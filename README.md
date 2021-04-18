@@ -1,2 +1,37 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
 # djprlabourdash
-Shiny dashboard to provide an overview of the Victorian labour market using public data
+
+<!-- badges: start -->
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R-CMD-check](https://github.com/djpr-data/djprlabourdash/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprlabourdash/actions)
+
+<!-- badges: end -->
+
+`djprlabourdash` is a Shiny-based dashboard providing an overview of the
+Victorian labour market using publicly-available data. It is created and
+maintained by the Data + Analytics team in DJPR Strategy and Priority
+Projects.
+
+## Installation
+
+Install from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("djpr-data/djprlabourdash")
+```
+
+## Related repos
+
+-   [`djprdashdata`](https://github.com/djpr-data/djprdashdata) contains
+    the data used in this app, as well as the code to update that data;
+
+-   [`djprshiny`](https://github.com/djpr-data/djprshiny) contains
+    common code used across DJPR Data + Analytics Shiny apps;
+
+-   [`djprtheme`](https://github.com/djpr-data/djprtheme) is a ggplot2
+    theme package that implements the DJPR visualisation style guide.
