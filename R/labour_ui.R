@@ -1,11 +1,16 @@
 labour_ui <- function(...) {
   navbarPage(
     theme = djpr_shiny_theme(),
+    lang = "en",
     position = "fixed-top",
     collapsible = TRUE,
     title = "DJPR Labour Dashboard",
     overview_page(),
-    indicators_page()
+    indicators_page(),
+    states_page(),
+    groups_page(),
+    regions_page(),
+    explore_page()
 
   )
 }
@@ -37,4 +42,23 @@ indicators_page <- function(...) {
              centred_row("Example indicators"))
 }
 
+states_page <- function(...) {
+  spaced_tab_panel(title = "States",
+                   centred_row("Compare states"))
+}
+
+groups_page <- function(...) {
+  spaced_tab_panel(title = "Groups",
+                   centred_row("Compare groups"))
+}
+
+regions_page <- function(...) {
+  spaced_tab_panel(title = "Regions",
+                   centred_row("Compare regions"))
+}
+
+explore_page <- function(...) {
+  spaced_tab_panel(title = "Regions",
+                   centred_row("Explore the data"))
+}
 
