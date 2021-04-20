@@ -11,7 +11,6 @@ labour_ui <- function(...) {
     groups_page(),
     regions_page(),
     explore_page()
-
   )
 }
 
@@ -58,7 +57,7 @@ regions_page <- function(...) {
 }
 
 explore_page <- function(...) {
-  spaced_tab_panel(title = "Regions",
+  spaced_tab_panel(title = "Explore",
                    centred_row("Explore the data"))
 }
 
