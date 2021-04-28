@@ -63,6 +63,28 @@ colpal <- topo.colors(6)
 rt1 <- reactable(
   sparklinelist,
   columns = list(
+    changeinquarter = colDef(
+      style = function(value) {
+        if (value > 0) {
+          color <- "#008000"
+        } else if (value < 0) {
+          color <- "#e00000"
+        } else {
+          color <- "#777"
+        }
+        list(color = color, fontWeight = "bold")
+      }),
+    changeinyear = colDef(
+      style = function(value) {
+        if (value > 0) {
+          color <- "#008000"
+        } else if (value < 0) {
+          color <- "#e00000"
+        } else {
+          color <- "#777"
+        }
+        list(color = color, fontWeight = "bold")
+      }),
     n = colDef(
           cell = function(value, index) {
         dui_sparkline(
@@ -91,7 +113,7 @@ rt1 <- reactable(
 rt1
 
 
-extra = colDef(
+changeinquarter = colDef(
   style = function(value) {
     if (value > 0) {
       color <- "#008000"
