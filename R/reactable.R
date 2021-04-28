@@ -10,6 +10,7 @@ lf <- readabs::read_abs("6202.0", tables = 5)
 
 #list of numbers
 
+startdate <- as.Date("2016-01-01") #Choose start date
 
 
 template <- lf %>%
@@ -21,8 +22,24 @@ template <- lf %>%
 
 labourforceclean <- lf %>%
   filter(series_type=="Seasonally Adjusted",
-         str_detect(series,"Persons"),!str_detect(series,"full-time")) %>%
-  select(date,series,value)
+         str_detect(series,"Persons"),
+         !str_detect(series,"full-time")) %>%
+  select(date,series,value) %>%
+  group_by(series) %>%
+  arrange(date) %>%
+  mutate(changeinquarter=(value-lag(value))/lag(value)*100) %>%
+  mutate(changeinquarter=sprintf("%.1f %%",changeinquarter)) %>%
+  mutate(changeinyear=(value-lag(value,4))/lag(value,4)*100) %>%
+  mutate(changeinyear=sprintf("%.1f %%",changeinyear)) %>%
+  filter(date>startdate) %>%
+  ungroup()
+
+changedf <- labourforceclean %>%
+   group_by(series) %>%
+  slice(which.max(date)) %>%
+  select(date,series,changeinquarter,changeinyear) %>%
+  ungroup()
+
 
 fun1 <- function(x){
   labourforceclean %>%
@@ -32,9 +49,13 @@ fun1 <- function(x){
 
 }
 
-sparklinelist <- template %>%
-  mutate(n=map(series,fun1))
 
+
+
+sparklinelist <- template %>%
+  mutate(n=map(series,fun1)) %>%
+  left_join(changedf,by="series") %>%
+  select(-date)
 
 colpal <- topo.colors(6)
 
@@ -51,24 +72,36 @@ rt1 <- reactable(
             stroke = colpal[index],
             showArea = TRUE,
             fill = colpal[index]),
-          # interactivity added here and unstyled for now
           dui_tooltip(components = list(
             dui_sparkverticalrefline(strokeDasharray = "4,4",
                                      stroke = gray.colors(10)[3]),
-            dui_sparkpointseries(      #styling
+            dui_sparkpointseries(
               stroke = colpal[index],
               fill = "#fff",
-              #litle extra interactivity for demostration purposes
-              renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)")) #obnoxiously big so it is apparent
+              renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)"))
           ))
         ))
       }
-    )))
+    )
+    ),
+  highlight=TRUE,
+  searchable=TRUE,
+  )
 
 rt1
 
 
-
+extra = colDef(
+  style = function(value) {
+    if (value > 0) {
+      color <- "#008000"
+    } else if (value < 0) {
+      color <- "#e00000"
+    } else {
+      color <- "#777"
+    }
+    list(color = color, fontWeight = "bold")
+  })
 
 
 
