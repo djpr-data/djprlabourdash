@@ -4,3 +4,6 @@
 ^\.github$
 ^data-raw$
 ^LICENSE\.md$
+^app\.R$
+^rsconnect$
+^\.httr-oauth$

@@ -1,4 +1,10 @@
 labour_ui <- function(...) {
+  fluidPage(
+  #   list(tags$head(tags$style(HTML("
+  #     # .navbar {min-height: 40px;},
+  #     .navbar.navbar-default {background-color: #000000 !important;}
+  #
+  # ")))),
   navbarPage(
     theme = djpr_shiny_theme(),
     lang = "en",
@@ -11,7 +17,7 @@ labour_ui <- function(...) {
     groups_page(),
     regions_page(),
     explore_page()
-  )
+  ))
 }
 
 spaced_tab_panel <- function(title,

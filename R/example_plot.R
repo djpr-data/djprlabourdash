@@ -13,5 +13,6 @@ example_plot <- function(data = ggplot2::economics,
       subtitle = subtitle,
       caption = caption
     ) +
-    theme_minimal(base_size = 16)
+    djprtheme::theme_djpr(base_size = 16) +
+    theme(axis.title.x = element_blank())
 }

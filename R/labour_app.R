@@ -1,8 +1,9 @@
 #' @import  djprshiny
 #' @import shiny
 
-
 labour_server <- function(input, output, session) {
+
+
   purrr::pmap(
     .l = list(
       id = list(
@@ -23,5 +24,7 @@ labour_server <- function(input, output, session) {
 }
 
 app <- function(...) {
+  lfs <- djprdashdata::download_abs_ts("6202.0")
+
   shiny::shinyApp(labour_ui(), labour_server)
 }
