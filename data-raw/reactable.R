@@ -35,7 +35,7 @@ labourforceclean <- lf %>%
   ungroup()
 
 changedf <- labourforceclean %>%
-   group_by(series) %>%
+  group_by(series) %>%
   slice(which.max(date)) %>%
   select(date,series,changeinquarter,changeinyear) %>%
   ungroup()
@@ -86,7 +86,7 @@ rt1 <- reactable(
         list(color = color, fontWeight = "bold")
       }),
     n = colDef(
-          cell = function(value, index) {
+      cell = function(value, index) {
         dui_sparkline(
           data = value[[1]],
           height = 80,
@@ -94,21 +94,21 @@ rt1 <- reactable(
             stroke = colpal[index],
             showArea = TRUE,
             fill = colpal[index]),
-          dui_tooltip(components = list(
-            dui_sparkverticalrefline(strokeDasharray = "4,4",
-                                     stroke = gray.colors(10)[3]),
-            dui_sparkpointseries(
-              stroke = colpal[index],
-              fill = "#fff",
-              renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)"))
+            dui_tooltip(components = list(
+              dui_sparkverticalrefline(strokeDasharray = "4,4",
+                                       stroke = gray.colors(10)[3]),
+              dui_sparkpointseries(
+                stroke = colpal[index],
+                fill = "#fff",
+                renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)"))
+            ))
           ))
-        ))
       }
     )
-    ),
+  ),
   highlight=TRUE,
   searchable=TRUE,
-  )
+)
 
 rt1
 
@@ -124,7 +124,6 @@ changeinquarter = colDef(
     }
     list(color = color, fontWeight = "bold")
   })
-
 
 
 

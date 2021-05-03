@@ -61,7 +61,6 @@ ui <- navbarPage("DJPR!",
 )
 
 server <- function(input, output, session) {
-  thematic::thematic_shiny()
 
   output$plot <- renderPlot({
     plot(cars, type = input$plotType)

@@ -1,4 +1,4 @@
-#' @import  djprshiny
+#' @import djprshiny
 #' @import shiny
 
 labour_server <- function(input, output, session) {
@@ -24,7 +24,7 @@ labour_server <- function(input, output, session) {
 }
 
 app <- function(...) {
-  # lfs <- djprdashdata::download_abs_ts("6202.0")
+  lfs <- djprdashdata::download_abs_ts("abs-lfs")
 
   shiny::shinyApp(labour_ui(), labour_server)
 }
