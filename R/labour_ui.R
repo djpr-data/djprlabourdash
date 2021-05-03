@@ -1,10 +1,5 @@
 labour_ui <- function(...) {
   fluidPage(
-  #   list(tags$head(tags$style(HTML("
-  #     # .navbar {min-height: 40px;},
-  #     .navbar.navbar-default {background-color: #000000 !important;}
-  #
-  # ")))),
   navbarPage(
     theme = djpr_shiny_theme(),
     lang = "en",
@@ -31,13 +26,28 @@ spaced_tab_panel <- function(title,
 }
 
 overview_page <- function(...) {
+
+  loading_content <- div(
+    id = "loading_page",
+    centred_row(" Loading data, please wait...")
+  )
+
+  main_content <- shinyjs::hidden(
+    div(id = "main_content",
+    centred_row(h1("Example overview")),
+    centred_row("Lorem i psum dolor sit amet, no ullum melius laoreet quo, quo iuvaret recteque torquatos id. Vix cu habeo reque nonumy, mel ne deleniti percipit efficiantur. An pro definiebas scripserit. Et errem dicam explicari cum, veritus mediocrem reprehendunt mei an. Duo ad dolor soluta referrentur."),
+    djpr_plot_ui("plot1"),
+    djpr_plot_ui("plot2"),
+    centred_row("Lorem ipsum dolor sit amet, no ullum melius laoreet quo, quo iuvaret recteque torquatos id. Vix cu habeo reque nonumy, mel ne deleniti percipit efficiantur. An pro definiebas scripserit. Et errem dicam explicari cum, veritus mediocrem reprehendunt mei an. Duo ad dolor soluta referrentur."),
+    br()
+    )
+  )
+
   spaced_tab_panel(title = "Overview",
-             centred_row(h1("Example overview")),
-             centred_row("Lorem ipsum dolor sit amet, no ullum melius laoreet quo, quo iuvaret recteque torquatos id. Vix cu habeo reque nonumy, mel ne deleniti percipit efficiantur. An pro definiebas scripserit. Et errem dicam explicari cum, veritus mediocrem reprehendunt mei an. Duo ad dolor soluta referrentur."),
-             djpr_plot_ui("plot1"),
-             djpr_plot_ui("plot2"),
-             centred_row("Lorem ipsum dolor sit amet, no ullum melius laoreet quo, quo iuvaret recteque torquatos id. Vix cu habeo reque nonumy, mel ne deleniti percipit efficiantur. An pro definiebas scripserit. Et errem dicam explicari cum, veritus mediocrem reprehendunt mei an. Duo ad dolor soluta referrentur."),
-             br()
+                   shinyjs::useShinyjs(),
+                   loading_content,
+                   main_content
+
 
   )
 }

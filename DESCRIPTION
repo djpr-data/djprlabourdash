@@ -22,7 +22,8 @@ Imports:
     pkgload,
     purrr,
     rlang,
-    shiny (>= 1.6.0)
+    shiny (>= 1.6.0),
+    shinyjs
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

@@ -3,6 +3,7 @@
 
 labour_server <- function(input, output, session) {
 
+  dash_data <- load_dash_data()
 
   purrr::pmap(
     .l = list(
@@ -24,7 +25,5 @@ labour_server <- function(input, output, session) {
 }
 
 app <- function(...) {
-  lfs <- djprdashdata::download_abs_ts("abs-lfs")
-
   shiny::shinyApp(labour_ui(), labour_server)
 }
