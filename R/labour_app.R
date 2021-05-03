@@ -1,25 +1,20 @@
 #' @import djprshiny
+#' @import djprdashdata
 #' @import shiny
 
 labour_server <- function(input, output, session) {
 
-  dash_data <- load_dash_data()
+  dash_data <- load_and_hide()
+
+  plot_params <- tibble::tribble(
+                 ~id, ~plot_function,                                                   ~data, ~date_slider,
+             "plot1",  example_plot, filter_lfs_data("unemployment rate", state = "victoria", df = dash_data), TRUE,
+             "plot2",  example_plot, filter_lfs_data("unemployment rate", state = "victoria", df = dash_data),  FALSE
+             )
+
 
   purrr::pmap(
-    .l = list(
-      id = list(
-        "plot1",
-        "plot2"
-      ),
-      plot_function = list(
-        example_plot,
-        example_plot
-      ),
-      date_slider = list(
-        FALSE,
-        TRUE
-      )
-    ),
+    .l = plot_params,
     .f = djpr_plot_server
   )
 }
