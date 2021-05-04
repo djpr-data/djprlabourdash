@@ -23,7 +23,8 @@ Imports:
     purrr,
     rlang,
     shiny (>= 1.6.0),
-    shinyjs
+    shinyjs,
+    tibble
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
