@@ -17,6 +17,7 @@ Imports:
     djprdashdata (>= 0.0.0.9000),
     djprshiny (>= 0.0.0.9000),
     djprtheme (>= 0.0.0.9000),
+    dplyr,
     ggplot2,
     htmltools (>= 0.5.1.1),
     pkgload,
@@ -24,8 +25,11 @@ Imports:
     rlang,
     shiny (>= 1.6.0),
     shinyjs,
-    tibble
+    tibble,
+    tidyr
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata
+Depends: 
+    R (>= 2.10)

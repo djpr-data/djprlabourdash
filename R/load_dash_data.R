@@ -18,8 +18,9 @@ load_dash_data <- function() {
                                  )
                   )
 
-  djprdashdata::download_abs_ts("abs-lfs") %>%
-    tidyr::unnest(cols = data) %>%
+  df <- djprdashdata::download_abs_ts("abs-lfs")
+
+  df %>%
     dplyr::left_join(crosstabs,
                      by = "series_id")
 }
