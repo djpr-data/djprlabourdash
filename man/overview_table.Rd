@@ -20,6 +20,7 @@ Create a Reactable to summarise key ABS LFS indicators
 }
 \examples{
 # Using the data available to this dashboard
+\dontrun{
 dash_data <- load_dash_data()
 series_ids <- c(
   "A84423349V",
@@ -34,7 +35,7 @@ data <- dash_data \%>\%
   unnest(cols = everything())
 
 overview_table(data = data)
-
+}
 
 }
 \author{

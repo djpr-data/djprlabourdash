@@ -6,6 +6,7 @@
 #' @author Darren Wong
 #' @examples
 #' # Using the data available to this dashboard
+#' \dontrun{
 #' dash_data <- load_dash_data()
 #' series_ids <- c(
 #'   "A84423349V",
@@ -20,7 +21,7 @@
 #'   unnest(cols = everything())
 #'
 #' overview_table(data = data)
-#'
+#'}
 #'
 overview_table <- function(data,
                            years_in_sparklines = 2
