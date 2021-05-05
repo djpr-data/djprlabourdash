@@ -14,7 +14,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    dataui,
+    dataui (>= 0.0.1),
     djprdashdata (>= 0.0.0.9000),
     djprshiny (>= 0.0.0.9000),
     djprtheme (>= 0.0.0.9000),
@@ -29,7 +29,8 @@ Imports:
     rlang,
     shiny (>= 1.6.0),
     shinyjs
-Remotes: 
+Remotes:  
     djpr-data/djprshiny,
     djpr-data/djprtheme,
-    djpr-data/djprdashdata
+    djpr-data/djprdashdata,
+    timelyportfolio/dataui
