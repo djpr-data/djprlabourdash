@@ -31,7 +31,6 @@ Imports:
     shinyjs,
     tibble,
     tidyr
-
 Remotes:  
     djpr-data/djprshiny,
     djpr-data/djprtheme,
