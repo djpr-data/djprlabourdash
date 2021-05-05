@@ -22,7 +22,6 @@ Imports:
     ggplot2,
     htmltools (>= 0.5.1.1),
     htmlwidgets,
-    lubridate,
     pkgload,
     purrr,
     reactable,
