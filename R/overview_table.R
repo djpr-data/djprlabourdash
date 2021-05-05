@@ -27,7 +27,14 @@ overview_table <- function(data,
                            years_in_sparklines = 2
                            ) {
 
-  startdate <- seq(max(data$date), length = 2, by = "-2 years")[2]
+  # Function to avoid adding a lubridate dependency
+  subtract_years <- function(max_date, n_years) {
+    seq(max_date,
+        length = 2,
+        by = paste0("-", n_years, " years"))[2]
+  }
+
+  startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   template <- data %>%
     dplyr::group_by(.data$series) %>%
