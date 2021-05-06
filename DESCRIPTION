@@ -2,11 +2,19 @@ Package: djprlabourdash
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
+    c(
+    person(given = "Darren",
+           family = "Wong",
+           role = "ctb",
+           email = "darren.wong@ecodev.vic.gov.au"),
     person(given = "Matt",
            family = "Cowgill",
            role = c("aut", "cre"),
-           email = "mattcowgill@gmail.com",
-           comment = c(ORCID = "0000-0003-0422-3300"))
+           email = "matt.cowgill@ecodev.vic.gov.au",
+           comment = c(ORCID = "0000-0003-0422-3300")),
+    person(given = "Department of Jobs, Precincts and Regions (Victoria)",
+           role = c("cph", "fnd"))
+           )
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
