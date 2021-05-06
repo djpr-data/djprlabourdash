@@ -30,10 +30,13 @@ Imports:
     shinyjs,
     tibble,
     tidyr
-Remotes:  
+Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
     timelyportfolio/dataui
 Depends: 
     R (>= 3.50)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
