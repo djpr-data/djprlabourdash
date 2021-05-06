@@ -31,8 +31,8 @@ series_ids <- c(
 )
 
 data <- dash_data \%>\%
-  filter(.data$series_id \%in\% series_ids) \%>\%
-  unnest(cols = everything())
+  dplyr::filter(.data$series_id \%in\% series_ids) \%>\%
+  tidyr::unnest(cols = everything())
 
 overview_table(data = data)
 }

@@ -17,8 +17,8 @@
 #' )
 #'
 #' data <- dash_data %>%
-#'   filter(.data$series_id %in% series_ids) %>%
-#'   unnest(cols = everything())
+#'   dplyr::filter(.data$series_id %in% series_ids) %>%
+#'   tidyr::unnest(cols = everything())
 #'
 #' overview_table(data = data)
 #'}
@@ -41,7 +41,7 @@ overview_table <- function(data,
     dplyr::count()
 
   labourforceclean <- data %>%
-    dplyr::select(.data$date, .data$series, .data$value, .data$unit) %>%
+    dplyr::select(.data$date, series = .data$series, .data$value, .data$unit) %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
