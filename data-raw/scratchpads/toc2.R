@@ -97,9 +97,11 @@ ui <- fluidPage(
           9,
           id = "page-2-content",
           h1("Unemployment"),
+          paste0(rep("Text goes here", 1e3), collapse = ""),
           h1("Underemploykent"),
           paste0(rep("Text goes here", 1e3), collapse = ""),
-          h1("Foo bar")
+          h1("Foo bar"),
+          paste0(rep("Text goes here", 1e3), collapse = "")
         )
       )
     )

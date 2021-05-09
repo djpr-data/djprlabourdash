@@ -29,7 +29,7 @@ labour_server <- function(input, output, session) {
 
     df <- dash_data %>%
       dplyr::filter(.data$series_id %in% ids) %>%
-      tidyr::unnest(cols = everything())
+      tidyr::unnest(cols = dplyr::everything())
 
     overview_table(data = df)
   })
