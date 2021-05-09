@@ -1,5 +1,4 @@
 test_that("overview_table() returns a reactable htmlwidget", {
-
   dash_data <- load_dash_data()
   series_ids <- c(
     "A84423349V",

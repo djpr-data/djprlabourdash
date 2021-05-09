@@ -1,18 +1,18 @@
 ##########################################
-##########Labour Force Reactable##########
+########## Labour Force Reactable##########
 ##########################################
 
-#Author: Darren Wong
-#QA: -
+# Author: Darren Wong
+# QA: -
 
-#The purpose of this script is to generate an interactive table and sparkline of the latest ABS labour force release.
-#Expected runtime: < 1 min
+# The purpose of this script is to generate an interactive table and sparkline of the latest ABS labour force release.
+# Expected runtime: < 1 min
 
 
 rm(list = ls())
 
 
-##Load packages
+## Load packages
 
 library(readabs)
 library(reactable)
@@ -20,17 +20,17 @@ library(dataui)
 library(tidyverse)
 
 
-##Load Labour Force Data
+## Load Labour Force Data
 
 lf <- readabs::read_abs("6202.0", tables = 5)
 
 
-##Set Start Date
+## Set Start Date
 
 startdate <- as.Date("2018-01-01")
 
 
-##Create template table
+## Create template table
 
 template <- lf %>%
   filter(
@@ -41,32 +41,42 @@ template <- lf %>%
   count()
 
 
-##Clean Labour Force Data
+## Clean Labour Force Data
 
 labourforceclean <- lf %>%
   filter(
-    series_type == "Seasonally Adjusted",  #Choose seasonally adjusted series rather than trend or original
-    str_detect(series, "Persons"),  #Choose total people rather than men or women
-    !str_detect(series, "full-time")  #Ignore distinction between full time and part time work
+    series_type == "Seasonally Adjusted", # Choose seasonally adjusted series rather than trend or original
+    str_detect(series, "Persons"), # Choose total people rather than men or women
+    !str_detect(series, "full-time") # Ignore distinction between full time and part time work
   ) %>%
   select(date, series, value, unit) %>%
   group_by(series) %>%
   arrange(date) %>%
-  mutate(value = ifelse(unit == "000", 1000 * value, value)) %>%  #Convert '000 to per person
-  mutate(changeinquarter = (value - lag(value))) %>%  #Create Change in Quarter
-  mutate(changeinquarterpc = changeinquarter / lag(value) * 100) %>%  #Create percentage change in quarter
-  mutate(changeinquarterpc = sprintf("%.1f %%", changeinquarterpc)) %>%  #Style percentage change in quarter
-  mutate(changeinquarter = ifelse(unit == "000", sprintf("%1.0f", changeinquarter), sprintf("%.1f %%", changeinquarter))) %>%  #Style change in quarter
-  mutate(changeinyear = (value - lag(value, 4))) %>%  #Create change in year
-  mutate(changeinyearpc = changeinyear / lag(value, 4) * 100) %>%  #Create percentage change in year
-  mutate(changeinyearpc = sprintf("%.1f %%", changeinyearpc)) %>%  #Style perchange change in year
-  mutate(changeinyear = ifelse(unit == "000", sprintf("%1.0f", changeinyear), sprintf("%.1f %%", changeinyear))) %>%  #Style change in quarter
-  filter(date > startdate) %>%  #Apply startdate
+  mutate(value = ifelse(unit == "000", 1000 * value, value)) %>%
+  # Convert '000 to per person
+  mutate(changeinquarter = (value - lag(value))) %>%
+  # Create Change in Quarter
+  mutate(changeinquarterpc = changeinquarter / lag(value) * 100) %>%
+  # Create percentage change in quarter
+  mutate(changeinquarterpc = sprintf("%.1f %%", changeinquarterpc)) %>%
+  # Style percentage change in quarter
+  mutate(changeinquarter = ifelse(unit == "000", sprintf("%1.0f", changeinquarter), sprintf("%.1f %%", changeinquarter))) %>%
+  # Style change in quarter
+  mutate(changeinyear = (value - lag(value, 4))) %>%
+  # Create change in year
+  mutate(changeinyearpc = changeinyear / lag(value, 4) * 100) %>%
+  # Create percentage change in year
+  mutate(changeinyearpc = sprintf("%.1f %%", changeinyearpc)) %>%
+  # Style perchange change in year
+  mutate(changeinyear = ifelse(unit == "000", sprintf("%1.0f", changeinyear), sprintf("%.1f %%", changeinyear))) %>%
+  # Style change in quarter
+  filter(date > startdate) %>%
+  # Apply startdate
   ungroup()
 
 
 
-##Select only the latest changes in quarter and year
+## Select only the latest changes in quarter and year
 
 changedf <- labourforceclean %>%
   group_by(series) %>%
@@ -75,7 +85,7 @@ changedf <- labourforceclean %>%
   ungroup()
 
 
-##Create function to change time series to a list
+## Create function to change time series to a list
 
 fun1 <- function(x) {
   labourforceclean %>%
@@ -85,7 +95,7 @@ fun1 <- function(x) {
 }
 
 
-##Create a dataframe in the format required for a sparkline with the list function
+## Create a dataframe in the format required for a sparkline with the list function
 
 sparklinelist <- template %>%
   mutate(n = map(series, fun1)) %>%
@@ -93,15 +103,15 @@ sparklinelist <- template %>%
   select(-date)
 
 
-##Define colour palette
+## Define colour palette
 
 colpal <- topo.colors(6)
 
 
-##Create Reactable
+## Create Reactable
 
 rt1 <- reactable(
-  sparklinelist,  #Specify dataframe to use
+  sparklinelist, # Specify dataframe to use
   columns = list(
     changeinquarter = colDef(
       style = function(value) {
@@ -112,7 +122,7 @@ rt1 <- reactable(
         } else {
           color <- "#777"
         }
-        list(background = color, fontWeight = "bold", color = "#ffffff")  #Conditional format background based on value
+        list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
       }
     ),
     changeinquarterpc = colDef(
@@ -124,7 +134,7 @@ rt1 <- reactable(
         } else {
           color <- "#777"
         }
-        list(background = color, fontWeight = "bold", color = "#ffffff")  #Conditional format background based on value
+        list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
       }
     ),
     changeinyear = colDef(
@@ -136,7 +146,7 @@ rt1 <- reactable(
         } else {
           color <- "#777"
         }
-        list(background = color, fontWeight = "bold", color = "#ffffff")  #Conditional format background based on value
+        list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
       }
     ),
     changeinyearpc = colDef(
@@ -148,7 +158,7 @@ rt1 <- reactable(
         } else {
           color <- "#777"
         }
-        list(background = color, fontWeight = "bold", color = "#ffffff")  #Conditional format background based on value
+        list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
       }
     ),
     n = colDef(
@@ -160,17 +170,17 @@ rt1 <- reactable(
             dui_sparklineseries(
               stroke = colpal[index],
               showArea = TRUE,
-              fill = colpal[index] #Create actual sparkline
+              fill = colpal[index] # Create actual sparkline
             ),
             dui_tooltip(components = list(
               dui_sparkverticalrefline(
                 strokeDasharray = "4,4",
-                stroke = gray.colors(10)[3]  #Create moving tooltip
+                stroke = gray.colors(10)[3] # Create moving tooltip
               ),
               dui_sparkpointseries(
                 stroke = colpal[index],
                 fill = "#fff",
-                renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)") #display tooltip value
+                renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)") # display tooltip value
               )
             ))
           )

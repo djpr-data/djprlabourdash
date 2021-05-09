@@ -21,17 +21,17 @@
 #'   tidyr::unnest(cols = everything())
 #'
 #' overview_table(data = data)
-#'}
+#' }
 #'
 overview_table <- function(data,
-                           years_in_sparklines = 2
-                           ) {
+                           years_in_sparklines = 2) {
 
   # Function to avoid adding a lubridate dependency
   subtract_years <- function(max_date, n_years) {
     seq(max_date,
-        length = 2,
-        by = paste0("-", n_years, " years"))[2]
+      length = 2,
+      by = paste0("-", n_years, " years")
+    )[2]
   }
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
@@ -46,8 +46,9 @@ overview_table <- function(data,
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
       value = dplyr::if_else(.data$unit == "000",
-                             1000 * .data$value,
-                             .data$value),
+        1000 * .data$value,
+        .data$value
+      ),
       changeinquarter = (.data$value - dplyr::lag(.data$value)),
       changeinquarterpc = .data$changeinquarter / dplyr::lag(.data$value) * 100,
       changeinquarterpc = sprintf("%.1f %%", .data$changeinquarterpc),
@@ -71,9 +72,11 @@ overview_table <- function(data,
   changedf <- labourforceclean %>%
     dplyr::group_by(.data$series) %>%
     dplyr::slice(which.max(.data$date)) %>%
-    dplyr::select(.data$date, .data$series, .data$changeinquarter,
-           .data$changeinquarterpc, .data$changeinyear,
-           .data$changeinyearpc) %>%
+    dplyr::select(
+      .data$date, .data$series, .data$changeinquarter,
+      .data$changeinquarterpc, .data$changeinyear,
+      .data$changeinyearpc
+    ) %>%
     dplyr::ungroup()
 
 
