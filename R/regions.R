@@ -6,6 +6,9 @@ map_unemprate_vic <- function(data) {
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- absmapsdata::sa42016 %>% dplyr::filter(state_name_2016 =="Victoria") %>% dplyr::filter(sa4_code_2016 < 297)
 
+  # Fix issue with different naming for North West region in Victoria
+  data$sa4[data$sa4 == "Victoria - North West"] <- "North West"
+
   # Join shape file with data to create mapdata ----
   mapdata <- sa4_shp %>%
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
@@ -71,5 +74,8 @@ map_unemprate_vic <- function(data) {
 
   # Export a static image of the map (into your working directory)----
   mapview::mapshot(map, file = "Victoria_SA4_unemprate.png")
+
+  # Export the dynamic map with all functions as html page (into your working directory)----
+  htmlwidgets::saveWidget(map, file = "Victoria_SA4_unemprate.html")
 
 }
