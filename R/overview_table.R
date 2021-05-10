@@ -49,19 +49,33 @@ overview_table <- function(data,
         1000 * .data$value,
         .data$value
       ),
-      changeinquarter = (.data$value - dplyr::lag(.data$value)),
-      changeinquarterpc = .data$changeinquarter / dplyr::lag(.data$value) * 100,
-      changeinquarterpc = sprintf("%.1f %%", .data$changeinquarterpc),
-      changeinquarter = ifelse(.data$unit == "000",
-        sprintf("%1.0f", .data$changeinquarter),
-        sprintf("%.1f %%", .data$changeinquarter)
+      changeinmonth = (.data$value - dplyr::lag(.data$value)),
+      changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
+      changeinmonthpc = dplyr::if_else(
+        unit == "000",
+        sprintf("%0.1f %%", changeinmonthpc),
+        "-"
+      ),
+      changeinmonth = ifelse(.data$unit == "000",
+        format(round(changeinmonth), big.mark=",", scientific=F, trim=T),
+        sprintf("%.1f ppts", .data$changeinmonth)
       ),
       changeinyear = (.data$value - dplyr::lag(.data$value, 4)),
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 4) * 100,
-      changeinyearpc = sprintf("%.1f %%", .data$changeinyearpc),
+      changeinyearpc = dplyr::if_else(
+        unit == "000",
+        sprintf("%0.1f %%", changeinyearpc),
+        "-"
+      ),
       changeinyear = ifelse(.data$unit == "000",
-        sprintf("%1.0f", .data$changeinyear),
-        sprintf("%.1f %%", .data$changeinyear)
+        format(round(changeinyear), big.mark=",", scientific=F, trim=T),
+        sprintf("%.1f ppts", .data$changeinyear)
+      ),
+      latest_value=dplyr::if_else(
+        unit == "000",
+        format(round(value), big.mark=",", scientific=F, trim=T),
+        sprintf("%.1f %%", value)
+
       )
     ) %>%
     dplyr::filter(.data$date > startdate) %>%
@@ -73,9 +87,9 @@ overview_table <- function(data,
     dplyr::group_by(.data$series) %>%
     dplyr::slice(which.max(.data$date)) %>%
     dplyr::select(
-      .data$date, .data$series, .data$changeinquarter,
-      .data$changeinquarterpc, .data$changeinyear,
-      .data$changeinyearpc
+      .data$date, .data$series, .data$changeinmonth,
+      .data$changeinmonthpc, .data$changeinyear,
+      .data$changeinyearpc, latest_value
     ) %>%
     dplyr::ungroup()
 
@@ -104,59 +118,25 @@ overview_table <- function(data,
 
 
   ## Create Reactable
+  recolor_col <- function(value) {
+    if (value > 0) {
+      color <- "#f0fff0"
+    } else if (value < 0 & value != "-") {
+      color <- "#fff5ee"
+    } else {
+      color <- "#ddd"
+    }
+    list(background = color, fontWeight = "bold", color = "#000") # Conditional format background based on value
+  }
 
   rt1 <- reactable::reactable(
     sparklinelist, # Specify dataframe to use
     columns = list(
-      changeinquarter = reactable::colDef(
-        style = function(value) {
-          if (value > 0) {
-            color <- "#008000"
-          } else if (value < 0) {
-            color <- "#e00000"
-          } else {
-            color <- "#777"
-          }
-          list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
-        }
-      ),
-      changeinquarterpc = reactable::colDef(
-        style = function(value) {
-          if (value > 0) {
-            color <- "#008000"
-          } else if (value < 0) {
-            color <- "#e00000"
-          } else {
-            color <- "#777"
-          }
-          list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
-        }
-      ),
-      changeinyear = reactable::colDef(
-        style = function(value) {
-          if (value > 0) {
-            color <- "#008000"
-          } else if (value < 0) {
-            color <- "#e00000"
-          } else {
-            color <- "#777"
-          }
-          list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
-        }
-      ),
-      changeinyearpc = reactable::colDef(
-        style = function(value) {
-          if (value > 0) {
-            color <- "#008000"
-          } else if (value < 0) {
-            color <- "#e00000"
-          } else {
-            color <- "#777"
-          }
-          list(background = color, fontWeight = "bold", color = "#ffffff") # Conditional format background based on value
-        }
+      series = reactable::colDef(
+        name = ""
       ),
       n = reactable::colDef(
+        name = "",
         cell = function(value, index) {
           dataui::dui_sparkline(
             data = value[[1]],
@@ -164,7 +144,7 @@ overview_table <- function(data,
             components = list(
               dataui::dui_sparklineseries(
                 stroke = colpal[index],
-                showArea = TRUE,
+                showArea = F,
                 fill = colpal[index] # Create actual sparkline
               ),
               dataui::dui_tooltip(components = list(
@@ -181,7 +161,36 @@ overview_table <- function(data,
             )
           )
         }
+      ),
+      changeinmonth = reactable::colDef(
+        name = "No.",
+        style = recolor_col,
+        align = "center"
+      ),
+      changeinmonthpc = reactable::colDef(
+        name = "%",
+        style = recolor_col,
+        align = "center"
+      ),
+      changeinyear = reactable::colDef(
+        name = "No.",
+        style = recolor_col,
+        align = "center"
+      ),
+      changeinyearpc = reactable::colDef(
+        name = "%",
+        style = recolor_col,
+        align = "center"
+      ),
+      latest_value = reactable::colDef(
+        name = strftime(max(data$date), "%b %Y"),
+        style = recolor_col,
+        align = "center"
       )
+    ),
+    columnGroups = list(
+      reactable::colGroup(name="Change in month", columns=c("changeinmonth", "changeinmonthpc")),
+      reactable::colGroup(name="Change over year", columns=c("changeinyear", "changeinyearpc"))
     ),
     highlight = TRUE,
     resizable = TRUE,
