@@ -14,16 +14,17 @@ map_unemprate_vic <- function(data) {
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour bins
-  pal <- leaflet::colorBin("Blues", data$value, 5)           # last object is number of bins
+  mapdata_latest <- mapdata %>% dplyr::group_by(mapdata$sa4) %>% dplyr::filter(mapdata$date == max(mapdata$date))
+  pal <- leaflet::colorBin("Blues", mapdata_latest$value, 5)           # last object is number of bins
 
   #Create metro boundary (Greater Melbourne) ----
-#  metro_boundary_sa4 <- c(
-#    "Melbourne - Inner","Melbourne - Inner East","Melbourne - Inner South","Melbourne - North East",
-#    "Melbourne - North West","Melbourne - Outer East","Melbourne - South East","Melbourne - West",
-#    "Mornington Peninsula")
+  metro_boundary_sa4 <- c(
+    "Melbourne - Inner","Melbourne - Inner East","Melbourne - Inner South","Melbourne - North East",
+    "Melbourne - North West","Melbourne - Outer East","Melbourne - South East","Melbourne - West",
+    "Mornington Peninsula")
 
-#  metro_outline <- mapdata %>% dplyr::filter(sa4_name_2016 %in% metro_boundary_sa4) %>%
-#    dplyr::summarise(areasqkm_2016 = sum(areasqkm_2016))
+  metro_outline <- mapdata %>% dplyr::filter(sa4_name_2016 %in% metro_boundary_sa4) %>%
+    dplyr::summarise(areasqkm_2016 = sum(areasqkm_2016))
 
   # Produce dynamic map, all of Victoria ----
   # Ignore warning message:
@@ -35,7 +36,7 @@ map_unemprate_vic <- function(data) {
     leaflet::addPolygons(
       color = "grey",                          # colour of boundary lines, 'transparent' for no lines
       weight = 1,                              # thickness of boundary lines
-      fillColor = ~pal(mapdata$value),       # pre-defined above
+      fillColor = ~pal(mapdata$value),         # pre-defined above
       fillOpacity = 1.0,                       # strength of fill colour
       smoothFactor = 0.5,                      # smoothing between region
       stroke = T,
@@ -46,9 +47,9 @@ map_unemprate_vic <- function(data) {
       label = sprintf(                         # region label definition
         "<strong>%s</strong><br/>Unemployment rate: %g",   # label title, strong = bold
         mapdata$sa4_name_2016,                 # region name displayed in label
-        mapdata$value) %>%                   # eco data displayed in label
+        mapdata$value) %>%                     # eco data displayed in label
         lapply(htmltools::HTML),
-      labelOptions = leaflet::labelOptions(             # label options
+      labelOptions = leaflet::labelOptions(    # label options
         style = list(
           "font-weight" = "normal",            # "bold" makes it so
           padding = "3px 8px"),
@@ -71,9 +72,6 @@ map_unemprate_vic <- function(data) {
 
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
-
-  # Export a static image of the map (into your working directory)----
-  mapview::mapshot(map, file = "Victoria_SA4_unemprate.png")
 
   # Export the dynamic map with all functions as html page (into your working directory)----
   htmlwidgets::saveWidget(map, file = "Victoria_SA4_unemprate.html")

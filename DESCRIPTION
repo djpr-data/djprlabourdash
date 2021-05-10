@@ -25,7 +25,6 @@ Imports:
     janitor,
     leaflet,
     leaflet.extras,
-    mapshot,
     mapview,
     pkgload,
     purrr,
