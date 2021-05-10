@@ -34,10 +34,6 @@ overview_table <- function(data,
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
-  template <- data %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::summarise()
-
   labourforceclean <- data %>%
     dplyr::select(.data$date, series = .data$indicator, .data$value, .data$unit) %>%
     dplyr::filter(.data$date >= startdate) %>%
@@ -79,15 +75,18 @@ overview_table <- function(data,
     ) %>%
     dplyr::ungroup()
 
-  ## Select only the latest changes in quarter and year
+  ## Select only the latest changes
 
   changedf <- labourforceclean %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::slice(which.max(.data$date)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
-      .data$date, .data$series, .data$latest_value,
+      .data$date,
+      .data$series,
+      .data$latest_value,
       .data$changeinmonth,
-      .data$changeinmonthpc, .data$changeinyear,
+      .data$changeinmonthpc,
+      .data$changeinyear,
       .data$changeinyearpc,
     ) %>%
     dplyr::ungroup()
@@ -95,8 +94,8 @@ overview_table <- function(data,
   ## Create a dataframe in the format required for a sparkline with the list function
 
   sparklinelist <- labourforceclean %>%
-    group_by(series) %>%
-    summarise(n = list(list(value = c_across("value")))) %>%
+    dplyr::group_by(series) %>%
+    dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
     dplyr::left_join(changedf, by = "series") %>%
     dplyr::select(-.data$date)
 
@@ -121,16 +120,23 @@ overview_table <- function(data,
     columns = list(
       series = reactable::colDef(
         name = "",
-        minWidth = 110,
+        style = function(value, index) {
+          list(#color = colpal[index],
+               fontWeight = "bold")
+        },
+        minWidth = 100,
       ),
       n = reactable::colDef(
         name = paste0("Last ", years_in_sparklines ," years"),
         align = "center",
         maxWidth = 250,
+        minWidth = 50,
         cell = function(value, index) {
           dataui::dui_sparkline(
             data = value[[1]],
-            height = 50,
+            height = 40,
+            margin = list(top = 7, right = 3,
+                          bottom = 7, left = 3),
             components = list(
               dataui::dui_sparklineseries(
                 stroke = colpal[index],
@@ -170,7 +176,7 @@ overview_table <- function(data,
         name = "No.",
         style = recolor_col,
         align = "center" ,
-        minWidth = 70,
+        minWidth = 50,
         maxWidth = 90
       ),
       changeinyearpc = reactable::colDef(
@@ -181,11 +187,10 @@ overview_table <- function(data,
         maxWidth = 90
       ),
       latest_value = reactable::colDef(
-        name = strftime(max(data$date), "%b %Y"),
-        # style = recolor_col,
+        name = strftime(max(data$date), "%B %Y"),
         align = "center" ,
         maxWidth = 100,
-        minWidth = 90,
+        minWidth = 65
       )
     ),
     columnGroups = list(
@@ -198,7 +203,9 @@ overview_table <- function(data,
       borderColor = "#dfe2e5",
       stripedColor = "#f6f8fa",
       highlightColor = "#f0f5f9",
-      cellPadding = "5px 3px",
+      cellPadding = "7px 1px 1px",
+      headerStyle = list(fontWeight = "normal"),
+      groupHeaderStyle = list(fontWeight = "normal"),
       style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
     )
   )
