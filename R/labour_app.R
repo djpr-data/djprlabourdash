@@ -5,17 +5,7 @@
 labour_server <- function(input, output, session) {
   dash_data <- load_and_hide()
 
-  djpr_plot_server(
-    id = "plot1",
-    plot_function = example_plot,
-    date_slider = TRUE,
-    data = filter_dash_data(c("A84423242V", "A84423466F"),
-      df = dash_data
-    ),
-    check_box_options = c("Males", "Females"),
-    check_box_var = sex,
-    plt_change = reactive(input$plt_change)
-  )
+  # Overview ------
 
   output$main_table <- reactable::renderReactable({
     # req(dash_data)
@@ -33,6 +23,31 @@ labour_server <- function(input, output, session) {
 
     overview_table(data = df)
   })
+
+  djpr_plot_server(
+    id = "plot1",
+    plot_function = example_plot,
+    date_slider = TRUE,
+    data = filter_dash_data(c("A84423242V", "A84423466F"),
+                            df = dash_data
+    ),
+    check_box_options = c("Males", "Females"),
+    check_box_var = sex,
+    plt_change = reactive(input$plt_change)
+  )
+
+  # Indicators -----
+
+  djpr_plot_server(
+    id = "emp_growth_sincecovid",
+    plot_function = viz_empgrowth_sincecovid,
+    date_slider = TRUE,
+    data = filter_dash_data(c("A84423043C", "A84423349V"),
+                            df = dash_data),
+    date_slider_value_min = as.Date("2020-01-01"),
+    plt_change = reactive(input$plt_change)
+  )
+
 }
 
 app <- function(...) {
