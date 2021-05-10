@@ -22,7 +22,7 @@ Create a Reactable to summarise key ABS LFS indicators
 # Using the data available to this dashboard
 \dontrun{
 dash_data <- load_dash_data()
-series_ids <- c(
+table_ids <- c(
   "A84423349V",
   "A84423356T",
   "A84423355R",
@@ -30,11 +30,9 @@ series_ids <- c(
   "A84423350C"
 )
 
-data <- dash_data \%>\%
-  dplyr::filter(.data$series_id \%in\% series_ids) \%>\%
-  tidyr::unnest(cols = everything())
+table_data <- filter_dash_data(table_ids)
 
-overview_table(data = data)
+overview_table(table_data)
 }
 
 }

@@ -8,7 +8,7 @@
 #' # Using the data available to this dashboard
 #' \dontrun{
 #' dash_data <- load_dash_data()
-#' series_ids <- c(
+#' table_ids <- c(
 #'   "A84423349V",
 #'   "A84423356T",
 #'   "A84423355R",
@@ -16,11 +16,9 @@
 #'   "A84423350C"
 #' )
 #'
-#' data <- dash_data %>%
-#'   dplyr::filter(.data$series_id %in% series_ids) %>%
-#'   tidyr::unnest(cols = everything())
+#' table_data <- filter_dash_data(table_ids)
 #'
-#' overview_table(data = data)
+#' overview_table(table_data)
 #' }
 #'
 overview_table <- function(data,
@@ -38,10 +36,11 @@ overview_table <- function(data,
 
   template <- data %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::count()
+    dplyr::summarise()
 
   labourforceclean <- data %>%
-    dplyr::select(.data$date, series = .data$series, .data$value, .data$unit) %>%
+    dplyr::select(.data$date, series = .data$indicator, .data$value, .data$unit) %>%
+    dplyr::filter(.data$date >= startdate) %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
@@ -78,7 +77,6 @@ overview_table <- function(data,
 
       )
     ) %>%
-    dplyr::filter(.data$date > startdate) %>%
     dplyr::ungroup()
 
   ## Select only the latest changes in quarter and year
@@ -87,35 +85,23 @@ overview_table <- function(data,
     dplyr::group_by(.data$series) %>%
     dplyr::slice(which.max(.data$date)) %>%
     dplyr::select(
-      .data$date, .data$series, .data$changeinmonth,
+      .data$date, .data$series, .data$latest_value,
+      .data$changeinmonth,
       .data$changeinmonthpc, .data$changeinyear,
-      .data$changeinyearpc, latest_value
+      .data$changeinyearpc,
     ) %>%
     dplyr::ungroup()
 
-
-  ## Create function to change time series to a list
-
-  fun1 <- function(x) {
-    labourforceclean %>%
-      dplyr::filter(.data$series == x) %>%
-      dplyr::select(.data$value) %>%
-      as.list()
-  }
-
-
   ## Create a dataframe in the format required for a sparkline with the list function
 
-  sparklinelist <- template %>%
-    dplyr::mutate(n = purrr::map(.data$series, fun1)) %>%
+  sparklinelist <- labourforceclean %>%
+    group_by(series) %>%
+    summarise(n = list(list(value = c_across("value")))) %>%
     dplyr::left_join(changedf, by = "series") %>%
     dplyr::select(-.data$date)
 
-
   ## Define colour palette
-
-  colpal <- djprtheme::djpr_pal(6)
-
+  colpal <- djprtheme::djpr_pal(nrow(sparklinelist))
 
   ## Create Reactable
   recolor_col <- function(value) {
@@ -126,21 +112,25 @@ overview_table <- function(data,
     } else {
       color <- "#ddd"
     }
-    list(background = color, fontWeight = "bold", color = "#000") # Conditional format background based on value
+    # Conditional format background based on value
+    list(background = color, fontWeight = "normal", color = "#000")
   }
 
   rt1 <- reactable::reactable(
     sparklinelist, # Specify dataframe to use
     columns = list(
       series = reactable::colDef(
-        name = ""
+        name = "",
+        minWidth = 110,
       ),
       n = reactable::colDef(
-        name = "",
+        name = paste0("Last ", years_in_sparklines ," years"),
+        align = "center",
+        maxWidth = 250,
         cell = function(value, index) {
           dataui::dui_sparkline(
             data = value[[1]],
-            height = 80,
+            height = 50,
             components = list(
               dataui::dui_sparklineseries(
                 stroke = colpal[index],
@@ -155,7 +145,7 @@ overview_table <- function(data,
                 dataui::dui_sparkpointseries(
                   stroke = colpal[index],
                   fill = "#fff",
-                  renderLabel = htmlwidgets::JS("(d) => d.toFixed(2)") # display tooltip value
+                  renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)") # display tooltip value
                 )
               ))
             )
@@ -165,27 +155,37 @@ overview_table <- function(data,
       changeinmonth = reactable::colDef(
         name = "No.",
         style = recolor_col,
-        align = "center"
+        align = "center",
+        minWidth = 50,
+        maxWidth = 90,
       ),
       changeinmonthpc = reactable::colDef(
         name = "%",
         style = recolor_col,
-        align = "center"
+        align = "center",
+        minWidth = 50,
+        maxWidth = 90
       ),
       changeinyear = reactable::colDef(
         name = "No.",
         style = recolor_col,
-        align = "center"
+        align = "center" ,
+        minWidth = 70,
+        maxWidth = 90
       ),
       changeinyearpc = reactable::colDef(
         name = "%",
         style = recolor_col,
-        align = "center"
+        align = "center" ,
+        minWidth = 50,
+        maxWidth = 90
       ),
       latest_value = reactable::colDef(
         name = strftime(max(data$date), "%b %Y"),
-        style = recolor_col,
-        align = "center"
+        # style = recolor_col,
+        align = "center" ,
+        maxWidth = 100,
+        minWidth = 90,
       )
     ),
     columnGroups = list(
@@ -198,8 +198,8 @@ overview_table <- function(data,
       borderColor = "#dfe2e5",
       stripedColor = "#f6f8fa",
       highlightColor = "#f0f5f9",
-      cellPadding = "8px 12px",
-      style = list(fontFamily = "-apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif")
+      cellPadding = "5px 3px",
+      style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
     )
   )
 
