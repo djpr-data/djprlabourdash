@@ -3,6 +3,7 @@
 #' \dontrun{
 #'
 #' data <- load_dash_data()
+#' #for 'map_unemprate_vic'
 #' ids <- c("A84600253V",
 #'         "A84600145K",
 #'         "A84599659L",
@@ -30,9 +31,31 @@
 #'  tidyr::unnest(cols = dplyr::everything()) %>%
 #'  dplyr::filter(.data$date == max(.data$date))
 #'
-#' map_unemprate_vic(data)
+#' #for 'viz_emp_regions_sincecovid':
+#' data <- filter_dash_data(c("A84600141A",
+#'                            "A84600075R"), data) %>%
+#'         dplyr::filter(date >= as.Date("2020-01-01"))
 #'
-#' }
+#' #for 'viz_reg_unemprate_multiline':
+#' data <- filter_dash_data(c("A84600253V",
+#'                            "A84599659L",
+#'                            "A84600019W",
+#'                            "A84600187J",
+#'                            "A84599557X",
+#'                            "A84600115W",
+#'                            "A84599851L",
+#'                            "A84599923L",
+#'                            "A84600025T",
+#'                            "A84600193C",
+#'                            "A84599665J",
+#'                            "A84600031L",
+#'                            "A84599671C",
+#'                            "A84599677T",
+#'                            "A84599683L",
+#'                            "A84599929A",
+#'                            "A84600121T",
+#'                            "A84600037A", data)
+
 
 map_unemprate_vic <- function(data) {
 
@@ -121,4 +144,26 @@ map_unemprate_vic <- function(data) {
 
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
+}
+
+# Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
+viz_emp_regions_sincecovid <- function(data, title = "") {
+
+  df <- data %>%
+    dplyr::group_by(series) %>%
+    dplyr::mutate(value = value / value[date == as.Date("2020-03-01")])
+
+  df %>%
+    djpr_ts_linechart() +
+    labs(title = title)
+}
+
+viz_reg_unemprate_multiline <- function(data, title = "") {
+
+  data %>%
+    dplyr::filter(sa4 != "") %>%
+    ggplot(aes(x = date, y = value, col = sa4)) +
+    geom_line() +
+    facet_wrap(~sa4)
+
 }
