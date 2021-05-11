@@ -26,6 +26,25 @@ map_unemprate_vic <- function(data) {
   metro_outline <- mapdata %>% dplyr::filter(sa4_name_2016 %in% metro_boundary_sa4) %>%
     dplyr::summarise(areasqkm_2016 = sum(areasqkm_2016))
 
+  # Adding a title to the map, optional ----
+  tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title {
+    transform: translate(-50%,20%);
+    position: fixed !important;
+    left: 50%;                                     # 50% means center
+    text-align: center;                            # center, right or left
+    padding-left: 10px;
+    padding-right: 10px;
+    background: rgba(255,255,255,0.75);            # background colour of title
+    font-weight: bold;                             # bold or normal
+    font-size: 60px;                               # size of title font - doesn't seem to work though
+  }
+  "))
+
+  title <- tags$div(
+    tag.map.title, HTML("Unemployment rate [%] in Victoria")
+  )
+
   # Produce dynamic map, all of Victoria ----
   # Ignore warning message:
   # //sf layer has inconsistent datum (+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs).
@@ -68,7 +87,8 @@ map_unemprate_vic <- function(data) {
                 stroke = T,
                 color = "black",
                 weight = 2)  %>%               # thickness of metro outline
-    leaflet.extras::setMapWidgetStyle(list(background= "white"))    # background colour
+    leaflet.extras::setMapWidgetStyle(list(background= "white")) %>%   # background colour
+    leaflet::addControl(title, position = "topleft", className="map-title")
 
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
