@@ -14,8 +14,8 @@ map_unemprate_vic <- function(data) {
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour bins
-  mapdata_latest <- mapdata %>% dplyr::group_by(mapdata$sa4) %>% dplyr::filter(mapdata$date == max(mapdata$date))
-  pal <- leaflet::colorBin("Blues", mapdata_latest$value, 5)           # last object is number of bins
+  mapdata <- mapdata %>% dplyr::group_by(mapdata$sa4) %>% dplyr::filter(mapdata$date == max(mapdata$date))
+  pal <- leaflet::colorBin("Blues", mapdata$value, 5)           # last object is number of bins
 
   #Create metro boundary (Greater Melbourne) ----
   metro_boundary_sa4 <- c(
