@@ -53,7 +53,8 @@ Remotes:
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
-    timelyportfolio/dataui
+    timelyportfolio/dataui,
+    wfmackey/absmapsdata
 Depends: 
     R (>= 3.50)
 Suggests: 
