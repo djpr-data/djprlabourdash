@@ -8,7 +8,7 @@ labour_server <- function(input, output, session) {
   # Overview ------
 
   output$main_table <- reactable::renderReactable({
-    # req(dash_data)
+    req(dash_data)
     ids <- c(
       "A84423349V",
       "A84423356T",
@@ -17,9 +17,7 @@ labour_server <- function(input, output, session) {
       "A84423350C"
     )
 
-    df <- dash_data %>%
-      dplyr::filter(.data$series_id %in% ids) %>%
-      tidyr::unnest(cols = dplyr::everything())
+    df <- filter_dash_data(ids, dash_data)
 
     overview_table(data = df)
   })
@@ -37,6 +35,13 @@ labour_server <- function(input, output, session) {
   )
 
   # Indicators -----
+
+  output$text_empgrowth_sincecovid <- renderUI({
+    string <- "The unemployment  rate went up by XX to XX."
+    numbers <- c("0.2 percentage points", "6.1 per cent")
+    text_active(string, numbers,
+                alpha = 50)
+  })
 
   djpr_plot_server(
     id = "emp_growth_sincecovid",
