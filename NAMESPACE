@@ -2,7 +2,4 @@
 
 import(djprdashdata)
 import(djprshiny)
-import(ggplot2)
 import(shiny)
-importFrom(rlang,.data)
-importFrom(rlang,.env)

@@ -1,38 +1,5 @@
 #' Function to create the graphs for the 'Regions' subpage on the dashboard.
-#' @examples
-#' \dontrun{
 #'
-#' data <- load_dash_data()
-#' ids <- c("A84600253V",
-#'         "A84600145K",
-#'         "A84599659L",
-#'         "A84600019W",
-#'         "A84600187J",
-#'         "A84599557X",
-#'         "A84600115W",
-#'         "A84599851L",
-#'         "A84599923L",
-#'         "A84600025T",
-#'         "A84600193C",
-#'         "A84600079X",
-#'         "A84599665J",
-#'         "A84600031L",
-#'         "A84599671C",
-#'         "A84599677T",
-#'         "A84599683L",
-#'         "A84599929A",
-#'         "A84600121T",
-#'         "A84600037A")
-#'
-#' data <- data %>%
-#'  dplyr::filter(series_id %in% ids) %>%
-#'  janitor::clean_names() %>%
-#'  tidyr::unnest(cols = dplyr::everything()) %>%
-#'  dplyr::filter(.data$date == max(.data$date))
-#'
-#' map_unemprate_vic(data)
-#'
-#' }
 
 map_unemprate_vic <- function(data) {
 
@@ -49,6 +16,9 @@ map_unemprate_vic <- function(data) {
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour bins
+  mapdata <- mapdata %>%
+    dplyr::group_by(mapdata$sa4) %>%
+    dplyr::filter(mapdata$date == max(mapdata$date))
   pal <- leaflet::colorBin("Blues", mapdata$value, 5) # last object is number of bins
 
   # Create metro boundary (Greater Melbourne) ----
@@ -61,6 +31,25 @@ map_unemprate_vic <- function(data) {
   metro_outline <- mapdata %>%
     dplyr::filter(sa4_name_2016 %in% metro_boundary_sa4) %>%
     dplyr::summarise(areasqkm_2016 = sum(areasqkm_2016))
+
+  # Adding a title to the map, optional ----
+  tag.map.title <- tags$style(HTML("
+  .leaflet-control.map-title {
+    transform: translate(-50%,20%);
+    position: fixed !important;
+    left: 50%;                                     # 50% means center
+    text-align: center;                            # center, right or left
+    padding-left: 10px;
+    padding-right: 10px;
+    background: rgba(255,255,255,0.75);            # background colour of title
+    font-weight: bold;                             # bold or normal
+    font-size: 60px;                               # size of title font - doesn't seem to work though
+  }
+  "))
+
+  title <- tags$div(
+    tag.map.title, HTML("Unemployment rate [%] in Victoria")
+  )
 
   # Produce dynamic map, all of Victoria ----
   # Ignore warning message:
@@ -85,10 +74,11 @@ map_unemprate_vic <- function(data) {
         bringToFront = FALSE
       ), # FALSE = metro outline remains
       label = sprintf( # region label definition
-        "<strong>%s</strong><br/>Unemployment rate: %.2f", # label title, strong = bold, %.2f = 2 dec points
+        "<strong>%s</strong><br/>Unemployment rate: %.2f", # label title, strong = bold
         mapdata$sa4_name_2016, # region name displayed in label
         mapdata$value
       ) %>% # eco data displayed in label
+
         lapply(htmltools::HTML),
       labelOptions = leaflet::labelOptions( # label options
         style = list(
@@ -105,7 +95,7 @@ map_unemprate_vic <- function(data) {
       pal = pal, # colour palette as defined
       values = mapdata$value, # fill data
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "Unemployment Rate (%)", # label title
+      title = "Unemployment rate (%)", # label title
       opacity = 1
     ) %>%
     # label opacity
@@ -117,8 +107,13 @@ map_unemprate_vic <- function(data) {
       weight = 2
     ) %>%
     # thickness of metro outline
-    leaflet.extras::setMapWidgetStyle(list(background = "white")) # background colour
+    leaflet.extras::setMapWidgetStyle(list(background = "white")) %>%
+    # background colour
+    leaflet::addControl(title, position = "topleft", className = "map-title")
 
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
+
+  # Export the dynamic map with all functions as html page (into your working directory)----
+  htmlwidgets::saveWidget(map, file = "Victoria_SA4_unemprate.html")
 }

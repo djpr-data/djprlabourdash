@@ -11,16 +11,17 @@ load_and_hide <- function() {
 
 load_dash_data <- function() {
   crosstabs <- djprdashdata::lfs_lookup %>%
-    dplyr::select(-dplyr::one_of(c("cat_no",
-                                   "table_no",
-                                   "series",
-                                   "series_type")
-                                 )
-                  )
+    dplyr::select(-dplyr::one_of(c(
+      "cat_no",
+      "table_no",
+      "series",
+      "series_type"
+    )))
 
   df <- djprdashdata::download_abs_ts("abs-lfs")
 
   df %>%
     dplyr::left_join(crosstabs,
-                     by = "series_id")
+      by = "series_id"
+    )
 }
