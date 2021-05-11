@@ -32,7 +32,7 @@ map_unemprate_vic <- function(data) {
   # //Need '+proj=longlat +datum=WGS84'
   map <- leaflet::leaflet(data = mapdata) %>%
     leaflet::setView(lng = 145.4657, lat = -36.41472,   # coordinates of map at first view
-            zoom = 7) %>%                      # size of map at first view
+            zoom = 7) %>%                               # size of map at first view
     leaflet::addPolygons(
       color = "grey",                          # colour of boundary lines, 'transparent' for no lines
       weight = 1,                              # thickness of boundary lines
@@ -45,7 +45,7 @@ map_unemprate_vic <- function(data) {
         weight = 2,                            # thickness of region boundary
         bringToFront = FALSE),                 # FALSE = metro outline remains
       label = sprintf(                         # region label definition
-        "<strong>%s</strong><br/>Unemployment rate: %g",   # label title, strong = bold
+        "<strong>%s</strong><br/>Unemployment rate: %.2f",   # label title, strong = bold, %.2f = 2 dec points
         mapdata$sa4_name_2016,                 # region name displayed in label
         mapdata$value) %>%                     # eco data displayed in label
         lapply(htmltools::HTML),
@@ -59,7 +59,7 @@ map_unemprate_vic <- function(data) {
     ) %>%
     leaflet::addLegend(position = "bottomright",        # options: topright, bottomleft etc.
               pal = pal,                       # colour palette as defined
-              values = mapdata$value,        # fill data
+              values = mapdata$value,          # fill data
               labFormat = leaflet::labelFormat(transform = identity),
               title = "Unemployment Rate (%)",        # label title
               opacity = 1)  %>%                # label opacity
