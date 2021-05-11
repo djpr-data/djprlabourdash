@@ -11,3 +11,11 @@ viz_empgrowth_sincecovid(data)
 Line chart of cumulative employment change since March 2020
 in Victoria and Australia
 }
+\examples{
+\dontrun{
+dash_data <- load_dash_data()
+df <- filter_dash_data(c("A84423043C", "A84423349V"), dash_data)
+viz_empgrowth_sincecovid(df)
+}
+
+}

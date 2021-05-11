@@ -3,7 +3,7 @@ page_indicators <- function(...) {
     title = "Indicators",
     h1("Employment"),
     htmlOutput("text_empgrowth_sincecovid"),
-    djpr_plot_ui("emp_growth_sincecovid"),
+    djpr_plot_ui("ind_emp_sincecovid_line"),
     paste0(rep("Text goes here", 100), collapse = ""),
     h2("Some subtitle"),
     paste0(rep("Text goes here", 100), collapse = ""),

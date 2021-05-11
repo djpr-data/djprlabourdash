@@ -44,11 +44,12 @@ labour_server <- function(input, output, session) {
   })
 
   djpr_plot_server(
-    id = "emp_growth_sincecovid",
-    plot_function = viz_empgrowth_sincecovid,
-    date_slider = TRUE,
+    id = "ind_emp_sincecovid_line",
+    plot_function = viz_ind_emp_sincecovid_line,
+    date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V"),
-                            df = dash_data),
+                            df = dash_data) %>%
+      dplyr::filter(date >= as.Date("2020-01-01")),
     date_slider_value_min = as.Date("2020-01-01"),
     plt_change = reactive(input$plt_change)
   )

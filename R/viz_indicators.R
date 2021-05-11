@@ -1,14 +1,14 @@
 #' Line chart of cumulative employment change since March 2020
 #' in Victoria and Australia
-#'
+#' @noRd
 #' @examples
 #' \dontrun{
 #' dash_data <- load_dash_data()
 #' df <- filter_dash_data(c("A84423043C", "A84423349V"), dash_data)
-#' viz_empgrowth_sincecovid(df)
+#' viz_ind_emp_sincecovid_line(df)
 #' }
 #'
-viz_empgrowth_sincecovid <- function(data) {
+viz_ind_emp_sincecovid_line <- function(data) {
 
   df <- data %>%
     dplyr::mutate(state = dplyr::if_else(state == "", "Australia", state))
@@ -88,7 +88,8 @@ viz_empgrowth_sincecovid <- function(data) {
     djprtheme::theme_djpr() +
     theme(axis.title.x = element_blank()) +
     coord_cartesian(clip = "off") +
-    labs(caption = paste0("Source: ABS Labour Force and DJPR calculations. Note: Seasonally adjusted.")
+    labs(subtitle = "Cumulative employment growth since March 2020",
+         caption = paste0("Source: ABS Labour Force and DJPR calculations. Note: Seasonally adjusted.")
     )
 
 }
