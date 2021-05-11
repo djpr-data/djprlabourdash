@@ -1,4 +1,5 @@
 #' Function to create the graphs for the 'Regions' subpage on the dashboard.
+#' @param data the dataframe containing data to visualise
 #' @examples
 #' \dontrun{
 #'
@@ -38,8 +39,8 @@ map_unemprate_vic <- function(data) {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- absmapsdata::sa42016 %>%
-    dplyr::filter(state_name_2016 == "Victoria") %>%
-    dplyr::filter(sa4_code_2016 < 297)
+    dplyr::filter(.data$state_name_2016 == "Victoria") %>%
+    dplyr::filter(.data$sa4_code_2016 < 297)
 
   # Fix issue with different naming for North West region in Victoria
   data$sa4[data$sa4 == "Victoria - North West"] <- "North West"
@@ -59,8 +60,8 @@ map_unemprate_vic <- function(data) {
   )
 
   metro_outline <- mapdata %>%
-    dplyr::filter(sa4_name_2016 %in% metro_boundary_sa4) %>%
-    dplyr::summarise(areasqkm_2016 = sum(areasqkm_2016))
+    dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
+    dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
 
   # Produce dynamic map, all of Victoria ----
   # Ignore warning message:

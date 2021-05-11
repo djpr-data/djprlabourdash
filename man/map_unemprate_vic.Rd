@@ -6,6 +6,9 @@
 \usage{
 map_unemprate_vic(data)
 }
+\arguments{
+\item{data}{the dataframe containing data to visualise}
+}
 \description{
 Function to create the graphs for the 'Regions' subpage on the dashboard.
 }

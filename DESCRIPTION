@@ -35,11 +35,9 @@ Imports:
     leaflet,
     leaflet.extras,
     mapview,
-    pkgload,
     purrr,
     RColorBrewer,
     pkgload,
-    purrr,
     reactable,
     rlang,
     sf,
@@ -47,7 +45,10 @@ Imports:
     shinyjs,
     tibble,
     tidyr,
-    webshot
+    webshot,
+    ggiraph,
+    ggrepel,
+    stringr
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
