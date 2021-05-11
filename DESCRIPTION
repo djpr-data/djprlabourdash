@@ -2,11 +2,19 @@ Package: djprlabourdash
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
+    c(
+    person(given = "Darren",
+           family = "Wong",
+           role = "ctb",
+           email = "darren.wong@ecodev.vic.gov.au"),
     person(given = "Matt",
            family = "Cowgill",
            role = c("aut", "cre"),
-           email = "mattcowgill@gmail.com",
-           comment = c(ORCID = "0000-0003-0422-3300"))
+           email = "matt.cowgill@ecodev.vic.gov.au",
+           comment = c(ORCID = "0000-0003-0422-3300")),
+    person(given = "Department of Jobs, Precincts and Regions (Victoria)",
+           role = c("cph", "fnd"))
+           )
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -15,6 +23,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     absmapsdata,
+    dataui (>= 0.0.1),
     djprdashdata (>= 0.0.0.9000),
     djprshiny (>= 0.0.0.9000),
     djprtheme (>= 0.0.0.9000),
@@ -29,6 +38,9 @@ Imports:
     pkgload,
     purrr,
     RColorBrewer,
+    pkgload,
+    purrr,
+    reactable,
     rlang,
     sf,
     shiny (>= 1.6.0),
@@ -39,6 +51,10 @@ Imports:
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
-    djpr-data/djprdashdata
+    djpr-data/djprdashdata,
+    timelyportfolio/dataui
 Depends: 
-    R (>= 2.10)
+    R (>= 3.50)
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

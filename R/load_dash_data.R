@@ -2,13 +2,14 @@
 load_and_hide <- function() {
   df <- load_dash_data()
 
-  shinyjs::hide("loading_page")
-  shinyjs::show("main_content")
+  # shinyjs::hide("loading_page")
+  # shinyjs::show("main_content")
 
   df
 }
 
-
+#' Load data for the DJPR Labour Dashboard
+#' @export
 load_dash_data <- function() {
   crosstabs <- djprdashdata::lfs_lookup %>%
     dplyr::select(-dplyr::one_of(c(

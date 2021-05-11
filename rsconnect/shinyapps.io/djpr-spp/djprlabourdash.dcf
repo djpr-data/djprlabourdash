@@ -5,10 +5,10 @@ account: djpr-spp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4017979
-bundleId: 4549183
+bundleId: 4578733
 url: https://djpr-spp.shinyapps.io/djprlabourdash/
-when: 1620025040.077
-lastSyncTime: 1620025040.07703
+when: 1620610150.62613
+lastSyncTime: 1620610150.62616
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .github/.gitignore|.github/workflows/R-CMD-check.yaml|data-raw/.DS_Store|data-raw/scratchpad.R|data-raw/scratchpad2.R
+ignoredFiles: .github/.gitignore|.github/workflows/R-CMD-check.yaml|data-raw
