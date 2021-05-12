@@ -2,8 +2,9 @@
 #' @param data A dataframe containing tidied ABS Labour Force Survey
 #' @param years_in_sparklines Numeric; indicating the number of years of data
 #' to include in the sparkline charts in the returned reactable.
+#' @param row_var Unquoted variable name in data to use for row names
 #' @return A reactable (htmlwidget) including sparklines and sortable columns
-#' @author Darren Wong
+#' @author Darren Wong, Duy Nguyen
 #' @examples
 #' # Using the data available to this dashboard
 #' \dontrun{
@@ -22,7 +23,8 @@
 #' }
 #'
 overview_table <- function(data,
-                           years_in_sparklines = 2) {
+                           years_in_sparklines = 2,
+                           row_var = indicator) {
 
   # Function to avoid adding a lubridate dependency
   subtract_years <- function(max_date, n_years) {
@@ -35,7 +37,7 @@ overview_table <- function(data,
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   labourforceclean <- data %>%
-    dplyr::select(.data$date, series = .data$indicator, .data$value, .data$unit) %>%
+    dplyr::select(.data$date, series = {{row_var}}, .data$value, .data$unit) %>%
     dplyr::filter(.data$date >= startdate) %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%

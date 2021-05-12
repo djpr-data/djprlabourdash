@@ -3,7 +3,11 @@
 #' @import shiny
 
 labour_server <- function(input, output, session) {
-  dash_data <- load_and_hide()
+  dash_data <<- load_and_hide()
+
+  ts_summ <<-  dash_data %>%
+    tidyr::unnest(cols = data) %>%
+    djprshiny::ts_summarise()
 
   # Overview ------
 
@@ -22,26 +26,36 @@ labour_server <- function(input, output, session) {
     overview_table(data = df)
   })
 
-
-  djpr_plot_server(
-    id = "plot1",
-    plot_function = example_plot,
-    date_slider = TRUE,
-    data = filter_dash_data(c("A84423242V", "A84423466F"),
-      df = dash_data
-    ),
-    check_box_options = c("Males", "Females"),
-    check_box_var = sex,
-    plt_change = reactive(input$plt_change)
-  )
-
   # Indicators -----
 
-  output$text_empgrowth_sincecovid <- renderUI({
-    string <- "The unemployment  rate went up by XX to XX."
-    numbers <- c("0.2 percentage points", "6.1 per cent")
-    text_active(string, numbers,
-                alpha = 50)
+  output$ind_empgrowth_sincecovid_text <- renderUI({
+
+    text_active(paste("There were XX Victorians employed in XX, up from XX in XX.",
+                      "Employment grew by XX per cent over the year to XX,",
+                      "a" ,
+                      dplyr::case_when(get_summ("A84423349V", ptile_d_year_abs) < 0.33 ~
+                                         "relatively sluggish",
+                                       get_summ("A84423349V", ptile_d_year_abs) > 0.67 ~
+                                         "relatively rapid",
+                                       TRUE ~ "normal"),
+                      "pace of growth for Victoria compared to historical trends.",
+                      "Over the past year, employment across Australia grew by XX per cent.",
+                      "Employment in Victoria is XX per cent",
+                      dplyr::if_else(sign(get_summ("A84423349V", d_year_perc)) > 0,
+                                     "above",
+                                     "below"),
+                      "its pre-COVID level."
+                      ),
+                c(scales::comma(get_summ("A84423349V", latest_value)),
+                  get_summ("A84423349V", latest_period),
+                  scales::comma(get_summ("A84423349V", prev_value)),
+                  format(get_summ("A84423349V", prev_date), "%B"),
+                  get_summ("A84423349V", d_year_perc),
+                  format(get_summ("A84423349V", latest_date), "%B"),
+                  get_summ("A84423043C", d_year_perc),
+                  get_summ("A84423349V", d_year_perc)
+                )
+    )
   })
 
   djpr_plot_server(
@@ -54,6 +68,55 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = as.Date("2020-01-01"),
     plt_change = reactive(input$plt_change)
   )
+
+  output$ind_emp_dotpoints <- renderUI({
+    dp1 <- text_active(
+      paste("There were XX Victorians employed,",
+            "of whom XX were in full-time work."),
+      c(scales::comma(get_summ("A84423349V", latest_value)),
+        scales::comma(get_summ("A84423357V", latest_value))),
+      colour = djprtheme::djpr_pal(1)
+    )
+
+    dp2 <- text_active(
+      paste("Employment ",
+            dplyr::if_else(get_summ("A84423349V", d_period_abs) > 0,
+                           "rose",
+                           "fell"),
+            "by XX (XX per cent) in the month to XX",
+            "and by XX over the year"),
+      c(),
+      colour = djprtheme::djpr_pal(1)
+    )
+
+    tags$div(
+      tags$ul(
+        tags$li(dp1),
+        tags$li(dp2)
+      )
+    )
+
+  })
+
+  output$ind_emp_table <- reactable::renderReactable({
+    table_ids <- c(
+      "A84423349V",
+      "A84423357V",
+      "A84423356T",
+      "A84423244X",
+      "A84423468K",
+      "pt_emp_vic"
+    )
+
+    table_data <- filter_dash_data(table_ids)
+
+    table_data <- table_data %>%
+      mutate(indicator = if_else(sex != "",
+                                 paste0(indicator, " (", sex, ")"),
+                                 indicator))
+
+    overview_table(table_data)
+  })
 
 }
 

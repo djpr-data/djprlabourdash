@@ -2,14 +2,11 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Employment"),
-    htmlOutput("text_empgrowth_sincecovid"),
+    htmlOutput("ind_empgrowth_sincecovid_text"),
     djpr_plot_ui("ind_emp_sincecovid_line"),
-    paste0(rep("Text goes here", 100), collapse = ""),
-    h2("Some subtitle"),
-    paste0(rep("Text goes here", 100), collapse = ""),
-    h2("Some other subtitle"),
-    h1("Employment"),
-    djpr_plot_ui("plot")
+    htmlOutput("ind_emp_dotpoints"),
+    reactable::reactableOutput("ind_emp_table")
+
 
   )
 }
