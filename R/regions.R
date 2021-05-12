@@ -58,7 +58,30 @@
 #'                            "A84600037A", data)
 
 
-map_unemprate_vic <- function(data) {
+map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
+                                                        "A84600145K",
+                                                        "A84599659L",
+                                                        "A84600019W",
+                                                        "A84600187J",
+                                                        "A84599557X",
+                                                        "A84600115W",
+                                                        "A84599851L",
+                                                        "A84599923L",
+                                                        "A84600025T",
+                                                        "A84600193C",
+                                                        "A84600079X",
+                                                        "A84599665J",
+                                                        "A84600031L",
+                                                        "A84599671C",
+                                                        "A84599677T",
+                                                        "A84599683L",
+                                                        "A84599929A",
+                                                        "A84600121T",
+                                                        "A84600037A"),
+                                                      df = dash_data) %>%
+                                dplyr::group_by(.data$series) %>%
+                                dplyr::filter(.data$date == max(.data$date)),
+                              title = "") {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- absmapsdata::sa42016 %>%
@@ -148,7 +171,9 @@ map_unemprate_vic <- function(data) {
 }
 
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
-viz_emp_regions_sincecovid <- function(data, title = "") {
+viz_emp_regions_sincecovid <- function(data = filter_dash_data(c("A84600141A",
+                                                                 "A84600075R"), df = dash_data) %>%
+                                       dplyr::filter(date >= as.Date("2020-01-01")), title = "") {
 
   df <- data %>%
     dplyr::group_by(series) %>%
@@ -156,15 +181,94 @@ viz_emp_regions_sincecovid <- function(data, title = "") {
 
   df %>%
     djpr_ts_linechart() +
-    labs(title = title)
+    labs(title = title,
+         subtitle = "Change in employment (%) in Victorian regions since Mar-20",
+         caption = "Source: ABS Labour Force.")
 }
 
-viz_reg_unemprate_multiline <- function(data, title = "") {
+viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
+                                                                  "A84599659L",
+                                                                  "A84600019W",
+                                                                  "A84600187J",
+                                                                  "A84599557X",
+                                                                  "A84600115W",
+                                                                  "A84599851L",
+                                                                  "A84599923L",
+                                                                  "A84600025T",
+                                                                  "A84600193C",
+                                                                  "A84599665J",
+                                                                  "A84600031L",
+                                                                  "A84599671C",
+                                                                  "A84599677T",
+                                                                  "A84599683L",
+                                                                  "A84599929A",
+                                                                  "A84600121T",
+                                                                  "A84600037A", df = dash_data, title = ""))) {
+
+  vic <- data %>%
+    filter(sa4 == "") %>%
+    select(-sa4)
 
   data %>%
     dplyr::filter(sa4 != "") %>%
     ggplot(aes(x = date, y = value, col = sa4)) +
     geom_line() +
-    facet_wrap(~sa4)
+    geom_line(data = vic, col = "black") +
+    facet_wrap(~sa4) +
+    djprtheme::theme_djpr() +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05)),
+                       limits = c(0, 16)) +
+    theme(axis.title = element_blank()) +
+    labs(title = title,
+         subtitle = "Unemployment rate (%) by region (SA4)",
+         caption = "Source: ABS Labour Force. ")
+
+}
+
+viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
+                                                            "A84599659L",
+                                                            "A84600019W",
+                                                            "A84600187J",
+                                                            "A84599557X",
+                                                            "A84600115W",
+                                                            "A84599851L",
+                                                            "A84599923L",
+                                                            "A84600025T",
+                                                            "A84600193C",
+                                                            "A84599665J",
+                                                            "A84600031L",
+                                                            "A84599671C",
+                                                            "A84599677T",
+                                                            "A84599683L",
+                                                            "A84599929A",
+                                                            "A84600121T",
+                                                            "A84600037A"),
+                                                          df = dash_data) %>%
+                                    dplyr::group_by(.data$series) %>%
+                                    dplyr::filter(.data$date == max(.data$date)),
+                                  title = "") {
+
+  data %>%
+    dplyr::filter(.data$sa4 != "") %>%
+    ggplot(aes(x = reorder(sa4, value),
+               y = value)) +
+    ggiraph::geom_col_interactive(fill = djprtheme::djpr_pal(1),
+                                  aes(tooltip = round(value, 1))) +
+    geom_text(nudge_y = -0.5,
+              aes(label = round(value, 1)),
+              colour = "white",
+              size = 14 / .pt) +
+    coord_flip() +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05)) #,
+                       # breaks = seq(0, 10, 2),
+                       # labels = function(x) paste0(x, "%")
+                       ) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(axis.title.x = element_blank(),
+          panel.grid = element_blank(),
+          axis.text.x = element_blank()) +
+    labs(title = title,
+         subtitle = "",
+         caption = "")
 
 }
