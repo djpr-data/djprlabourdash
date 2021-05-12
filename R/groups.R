@@ -14,7 +14,7 @@
 #'          "A84423466F")
 
 
-Viz_gr_gen_partrate_line <- function(data) {
+Viz_gr_gen_partrate_line <- function(data, title = "") {
 
   df <- data %>%
     dplyr::group_by(series)
@@ -24,7 +24,7 @@ Viz_gr_gen_partrate_line <- function(data) {
     labs(title = title)
 }
 
-viz_gr_gen_unemp_line <- function(data) {
+viz_gr_gen_unemp_line <- function(data, title = "") {
 
   df <- data %>%
     dplyr::group_by(series)
