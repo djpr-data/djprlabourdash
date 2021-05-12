@@ -9,4 +9,3 @@ labour_ui <- function(...) {
     page_industries()
   )
 }
-

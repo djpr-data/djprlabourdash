@@ -22,6 +22,7 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
+    absmapsdata,
     dataui (>= 0.0.1),
     djprdashdata (>= 0.0.0.9000),
     djprshiny (>= 0.0.0.9000),
@@ -30,19 +31,30 @@ Imports:
     ggplot2,
     htmltools (>= 0.5.1.1),
     htmlwidgets,
-    pkgload,
+    janitor,
+    leaflet,
+    leaflet.extras,
+    mapview,
     purrr,
+    RColorBrewer,
+    pkgload,
     reactable,
     rlang,
+    sf,
     shiny (>= 1.6.0),
     shinyjs,
     tibble,
-    tidyr
+    tidyr,
+    webshot,
+    ggiraph,
+    ggrepel,
+    stringr
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
-    timelyportfolio/dataui
+    timelyportfolio/dataui,
+    wfmackey/absmapsdata
 Depends: 
     R (>= 3.50)
 Suggests: 
