@@ -5,7 +5,7 @@
 labour_server <- function(input, output, session) {
   dash_data <<- load_and_hide()
 
-  ts_summ <<-  dash_data %>%
+  ts_summ <<- dash_data %>%
     tidyr::unnest(cols = data) %>%
     djprshiny::ts_summarise()
 
@@ -29,32 +29,37 @@ labour_server <- function(input, output, session) {
   # Indicators -----
 
   output$ind_empgrowth_sincecovid_text <- renderUI({
-
-    text_active(paste("There were XX Victorians employed in XX, up from XX in XX.",
-                      "Employment grew by XX per cent over the year to XX,",
-                      "a" ,
-                      dplyr::case_when(get_summ("A84423349V", ptile_d_year_abs) < 0.33 ~
-                                         "relatively sluggish",
-                                       get_summ("A84423349V", ptile_d_year_abs) > 0.67 ~
-                                         "relatively rapid",
-                                       TRUE ~ "normal"),
-                      "pace of growth for Victoria compared to historical trends.",
-                      "Over the past year, employment across Australia grew by XX per cent.",
-                      "Employment in Victoria is XX per cent",
-                      dplyr::if_else(sign(get_summ("A84423349V", d_year_perc)) > 0,
-                                     "above",
-                                     "below"),
-                      "its pre-COVID level."
-                      ),
-                c(scales::comma(get_summ("A84423349V", latest_value)),
-                  get_summ("A84423349V", latest_period),
-                  scales::comma(get_summ("A84423349V", prev_value)),
-                  format(get_summ("A84423349V", prev_date), "%B"),
-                  get_summ("A84423349V", d_year_perc),
-                  format(get_summ("A84423349V", latest_date), "%B"),
-                  get_summ("A84423043C", d_year_perc),
-                  get_summ("A84423349V", d_year_perc)
-                )
+    text_active(
+      paste(
+        "There were XX Victorians employed in XX, up from XX in XX.",
+        "Employment grew by XX per cent over the year to XX,",
+        "a",
+        dplyr::case_when(
+          get_summ("A84423349V", ptile_d_year_abs) < 0.33 ~
+          "relatively sluggish",
+          get_summ("A84423349V", ptile_d_year_abs) > 0.67 ~
+          "relatively rapid",
+          TRUE ~ "normal"
+        ),
+        "pace of growth for Victoria compared to historical trends.",
+        "Over the past year, employment across Australia grew by XX per cent.",
+        "Employment in Victoria is XX per cent",
+        dplyr::if_else(sign(get_summ("A84423349V", d_year_perc)) > 0,
+          "above",
+          "below"
+        ),
+        "its pre-COVID level."
+      ),
+      c(
+        scales::comma(get_summ("A84423349V", latest_value)),
+        get_summ("A84423349V", latest_period),
+        scales::comma(get_summ("A84423349V", prev_value)),
+        format(get_summ("A84423349V", prev_date), "%B"),
+        get_summ("A84423349V", d_year_perc),
+        format(get_summ("A84423349V", latest_date), "%B"),
+        get_summ("A84423043C", d_year_perc),
+        get_summ("A84423349V", d_year_perc)
+      )
     )
   })
 
@@ -63,29 +68,44 @@ labour_server <- function(input, output, session) {
     plot_function = viz_ind_emp_sincecovid_line,
     date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V"),
-                            df = dash_data) %>%
+      df = dash_data
+    ) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
     date_slider_value_min = as.Date("2020-01-01"),
     plt_change = reactive(input$plt_change)
   )
 
+  # Indicators: dot point text of employment figures
   output$ind_emp_dotpoints <- renderUI({
     dp1 <- text_active(
-      paste("There were XX Victorians employed,",
-            "of whom XX were in full-time work."),
-      c(scales::comma(get_summ("A84423349V", latest_value)),
-        scales::comma(get_summ("A84423357V", latest_value))),
+      paste(
+        "There were XX Victorians employed,",
+        "of whom XX were in full-time work."
+      ),
+      c(
+        scales::comma(get_summ("A84423349V", latest_value)),
+        scales::comma(get_summ("A84423357V", latest_value))
+      ),
       colour = djprtheme::djpr_pal(1)
     )
 
     dp2 <- text_active(
-      paste("Employment ",
-            dplyr::if_else(get_summ("A84423349V", d_period_abs) > 0,
-                           "rose",
-                           "fell"),
-            "by XX (XX per cent) in the month to XX",
-            "and by XX over the year"),
-      c(),
+      paste(
+        "Employment ",
+        dplyr::if_else(get_summ("A84423349V", d_period_abs) > 0,
+          "rose",
+          "fell"
+        ),
+        "by XX people (XX per cent) in the month to XX",
+        "and by XX people (XX per cent) over the year."
+      ),
+      c(
+        scales::comma(get_summ("A84423349V", d_period_abs)),
+        get_summ("A84423349V", d_period_perc),
+        get_summ("A84423349V", latest_period),
+        scales::comma(get_summ("A84423349V", d_year_abs)),
+        get_summ("A84423349V", d_period_perc)
+      ),
       colour = djprtheme::djpr_pal(1)
     )
 
@@ -95,9 +115,9 @@ labour_server <- function(input, output, session) {
         tags$li(dp2)
       )
     )
-
   })
 
+  # Indicators: table of employment inducators
   output$ind_emp_table <- reactable::renderReactable({
     table_ids <- c(
       "A84423349V",
@@ -112,12 +132,12 @@ labour_server <- function(input, output, session) {
 
     table_data <- table_data %>%
       mutate(indicator = if_else(sex != "",
-                                 paste0(indicator, " (", sex, ")"),
-                                 indicator))
+        paste0(indicator, " (", sex, ")"),
+        indicator
+      ))
 
     overview_table(table_data)
   })
-
 }
 
 app <- function(...) {

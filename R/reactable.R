@@ -22,7 +22,24 @@
 #' overview_table(table_data)
 #' }
 #'
-overview_table <- function(data,
+overview_table <- function(data = filter_dash_data(series_ids = c(
+                             "A84423349V",
+                             "A84423356T",
+                             "A84423355R",
+                             "A84423354L",
+                             "A84423350C"
+                           )),
+                           years_in_sparklines = 2,
+                           row_var = indicator) {
+  make_reactable(
+    data = data,
+    years_in_sparklines = years_in_sparklines,
+    row_var = {{ row_var }}
+  )
+}
+
+
+make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = indicator) {
 
@@ -36,8 +53,9 @@ overview_table <- function(data,
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
-  labourforceclean <- data %>%
-    dplyr::select(.data$date, series = {{row_var}}, .data$value, .data$unit) %>%
+  summary_df <- data %>%
+    dplyr::select(.data$date, .data$series_id,
+                  series = {{ row_var }}, .data$value, .data$unit) %>%
     dplyr::filter(.data$date >= startdate) %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
@@ -54,37 +72,37 @@ overview_table <- function(data,
         "-"
       ),
       changeinmonth = ifelse(.data$unit == "000",
-        format(round(changeinmonth), big.mark=",", scientific=F, trim=T),
+        format(round(changeinmonth), big.mark = ",", scientific = F, trim = T),
         sprintf("%.1f ppts", .data$changeinmonth)
       ),
-      changeinyear = (.data$value - dplyr::lag(.data$value, 4)),
-      changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 4) * 100,
+      changeinyear = (.data$value - dplyr::lag(.data$value, 12)),
+      changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
       changeinyearpc = dplyr::if_else(
         unit == "000",
         sprintf("%0.1f %%", changeinyearpc),
         "-"
       ),
       changeinyear = ifelse(.data$unit == "000",
-        format(round(changeinyear), big.mark=",", scientific=F, trim=T),
+        format(round(changeinyear), big.mark = ",", scientific = F, trim = T),
         sprintf("%.1f ppts", .data$changeinyear)
       ),
-      latest_value=dplyr::if_else(
+      latest_value = dplyr::if_else(
         unit == "000",
-        format(round(value), big.mark=",", scientific=F, trim=T),
+        format(round(value), big.mark = ",", scientific = F, trim = T),
         sprintf("%.1f %%", value)
-
       )
     ) %>%
     dplyr::ungroup()
 
   ## Select only the latest changes
 
-  changedf <- labourforceclean %>%
+  changedf <- summary_df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
       .data$date,
       .data$series,
+      .data$series_id,
       .data$latest_value,
       .data$changeinmonth,
       .data$changeinmonthpc,
@@ -95,7 +113,7 @@ overview_table <- function(data,
 
   ## Create a dataframe in the format required for a sparkline with the list function
 
-  sparklinelist <- labourforceclean %>%
+  sparklinelist <- summary_df %>%
     dplyr::group_by(series) %>%
     dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
     dplyr::left_join(changedf, by = "series") %>%
@@ -104,32 +122,84 @@ overview_table <- function(data,
   ## Define colour palette
   colpal <- djprtheme::djpr_pal(nrow(sparklinelist))
 
-  ## Create Reactable
+
+  ## Calculate colours for each row
+  ts_summ <- djprshiny::ts_summarise(data)
+
+  full_pal <- colorRampPalette(c("#EA4125", "white", "#61A951"))(100)
+
+  calc_cols <- function(series_ids, item) {
+    ptiles <- get_summ(series_ids, {{item}})
+    ptiles <- round(ptiles * 100, 0)
+    full_pal[ptiles]
+  }
+
+  recol <- function(value, index, item) {
+
+    if (value == "-") {
+      cols <- "#E6E6E680"
+    } else {
+      cols <- calc_cols(sparklinelist$series_id[index],
+                        {{item}})
+    }
+
+    c(
+      list(background = cols,
+           fontWeight = "normal",
+           colour = "#000"),
+      list(border = "1px solid rgba(0, 0, 0, 0.03)")
+    )
+
+  }
+
+  recol_changeinmonth <- function(value, index) {
+    recol(value, index, ptile_d_period_abs)
+  }
+
+  recol_changeinmonthpc <- function(value, index) {
+    recol(value, index, ptile_d_period_perc)
+  }
+
+  recol_changeinyear <- function(value, index) {
+    recol(value, index, ptile_d_year_abs)
+  }
+
+  recol_changeinyearpc <- function(value, index) {
+    recol(value, index, ptile_d_year_perc)
+  }
+
+
   recolor_col <- function(value) {
     if (value > 0) {
+      # Green
       color <- "#f0fff0"
     } else if (value < 0 & value != "-") {
+      # Red
       color <- "#fff5ee"
     } else {
-      color <- "#ddd"
+      # Grey
+      color <- "#E6E6E680"
     }
     # Conditional format background based on value
     list(background = color, fontWeight = "normal", color = "#000")
   }
 
-  rt1 <- reactable::reactable(
-    sparklinelist, # Specify dataframe to use
+  ## Create Reactable
+  rt1 <- sparklinelist %>%
+    dplyr::select(-.data$series_id) %>%
+    reactable::reactable(
     columns = list(
       series = reactable::colDef(
         name = "",
         style = function(value, index) {
-          list(#color = colpal[index],
-               fontWeight = "bold")
+          list( # color = colpal[index],
+            fontWeight = "bold"
+          )
         },
         minWidth = 100,
       ),
       n = reactable::colDef(
-        name = paste0("Last ", years_in_sparklines ," years"),
+        name = paste0("Last ", years_in_sparklines, " years"),
         align = "center",
         maxWidth = 250,
         minWidth = 50,
@@ -137,8 +207,10 @@ overview_table <- function(data,
           dataui::dui_sparkline(
             data = value[[1]],
             height = 40,
-            margin = list(top = 7, right = 3,
-                          bottom = 7, left = 3),
+            margin = list(
+              top = 7, right = 3,
+              bottom = 7, left = 3
+            ),
             components = list(
               dataui::dui_sparklineseries(
                 stroke = colpal[index],
@@ -162,42 +234,42 @@ overview_table <- function(data,
       ),
       changeinmonth = reactable::colDef(
         name = "No.",
-        style = recolor_col,
+        style = recol_changeinmonth,
         align = "center",
         minWidth = 50,
         maxWidth = 90,
       ),
       changeinmonthpc = reactable::colDef(
         name = "%",
-        style = recolor_col,
+        style = recol_changeinmonthpc,
         align = "center",
         minWidth = 50,
         maxWidth = 90
       ),
       changeinyear = reactable::colDef(
         name = "No.",
-        style = recolor_col,
-        align = "center" ,
+        style = recol_changeinyear,
+        align = "center",
         minWidth = 50,
         maxWidth = 90
       ),
       changeinyearpc = reactable::colDef(
         name = "%",
-        style = recolor_col,
-        align = "center" ,
+        style = recol_changeinyearpc,
+        align = "center",
         minWidth = 50,
         maxWidth = 90
       ),
       latest_value = reactable::colDef(
         name = strftime(max(data$date), "%B %Y"),
-        align = "center" ,
+        align = "center",
         maxWidth = 100,
         minWidth = 65
       )
     ),
     columnGroups = list(
-      reactable::colGroup(name="Change in month", columns=c("changeinmonth", "changeinmonthpc")),
-      reactable::colGroup(name="Change over year", columns=c("changeinyear", "changeinyearpc"))
+      reactable::colGroup(name = "Change in month", columns = c("changeinmonth", "changeinmonthpc")),
+      reactable::colGroup(name = "Change over year", columns = c("changeinyear", "changeinyearpc"))
     ),
     highlight = TRUE,
     resizable = TRUE,

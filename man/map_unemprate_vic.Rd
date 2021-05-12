@@ -16,34 +16,35 @@ Function to create the graphs for the 'Regions' subpage on the dashboard.
 \dontrun{
 
 data <- load_dash_data()
-ids <- c("A84600253V",
-        "A84600145K",
-        "A84599659L",
-        "A84600019W",
-        "A84600187J",
-        "A84599557X",
-        "A84600115W",
-        "A84599851L",
-        "A84599923L",
-        "A84600025T",
-        "A84600193C",
-        "A84600079X",
-        "A84599665J",
-        "A84600031L",
-        "A84599671C",
-        "A84599677T",
-        "A84599683L",
-        "A84599929A",
-        "A84600121T",
-        "A84600037A")
+ids <- c(
+  "A84600253V",
+  "A84600145K",
+  "A84599659L",
+  "A84600019W",
+  "A84600187J",
+  "A84599557X",
+  "A84600115W",
+  "A84599851L",
+  "A84599923L",
+  "A84600025T",
+  "A84600193C",
+  "A84600079X",
+  "A84599665J",
+  "A84600031L",
+  "A84599671C",
+  "A84599677T",
+  "A84599683L",
+  "A84599929A",
+  "A84600121T",
+  "A84600037A"
+)
 
 data <- data \%>\%
- dplyr::filter(series_id \%in\% ids) \%>\%
- janitor::clean_names() \%>\%
- tidyr::unnest(cols = dplyr::everything()) \%>\%
- dplyr::filter(.data$date == max(.data$date))
+  dplyr::filter(series_id \%in\% ids) \%>\%
+  janitor::clean_names() \%>\%
+  tidyr::unnest(cols = dplyr::everything()) \%>\%
+  dplyr::filter(.data$date == max(.data$date))
 
 map_unemprate_vic(data)
-
 }
 }

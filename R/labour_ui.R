@@ -1,5 +1,4 @@
 labour_ui <- function(...) {
-
   djprshiny::djpr_page(
     title = "DJPR Labour Dashboard",
     page_overview(),
