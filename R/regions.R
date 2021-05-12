@@ -221,7 +221,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
     theme(axis.title = element_blank()) +
     labs(title = title,
          subtitle = "Unemployment rate (%) by region (SA4)",
-         caption = "Source: ABS Labour Force. ")
+         caption = "Source: ABS Labour Force.")
 
 }
 
@@ -259,16 +259,13 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
               colour = "white",
               size = 14 / .pt) +
     coord_flip() +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05)) #,
-                       # breaks = seq(0, 10, 2),
-                       # labels = function(x) paste0(x, "%")
-                       ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     djprtheme::theme_djpr(flipped = TRUE) +
     theme(axis.title.x = element_blank(),
           panel.grid = element_blank(),
           axis.text.x = element_blank()) +
-    labs(title = title,
+    labs(title = "",
          subtitle = "",
-         caption = "")
+         caption = "Source: ABS Labour Force.")
 
 }
