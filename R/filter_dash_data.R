@@ -21,11 +21,10 @@ filter_dash_data <- function(series_ids, df = dash_data) {
 #' dash_data <- load_and_hide()
 #'
 #' ts_summ <- dash_data %>%
-#'  tidyr::unnest(cols = data) %>%
-#'  djprshiny::ts_summarise()
+#'   tidyr::unnest(cols = data) %>%
+#'   djprshiny::ts_summarise()
 #'
 #' get_summ("A84601638A", latest_value)
-#'
 #' }
 #'
 get_summ <- function(series_ids,

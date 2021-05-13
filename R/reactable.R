@@ -14,7 +14,8 @@
 #'   "A84423356T",
 #'   "A84423355R",
 #'   "A84423354L",
-#'   "A84423350C"
+#'   "A84423350C",
+#'   "A85223451R
 #' )
 #'
 #' table_data <- filter_dash_data(table_ids)
@@ -27,7 +28,8 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
                              "A84423356T",
                              "A84423355R",
                              "A84423354L",
-                             "A84423350C"
+                             "A84423350C",
+                             "A85223451R"
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {
@@ -53,9 +55,11 @@ make_reactable <- function(data,
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
+  # Calculate summary data frame - levels and changes -----
   summary_df <- data %>%
     dplyr::select(.data$date, .data$series_id,
-                  series = {{ row_var }}, .data$value, .data$unit) %>%
+      series = {{ row_var }}, .data$value, .data$unit
+    ) %>%
     dplyr::filter(.data$date >= startdate) %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
@@ -68,7 +72,7 @@ make_reactable <- function(data,
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
       changeinmonthpc = dplyr::if_else(
         unit == "000",
-        sprintf("%0.1f %%", changeinmonthpc),
+        sprintf("%0.1f%%", changeinmonthpc),
         "-"
       ),
       changeinmonth = ifelse(.data$unit == "000",
@@ -79,7 +83,7 @@ make_reactable <- function(data,
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
       changeinyearpc = dplyr::if_else(
         unit == "000",
-        sprintf("%0.1f %%", changeinyearpc),
+        sprintf("%0.1f%%", changeinyearpc),
         "-"
       ),
       changeinyear = ifelse(.data$unit == "000",
@@ -111,7 +115,7 @@ make_reactable <- function(data,
     ) %>%
     dplyr::ungroup()
 
-  ## Create a dataframe in the format required for a sparkline with the list function
+  ## Created df in format required for sparkline ----
 
   sparklinelist <- summary_df %>%
     dplyr::group_by(series) %>%
@@ -122,34 +126,49 @@ make_reactable <- function(data,
   ## Define colour palette
   colpal <- djprtheme::djpr_pal(nrow(sparklinelist))
 
-
   ## Calculate colours for each row
   ts_summ <- djprshiny::ts_summarise(data)
 
-  full_pal <- colorRampPalette(c("#EA4125", "white", "#61A951"))(100)
+  full_pal <- colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
 
   calc_cols <- function(series_ids, item) {
-    ptiles <- get_summ(series_ids, {{item}})
+    ptiles <- get_summ(series_ids, {{ item }})
+
+    # For some indicators, 20 pctile is "bad", for some it is "good"
+    up_is_good <- get_summ(series_ids, up_is_good)
+    ptiles <- ifelse(up_is_good, ptiles, 1 - ptiles)
+
     ptiles <- round(ptiles * 100, 0)
     full_pal[ptiles]
   }
 
-  recol <- function(value, index, item) {
+  cell_padding <- list(
+    `padding-top` = "8px",
+    `padding-right` = "0px",
+    `padding-bottom` = "7px",
+    `padding-left` = "0px"
+  )
 
+  recol <- function(value, index, item,
+                    padding = cell_padding) {
     if (value == "-") {
       cols <- "#E6E6E680"
     } else {
-      cols <- calc_cols(sparklinelist$series_id[index],
-                        {{item}})
+      cols <- calc_cols(
+        sparklinelist$series_id[index],
+        {{ item }}
+      )
     }
 
     c(
-      list(background = cols,
-           fontWeight = "normal",
-           colour = "#000"),
-      list(border = "1px solid rgba(0, 0, 0, 0.03)")
+      list(
+        background = cols,
+        fontWeight = "normal",
+        colour = "#000"
+      ),
+      list(border = "1px solid rgba(0, 0, 0, 0.03)"),
+      padding
     )
-
   }
 
   recol_changeinmonth <- function(value, index) {
@@ -157,7 +176,9 @@ make_reactable <- function(data,
   }
 
   recol_changeinmonthpc <- function(value, index) {
-    recol(value, index, ptile_d_period_perc)
+    c(recol(value, index, ptile_d_period_perc),
+      list(`border-right` = "1px solid #000")
+      )
   }
 
   recol_changeinyear <- function(value, index) {
@@ -168,121 +189,132 @@ make_reactable <- function(data,
     recol(value, index, ptile_d_year_perc)
   }
 
+  col_header_style <- list(
+    `font-size` = "13px",
+    `font-weight` = "400"
+  )
 
-  recolor_col <- function(value) {
-    if (value > 0) {
-      # Green
-      color <- "#f0fff0"
-    } else if (value < 0 & value != "-") {
-      # Red
-      color <- "#fff5ee"
-    } else {
-      # Grey
-      color <- "#E6E6E680"
-    }
-    # Conditional format background based on value
-    list(background = color, fontWeight = "normal", color = "#000")
-  }
-
-  ## Create Reactable
+  ## Create Reactable -----
   rt1 <- sparklinelist %>%
     dplyr::select(-.data$series_id) %>%
     reactable::reactable(
-    columns = list(
-      series = reactable::colDef(
-        name = "",
-        style = function(value, index) {
-          list( # color = colpal[index],
-            fontWeight = "bold"
-          )
-        },
-        minWidth = 100,
-      ),
-      n = reactable::colDef(
-        name = paste0("Last ", years_in_sparklines, " years"),
-        align = "center",
-        maxWidth = 250,
-        minWidth = 50,
-        cell = function(value, index) {
-          dataui::dui_sparkline(
-            data = value[[1]],
-            height = 40,
-            margin = list(
-              top = 7, right = 3,
-              bottom = 7, left = 3
+      columns = list(
+        series = reactable::colDef(
+          name = "",
+          style = function(value, index) {
+            c(list(
+              fontWeight = "bold"
             ),
-            components = list(
-              dataui::dui_sparklineseries(
-                stroke = colpal[index],
-                showArea = F,
-                fill = colpal[index] # Create actual sparkline
+            cell_padding)
+          },
+          minWidth = 100,
+        ),
+        n = reactable::colDef(
+          name = paste0("LAST ", years_in_sparklines, " YEARS"),
+          align = "center",
+          maxWidth = 250,
+          minWidth = 50,
+          headerStyle = col_header_style,
+          cell = function(value, index) {
+            dataui::dui_sparkline(
+              data = value[[1]],
+              height = 50,
+              margin = list(
+                top = 7, right = 3,
+                bottom = 7, left = 3
               ),
-              dataui::dui_tooltip(components = list(
-                dataui::dui_sparkverticalrefline(
-                  strokeDasharray = "4,4",
-                  stroke = "#838383" # Create moving tooltip
-                ),
-                dataui::dui_sparkpointseries(
+              components = list(
+                # Create actual sparkline
+                dataui::dui_sparklineseries(
                   stroke = colpal[index],
-                  fill = "#fff",
-                  renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)") # display tooltip value
-                )
-              ))
+                  showArea = F,
+                  fill = colpal[index]
+                ) ,
+                dataui::dui_tooltip(
+                  components = list(
+                    # Create moving tooltip
+                  dataui::dui_sparkverticalrefline(
+                    strokeDasharray = "0, 0",
+                    strokeWidth = 1,
+                    stroke = "#838383"
+                  ) ,
+                  # display tooltip value
+                  dataui::dui_sparkpointseries(
+                    stroke = colpal[index],
+                    fill = "#fff",
+                    renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
+                  )
+                ))
+              )
             )
-          )
-        }
+          }
+        ),
+        changeinmonth = reactable::colDef(
+          name = "NO.",
+          style = recol_changeinmonth,
+          headerStyle = col_header_style,
+          align = "center",
+          minWidth = 65,
+          maxWidth = 90,
+        ),
+        changeinmonthpc = reactable::colDef(
+          name = "PER CENT",
+          style = recol_changeinmonthpc,
+          headerStyle = col_header_style,
+          align = "center",
+          minWidth = 65,
+          maxWidth = 90
+        ),
+        changeinyear = reactable::colDef(
+          name = "NO.",
+          style = recol_changeinyear,
+          headerStyle = col_header_style,
+          align = "center",
+          minWidth = 65,
+          maxWidth = 90
+        ),
+        changeinyearpc = reactable::colDef(
+          name = "PER CENT",
+          style = recol_changeinyearpc,
+          headerStyle = col_header_style,
+          align = "center",
+          minWidth = 65,
+          maxWidth = 90
+        ),
+        latest_value = reactable::colDef(
+          name = toupper(strftime(max(data$date), "%B %Y")),
+          align = "center",
+          headerStyle = col_header_style,
+          style = c(cell_padding,
+                    list(`border-right` = "1px solid #000")),
+          maxWidth = 90,
+          minWidth = 70
+        )
       ),
-      changeinmonth = reactable::colDef(
-        name = "No.",
-        style = recol_changeinmonth,
-        align = "center",
-        minWidth = 50,
-        maxWidth = 90,
+      columnGroups = list(
+        reactable::colGroup(
+          name = "Change in month", columns = c("changeinmonth", "changeinmonthpc"),
+          headerStyle = list(`font-weight` = "600")
+        ),
+        reactable::colGroup(
+          name = "Change over year", columns = c("changeinyear", "changeinyearpc"),
+          headerStyle = list(`font-weight` = "600")
+        )
       ),
-      changeinmonthpc = reactable::colDef(
-        name = "%",
-        style = recol_changeinmonthpc,
-        align = "center",
-        minWidth = 50,
-        maxWidth = 90
-      ),
-      changeinyear = reactable::colDef(
-        name = "No.",
-        style = recol_changeinyear,
-        align = "center",
-        minWidth = 50,
-        maxWidth = 90
-      ),
-      changeinyearpc = reactable::colDef(
-        name = "%",
-        style = recol_changeinyearpc,
-        align = "center",
-        minWidth = 50,
-        maxWidth = 90
-      ),
-      latest_value = reactable::colDef(
-        name = strftime(max(data$date), "%B %Y"),
-        align = "center",
-        maxWidth = 100,
-        minWidth = 65
+      highlight = TRUE,
+      resizable = TRUE,
+      theme = reactable::reactableTheme(
+        borderColor = "#dfe2e5",
+        stripedColor = "#f6f8fa",
+        highlightColor = "#f0f5f9",
+        cellPadding = "7px 1px 1px 1px",
+        tableStyle = list(`border-bottom` = "1px solid #000"),
+        headerStyle = list(fontWeight = "normal",
+                           `border-bottom` = "1px solid #000"),
+        groupHeaderStyle = list(fontWeight = "normal"),
+        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
       )
-    ),
-    columnGroups = list(
-      reactable::colGroup(name = "Change in month", columns = c("changeinmonth", "changeinmonthpc")),
-      reactable::colGroup(name = "Change over year", columns = c("changeinyear", "changeinyearpc"))
-    ),
-    highlight = TRUE,
-    resizable = TRUE,
-    theme = reactable::reactableTheme(
-      borderColor = "#dfe2e5",
-      stripedColor = "#f6f8fa",
-      highlightColor = "#f0f5f9",
-      cellPadding = "7px 1px 1px",
-      headerStyle = list(fontWeight = "normal"),
-      groupHeaderStyle = list(fontWeight = "normal"),
-      style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
     )
-  )
 
   rt1
 }
