@@ -6,7 +6,7 @@
 \usage{
 overview_table(
   data = filter_dash_data(series_ids = c("A84423349V", "A84423356T", "A84423355R",
-    "A84423354L", "A84423350C")),
+    "A84423354L", "A84423350C", "A85223451R")),
   years_in_sparklines = 2,
   row_var = indicator
 )
@@ -24,24 +24,6 @@ A reactable (htmlwidget) including sparklines and sortable columns
 }
 \description{
 Create a Reactable to summarise key ABS LFS indicators
-}
-\examples{
-# Using the data available to this dashboard
-\dontrun{
-dash_data <- load_dash_data()
-table_ids <- c(
-  "A84423349V",
-  "A84423356T",
-  "A84423355R",
-  "A84423354L",
-  "A84423350C"
-)
-
-table_data <- filter_dash_data(table_ids)
-
-overview_table(table_data)
-}
-
 }
 \author{
 Darren Wong, Duy Nguyen

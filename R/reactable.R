@@ -131,11 +131,13 @@ make_reactable <- function(data,
 
   full_pal <- colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
 
-  calc_cols <- function(series_ids, item) {
-    ptiles <- get_summ(series_ids, {{ item }})
+  calc_cols <- function(series_ids, item, summ_df = ts_summ) {
+    ptiles <- get_summ(series_ids, {{ item }},
+                       df = summ_df)
 
     # For some indicators, 20 pctile is "bad", for some it is "good"
-    up_is_good <- get_summ(series_ids, up_is_good)
+    up_is_good <- get_summ(series_ids, up_is_good,
+                           df = summ_df)
     ptiles <- ifelse(up_is_good, ptiles, 1 - ptiles)
 
     ptiles <- round(ptiles * 100, 0)

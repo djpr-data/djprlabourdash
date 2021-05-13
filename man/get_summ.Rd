@@ -23,11 +23,10 @@ Get a key fact about a time series
 dash_data <- load_and_hide()
 
 ts_summ <- dash_data \%>\%
- tidyr::unnest(cols = data) \%>\%
- djprshiny::ts_summarise()
+  tidyr::unnest(cols = data) \%>\%
+  djprshiny::ts_summarise()
 
 get_summ("A84601638A", latest_value)
-
 }
 
 }
