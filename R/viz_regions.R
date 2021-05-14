@@ -74,7 +74,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour bins
-  pal <- leaflet::colorBin("Blues", mapdata$value, 5) # last object is number of bins
+  pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
 
   # Create metro boundary (Greater Melbourne) ----
   metro_boundary_sa4 <- c(
@@ -132,7 +132,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
       ) # text box flips from side to side as needed
     ) %>%
     leaflet::addLegend(
-      position = "bottomright", # options: topright, bottomleft etc.
+      position = "topright", # options: topright, bottomleft etc.
       pal = pal, # colour palette as defined
       values = mapdata$value, # fill data
       labFormat = leaflet::labelFormat(transform = identity),
