@@ -48,7 +48,8 @@ Imports:
     webshot,
     ggiraph,
     ggrepel,
-    stringr
+    stringr,
+    zoo
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
