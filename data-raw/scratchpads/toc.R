@@ -8,8 +8,7 @@ ui <- fluidPage(
       rel = "stylesheet",
       href = "https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"
     ),
-    tags$script(src = "https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"
-                ),
+    tags$script(src = "https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"),
     tags$style(HTML("
                     .sticky-top {
     top: 100px; /* height of header */
@@ -36,7 +35,7 @@ ui <- fluidPage(
           br(),
           tags$nav(
             id = "toc1",
-            class="sticky-top"
+            class = "sticky-top"
           ),
           tags$script(
             '$(function() {
@@ -62,19 +61,14 @@ ui <- fluidPage(
           h2("Some other subtitle"),
           h1("Title"),
           paste0(rep("Text goes here", 100), collapse = ""),
-
           h1("Another title"),
           paste0(rep("Text goes here", 100), collapse = ""),
-
           h2("Subsection A"),
           paste0(rep("Text goes here", 100), collapse = ""),
-
           h2("Subsection B"),
           paste0(rep("Text goes here", 100), collapse = ""),
-
           h1("A final title"),
           paste0(rep("Text goes here", 100), collapse = ""),
-
         )
       )
     ),

@@ -3,38 +3,11 @@
 #' @examples
 #' \dontrun{
 #'
-#' data <- load_dash_data()
-#' #for 'map_unemprate_vic'
-#' ids <- c("A84600253V",
-#'         "A84600145K",
-#'         "A84599659L",
-#'         "A84600019W",
-#'         "A84600187J",
-#'         "A84599557X",
-#'         "A84600115W",
-#'         "A84599851L",
-#'         "A84599923L",
-#'         "A84600025T",
-#'         "A84600193C",
-#'         "A84600079X",
-#'         "A84599665J",
-#'         "A84600031L",
-#'         "A84599671C",
-#'         "A84599677T",
-#'         "A84599683L",
-#'         "A84599929A",
-#'         "A84600121T",
-#'         "A84600037A")
-#'
-#' data <- data %>%
-#'  dplyr::filter(series_id %in% ids) %>%
-#'  janitor::clean_names() %>%
-#'  tidyr::unnest(cols = dplyr::everything()) %>%
-#'  dplyr::filter(.data$date == max(.data$date))
+#' dash_data <- load_dash_data()
 #'
 #' #for 'viz_emp_regions_sincecovid':
 #' data <- filter_dash_data(c("A84600141A",
-#'                            "A84600075R"), data) %>%
+#'                            "A84600075R")) %>%
 #'         dplyr::filter(date >= as.Date("2020-01-01"))
 #'
 #' #for 'viz_reg_unemprate_multiline':
@@ -55,7 +28,8 @@
 #'                            "A84599683L",
 #'                            "A84599929A",
 #'                            "A84600121T",
-#'                            "A84600037A", data)
+#'                            "A84600037A"))
+#'}
 
 
 map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
@@ -89,7 +63,11 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
     dplyr::filter(.data$sa4_code_2016 < 297)
 
   # Fix issue with different naming for North West region in Victoria
-  data$sa4[data$sa4 == "Victoria - North West"] <- "North West"
+  data <- data %>%
+    dplyr::mutate(
+      sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
+                                 "North West",
+                                 .data$sa4))
 
   # Join shape file with data to create mapdata ----
   mapdata <- sa4_shp %>%
@@ -105,15 +83,21 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
     "Mornington Peninsula"
   )
 
+  mapdata <- mapdata %>%
+    sf::st_transform('+proj=longlat +datum=WGS84')
+
   metro_outline <- mapdata %>%
     dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
     dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
+
+
 
   # Produce dynamic map, all of Victoria ----
   # Ignore warning message:
   # //sf layer has inconsistent datum (+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs).
   # //Need '+proj=longlat +datum=WGS84'
-  map <- leaflet::leaflet(data = mapdata) %>%
+  map <- mapdata %>%
+    leaflet::leaflet() %>%
     leaflet::setView(
       lng = 145.4657, lat = -36.41472, # coordinates of map at first view
       zoom = 7
@@ -132,7 +116,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
         bringToFront = FALSE
       ), # FALSE = metro outline remains
       label = sprintf( # region label definition
-        "<strong>%s</strong><br/>Unemployment rate: %.2f", # label title, strong = bold, %.2f = 2 dec points
+        "<strong>%s</strong><br/>Unemployment rate: %.1f", # label title, strong = bold, %.1f = 1 dec points
         mapdata$sa4_name_2016, # region name displayed in label
         mapdata$value
       ) %>% # eco data displayed in label
@@ -152,7 +136,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
       pal = pal, # colour palette as defined
       values = mapdata$value, # fill data
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "Unemployment Rate (%)", # label title
+      title = "Unemployment rate (%)", # label title
       opacity = 1
     ) %>%
     # label opacity
@@ -171,20 +155,25 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
 }
 
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
-viz_emp_regions_sincecovid <- function(data = filter_dash_data(c("A84600141A",
-                                                                 "A84600075R"), df = dash_data) %>%
+viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c("A84600141A",
+                                                                 "A84600075R")) %>%
                                          dplyr::group_by(series_id) %>%
                                          dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                         dplyr::filter(date >= as.Date("2020-01-01")), title = "") {
+                                         dplyr::filter(date >= as.Date("2020-01-01")),
+                                         title = "") {
 
   df <- data %>%
     dplyr::group_by(series) %>%
-    dplyr::mutate(value = value / value[date == as.Date("2020-03-01")])
+    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) -1)
+                  )
 
   df %>%
-    djpr_ts_linechart() +
+    djpr_ts_linechart(col_var = gcc_restofstate,
+                      label_num = paste0(round(.data$value, 1), "%"),
+                      y_labels = function(x) paste0(x, "%"),
+                      hline = 0) +
     labs(title = title,
-         subtitle = "Change in employment (%) in Victorian regions since Mar-20",
+         subtitle = "Change in employment (%) in Victorian regions since March 2020",
          caption = "Source: ABS Labour Force.")
 }
 
@@ -205,9 +194,12 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
                                                                   "A84599683L",
                                                                   "A84599929A",
                                                                   "A84600121T",
-                                                                  "A84600037A", df = dash_data) %>%
+                                                                  "A84600037A")) %>%
                                           dplyr::group_by(series_id) %>%
-                                          dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA))), title = "") {
+                                          dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                          dplyr::filter(!is.na(value)),
+                                        title = "") {
+
 
   vic <- data %>%
     filter(sa4 == "") %>%
@@ -221,10 +213,12 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
     facet_wrap(~sa4) +
     djprtheme::theme_djpr() +
     scale_y_continuous(expand = expansion(mult = c(0, 0.05)),
-                       limits = c(0, 16)) +
+                       limits = c(0, 16),
+                       breaks = seq(0, 15, 5)) +
+    scale_x_date(date_labels = "%Y") +
     theme(axis.title = element_blank()) +
     labs(title = title,
-         subtitle = "Unemployment rate (%) by region (SA4)",
+         subtitle = "Unemployment rate by region (SA4), per cent",
          caption = "Source: ABS Labour Force.")
 
 }
@@ -270,7 +264,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
           panel.grid = element_blank(),
           axis.text.x = element_blank()) +
     labs(title = "",
-         subtitle = "",
+         subtitle = "Unemployment rate by region (SA4), per cent",
          caption = "Source: ABS Labour Force.")
 
 }
