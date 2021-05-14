@@ -74,7 +74,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour bins
-  pal <- leaflet::colorBin("Blues", mapdata$value, 5) # last object is number of bins
+  pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
 
   # Create metro boundary (Greater Melbourne) ----
   metro_boundary_sa4 <- c(

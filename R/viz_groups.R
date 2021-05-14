@@ -40,12 +40,19 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
                                                          "A84423469L",
                                                          "A84423350C",
                                                          "A84423238C",
-                                                         "A84423462W"), df = dash_data),
+                                                         "A84423462W",
+                                                         "pt_emp_vic"), df = dash_data),
                                                 title = "") {
-  data %>%
-    ggplot(aes(x = reorder(series, value),
-               y = value)) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05)) ,
+# still missing: part time and not in labour force data
+
+    data %>%
+    ggplot(aes(x = series, fill = indicator),
+               y = value) +
+          geom_bar(stat = "count") +
+          coord_flip()
+
+
+        scale_y_continuous(expand = expansion(mult = c(0, 0.05)) ,
                        breaks = seq(0, 10, 2),
                        labels = function(x) paste0(x, "%")
     ) +
