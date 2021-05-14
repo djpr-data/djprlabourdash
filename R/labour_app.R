@@ -11,6 +11,10 @@ labour_server <- function(input, output, session) {
 
   # Overview ------
 
+  output$overview_text <- renderUI({
+    text_overview_summary(ts_summ)
+  })
+
   output$main_table <- reactable::renderReactable({
     req(dash_data)
     ids <- c(

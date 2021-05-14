@@ -7,7 +7,7 @@ page_overview <- function(...) {
     br(),
     br(),
     br(),
-    centred_row(" Loading data, please wait...")
+    centred_row(h4(" Loading data, please wait..."))
   )
 
   main_content <- shinyjs::hidden(
@@ -17,8 +17,9 @@ page_overview <- function(...) {
       br(),
       br(),
       br(),
-      centred_row(h1("Example overview")),
-      centred_row("Lorem i psum dolor sit amet, no ullum melius laoreet quo, quo iuvaret recteque torquatos id. Vix cu habeo reque nonumy, mel ne deleniti percipit efficiantur. An pro definiebas scripserit. Et errem dicam explicari cum, veritus mediocrem reprehendunt mei an. Duo ad dolor soluta referrentur."),
+      centred_row(h1("Overview")),
+      centred_row(htmlOutput("overview_text")),
+      br(),
       centred_row(
         reactable::reactableOutput("main_table")
       ),
