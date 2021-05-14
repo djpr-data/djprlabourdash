@@ -1,15 +1,46 @@
+
 #' Line chart of cumulative employment change since March 2020
 #' in Victoria and Australia
-#'
+#' @noRd
 #' @examples
 #' \dontrun{
 #' dash_data <- load_dash_data()
-#' df <- filter_dash_data(c("A84423043C", "A84423349V"), dash_data)
-#' viz_empgrowth_sincecovid(df)
+#' viz_ind_emp_sincecovid_line()
 #' }
 #'
-viz_empgrowth_sincecovid <- function(data) {
+title_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", "A84423349V"),
+                                            df = dash_data
+                                          )) {
+  df <- data %>%
+    dplyr::filter(.data$date >= as.Date("2020-03-01")) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
+    dplyr::group_by(.data$state, .data$series) %>%
+    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) - 1)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
 
+  latest <- df %>%
+    dplyr::select(value, state) %>%
+    tidyr::spread(key = state, value = value)
+
+  if (latest$Victoria < 0) {
+    title <- "Victorian employment is below pre-COVID levels"
+  } else {
+    if (round(latest$Victoria, 1) < round(latest$Australia)) {
+      title <- "Victorian employment is above pre-COVID levels, but growth lags behind the national total"
+    } else if (round(latest$Victoria, 1) == round(latest$Australia, 1)) {
+      title <- "Victorian employment is above pre-COVID levels, and has caught up with the national employment growth"
+    } else {
+      title <- "Victorian employment is above pre-COVID levels, and has grown faster than the national total"
+    }
+  }
+  return(title)
+}
+
+viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", "A84423349V"),
+                                          df = dash_data
+                                        ),
+                                        title = title_ind_emp_sincecovid_line(data)) {
   df <- data %>%
     dplyr::mutate(state = dplyr::if_else(state == "", "Australia", state))
 
@@ -21,16 +52,16 @@ viz_empgrowth_sincecovid <- function(data) {
     dplyr::filter(date == max(.data$date))
 
   df <- df %>%
-      dplyr::mutate(tooltip = paste0(
-        state,
-        "\n",
-        format(
-          .data$date,
-          "%b %Y"
-        ),
-        "\n",
-        round(.data$value, 1)
-      ))
+    dplyr::mutate(tooltip = paste0(
+      state,
+      "\n",
+      format(
+        .data$date,
+        "%b %Y"
+      ),
+      "\n",
+      round(.data$value, 1)
+    ))
 
   days_in_data <- as.numeric(max(df$date) - min(df$date))
 
@@ -48,7 +79,7 @@ viz_empgrowth_sincecovid <- function(data) {
       col = .data$state
     )) +
     geom_hline(yintercept = 0) +
-    geom_line()  +
+    geom_line() +
     scale_colour_discrete(palette = djprtheme::djpr_pal) +
     geom_point(
       data = max_date,
@@ -73,9 +104,9 @@ viz_empgrowth_sincecovid <- function(data) {
       size = 12 / .pt
     ) +
     ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
-                                    size = 3,
-                                    colour = "white",
-                                    alpha = 0.01
+      size = 3,
+      colour = "white",
+      alpha = 0.01
     ) +
     scale_x_date(
       expand = expansion( # mult = c(0, 0.08)
@@ -83,12 +114,16 @@ viz_empgrowth_sincecovid <- function(data) {
       ),
       date_labels = "%b\n%Y"
     ) +
-    scale_y_continuous(expand = expansion(mult = 0.1),
-                       labels = function(x) paste0(x, "%")) +
+    scale_y_continuous(
+      expand = expansion(mult = 0.1),
+      labels = function(x) paste0(x, "%")
+    ) +
     djprtheme::theme_djpr() +
     theme(axis.title.x = element_blank()) +
     coord_cartesian(clip = "off") +
-    labs(caption = paste0("Source: ABS Labour Force and DJPR calculations. Note: Seasonally adjusted.")
+    labs(
+      title = title,
+      subtitle = "Cumulative employment growth since March 2020",
+      caption = paste0("Source: ABS Labour Force and DJPR calculations. Note: Seasonally adjusted.")
     )
-
 }

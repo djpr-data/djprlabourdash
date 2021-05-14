@@ -7,6 +7,8 @@ test_that("filter_dash_data() returns expected object", {
   expect_gt(nrow(df), 517)
   expect_gt(length(df), 30)
   expect_equal(length(unique(df$series)), 1)
-  expect_identical(unique(df$series),
-                   "Unemployment rate ;  Persons ;  > Victoria ;")
+  expect_identical(
+    unique(df$series),
+    "Unemployment rate ;  Persons ;  > Victoria ;"
+  )
 })

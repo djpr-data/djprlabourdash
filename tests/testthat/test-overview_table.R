@@ -1,5 +1,7 @@
 test_that("overview_table() returns a reactable htmlwidget", {
-  dash_data <- load_dash_data()
+  dash_data <- load_dash_data() %>%
+    tidyr::unnest(everything())
+
   series_ids <- c(
     "A84423349V",
     "A84423356T",
