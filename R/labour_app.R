@@ -141,6 +141,48 @@ labour_server <- function(input, output, session) {
     overview_table(table_data)
   })
 
+  # Regions ------
+  output$reg_unemprate_map <- leaflet::renderLeaflet({
+    map_unemprate_vic()
+  })
+
+  output$reg_unemprate_bar <- renderPlot({
+    df <- filter_dash_data(c("A84600253V",
+                       "A84599659L",
+                       "A84600019W",
+                       "A84600187J",
+                       "A84599557X",
+                       "A84600115W",
+                       "A84599851L",
+                       "A84599923L",
+                       "A84600025T",
+                       "A84600193C",
+                       "A84599665J",
+                       "A84600031L",
+                       "A84599671C",
+                       "A84599677T",
+                       "A84599683L",
+                       "A84599929A",
+                       "A84600121T",
+                       "A84600037A") ) %>%
+      dplyr::group_by(series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+      dplyr::filter(.data$date == max(.data$date))
+
+    df %>%
+      viz_reg_unemprate_bar()
+  })
+
+  djpr_plot_server("reg_emp_regions_sincecovid_line",
+                   viz_reg_emp_regions_sincecovid_line,
+                   date_slider = FALSE,
+                   data = filter_dash_data(c("A84600141A",
+                                             "A84600075R")) %>%
+                     dplyr::group_by(series_id) %>%
+                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                     dplyr::filter(date >= as.Date("2020-01-01")),
+                   plt_change = reactive(input$plt_change))
+
   # Links to pages -----
   observeEvent(input$link_indicators, {
     updateNavbarPage(session, "navbarpage", "tab-indicators")

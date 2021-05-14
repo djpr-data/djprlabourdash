@@ -100,7 +100,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
     leaflet::leaflet() %>%
     leaflet::setView(
       lng = 145.4657, lat = -36.41472, # coordinates of map at first view
-      zoom = 7
+      zoom = 6
     ) %>%
     # size of map at first view
     leaflet::addPolygons(
@@ -132,7 +132,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
       ) # text box flips from side to side as needed
     ) %>%
     leaflet::addLegend(
-      position = "bottomright", # options: topright, bottomleft etc.
+      position = "topright", # options: topright, bottomleft etc.
       pal = pal, # colour palette as defined
       values = mapdata$value, # fill data
       labFormat = leaflet::labelFormat(transform = identity),
@@ -247,24 +247,29 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
                                     dplyr::filter(.data$date == max(.data$date)),
                                     title = "") {
 
-  data %>%
+  data <- data %>%
     dplyr::filter(.data$sa4 != "") %>%
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+                                       "Warrnambool & S. West",
+                                       .data$sa4))
+
+  data %>%
     ggplot(aes(x = reorder(sa4, value),
                y = value)) +
     ggiraph::geom_col_interactive(fill = djprtheme::djpr_pal(1),
                                   aes(tooltip = round(value, 1))) +
-    geom_text(nudge_y = -0.5,
+    geom_text(nudge_y = 0.1,
               aes(label = round(value, 1)),
-              colour = "white",
-              size = 14 / .pt) +
-    coord_flip() +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+              colour = "black",
+              hjust = 0,
+              size = 12 / .pt) +
+    coord_flip(clip = "off") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     djprtheme::theme_djpr(flipped = TRUE) +
     theme(axis.title.x = element_blank(),
           panel.grid = element_blank(),
+          axis.text.y = element_text(size = 12),
           axis.text.x = element_blank()) +
-    labs(title = "",
-         subtitle = "Unemployment rate by region (SA4), per cent",
-         caption = "Source: ABS Labour Force.")
+    labs(title = title)
 
 }
