@@ -41,17 +41,62 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
                                                          "A84423350C",
                                                          "A84423238C",
                                                          "A84423462W",
-                                                         "pt_emp_vic"), df = dash_data),
+                                                         "pt_emp_vic",
+                                                         "A84423689R",
+                                                         "A84423351F",
+                                                         "A84423577W",
+                                                         "A84423239F",
+                                                         "A84423801C",
+                                                         "A84423463X"), df = dash_data),
                                                 title = "") {
-# still missing: part time and not in labour force data
 
+    # create time series for not in labour force and part-time
+    data <- data %>%
+      dplyr::group_by(.data$date) %>%
+      dplyr::summarise(value = value[series_id == "A84423689R"] -
+                         value[series_id == "A84423351F"]) %>%
+      dplyr::mutate(series = "Not in the labour force ; Persons ; Victoria",
+                    series_id = "nilf_vic") %>%
+      dplyr::bind_rows(data)
+
+    data <- data %>%
+      dplyr::group_by(.data$date) %>%
+      dplyr::summarise(value = value[series_id == "A84423577W"] -
+                         value[series_id == "A84423239F"]) %>%
+      dplyr::mutate(series = "Not in the labour force ; Male ; Victoria",
+                    series_id = "nilf_vic_male") %>%
+      dplyr::bind_rows(data)
+
+    data <- data %>%
+      dplyr::group_by(.data$date) %>%
+      dplyr::summarise(value = value[series_id == "A84423801C"] -
+                         value[series_id == "A84423463X"]) %>%
+      dplyr::mutate(series = "Not in the labour force ; Female ; Victoria",
+                    series_id = "nilf_vic_female") %>%
+      dplyr::bind_rows(data)
+
+    data <- data %>%
+      dplyr::group_by(.data$date) %>%
+      dplyr::summarise(value = value[series_id == "A84423237A"] -
+                         value[series_id == "A84423245A"]) %>%
+      dplyr::mutate(series = "Part time employed ; Male ; Victoria",
+                    series_id = "pt_emp_vic_male") %>%
+      dplyr::bind_rows(data)
+
+    data <- data %>%
+      dplyr::group_by(.data$date) %>%
+      dplyr::summarise(value = value[series_id == "A84423461V"] -
+                         value[series_id == "A84423469L"]) %>%
+      dplyr::mutate(series = "Part time employed ; Female ; Victoria",
+                    series_id = "pt_emp_vic_female") %>%
+      dplyr::bind_rows(data)
+
+    # draw stacked box plot
     data %>%
     ggplot(aes(x = series, fill = indicator),
                y = value) +
           geom_bar(stat = "count") +
-          coord_flip()
-
-
+          coord_flip() +
         scale_y_continuous(expand = expansion(mult = c(0, 0.05)) ,
                        breaks = seq(0, 10, 2),
                        labels = function(x) paste0(x, "%")
@@ -60,6 +105,8 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
     labs(title = "",
          subtitle = "Unemployment rate (%) in Victorian regions",
          caption = "Source: ABS Labour Force.")                                                }
+
+
 
 viz_gr_gen_partrate_line <- function(data = filter_dash_data(c("A84423355R",
                                                                "A84423243W",
