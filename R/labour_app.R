@@ -140,6 +140,28 @@ labour_server <- function(input, output, session) {
 
     overview_table(table_data)
   })
+
+  # Links to pages -----
+  observeEvent(input$link_indicators, {
+    updateNavbarPage(session, "navbarpage", "tab-indicators")
+  })
+
+  observeEvent(input$link_overview, {
+    updateNavbarPage(session, "navbarpage", "tab-overview")
+  })
+
+  observeEvent(input$link_regions, {
+    updateNavbarPage(session, "navbarpage", "tab-regions")
+  })
+
+  observeEvent(input$link_groups, {
+    updateNavbarPage(session, "navbarpage", "tab-groups")
+  })
+
+  observeEvent(input$link_industries, {
+    updateNavbarPage(session, "navbarpage", "tab-industries")
+  })
+
 }
 
 app <- function(...) {

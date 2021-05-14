@@ -21,6 +21,13 @@ page_overview <- function(...) {
       centred_row(htmlOutput("overview_text")),
       br(),
       centred_row(
+        tagList(
+          "Find out more on the ",
+          actionLink("link_indicators", "indicators"),
+          " page or in the table below."
+        )
+      ),
+      centred_row(
         reactable::reactableOutput("main_table")
       ),
       br()
