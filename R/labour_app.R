@@ -67,9 +67,7 @@ labour_server <- function(input, output, session) {
     id = "ind_emp_sincecovid_line",
     plot_function = viz_ind_emp_sincecovid_line,
     date_slider = FALSE,
-    data = filter_dash_data(c("A84423043C", "A84423349V"),
-      df = dash_data
-    ) %>%
+    data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
     date_slider_value_min = as.Date("2020-01-01"),
     plt_change = reactive(input$plt_change)
