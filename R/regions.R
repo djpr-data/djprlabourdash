@@ -77,9 +77,9 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
                                                         "A84599683L",
                                                         "A84599929A",
                                                         "A84600121T",
-                                                        "A84600037A"),
-                                                      df = dash_data) %>%
-                                dplyr::group_by(.data$series) %>%
+                                                        "A84600037A")) %>%
+                                group_by(series_id) %>%
+                                mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                 dplyr::filter(.data$date == max(.data$date)),
                               title = "") {
 
@@ -173,7 +173,9 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
 viz_emp_regions_sincecovid <- function(data = filter_dash_data(c("A84600141A",
                                                                  "A84600075R"), df = dash_data) %>%
-                                       dplyr::filter(date >= as.Date("2020-01-01")), title = "") {
+                                         dplyr::group_by(series_id) %>%
+                                         dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                         dplyr::filter(date >= as.Date("2020-01-01")), title = "") {
 
   df <- data %>%
     dplyr::group_by(series) %>%
@@ -203,7 +205,9 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
                                                                   "A84599683L",
                                                                   "A84599929A",
                                                                   "A84600121T",
-                                                                  "A84600037A", df = dash_data, title = ""))) {
+                                                                  "A84600037A", df = dash_data) %>%
+                                          dplyr::group_by(series_id) %>%
+                                          dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA))), title = "") {
 
   vic <- data %>%
     filter(sa4 == "") %>%
@@ -244,9 +248,10 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
                                                             "A84600121T",
                                                             "A84600037A"),
                                                           df = dash_data) %>%
-                                    dplyr::group_by(.data$series) %>%
+                                    dplyr::group_by(series_id) %>%
+                                    dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                     dplyr::filter(.data$date == max(.data$date)),
-                                  title = "") {
+                                    title = "") {
 
   data %>%
     dplyr::filter(.data$sa4 != "") %>%
