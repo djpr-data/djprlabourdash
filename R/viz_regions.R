@@ -73,8 +73,10 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
   mapdata <- sa4_shp %>%
     dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
-  # Create colour bins
-  pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
+  # Create colour palette
+  # Switched here from binned to continuous colours
+  # pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
+  pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
 
   # Create metro boundary (Greater Melbourne) ----
   metro_boundary_sa4 <- c(
@@ -126,7 +128,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
           "font-weight" = "normal", # "bold" makes it so
           padding = "3px 8px"
         ),
-        textsize = "15px", # text size of label (15 px seems good size)
+        textsize = "12px", # text size of label
         noHide = FALSE, # TRUE makes labels permanently visible (messy)
         direction = "auto"
       ) # text box flips from side to side as needed
@@ -135,17 +137,19 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
       position = "topright", # options: topright, bottomleft etc.
       pal = pal, # colour palette as defined
       values = mapdata$value, # fill data
+      bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "Unemployment rate (%)", # label title
-      opacity = 1
+      title = "Unemployment<br/>rate (per cent)", # label title
+      opacity = 1,
     ) %>%
     # label opacity
     leaflet::addPolygons(
       data = metro_outline, #
       fill = F,
       stroke = T,
+      opacity = 1,
       color = "black",
-      weight = 2
+      weight = 1
     ) %>%
     # thickness of metro outline
     leaflet.extras::setMapWidgetStyle(list(background = "white")) # background colour
@@ -256,14 +260,16 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
   data %>%
     ggplot(aes(x = reorder(sa4, value),
                y = value)) +
-    ggiraph::geom_col_interactive(fill = djprtheme::djpr_pal(1),
-                                  aes(tooltip = round(value, 1))) +
+    geom_col(#fill = djprtheme::djpr_pal(1),
+      col = "grey85",
+             aes(fill = -value)) +
     geom_text(nudge_y = 0.1,
               aes(label = round(value, 1)),
               colour = "black",
               hjust = 0,
               size = 12 / .pt) +
     coord_flip(clip = "off") +
+    scale_fill_distiller(palette = "Blues") +
     scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     djprtheme::theme_djpr(flipped = TRUE) +
     theme(axis.title.x = element_blank(),

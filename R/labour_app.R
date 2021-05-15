@@ -3,6 +3,7 @@
 #' @import shiny
 
 labour_server <- function(input, output, session) {
+
   dash_data <<- load_and_hide()
 
   ts_summ <<- dash_data %>%
