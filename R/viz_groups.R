@@ -109,10 +109,6 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
                "nilf_vic")
     data <- data[ , !(names(data) %in% drops)]
 
-    # creating proportions
-    data$proportion <- data$series %>%
-      reshape2::melt(data, id.vars = c("value"), value.name = "proportion")
-
     # draw stacked box plot
     ggplot() + geom_bar(aes(x = data$sex,
                             y = data$indicator,
