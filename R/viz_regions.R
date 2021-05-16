@@ -159,12 +159,31 @@ map_unemprate_vic <- function(data = filter_dash_data(c("A84600253V",
 }
 
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
+title_reg_emp_regions_sincecovid_line <- function(data) {
+
+  current <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-03-01")]) -1)
+    ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(.data$gcc_restofstate, .data$value) %>%
+    tidyr::spread(key = .data$gcc_restofstate, value = .data$value)
+
+  diff <- current$`Greater Melbourne` - current$`Rest of Vic.`
+  case_when(abs(diff) < 0.1 ~
+              "Employment in Greater Melbourne has caught up with the rest of Victoria",
+            sign(diff) == -1 ~
+              "Employment in Greater Melbourne has not kept pace with the rest of Victoria",
+            TRUE ~ "Employment in Greater Melbourne has grown faster than the rest of Victoria")
+}
+
 viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c("A84600141A",
                                                                  "A84600075R")) %>%
                                          dplyr::group_by(series_id) %>%
                                          dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                          dplyr::filter(date >= as.Date("2020-01-01")),
-                                         title = "") {
+                                         title = title_reg_emp_regions_sincecovid_line(data = data)) {
 
   df <- data %>%
     dplyr::group_by(series) %>%
@@ -177,8 +196,22 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c("A8460
                       y_labels = function(x) paste0(x, "%"),
                       hline = 0) +
     labs(title = title,
-         subtitle = "Change in employment (%) in Victorian regions since March 2020",
-         caption = "Source: ABS Labour Force.")
+         subtitle = "Cumulative change in employment (%) in Greater Melbourne and the rest of Victoria since March 2020",
+         caption = paste0("Source: ABS Labour Force.",
+                          "Note: Latest data is from ",
+                          format(max(df$date), "%B %Y"),
+                          ". Not seasonally adjusted. Data smoothed using a 3 month rolling average."))
+}
+
+title_reg_unemprate_multiline <- function(data) {
+
+  highest_current_ur <- data %>%
+    dplyr::filter(.data$date == max(data$date)) %>%
+    dplyr::filter(.data$value == max(data$value)) %>%
+    dplyr::pull(.data$sa4)
+
+  highest_current_ur <- data$sa4[data$value == max(data$value)]
+  paste0(highest_current_ur, " has the highest unemployment rate in Victoria")
 }
 
 viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
@@ -202,28 +235,75 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c("A84600253V",
                                           dplyr::group_by(series_id) %>%
                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                           dplyr::filter(!is.na(value)),
-                                        title = "") {
+                                        title = title_reg_unemprate_multiline(data = data)) {
+
+  data <- data %>%
+    dplyr::mutate(tooltip = paste0(.data$sa4, "\n", format(.data$date, "%b %Y"),
+                                   "\n", round2(.data$value, 1), "%"),
+                  sa4 = gsub(" and South ", " & S. ", .data$sa4, fixed = TRUE))
+
+
+  max_y <- max(data$value)
+  mid_x <- median(data$date)
+
+  data <- data %>%
+    dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4),
+                  is_vic = dplyr::if_else(.data$sa4 == "Victoria", TRUE, FALSE))
 
 
   vic <- data %>%
-    filter(sa4 == "") %>%
+    filter(sa4 == "Victoria") %>%
     select(-sa4)
 
+  facet_labels <- data %>%
+    group_by(sa4, is_vic) %>%
+    summarise() %>%
+    mutate(x = mid_x,
+           y = max_y)
+
+  data$sa4 <- factor(data$sa4,
+                     levels = c("Victoria", sort(unique(data$sa4[data$sa4 != "Victoria"]))))
+
   data %>%
-    dplyr::filter(sa4 != "") %>%
-    ggplot(aes(x = date, y = value, col = sa4)) +
-    geom_line() +
-    geom_line(data = vic, col = "black") +
-    facet_wrap(~sa4) +
+    ggplot(aes(x = date, y = value, col = is_vic)) +
+    geom_line(aes(group = sa4)) +
+    geom_label(data = facet_labels,
+              aes(label = stringr::str_wrap(sa4, 11),
+                  y = max_y,
+                  x = mid_x),
+              nudge_y = 0.1,
+              lineheight = 0.85,
+              label.padding = unit(0.05, "lines"),
+              label.size = 0,
+              size = 12 / .pt) +
+    geom_line(data = vic) +
+    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
+                                    size = 3,
+                                    colour = "white",
+                                    alpha = 0.01) +
+    facet_wrap(~factor(sa4),
+               ncol = 6) +
+    scale_colour_manual(values = c(`TRUE` = "#2A6FA2",
+                                   `FALSE` = "#62BB46")) +
     djprtheme::theme_djpr() +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05)),
-                       limits = c(0, 16),
-                       breaks = seq(0, 15, 5)) +
-    scale_x_date(date_labels = "%Y") +
-    theme(axis.title = element_blank()) +
+    coord_cartesian(clip = "off") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.1)),
+                       limits = function(limits) c(0, limits[2]),
+                       breaks = function(limits) c(0,
+                                                   min(c(limits[2],
+                                                         10))),
+                       labels = function(x) paste0(round2(x), "%")
+                       ) +
+    scale_x_date(date_labels = "%Y",
+                 breaks = scales::breaks_pretty(n = 3)
+                 ) +
+    theme(axis.title = element_blank(),
+          strip.text = element_blank()) +
     labs(title = title,
          subtitle = "Unemployment rate by region (SA4), per cent",
-         caption = "Source: ABS Labour Force.")
+         caption = paste0("Source: ABS Labour Force. Note: Latest data is from ",
+                          format(max(data$date), "%B %Y"),
+                          ". Not seasonally adjusted. Data smoothed using a 3 month rolling average."))
 
 }
 
@@ -260,9 +340,9 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c("A84600253V",
   data %>%
     ggplot(aes(x = reorder(sa4, value),
                y = value)) +
-    geom_col(#fill = djprtheme::djpr_pal(1),
+    geom_col(
       col = "grey85",
-             aes(fill = -value)) +
+      aes(fill = -value)) +
     geom_text(nudge_y = 0.1,
               aes(label = round(value, 1)),
               colour = "black",
