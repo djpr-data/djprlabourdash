@@ -56,7 +56,8 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
       dplyr::summarise(value = value[series_id == "A84423689R"] -
                          value[series_id == "A84423351F"]) %>%
       dplyr::mutate(series = "Not in the labour force ; Persons ; Victoria",
-                    series_id = "nilf_vic") %>%
+                    series_id = "nilf_vic",
+                    indicator = "Not in labour force") %>%
       dplyr::bind_rows(data)
 
     data <- data %>%
@@ -64,7 +65,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
       dplyr::summarise(value = value[series_id == "A84423577W"] -
                          value[series_id == "A84423239F"]) %>%
       dplyr::mutate(series = "Not in the labour force ; Male ; Victoria",
-                    series_id = "nilf_vic_male") %>%
+                    series_id = "nilf_vic_male",
+                    indicator = "Not in labour force",
+                    sex = "Males") %>%
       dplyr::bind_rows(data)
 
     data <- data %>%
@@ -72,7 +75,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
       dplyr::summarise(value = value[series_id == "A84423801C"] -
                          value[series_id == "A84423463X"]) %>%
       dplyr::mutate(series = "Not in the labour force ; Female ; Victoria",
-                    series_id = "nilf_vic_female") %>%
+                    series_id = "nilf_vic_female",
+                    indicator = "Not in labour force",
+                    sex = "Females") %>%
       dplyr::bind_rows(data)
 
     data <- data %>%
@@ -80,7 +85,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
       dplyr::summarise(value = value[series_id == "A84423237A"] -
                          value[series_id == "A84423245A"]) %>%
       dplyr::mutate(series = "Part time employed ; Male ; Victoria",
-                    series_id = "pt_emp_vic_male") %>%
+                    series_id = "pt_emp_vic_male",
+                    indicator = "Employed part-time",
+                    sex = "Males") %>%
       dplyr::bind_rows(data)
 
     data <- data %>%
@@ -88,7 +95,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
       dplyr::summarise(value = value[series_id == "A84423461V"] -
                          value[series_id == "A84423469L"]) %>%
       dplyr::mutate(series = "Part time employed ; Female ; Victoria",
-                    series_id = "pt_emp_vic_female") %>%
+                    series_id = "pt_emp_vic_female",
+                    indicator = "Employed part-time",
+                    sex = "Females") %>%
       dplyr::bind_rows(data)
 
     # remove the series IDs we don't need: civ pop and employed total and all persons
@@ -100,14 +109,16 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
                "nilf_vic")
     data <- data[ , !(names(data) %in% drops)]
 
+    # creating proportions
+    data$proportion <- data$series %>%
+      reshape2::melt(data, id.vars = c("value"), value.name = "proportion")
 
     # draw stacked box plot
-    data %>%
-    ggplot(aes(x = series, fill = indicator),
-               y = value) +
-          geom_bar(stat = "count") +
+    ggplot() + geom_bar(aes(x = data$sex,
+                            y = data$indicator,
+                            fill = data$indicator),
+                        stat = "identity") +
           coord_flip()
-
 
 
     #+
