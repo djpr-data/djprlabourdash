@@ -47,8 +47,10 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
                                                          "A84423577W",
                                                          "A84423239F",
                                                          "A84423801C",
-                                                         "A84423463X"), df = dash_data),
-                                                title = "") {
+                                                         "A84423463X"), df = dash_data) %>%
+                                 dplyr::group_by(.data$series) %>%
+                                 dplyr::filter(.data$date == max(.data$date)),
+                               title = "") {
 
     # create time series for not in labour force and part-time
     data <- data %>%
@@ -100,33 +102,35 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
                     sex = "Females") %>%
       dplyr::bind_rows(data)
 
-    # remove the series IDs we don't need: civ pop and employed total and all persons
-    drops <- c("A84423349V",
-               "A84423349V",
-               "A84423357V",
-               "pt_emp_vic",
-               "A84423350C",
-               "nilf_vic")
-    data <- data[ , !(names(data) %in% drops)]
+    #drop rows we don't need
+    data <- filter(data, data$indicator %in% c("Employed part-time",
+                                                "Not in labour force",
+                                                "Unemployed total",
+                                                "Employed full-time"))
+
+    # data[c("Employed full-time", "Employed part-time", "Unemployed total", "Not in labour force"), ]
 
     # draw stacked box plot
-    ggplot() + geom_bar(aes(x = data$sex,
-                            y = data$indicator,
-                            fill = data$indicator),
-                        stat = "identity") +
-          coord_flip()
-
-
-    #+
-        scale_y_continuous(expand = expansion(mult = c(0, 0.05)) ,
-                       breaks = seq(0, 10, 2),
-                       labels = function(x) paste0(x, "%")
-    ) +
-    djprtheme::theme_djpr(flipped = TRUE) +
-    labs(title = "",
-         subtitle = "Unemployment rate (%) in Victorian regions",
-         caption = "Source: ABS Labour Force.")                                                }
-
+    data %>%
+      mutate(indicator = factor(indicator,
+                                levels = c("Not in labour force",
+                                           "Unemployed total",
+                                           "Employed part-time",
+                                           "Employed full-time"))) %>%
+      dplyr::filter(.data$sex != "") %>%
+      ggplot(aes(x = sex, y = value, fill = indicator)) +
+      geom_bar(stat="identity", position = "fill") +
+      coord_flip() +
+      scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
+      djprtheme::theme_djpr(flipped = TRUE, legend = "top") +
+      djprtheme::djpr_fill_manual(4) +
+      theme(axis.title.x = element_blank(),
+            panel.grid = element_blank(),
+            axis.text.x = element_blank()) +
+      labs(title = "",
+           subtitle = "Employment by Gender",
+           caption = "Source: ABS Labour Force.")
+}
 
 
 viz_gr_gen_partrate_line <- function(data = filter_dash_data(c("A84423355R",
