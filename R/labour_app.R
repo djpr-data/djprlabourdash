@@ -3,6 +3,7 @@
 #' @import shiny
 
 labour_server <- function(input, output, session) {
+  # Load data and create persistent objects ----
   dash_data <<- load_and_hide()
 
   ts_summ <<- dash_data %>%
@@ -226,33 +227,59 @@ labour_server <- function(input, output, session) {
   )
 
   djpr_plot_server("reg_unemprate_dispersion",
-                   viz_reg_unemprate_dispersion,
-                   data = filter_dash_data(c(
-                     "A84600253V",
-                     "A84599659L",
-                     "A84600019W",
-                     "A84600187J",
-                     "A84599557X",
-                     "A84600115W",
-                     "A84599851L",
-                     "A84599923L",
-                     "A84600025T",
-                     "A84600193C",
-                     "A84599665J",
-                     "A84600031L",
-                     "A84599671C",
-                     "A84599677T",
-                     "A84599683L",
-                     "A84599929A",
-                     "A84600121T",
-                     "A84600037A"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(series_id) %>%
-                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
-                   date_slider_value_min = as.Date("2014-01-01"),
-                   plt_change = plt_change)
+    viz_reg_unemprate_dispersion,
+    data = filter_dash_data(c(
+      "A84600253V",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::group_by(series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
+    date_slider_value_min = as.Date("2014-01-01"),
+    plt_change = plt_change
+  )
+
+  output$reg_sa4 <- renderPlot(
+    {
+      map_reg_sa4(sa4 = input$focus_region)
+    },
+    height = 350
+  )
+
+  output$table_region_focus <- reactable::renderReactable({
+    reactable_region_focus(sa4 = input$focus_region)
+  })
+
+  reg_sa4unemp_cf_broadregion_withtitle <- reactive({
+    viz_reg_sa4unemp_cf_broadregion(sa4 = input$focus_region)
+  })
+
+  output$reg_sa4unemp_cf_broadregion_title <- renderUI({
+    djpr_plot_title(extract_labs(reg_sa4unemp_cf_broadregion_withtitle()))
+  })
+
+  output$reg_sa4unemp_cf_broadregion <- renderPlot({
+    plot <- reg_sa4unemp_cf_broadregion_withtitle()
+    plot$labels$title <- NULL
+    plot
+  })
 
   # Links to pages -----
   observeEvent(input$link_indicators, {

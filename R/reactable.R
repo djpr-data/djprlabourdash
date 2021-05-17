@@ -98,6 +98,13 @@ make_reactable <- function(data,
     ) %>%
     dplyr::ungroup()
 
+  # If a number is -0.0, change to 0.0
+  summary_df <- summary_df %>%
+    dplyr::mutate(dplyr::across(
+      dplyr::starts_with("changein"),
+      ~gsub("-0.0", "0.0", .x)
+    ))
+
   ## Select only the latest changes
 
   changedf <- summary_df %>%
@@ -209,7 +216,7 @@ make_reactable <- function(data,
           style = function(value, index) {
             c(
               list(
-                fontWeight = "bold" #,
+                fontWeight = "bold" # ,
                 # color = colpal[index]
               ),
               cell_padding

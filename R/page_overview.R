@@ -25,7 +25,10 @@ page_overview <- function(...) {
         )
       ),
       centred_row(
-        reactable::reactableOutput("main_table")
+        tagList(
+          reactable::reactableOutput("main_table"),
+          reactable_caption()
+        )
       ),
       br()
     )

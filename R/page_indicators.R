@@ -6,6 +6,7 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_emp_sincecovid_line"),
     htmlOutput("ind_emp_dotpoints"),
     reactable::reactableOutput("ind_emp_table"),
+    reactable_caption(),
     br(),
     br()
   )

@@ -99,8 +99,6 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
     dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
 
-
-
   # Produce dynamic map, all of Victoria ----
   # Ignore warning message:
   # //sf layer has inconsistent datum (+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs).
@@ -541,15 +539,21 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   df_tidy <- df_summ %>%
     dplyr::select(-.data$range) %>%
-    tidyr::gather(key = series, value = value,
-                  -.data$date)
+    tidyr::gather(
+      key = series, value = value,
+      -.data$date
+    )
 
   df_tidy <- df_tidy %>%
-    mutate(tooltip = case_when(series == "vic" ~ "Victoria ",
-                               series == "max_ur" ~ "Highest ",
-                               series == "min_ur" ~ "Lowest ",
-                               TRUE ~ NA_character_),
-           tooltip = paste0(tooltip, round2(.data$value, 1), "%"))
+    mutate(
+      tooltip = case_when(
+        series == "vic" ~ "Victoria ",
+        series == "max_ur" ~ "Highest ",
+        series == "min_ur" ~ "Lowest ",
+        TRUE ~ NA_character_
+      ),
+      tooltip = paste0(tooltip, round2(.data$value, 1), "%")
+    )
 
   days_in_data <- as.numeric(max(data$date) - min(data$date))
 
@@ -566,31 +570,40 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       alpha = 0.25
     ) +
     geom_line(
-      aes(y = .data$value,
-          color = .data$series
-          )
-      ) +
-    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip,
-                                        y = .data$value),
-                                    size = 3,
-                                    colour = "white",
-                                    alpha = 0.01
+      aes(
+        y = .data$value,
+        color = .data$series
+      )
     ) +
-    ggrepel::geom_label_repel(data = ~filter(., date == max(date)),
-                              aes(label = stringr::str_wrap(.data$tooltip, 7),
-                                  col = .data$series,
-                                  y = .data$value),
-                              label.size = NA,
-                              lineheight = 0.85,
-                              size = 12 / .pt,
-                              hjust = 0,
-                              min.segment.length = unit(10000, "lines"),
-                              nudge_x = days_in_data * 0.1,
-                              label.padding = 0.01,
-                              direction = "y") +
+    ggiraph::geom_point_interactive(aes(
+      tooltip = .data$tooltip,
+      y = .data$value
+    ),
+    size = 3,
+    colour = "white",
+    alpha = 0.01
+    ) +
+    ggrepel::geom_label_repel(
+      data = ~ filter(., date == max(date)),
+      aes(
+        label = stringr::str_wrap(.data$tooltip, 7),
+        col = .data$series,
+        y = .data$value
+      ),
+      label.size = NA,
+      lineheight = 0.85,
+      size = 12 / .pt,
+      hjust = 0,
+      min.segment.length = unit(10000, "lines"),
+      nudge_x = days_in_data * 0.1,
+      label.padding = 0.01,
+      direction = "y"
+    ) +
     djprtheme::theme_djpr() +
-    djprtheme::djpr_y_continuous(limits = c(0, max(df_tidy$value)),
-                                 labels = function(x) paste0(x, "%")) +
+    djprtheme::djpr_y_continuous(
+      limits = c(0, max(df_tidy$value)),
+      labels = function(x) paste0(x, "%")
+    ) +
     scale_x_date(
       expand = expansion(
         add = c(0, days_in_data * 0.2)
@@ -598,35 +611,45 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       breaks = scales::breaks_pretty(n = 4),
       date_labels = "%b\n%Y"
     ) +
-    scale_colour_manual(values = c("min_ur" = djprtheme::djpr_green,
-                                   "max_ur" = djprtheme::djpr_royal_blue,
-                                   "vic" = "black")) +
-    theme(axis.title = element_blank(),
-          axis.text = element_text(size = 12),
-          plot.subtitle = element_text(size = 14)) +
+    scale_colour_manual(values = c(
+      "min_ur" = djprtheme::djpr_green,
+      "max_ur" = djprtheme::djpr_royal_blue,
+      "vic" = "black"
+    )) +
+    theme(
+      axis.title = element_blank(),
+      axis.text = element_text(size = 12),
+      plot.subtitle = element_text(size = 14)
+    ) +
     labs(subtitle = "Highest and lowest unemployment rates\nin Victorian regions (SA4s)")
 
 
   # Second plot: Range between high and low -----
   plot_range <- df_summ %>%
     ggplot(aes(x = date, y = range)) +
-    ggiraph::geom_col_interactive(aes(tooltip = paste0(format(.data$date, "%B %Y"),
-                                                              "\n", round2(.data$range, 1), " ppts")),
-                                  fill = djpr_pal(1),
-                                  colour = NA,
-                                  size = 0,
-                                  alpha = 0.25) +
+    ggiraph::geom_col_interactive(aes(tooltip = paste0(
+      format(.data$date, "%B %Y"),
+      "\n", round2(.data$range, 1), " ppts"
+    )),
+    fill = djpr_pal(1),
+    colour = NA,
+    size = 0,
+    alpha = 0.25
+    ) +
     theme_djpr() +
     scale_x_date(
       date_labels = "%b\n%Y",
       breaks = scales::breaks_pretty(n = 4)
     ) +
-    djpr_y_continuous(limits = function(x) c(0, max(x)) #,
-                      #labels = function(x) paste0(x, " ppts")
-                      ) +
-    theme(axis.title = element_blank(),
-          axis.text = element_text(size = 12),
-          plot.subtitle = element_text(size = 14)) +
+    djpr_y_continuous(
+      limits = function(x) c(0, max(x)) # ,
+      # labels = function(x) paste0(x, " ppts")
+    ) +
+    theme(
+      axis.title = element_blank(),
+      axis.text = element_text(size = 12),
+      plot.subtitle = element_text(size = 14)
+    ) +
     labs(subtitle = "Range between highest and lowest\n(percentage points)")
 
   # Create title -----
@@ -640,14 +663,390 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   # Combine plots -----
   plots_combined <- patchwork::wrap_plots(plot_high_low,
-                        plot_range,
-                        patchwork::plot_spacer(),
-                        ncol = 2) +
+    plot_range,
+    patchwork::plot_spacer(),
+    ncol = 2
+  ) +
     coord_cartesian(clip = "off") +
     patchwork::plot_layout(heights = c(0.99, 0.01)) +
-    patchwork::plot_annotation(title = plot_title,
-                               caption = "Source: ABS Labour Force Detailed. Notes: Data is not seasonally adjusted; smoothed using a 3 month rolling average.",
-                               theme = theme_djpr())
+    patchwork::plot_annotation(
+      title = plot_title,
+      caption = "Source: ABS Labour Force Detailed. Notes: Data is not seasonally adjusted; smoothed using a 3 month rolling average.",
+      theme = theme_djpr()
+    )
 
   plots_combined
+}
+
+map_reg_sa4 <- function(sa4 = c(
+                          "Melbourne - North East",
+                          "Melbourne - Inner",
+                          "Ballarat",
+                          "Geelong",
+                          "Hume",
+                          "Latrobe - Gippsland",
+                          "Melbourne - Outer East",
+                          "Melbourne - South East",
+                          "North West",
+                          "Melbourne - Inner East",
+                          "Melbourne - West",
+                          "Bendigo",
+                          "Warrnambool and South West",
+                          "Melbourne - North West",
+                          "Shepparton",
+                          "Melbourne - Inner South",
+                          "Mornington Peninsula"
+                        )) {
+  sa4 <- match.arg(sa4)
+
+  all_areas <- absmapsdata::sa42016 %>%
+    filter(state_name_2016 == "Victoria") %>%
+    mutate(selected = dplyr::if_else(.data$sa4_name_2016 == .env$sa4, TRUE, FALSE))
+
+  selected_area <- all_areas %>%
+    dplyr::filter(selected == TRUE)
+
+  all_areas %>%
+    ggplot() +
+    geom_sf(aes(alpha = selected),
+      size = 0.25,
+      fill = djprtheme::djpr_royal_blue,
+      colour = djprtheme::djpr_cool_grey_11
+    ) +
+    geom_curve(
+      data = selected_area,
+      aes(x = cent_long, y = cent_lat),
+      xend = 147, yend = -35,
+      curvature = 0.2,
+      colour = "#1F1547"
+    ) +
+    geom_point(
+      data = selected_area,
+      aes(x = cent_long, y = cent_lat),
+      colour = "#1F1547",
+      size = 3,
+      shape = "circle filled",
+      stroke = 1.5,
+      fill = "white"
+    ) +
+    annotate("label",
+      x = 147,
+      y = -34.5,
+      label = stringr::str_wrap(sa4, 14),
+      colour = "#1F1547",
+      size = 24 / .pt,
+      fontface = "bold",
+      lineheight = 0.9,
+      label.size = 0
+    ) +
+    scale_alpha_manual(values = c(
+      `FALSE` = 0.2,
+      `TRUE` = 0.8
+    )) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
+                                              c(
+                                                "A84599659L",
+                                                "A84600019W",
+                                                "A84600187J",
+                                                "A84599557X",
+                                                "A84600115W",
+                                                "A84599851L",
+                                                "A84599923L",
+                                                "A84600025T",
+                                                "A84600193C",
+                                                "A84599665J",
+                                                "A84600031L",
+                                                "A84599671C",
+                                                "A84599677T",
+                                                "A84599683L",
+                                                "A84599929A",
+                                                "A84600121T",
+                                                "A84600037A",
+                                                "A84595516F",
+                                                "A84595471L"
+                                              )
+                                            ) %>%
+                                              dplyr::group_by(series_id) %>%
+                                              dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                              dplyr::filter(.data$date >= max(.data$date) - (365.25 * 5)),
+                                            sa4 = "Geelong") {
+  in_melb <- grepl("Melbourne", sa4)
+
+  broad_region <- dplyr::if_else(in_melb,
+    "Greater Melbourne",
+    "Regional Victoria"
+  )
+
+  data <- data %>%
+    mutate(sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
+      "North West",
+      .data$sa4
+    ))
+
+  sa4_df <- data %>%
+    dplyr::filter(.data$sa4 == .env$sa4) %>%
+    mutate(col_var = sa4)
+
+  current_sa4_ur <- sa4_df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::pull(value) %>%
+    round2(1)
+
+  comparator_id <- dplyr::if_else(in_melb,
+    "A84595516F",
+    "A84595471L"
+  )
+
+  comparator_df <- data %>%
+    dplyr::filter(
+      .data$series_id == comparator_id,
+      .data$date >= min(sa4_df$date)
+    ) %>%
+    mutate(col_var = broad_region)
+
+  current_comp_ur <- comparator_df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::pull(value) %>%
+    round2(1)
+
+  sa4_cf_comp <- dplyr::case_when(
+    current_sa4_ur > current_comp_ur ~ "higher",
+    current_sa4_ur < current_comp_ur ~ "lower",
+    current_sa4_ur == current_comp_ur ~ "the same",
+    TRUE ~ NA_character_
+  )
+
+  comb <- dplyr::bind_rows(
+    comparator_df,
+    sa4_df
+  )
+
+  comb %>%
+    djpr_ts_linechart(
+      col_var = col_var,
+      label_num = paste0(round(.data$value, 1), "%")
+    ) +
+    scale_y_continuous(
+      limits = function(limits) c(0, limits[2]),
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(4),
+      expand = expansion(mult = c(0, 0.05))
+    ) +
+    labs(
+      title = paste0(
+        "The unemployment rate is ",
+        sa4_cf_comp,
+        " in ",
+        sa4,
+        dplyr::if_else(sa4_cf_comp == "the same", " and ", " than "),
+        "in ",
+        broad_region
+      ),
+      subtitle = paste0(
+        "Unemployment rate in ",
+        sa4,
+        " and ",
+        broad_region
+      ),
+      caption = "Source: ABS Labour Force (detailed). Note: Data not seasonally adjusted; smoothed using a 3 month rolling average."
+    )
+}
+
+reactable_region_focus <- function(data = filter_dash_data(
+                                 c("A84600141A",
+                                   "A84600144J",
+                                   "A84600145K",
+                                   "A84599655C",
+                                   "A84599658K",
+                                   "A84599659L",
+                                   "A84600015L",
+                                   "A84600018V",
+                                   "A84600019W",
+                                   "A84600183X",
+                                   "A84600186F",
+                                   "A84600187J",
+                                   "A84599553R",
+                                   "A84599556W",
+                                   "A84599557X",
+                                   "A84600111L",
+                                   "A84600114V",
+                                   "A84600115W",
+                                   "A84599847W",
+                                   "A84599850K",
+                                   "A84599851L",
+                                   "A84599919W",
+                                   "A84599922K",
+                                   "A84599923L",
+                                   "A84600021J",
+                                   "A84600024R",
+                                   "A84600025T",
+                                   "A84600189L",
+                                   "A84600192A",
+                                   "A84600193C",
+                                   "A84600075R",
+                                   "A84600078W",
+                                   "A84600079X",
+                                   "A84599661X",
+                                   "A84599664F",
+                                   "A84599665J",
+                                   "A84600027W",
+                                   "A84600030K",
+                                   "A84600031L",
+                                   "A84599667L",
+                                   "A84599670A",
+                                   "A84599671C",
+                                   "A84599673J",
+                                   "A84599676R",
+                                   "A84599677T",
+                                   "A84599679W",
+                                   "A84599682K",
+                                   "A84599683L",
+                                   "A84599925T",
+                                   "A84599928X",
+                                   "A84599929A",
+                                   "A84600117A",
+                                   "A84600120R",
+                                   "A84600121T",
+                                   "A84600033T",
+                                   "A84600036X",
+                                   "A84600037A")
+
+                               ) %>%
+                                 dplyr::group_by(series_id) %>%
+                                 dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
+                               sa4 = "Geelong") {
+  in_melb <- grepl("Melbourne", sa4)
+
+  broad_region <- dplyr::if_else(in_melb,
+    "Greater Melbourne",
+    "Regional Victoria"
+  )
+
+  latest_date <- format(max(data$date), "%b %Y")
+
+  data <- data %>%
+    dplyr::mutate(gcc_restofstate = dplyr::if_else(.data$gcc_restofstate ==
+      "Rest of Vic.",
+    "Regional Victoria",
+    .data$gcc_restofstate
+    )) %>%
+    dplyr::mutate(geog = dplyr::if_else(.data$sa4 != "",
+      .data$sa4,
+      .data$gcc_restofstate
+    )) %>%
+    dplyr::filter(.data$geog %in% c(.env$broad_region, .env$sa4))
+
+  table_df <- data %>%
+    dplyr::group_by(geog, indicator) %>%
+    dplyr::mutate(
+      d_month = dplyr::if_else(.data$indicator == "Employed total",
+                               100 * ((value / dplyr::lag(value, 1)) - 1),
+                               value - dplyr::lag(value, 1)),
+      d_year = dplyr::if_else(.data$indicator == "Employed total",
+                              100 * ((value / dplyr::lag(value, 12)) - 1),
+                              value - dplyr::lag(value, 12))
+    ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(
+      .data$indicator, .data$value, .data$geog,
+      .data$d_month, .data$d_year
+    ) %>%
+    dplyr::ungroup()
+
+  table_df <- table_df %>%
+    dplyr::mutate(across(c(value, d_month, d_year),
+                         ~round2(.x, 1))) %>%
+    dplyr::mutate(value = dplyr::if_else(indicator == "Employed total",
+                                         paste0(value, "k"),
+                                         paste0(value, "%")),
+                  d_month = dplyr::if_else(indicator == "Employed total",
+                                          paste0(d_month, "%"),
+                                          paste0(d_month, " ppts")),
+                  d_year = dplyr::if_else(indicator == "Employed total",
+                                          paste0(d_year, "%"),
+                                          paste0(d_year, " ppts")))
+
+  table_df <- table_df %>%
+    dplyr::rename({{ latest_date }} := value,
+      `Change over month` = d_month,
+      `Change over year` = d_year
+    )
+
+  table_df <- table_df %>%
+    tidyr::gather(
+      key = series, value = value,
+      -indicator, -geog
+    ) %>%
+    tidyr::spread(key = geog, value = value)
+
+  table_df <- table_df %>%
+    dplyr::group_by(.data$indicator) %>%
+    mutate(order = dplyr::case_when(
+      series == "Change over month" ~ 2,
+      series == "Change over year" ~ 3,
+      TRUE ~ 1
+    )) %>%
+    dplyr::arrange(desc(indicator), order) %>%
+    dplyr::select(-order)
+
+  col_names <- names(table_df)
+
+  col_header_style <- list(
+    `font-weight` = "600"
+  )
+
+  table_df %>%
+    rename(region = 3,
+           aggregate = 4) %>%
+    reactable::reactable(
+      columns = list(
+        indicator = reactable::colDef(
+          name = "",
+          minWidth = 65,
+          style = reactable::JS("function(rowInfo, colInfo, state) {
+        var firstSorted = state.sorted[0]
+        // Merge cells if unsorted
+        if (!firstSorted || firstSorted.id === 'indicator') {
+          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
+          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
+            return { visibility: 'hidden' }
+          }
+        }
+      }")),
+        series = reactable::colDef(
+          name = "",
+          minWidth = 45
+        ),
+        region = reactable::colDef(
+          name = col_names[3],
+          headerStyle = col_header_style
+        ),
+        aggregate = reactable::colDef(
+          name = col_names[4],
+          headerStyle = col_header_style
+        )
+      ),
+      defaultColDef = reactable::colDef(
+        minWidth = 50
+      ),
+      highlight = TRUE,
+      resizable = TRUE,
+      sortable = FALSE,
+      theme = reactable::reactableTheme(
+        borderColor = "#dfe2e5",
+        stripedColor = "#f6f8fa",
+        highlightColor = "#f0f5f9",
+        cellPadding = "7px 1px 1px 1px",
+        tableStyle = list(`border-bottom` = "1px solid #000"),
+        headerStyle = list(
+          fontWeight = "normal",
+          `border-bottom` = "1px solid #000"
+        ),
+        groupHeaderStyle = list(fontWeight = "normal"),
+        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
+      ))
 }
