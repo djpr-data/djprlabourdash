@@ -103,16 +103,14 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c("A84423349V",
       dplyr::bind_rows(data)
 
     #drop rows we don't need
-    data <- filter(data, data$indicator %in% c("Employed part-time",
+    data <- dplyr::filter(data, data$indicator %in% c("Employed part-time",
                                                 "Not in labour force",
                                                 "Unemployed total",
                                                 "Employed full-time"))
 
-    # data[c("Employed full-time", "Employed part-time", "Unemployed total", "Not in labour force"), ]
-
     # draw stacked box plot
     data %>%
-      mutate(indicator = factor(indicator,
+      dplyr::mutate(indicator = factor(indicator,
                                 levels = c("Not in labour force",
                                            "Unemployed total",
                                            "Employed part-time",
