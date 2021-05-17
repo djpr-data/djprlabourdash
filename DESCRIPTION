@@ -50,7 +50,8 @@ Imports:
     ggrepel,
     stringr,
     zoo,
-    scales
+    scales,
+    patchwork
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

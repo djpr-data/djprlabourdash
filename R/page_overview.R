@@ -1,6 +1,4 @@
 page_overview <- function(...) {
-
-
   loading_content <- div(
     id = "loading_page",
     br(),
@@ -16,8 +14,7 @@ page_overview <- function(...) {
       br(),
       br(),
       br(),
-      br(),
-      centred_row(h1("Overview")),
+      centred_row(h1("Victorian Jobs Dashboard")),
       centred_row(htmlOutput("overview_text")),
       br(),
       centred_row(
@@ -34,11 +31,11 @@ page_overview <- function(...) {
     )
   )
 
-  tabPanel(title = "Overview",
-                   shinyjs::useShinyjs(),
-                   loading_content,
-                   main_content
-
+  tabPanel(
+    title = "Overview",
+    shinyjs::useShinyjs(),
+    loading_content,
+    main_content
   )
 
   # tabPanel(

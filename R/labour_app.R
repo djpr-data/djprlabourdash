@@ -3,7 +3,6 @@
 #' @import shiny
 
 labour_server <- function(input, output, session) {
-
   dash_data <<- load_and_hide()
 
   ts_summ <<- dash_data %>%
@@ -92,8 +91,7 @@ labour_server <- function(input, output, session) {
       c(
         scales::comma(get_summ("A84423349V", latest_value)),
         scales::comma(get_summ("A84423357V", latest_value))
-      ),
-      colour = djprtheme::djpr_pal(1)
+      )
     )
 
     dp2 <- text_active(
@@ -112,8 +110,7 @@ labour_server <- function(input, output, session) {
         get_summ("A84423349V", latest_period),
         scales::comma(get_summ("A84423349V", d_year_abs)),
         get_summ("A84423349V", d_period_perc)
-      ),
-      colour = djprtheme::djpr_pal(1)
+      )
     )
 
     tags$div(
@@ -152,24 +149,26 @@ labour_server <- function(input, output, session) {
   })
 
   output$reg_unemprate_bar <- renderPlot({
-    df <- filter_dash_data(c("A84600253V",
-                       "A84599659L",
-                       "A84600019W",
-                       "A84600187J",
-                       "A84599557X",
-                       "A84600115W",
-                       "A84599851L",
-                       "A84599923L",
-                       "A84600025T",
-                       "A84600193C",
-                       "A84599665J",
-                       "A84600031L",
-                       "A84599671C",
-                       "A84599677T",
-                       "A84599683L",
-                       "A84599929A",
-                       "A84600121T",
-                       "A84600037A") ) %>%
+    df <- filter_dash_data(c(
+      "A84600253V",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A"
+    )) %>%
       dplyr::group_by(series_id) %>%
       dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
       dplyr::filter(.data$date == max(.data$date))
@@ -178,42 +177,81 @@ labour_server <- function(input, output, session) {
       viz_reg_unemprate_bar()
   })
 
-  djpr_plot_server("reg_emp_regions_sincecovid_line",
-                   viz_reg_emp_regions_sincecovid_line,
-                   date_slider = FALSE,
-                   data = filter_dash_data(c("A84600141A",
-                                             "A84600075R")) %>%
-                     dplyr::group_by(series_id) %>%
-                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                     dplyr::filter(date >= as.Date("2020-01-01")),
-                   plt_change = plt_change
-                   )
 
   djpr_plot_server("reg_unemprate_multiline",
-                   viz_reg_unemprate_multiline,
-                   date_slider = TRUE,
-                   data = filter_dash_data(c("A84600253V",
-                                             "A84599659L",
-                                             "A84600019W",
-                                             "A84600187J",
-                                             "A84599557X",
-                                             "A84600115W",
-                                             "A84599851L",
-                                             "A84599923L",
-                                             "A84600025T",
-                                             "A84600193C",
-                                             "A84599665J",
-                                             "A84600031L",
-                                             "A84599671C",
-                                             "A84599677T",
-                                             "A84599683L",
-                                             "A84599929A",
-                                             "A84600121T",
-                                             "A84600037A")) %>%
+    viz_reg_unemprate_multiline,
+    date_slider = TRUE,
+    data = filter_dash_data(c(
+      "A84600253V",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A"
+    )) %>%
+      dplyr::group_by(series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+      dplyr::filter(!is.na(value)),
+    date_slider_value_min = as.Date("2014-11-29"),
+    plt_change = plt_change
+  )
+
+  output$text_emp_regions <- renderUI({
+    text_reg_regions_sincecovid()
+  })
+
+  djpr_plot_server("reg_emp_regions_sincecovid_line",
+    viz_reg_emp_regions_sincecovid_line,
+    date_slider = FALSE,
+    data = filter_dash_data(c(
+      "A84600141A",
+      "A84600075R"
+    )) %>%
+      dplyr::group_by(series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+      dplyr::filter(date >= as.Date("2020-01-01")),
+    plt_change = plt_change
+  )
+
+  djpr_plot_server("reg_unemprate_dispersion",
+                   viz_reg_unemprate_dispersion,
+                   data = filter_dash_data(c(
+                     "A84600253V",
+                     "A84599659L",
+                     "A84600019W",
+                     "A84600187J",
+                     "A84599557X",
+                     "A84600115W",
+                     "A84599851L",
+                     "A84599923L",
+                     "A84600025T",
+                     "A84600193C",
+                     "A84599665J",
+                     "A84600031L",
+                     "A84599671C",
+                     "A84599677T",
+                     "A84599683L",
+                     "A84599929A",
+                     "A84600121T",
+                     "A84600037A"
+                   ),
+                   df = dash_data
+                   ) %>%
                      dplyr::group_by(series_id) %>%
-                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                     dplyr::filter(!is.na(value)),
-                   date_slider_value_min = as.Date("2014-11-29"),
+                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
+                   date_slider_value_min = as.Date("2014-01-01"),
                    plt_change = plt_change)
 
   # Links to pages -----
@@ -236,7 +274,6 @@ labour_server <- function(input, output, session) {
   observeEvent(input$link_industries, {
     updateNavbarPage(session, "navbarpage", "tab-industries")
   })
-
 }
 
 app <- function(...) {
