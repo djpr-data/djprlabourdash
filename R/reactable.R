@@ -115,7 +115,8 @@ make_reactable <- function(data,
         sprintf("%.1f %%", value)
       )
     ) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$date >= startdate)
 
   ## Select only the latest changes
 
@@ -209,7 +210,9 @@ make_reactable <- function(data,
   }
 
   recol_changeinyearpc <- function(value, index) {
-    recol(value, index, ptile_d_year_perc)
+    c(recol(value, index, ptile_d_year_perc),
+    list(`border-right` = "1px solid #000")
+    )
   }
 
   col_header_style <- list(
@@ -306,7 +309,7 @@ make_reactable <- function(data,
         ),
         changesince14 = reactable::colDef(
           name = "NO.",
-          style = recol_changeinyear,
+#          style = recol_changeinyear,
           headerStyle = col_header_style,
           align = "center",
           minWidth = 65,
@@ -314,8 +317,7 @@ make_reactable <- function(data,
         ),
         changesince14pc = reactable::colDef(
           name = "PER CENT",
-          style = recol_changeinyearpc,
-          headerStyle = col_header_style,
+#          style = recol_changeinyearpc,
           align = "center",
           minWidth = 65,
           maxWidth = 90
@@ -337,6 +339,10 @@ make_reactable <- function(data,
         ),
         reactable::colGroup(
           name = "Change over year", columns = c("changeinyear", "changeinyearpc"),
+          headerStyle = list(`font-weight` = "600")
+        ),
+        reactable::colGroup(
+          name = "Change since Nov14", columns = c("changesince14", "changesince14pc"),
           headerStyle = list(`font-weight` = "600")
         )
       ),
