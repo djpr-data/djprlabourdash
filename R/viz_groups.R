@@ -180,7 +180,7 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
 
     data <- data %>%
     dplyr::group_by(.data$date) %>%
-    dplyr::summarise(value = ((value[series_id == "15-24_greater melbourne_employed"] +
+    dplyr::summarise(value = (100*(value[series_id == "15-24_greater melbourne_employed"] +
                        value[series_id == "15-24_rest of vic._employed"] +
                        value[series_id == "15-24_greater melbourne_unemployed"] +
                        value[series_id == "15-24_rest of vic._unemployed"]) /
@@ -198,7 +198,7 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
 
     data <- data %>%
       dplyr::group_by(.data$date) %>%
-      dplyr::summarise(value = ((value[series_id == "25-54_greater melbourne_employed"] +
+      dplyr::summarise(value = (100*(value[series_id == "25-54_greater melbourne_employed"] +
                                    value[series_id == "25-54_rest of vic._employed"] +
                                    value[series_id == "25-54_greater melbourne_unemployed"] +
                                    value[series_id == "25-54_rest of vic._unemployed"]) /
@@ -216,7 +216,7 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
 
     data <- data %>%
       dplyr::group_by(.data$date) %>%
-      dplyr::summarise(value = ((value[series_id == "55+_greater melbourne_employed"] +
+      dplyr::summarise(value = (100*(value[series_id == "55+_greater melbourne_employed"] +
                                    value[series_id == "55+_rest of vic._employed"] +
                                    value[series_id == "55+_greater melbourne_unemployed"] +
                                    value[series_id == "55+_rest of vic._unemployed"]) /
@@ -239,6 +239,8 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
     data %>%
       ungroup() %>%
       djpr_ts_linechart() +
+      scale_y_continuous(breaks = scales::breaks_pretty(5),
+                         labels = function(x) paste0(x, "%")) +
       labs(title = title,
          subtitle = "Labour force participation rate by age",
          caption = "Source: ABS Labour Force. Note: 12 month average.")
