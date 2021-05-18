@@ -49,7 +49,10 @@ Imports:
     ggiraph,
     ggrepel,
     stringr,
-    zoo
+    zoo,
+    scales,
+    patchwork,
+    lubridate
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

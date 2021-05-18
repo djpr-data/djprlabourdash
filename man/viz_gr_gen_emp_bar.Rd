@@ -6,8 +6,8 @@
 \usage{
 viz_gr_gen_emp_bar(
   data = filter_dash_data(c("A84423349V", "A84423237A", "A84423461V", "A84423357V",
-    "A84423245A", "A84423469L", "A84423350C", "A84423238C", "A84423462W"), df =
-    dash_data),
+    "A84423245A", "A84423469L", "A84423350C", "A84423238C", "A84423462W", "pt_emp_vic"),
+    df = dash_data),
   title = ""
 )
 }
@@ -16,4 +16,42 @@ viz_gr_gen_emp_bar(
 }
 \description{
 Function to create the graphs for the 'Groups' subpage on the dashboard.
+}
+\examples{
+\dontrun{
+
+# for viz_gr_gen_emp_bar:
+ids <- c(
+  "A84423349V",
+  "A84423237A",
+  "A84423461V",
+  "A84423357V",
+  "A84423245A",
+  "A84423469L",
+  "A84423350C",
+  "A84423238C",
+  "A84423462W"
+)
+# (also parttime figures and
+# not in the labour force)
+
+# for viz_gr_gen_partrate_line:
+ids <- c(
+  "A84423355R",
+  "A84423243W",
+  "A84423467J"
+)
+
+# for viz_gr_gen_unemp_line:
+ids <- c(
+  "A84423354L",
+  "A84423242V",
+  "A84423466F"
+)
+
+# for viz_gr_yth_lfpart_line:
+# ids <- will need smoothing and extracting data from LM1.
+
+# for viz_gr_yth_emp_line:
+}
 }

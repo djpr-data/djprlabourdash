@@ -69,7 +69,8 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
     dplyr::mutate(label = paste0(
       stringr::str_wrap(state, 10),
       "\n",
-      stringr::str_wrap(round(.data$value, 1), 10)
+      paste0(stringr::str_wrap(round(.data$value, 1), 10),
+             "%")
     ))
 
   df %>%
@@ -92,16 +93,17 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
       data = lab_df,
       aes(label = label),
       hjust = 0,
+      fontface = "bold",
       nudge_x = days_in_data * 0.033,
       label.padding = 0.01,
-      label.size = 0.001,
+      label.size = NA,
       lineheight = 0.9,
       point.padding = unit(0, "lines"),
       direction = "y",
       seed = 123,
       show.legend = FALSE,
       min.segment.length = unit(5, "lines"),
-      size = 12 / .pt
+      size = 14 / .pt
     ) +
     ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
       size = 3,
@@ -123,7 +125,182 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
     coord_cartesian(clip = "off") +
     labs(
       title = title,
-      subtitle = "Cumulative employment growth since March 2020",
+      subtitle = "Cumulative change in employment since March 2020, per cent",
       caption = paste0("Source: ABS Labour Force and DJPR calculations. Note: Seasonally adjusted.")
     )
+}
+
+viz_ind_empgro_line <- function(data = filter_dash_data(c(
+                                  "A84423349V",
+                                  "A84423043C"
+                                ))) {
+
+  df <- data %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(value = 100 * ((value / lag(value, 12)) - 1)) %>%
+    dplyr::filter(!is.na(value)) %>%
+    dplyr::ungroup()
+
+  vic_latest <- df %>%
+    dplyr::filter(.data$state == "Victoria" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value)
+
+  aus_latest <- df %>%
+    dplyr::filter(.data$state == "Australia" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value)
+
+  title <- dplyr::if_else(
+    vic_latest > aus_latest,
+    "Employment growth in Victoria has outpaced Australia as a whole in the past 12 months",
+    "Employment growth in Victoria has lagged behind Australia as a whole in the past 12 months"
+  )
+
+  df %>%
+    djpr_ts_linechart(col_var = state,
+                      y_labels = function(x) paste0(x, "%")) +
+    labs(subtitle = "Annual employment growth in Victoria and Australia, per cent",
+         caption = "Source: ABS Labour Force.",
+         title = title)
+
+}
+
+viz_ind_emppopratio_line <- function(data = filter_dash_data(c("A84423356T",
+                                                                   "A84423244X",
+                                                                   "A84423468K")
+)) {
+
+  df <- data %>%
+    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
+                                       "Persons",
+                                       .data$sex))
+
+  cf_covid <- df %>%
+    dplyr::filter(.data$sex != "Persons") %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::mutate(cf_covid = .data$value / .data$value[.data$date ==
+                                                         as.Date("2020-03-01")]) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(.data$sex, .data$cf_covid)
+
+  men_cf_covid <- cf_covid %>%
+    dplyr::filter(.data$sex == "Males") %>%
+    dplyr::pull(.data$cf_covid)
+
+  women_cf_covid <- cf_covid %>%
+    dplyr::filter(.data$sex == "Females") %>%
+    dplyr::pull(.data$cf_covid)
+
+  title <- dplyr::case_when(men_cf_covid > 1 &
+                     women_cf_covid > 1 ~
+                     "Employment for both men and women is now above its pre-COVID levels as a share of the population",
+                   men_cf_covid < 1 &
+                     women_cf_covid > 1 ~
+                     "Male employment is below pre-COVID levels as a share of the population, but female employment is above pre-COVID levels",
+                   men_cf_covid > 1 &
+                     women_cf_covid < 1 ~
+                     "Female employment is below pre-COVID levels as a share of the population, but male employment is above pre-COVID levels",
+                   men_cf_covid < 1 &
+                     women_cf_covid < 1 ~
+                     "Employment of both men and women is below pre-COVID levels as a share of the population",
+                   TRUE ~ "")
+
+  df %>%
+    djpr_ts_linechart(col_var = sex,
+                      y_labels = function(x) paste0(x, "%")) +
+    labs(title = title,
+         subtitle = "Employment to population ratio by sex, Victoria, per cent",
+         caption = "Source: ABS Labour Force")
+
+}
+
+viz_ind_unemp_states_dot <- function(data = filter_dash_data(
+  c("A84423354L",
+    "A84423270C",
+    "A84423368A",
+    "A84423340X",
+    "A84423326C",
+    "A84423284T",
+    "A84423312R",
+    "A84423298F",
+    "A84423050A")
+
+)) {
+  df <- data %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "",
+                                  "Australia",
+                                  .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Australian Capital Territory",
+                                         "ACT",
+                                         .data$state)) %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::filter(.data$date %in% c(max(.data$date),
+                                    max(.data$date) - lubridate::years(1)))
+
+  df_wide <- df %>%
+    dplyr::mutate(date_type = dplyr::if_else(date == min(date),
+                                             "min_date",
+                                             "max_date")) %>%
+    dplyr::select(state, value, date_type) %>%
+    tidyr::spread(key = date_type, value = value) %>%
+    dplyr::mutate(arrow_max = if_else(max_date > min_date,
+                                      max_date - 0.05,
+                                      max_date + 0.05))
+
+
+  vic_rank <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$state != "Australia",
+                  .data$date == max(.data$date)) %>%
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value)) %>%
+    dplyr::filter(.data$state == "Victoria") %>%
+    dplyr::pull(.data$rank)
+
+  title <- dplyr::case_when(
+    vic_rank == 1 ~ "the highest in Australia",
+    vic_rank == 2 ~ "the second highest in Australia",
+    vic_rank == 8 ~ "the lowest in Australia",
+    vic_rank == 7 ~ "the second lowest in Australia",
+    TRUE ~ "middle of the pack for Australan states and territories"
+  ) %>%
+    paste0("Victoria's unemployment rate is ", .)
+
+  df %>%
+    ggplot(aes(x = reorder(state, value), y = value, col = format(date, "%b %Y"))) +
+    geom_segment(data = df_wide,
+                 aes(x = reorder(state, max_date),
+                     xend = reorder(state, max_date),
+                     y = min_date,
+                     yend = arrow_max
+                     ),
+                 colour = djprtheme::djpr_cool_grey_11,
+                 arrow = arrow(length = unit(0.5, "lines"),
+                               type = "closed",
+                               angle = 25),
+                 inherit.aes = F) +
+    ggiraph::geom_point_interactive(size = 3,
+                                    aes(tooltip = paste0(format(.data$date, "%b %Y"),
+                                                         "\n",
+                                                         round2(.data$value, 1))
+                                        )) +
+    ggrepel::geom_label_repel(data = ~dplyr::filter(., .data$state == "Victoria"),
+               aes(label = format(.data$date, "%b %Y") ),
+               direction = "y",
+               label.padding = unit(0.1, "lines"),
+               size = 14 / .pt,
+               min.segment.length = unit(10000, "lines"),
+               label.size = NA,
+               nudge_x = 0.33) +
+    theme_djpr(flipped = T) +
+    coord_flip() +
+    djpr_colour_manual(2) +
+    labs(y = "Unemployment rate",
+         subtitle = paste0("Unemployment rate in Australian states and territories in ",
+                           unique(df$date) %>% format("%B %Y") %>% paste0(collapse = " and ")),
+         title = title,
+         caption = "Source: ABS Labour Force.")
+
 }

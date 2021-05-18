@@ -1,6 +1,4 @@
 page_overview <- function(...) {
-
-
   loading_content <- div(
     id = "loading_page",
     br(),
@@ -16,29 +14,27 @@ page_overview <- function(...) {
       br(),
       br(),
       br(),
-      br(),
-      centred_row(h1("Overview")),
+      centred_row(h1("DJPR Jobs Dashboard")),
       centred_row(htmlOutput("overview_text")),
       br(),
+      centred_row(h3("Overview")),
       centred_row(
         tagList(
-          "Find out more on the ",
-          actionLink("link_indicators", "indicators"),
-          " page or in the table below."
+          reactable::reactableOutput("main_table"),
+          reactable_caption()
         )
       ),
-      centred_row(
-        reactable::reactableOutput("main_table")
-      ),
+      br(),
+      centred_row(htmlOutput("overview_footnote")),
       br()
     )
   )
 
-  tabPanel(title = "Overview",
-                   shinyjs::useShinyjs(),
-                   loading_content,
-                   main_content
-
+  tabPanel(
+    title = "Overview",
+    shinyjs::useShinyjs(),
+    loading_content,
+    main_content
   )
 
   # tabPanel(

@@ -1,3 +1,4 @@
+
 #' Function to create the graphs for the 'Groups' subpage on the dashboard.
 #' @param data the dataframe containing data to visualise
 #' @examples
@@ -370,7 +371,5 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c("A84424691V",
          subtitle = "Unemployment in Victoria by age",
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
-
-
 
 
