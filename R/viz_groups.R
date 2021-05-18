@@ -302,7 +302,6 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_grea
     dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) -1)
     )
 
-
   # draw line graph
   data %>%
     djpr_ts_linechart(col_var = age,
