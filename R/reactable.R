@@ -246,8 +246,8 @@ make_reactable <- function(data,
               data = value[[1]],
               height = 50,
               margin = list(
-                top = 7, right = 3,
-                bottom = 7, left = 3
+                top = 20, right = 10,
+                bottom = 20, left = 10
               ),
               components = list(
                 # Create actual sparkline
