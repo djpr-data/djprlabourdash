@@ -156,6 +156,9 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c("A84423354L",
          caption = "Source: ABS Labour Force. Note: seasonally adjusted data.")
 }
 
+#viz_gr_yth_table - not done yet
+# big table with demographics figures and %
+
 viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
                                                              "15-24_greater melbourne_employed",
                                                              "25-54_greater melbourne_employed",
@@ -175,8 +178,10 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
                                                              "15-24_rest of vic._unemployed",
                                                              "25-54_rest of vic._unemployed",
                                                              "55+_rest of vic._unemployed",
-                                                             "A84424622R"),
-                                                           df = dash_data), title = "") {
+                                                             "A84424622R"), df = dash_data)  %>%
+                                      dplyr::group_by(series_id) %>%
+                                      dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)),
+                                                    title = "") {
 
     data <- data %>%
     dplyr::group_by(.data$date) %>%
@@ -247,15 +252,18 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
 }
 
 
-viz_gr_yth_emp_line <- function(data = filter_dash_data(c("15-24_greater melbourne_employed",
+viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_greater melbourne_employed",
                                                              "25-54_greater melbourne_employed",
                                                              "55+_greater melbourne_employed",
                                                              "15-24_rest of vic._employed",
                                                              "25-54_rest of vic._employed",
                                                              "55+_rest of vic._employed"),
-                                                           df = dash_data), title = "") {
+                                                           df = dash_data) %>%
+                                              dplyr::group_by(series_id) %>%
+                                              dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
+                                              dplyr::filter(date >= as.Date("2020-01-01")), title = "") {
 
-  data <- data %>%
+   data <- data %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(value = (value[series_id == "15-24_greater melbourne_employed"] +
                                  value[series_id == "15-24_rest of vic._employed"])) %>%
@@ -300,14 +308,17 @@ viz_gr_yth_emp_line <- function(data = filter_dash_data(c("15-24_greater melbour
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_unemp_line <- function(data = filter_dash_data(c("A84424691V",
+viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c("A84424691V",
                                                                 "15-24_greater melbourne_unemployed",
                                                                 "25-54_greater melbourne_unemployed",
                                                                 "55+_greater melbourne_unemployed",
                                                                 "15-24_rest of vic._unemployed",
                                                                 "25-54_rest of vic._unemployed",
                                                                 "55+_rest of vic._unemployed"),
-                                                        df = dash_data), title = "") {
+                                                  df = dash_data)  %>%
+                                                  dplyr::group_by(series_id) %>%
+                                                  dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)),
+                                                  title = "") {
 
   data <- data %>%
     dplyr::group_by(.data$date) %>%
