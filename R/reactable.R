@@ -112,7 +112,7 @@ make_reactable <- function(data,
       latest_value = dplyr::if_else(
         unit == "000",
         format(round(value), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f %%", value)
+        sprintf("%.1f%%", value)
       )
     ) %>%
     dplyr::ungroup()

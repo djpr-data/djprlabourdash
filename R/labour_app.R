@@ -262,6 +262,10 @@ labour_server <- function(input, output, session) {
     djpr_plot_caption(paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."))
   })
 
+  output$title_unemprate_vic <- renderText({
+    title_unemprate_vic()
+  })
+
   output$reg_unemprate_map <- leaflet::renderLeaflet({
     map_unemprate_vic()
   })

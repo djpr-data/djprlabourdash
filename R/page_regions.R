@@ -4,7 +4,7 @@ page_regions <- function(...) {
     h1("Regions of Victoria"),
     # ADD GCC V REST
     h2("Unemployment by region"),
-    djpr_plot_title("The unemployment rate varies widely across Victoria"),
+    djpr_plot_title(textOutput("title_unemprate_vic")),
     djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
     fluidRow(
       column(
