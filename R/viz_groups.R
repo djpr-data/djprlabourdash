@@ -320,22 +320,5 @@ viz_gr_yth_unemp_line <- function(data = filter_dash_data(c("A84424691V",   # un
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433473R"),
-                                                             df = dash_data) %>%
-                                        dplyr::group_by(series_id) %>%
-                                        dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-                                        dplyr::filter(date >= as.Date("2020-01-01")),
-                                        title = "") {
-
-  #calculate most vulnerable cohort
-
-
-
-  data %>%
-    djpr_ts_linechart() +
-    labs(title = title,
-         subtitle = "Most vulnerable youth cohort",
-         caption = "Source: ABS Labour Force. Note: 12 month average.")
-}
 
 
