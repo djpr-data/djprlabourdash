@@ -17,13 +17,14 @@ page_overview <- function(...) {
       centred_row(h1("Victorian Jobs Dashboard")),
       centred_row(htmlOutput("overview_text")),
       br(),
-      centred_row(
-        tagList(
-          "Find out more on the ",
-          actionLink("link_indicators", "indicators"),
-          " page or in the table below."
-        )
-      ),
+      # centred_row(
+      #   tagList(
+      #     "Find out more on the ",
+      #     actionLink("link_indicators", "indicators"),
+      #     " page or in the table below."
+      #   )
+      # ),
+      centred_row(h3("Overview")),
       centred_row(
         tagList(
           reactable::reactableOutput("main_table"),

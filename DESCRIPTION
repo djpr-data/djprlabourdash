@@ -51,7 +51,8 @@ Imports:
     stringr,
     zoo,
     scales,
-    patchwork
+    patchwork,
+    lubridate
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

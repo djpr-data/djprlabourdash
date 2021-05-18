@@ -40,6 +40,25 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
   )
 }
 
+indicators_table <- function(data = filter_dash_data(c(
+                               "A84423349V",
+                               "A84423357V",
+                               "A84423356T",
+                               "A84423244X",
+                               "A84423468K",
+                               "pt_emp_vic"
+                             )),
+                             years_in_sparklines = 2,
+                             row_var = indicator) {
+  table_data <- data %>%
+    mutate(indicator = if_else(sex != "",
+      paste0(indicator, " (", sex, ")"),
+      indicator
+    ))
+
+  overview_table(table_data)
+}
+
 
 make_reactable <- function(data,
                            years_in_sparklines = 2,
@@ -102,7 +121,7 @@ make_reactable <- function(data,
   summary_df <- summary_df %>%
     dplyr::mutate(dplyr::across(
       dplyr::starts_with("changein"),
-      ~gsub("-0.0", "0.0", .x)
+      ~ gsub("-0.0", "0.0", .x)
     ))
 
   ## Select only the latest changes

@@ -39,7 +39,7 @@ labour_server <- function(input, output, session) {
   output$ind_empgrowth_sincecovid_text <- renderUI({
     text_active(
       paste(
-        "There were XX Victorians employed in XX, up from XX in XX.",
+        "There were XX million Victorians employed in XX, up from XX million in XX.",
         "Employment grew by XX per cent over the year to XX,",
         "a",
         dplyr::case_when(
@@ -59,14 +59,14 @@ labour_server <- function(input, output, session) {
         "its pre-COVID level."
       ),
       c(
-        scales::comma(get_summ("A84423349V", latest_value)),
+        round2(get_summ("A84423349V", latest_value) / 1000000, 3),
         get_summ("A84423349V", latest_period),
-        scales::comma(get_summ("A84423349V", prev_value)),
+        round2(get_summ("A84423349V", prev_value) / 1000000, 3),
         format(get_summ("A84423349V", prev_date), "%B"),
-        get_summ("A84423349V", d_year_perc),
+        round2(get_summ("A84423349V", d_year_perc), 1),
         format(get_summ("A84423349V", latest_date), "%B"),
-        get_summ("A84423043C", d_year_perc),
-        get_summ("A84423349V", d_year_perc)
+        round2(get_summ("A84423043C", d_year_perc), 1),
+        round2(get_summ("A84423349V", d_year_perc), 1)
       )
     )
   })
@@ -83,66 +83,89 @@ labour_server <- function(input, output, session) {
   )
 
   # Indicators: dot point text of employment figures
-  output$ind_emp_dotpoints <- renderUI({
-    dp1 <- text_active(
-      paste(
-        "There were XX Victorians employed,",
-        "of whom XX were in full-time work."
-      ),
-      c(
-        scales::comma(get_summ("A84423349V", latest_value)),
-        scales::comma(get_summ("A84423357V", latest_value))
-      )
-    )
+  # output$ind_emp_dotpoints <- renderUI({
+  #   dp1 <- text_active(
+  #     paste(
+  #       "There were XX Victorians employed,",
+  #       "of whom XX were in full-time work."
+  #     ),
+  #     c(
+  #       scales::comma(get_summ("A84423349V", latest_value)),
+  #       scales::comma(get_summ("A84423357V", latest_value))
+  #     )
+  #   )
+  #
+  #   dp2 <- text_active(
+  #     paste(
+  #       "Employment ",
+  #       dplyr::if_else(get_summ("A84423349V", d_period_abs) > 0,
+  #         "rose",
+  #         "fell"
+  #       ),
+  #       "by XX people (XX per cent) in the month to XX",
+  #       "and by XX people (XX per cent) over the year."
+  #     ),
+  #     c(
+  #       scales::comma(get_summ("A84423349V", d_period_abs)),
+  #       get_summ("A84423349V", d_period_perc),
+  #       get_summ("A84423349V", latest_period),
+  #       scales::comma(get_summ("A84423349V", d_year_abs)),
+  #       get_summ("A84423349V", d_period_perc)
+  #     )
+  #   )
+  #
+  #   tags$div(
+  #     tags$ul(
+  #       tags$li(dp1),
+  #       tags$li(dp2)
+  #     )
+  #   )
+  # })
 
-    dp2 <- text_active(
-      paste(
-        "Employment ",
-        dplyr::if_else(get_summ("A84423349V", d_period_abs) > 0,
-          "rose",
-          "fell"
-        ),
-        "by XX people (XX per cent) in the month to XX",
-        "and by XX people (XX per cent) over the year."
-      ),
-      c(
-        scales::comma(get_summ("A84423349V", d_period_abs)),
-        get_summ("A84423349V", d_period_perc),
-        get_summ("A84423349V", latest_period),
-        scales::comma(get_summ("A84423349V", d_year_abs)),
-        get_summ("A84423349V", d_period_perc)
-      )
-    )
-
-    tags$div(
-      tags$ul(
-        tags$li(dp1),
-        tags$li(dp2)
-      )
-    )
-  })
-
-  # Indicators: table of employment inducators
+  # Indicators: table of employment indicators
   output$ind_emp_table <- reactable::renderReactable({
-    table_ids <- c(
-      "A84423349V",
-      "A84423357V",
-      "A84423356T",
-      "A84423244X",
-      "A84423468K",
-      "pt_emp_vic"
-    )
-
-    table_data <- filter_dash_data(table_ids)
-
-    table_data <- table_data %>%
-      mutate(indicator = if_else(sex != "",
-        paste0(indicator, " (", sex, ")"),
-        indicator
-      ))
-
-    overview_table(table_data)
+    indicators_table()
   })
+
+  # Indicators: line chart of annual employment growth in Vic & Aus
+
+  djpr_plot_server("ind_empgro_line",
+                   viz_ind_empgro_line,
+                   data = filter_dash_data(c(
+                     "A84423349V",
+                     "A84423043C"
+                   )),
+                   date_slider_value_min = Sys.Date() - (365 * 5),
+                   plt_change = plt_change)
+
+  # Indicators: line chart of emp-pop by sex
+  djpr_plot_server("ind_emppopratio_line",
+                   viz_ind_emppopratio_line,
+                   data = filter_dash_data(c("A84423356T",
+                                             "A84423244X",
+                                             "A84423468K")
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   plt_change = plt_change)
+
+  # Indicators: dot plot of unemp rate by state
+  djpr_plot_server("ind_unemp_states_dot",
+                   viz_ind_unemp_states_dot,
+                   data = filter_dash_data(
+                     c("A84423354L",
+                       "A84423270C",
+                       "A84423368A",
+                       "A84423340X",
+                       "A84423326C",
+                       "A84423284T",
+                       "A84423312R",
+                       "A84423298F",
+                       "A84423050A")
+
+                   ),
+                   date_slider = FALSE,
+                   plt_change = plt_change)
+
 
   # Regions ------
   output$reg_unemprate_map <- leaflet::renderLeaflet({

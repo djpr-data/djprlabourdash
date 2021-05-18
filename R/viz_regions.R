@@ -857,68 +857,69 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
 }
 
 reactable_region_focus <- function(data = filter_dash_data(
-                                 c("A84600141A",
-                                   "A84600144J",
-                                   "A84600145K",
-                                   "A84599655C",
-                                   "A84599658K",
-                                   "A84599659L",
-                                   "A84600015L",
-                                   "A84600018V",
-                                   "A84600019W",
-                                   "A84600183X",
-                                   "A84600186F",
-                                   "A84600187J",
-                                   "A84599553R",
-                                   "A84599556W",
-                                   "A84599557X",
-                                   "A84600111L",
-                                   "A84600114V",
-                                   "A84600115W",
-                                   "A84599847W",
-                                   "A84599850K",
-                                   "A84599851L",
-                                   "A84599919W",
-                                   "A84599922K",
-                                   "A84599923L",
-                                   "A84600021J",
-                                   "A84600024R",
-                                   "A84600025T",
-                                   "A84600189L",
-                                   "A84600192A",
-                                   "A84600193C",
-                                   "A84600075R",
-                                   "A84600078W",
-                                   "A84600079X",
-                                   "A84599661X",
-                                   "A84599664F",
-                                   "A84599665J",
-                                   "A84600027W",
-                                   "A84600030K",
-                                   "A84600031L",
-                                   "A84599667L",
-                                   "A84599670A",
-                                   "A84599671C",
-                                   "A84599673J",
-                                   "A84599676R",
-                                   "A84599677T",
-                                   "A84599679W",
-                                   "A84599682K",
-                                   "A84599683L",
-                                   "A84599925T",
-                                   "A84599928X",
-                                   "A84599929A",
-                                   "A84600117A",
-                                   "A84600120R",
-                                   "A84600121T",
-                                   "A84600033T",
-                                   "A84600036X",
-                                   "A84600037A")
-
-                               ) %>%
-                                 dplyr::group_by(series_id) %>%
-                                 dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
-                               sa4 = "Geelong") {
+                                     c(
+                                       "A84600141A",
+                                       "A84600144J",
+                                       "A84600145K",
+                                       "A84599655C",
+                                       "A84599658K",
+                                       "A84599659L",
+                                       "A84600015L",
+                                       "A84600018V",
+                                       "A84600019W",
+                                       "A84600183X",
+                                       "A84600186F",
+                                       "A84600187J",
+                                       "A84599553R",
+                                       "A84599556W",
+                                       "A84599557X",
+                                       "A84600111L",
+                                       "A84600114V",
+                                       "A84600115W",
+                                       "A84599847W",
+                                       "A84599850K",
+                                       "A84599851L",
+                                       "A84599919W",
+                                       "A84599922K",
+                                       "A84599923L",
+                                       "A84600021J",
+                                       "A84600024R",
+                                       "A84600025T",
+                                       "A84600189L",
+                                       "A84600192A",
+                                       "A84600193C",
+                                       "A84600075R",
+                                       "A84600078W",
+                                       "A84600079X",
+                                       "A84599661X",
+                                       "A84599664F",
+                                       "A84599665J",
+                                       "A84600027W",
+                                       "A84600030K",
+                                       "A84600031L",
+                                       "A84599667L",
+                                       "A84599670A",
+                                       "A84599671C",
+                                       "A84599673J",
+                                       "A84599676R",
+                                       "A84599677T",
+                                       "A84599679W",
+                                       "A84599682K",
+                                       "A84599683L",
+                                       "A84599925T",
+                                       "A84599928X",
+                                       "A84599929A",
+                                       "A84600117A",
+                                       "A84600120R",
+                                       "A84600121T",
+                                       "A84600033T",
+                                       "A84600036X",
+                                       "A84600037A"
+                                     )
+                                   ) %>%
+                                     dplyr::group_by(series_id) %>%
+                                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
+                                   sa4 = "Geelong") {
   in_melb <- grepl("Melbourne", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
@@ -944,11 +945,13 @@ reactable_region_focus <- function(data = filter_dash_data(
     dplyr::group_by(geog, indicator) %>%
     dplyr::mutate(
       d_month = dplyr::if_else(.data$indicator == "Employed total",
-                               100 * ((value / dplyr::lag(value, 1)) - 1),
-                               value - dplyr::lag(value, 1)),
+        100 * ((value / dplyr::lag(value, 1)) - 1),
+        value - dplyr::lag(value, 1)
+      ),
       d_year = dplyr::if_else(.data$indicator == "Employed total",
-                              100 * ((value / dplyr::lag(value, 12)) - 1),
-                              value - dplyr::lag(value, 12))
+        100 * ((value / dplyr::lag(value, 12)) - 1),
+        value - dplyr::lag(value, 12)
+      )
     ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
@@ -958,17 +961,24 @@ reactable_region_focus <- function(data = filter_dash_data(
     dplyr::ungroup()
 
   table_df <- table_df %>%
-    dplyr::mutate(across(c(value, d_month, d_year),
-                         ~round2(.x, 1))) %>%
-    dplyr::mutate(value = dplyr::if_else(indicator == "Employed total",
-                                         paste0(value, "k"),
-                                         paste0(value, "%")),
-                  d_month = dplyr::if_else(indicator == "Employed total",
-                                          paste0(d_month, "%"),
-                                          paste0(d_month, " ppts")),
-                  d_year = dplyr::if_else(indicator == "Employed total",
-                                          paste0(d_year, "%"),
-                                          paste0(d_year, " ppts")))
+    dplyr::mutate(across(
+      c(value, d_month, d_year),
+      ~ round2(.x, 1)
+    )) %>%
+    dplyr::mutate(
+      value = dplyr::if_else(indicator == "Employed total",
+        paste0(value, "k"),
+        paste0(value, "%")
+      ),
+      d_month = dplyr::if_else(indicator == "Employed total",
+        paste0(d_month, "%"),
+        paste0(d_month, " ppts")
+      ),
+      d_year = dplyr::if_else(indicator == "Employed total",
+        paste0(d_year, "%"),
+        paste0(d_year, " ppts")
+      )
+    )
 
   table_df <- table_df %>%
     dplyr::rename({{ latest_date }} := value,
@@ -1000,8 +1010,10 @@ reactable_region_focus <- function(data = filter_dash_data(
   )
 
   table_df %>%
-    rename(region = 3,
-           aggregate = 4) %>%
+    rename(
+      region = 3,
+      aggregate = 4
+    ) %>%
     reactable::reactable(
       columns = list(
         indicator = reactable::colDef(
@@ -1016,7 +1028,8 @@ reactable_region_focus <- function(data = filter_dash_data(
             return { visibility: 'hidden' }
           }
         }
-      }")),
+      }")
+        ),
         series = reactable::colDef(
           name = "",
           minWidth = 45
@@ -1048,5 +1061,6 @@ reactable_region_focus <- function(data = filter_dash_data(
         ),
         groupHeaderStyle = list(fontWeight = "normal"),
         style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      ))
+      )
+    )
 }

@@ -1,7 +1,7 @@
 page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
-    br(),
+    h1("Regions of Victoria"),
     HTML(
       paste0(
         "Employment and unemployment is not distributed evenly across Victoria. ",
@@ -57,16 +57,12 @@ page_regions <- function(...) {
     ),
     fluidRow(
       style = "padding-left: 15px;border: 1px solid #53565A; box-shadow: 3px 3px 2px #AEAEAE;",
-      fluidRow(
-
-      ),
-
+      fluidRow(),
       column(
         6,
-        plotOutput("reg_sa4", height = 280
-        ),
+        plotOutput("reg_sa4", height = 280),
         br(),
-        htmlOutput("reg_sa4unemp_cf_broadregion_title"),
+        htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE),
         plotOutput("reg_sa4unemp_cf_broadregion", height = 300)
       ),
       column(
