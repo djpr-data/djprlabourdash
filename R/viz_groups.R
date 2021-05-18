@@ -263,7 +263,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_grea
                                               dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
                                               dplyr::filter(date >= as.Date("2020-01-01")), title = "") {
 
-   data <- data %>%
+  data <- data %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(value = (value[series_id == "15-24_greater melbourne_employed"] +
                                  value[series_id == "15-24_rest of vic._employed"])) %>%
@@ -296,16 +296,23 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_grea
   # drop rows we don't need
   data <- dplyr::filter(data, .data$indicator == "Employed_vic")
 
+  # Indexing to Covid start
+  data <- data %>%
+    dplyr::group_by(series) %>%
+    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) -1)
+    )
+
+
   # draw line graph
   data %>%
-    ungroup() %>%
-    djpr_ts_linechart() +
-    scale_y_continuous(limits = function(x) c(0, x[2]),
-                       expand = expansion(mult = c(0, 0.05))
-                       ) +
-    labs(title = title,
-         subtitle = "Employment in Victoria by age",
-         caption = "Source: ABS Labour Force. Note: 12 month average.")
+    djpr_ts_linechart(col_var = age,
+                      label_num = paste0(round(.data$value, 1), "%"),
+                      y_labels = function(x) paste0(x, "%"),
+                      hline = 0) +
+    scale_y_continuous(breaks = scales::breaks_pretty(5),
+                       labs(title = title,
+         subtitle = "Change in employment (%) for different age groups since March 2020",
+         caption = "Source: ABS Labour Force. Note: 12 month average."))
 }
 
 viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c("A84424691V",
