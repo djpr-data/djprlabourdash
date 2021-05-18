@@ -3,7 +3,7 @@ page_groups <- function(...) {
     title = "Groups",
     "Compare groups",
     br(),
-    htmlOutput("footnote_text"),
+    htmlOutput("groups_footnote"),
     br()
   )
 }

@@ -15,7 +15,11 @@ labour_server <- function(input, output, session) {
 
   # Overview ------
 
-  output$footnote_text <- renderUI({
+  output$overview_footnote <-
+    output$indicators_footnote <-
+    output$groups_footnote <-
+    output$regions_footnote <-
+    output$industries_footnote <- renderUI({
     req(dash_data)
     latest <- max(ts_summ$latest_date)
     div(

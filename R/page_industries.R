@@ -3,7 +3,7 @@ page_industries <- function(...) {
     title = "Industries",
     "Compare industries",
     br(),
-    htmlOutput("footnote_text"),
+    htmlOutput("industries_footnote"),
     br()
   )
 }

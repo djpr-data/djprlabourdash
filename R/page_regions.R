@@ -67,7 +67,7 @@ page_regions <- function(...) {
     br(),
     djpr_plot_ui("reg_unemprate_dispersion"),
     br(),
-    htmlOutput("footnote_text"),
+    htmlOutput("regions_footnote"),
     br()
   )
 }

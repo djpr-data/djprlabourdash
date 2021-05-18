@@ -25,7 +25,7 @@ page_overview <- function(...) {
         )
       ),
       br(),
-      centred_row(htmlOutput("footnote_text")),
+      centred_row(htmlOutput("overview_footnote")),
       br()
     )
   )

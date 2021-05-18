@@ -16,6 +16,6 @@ page_indicators <- function(...) {
     h1("Unemployment"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
-    htmlOutput("footnote_text")
+    htmlOutput("indicators_footnote")
   )
 }
