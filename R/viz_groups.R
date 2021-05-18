@@ -156,7 +156,7 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c("A84423354L",
          caption = "Source: ABS Labour Force. Note: seasonally adjusted data.")
 }
 
-viz_gr_yth_lfpart_line <- function(data = filter_dash_data(c("A84424692W",
+viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c("A84424692W",
                                                              "15-24_greater melbourne_employed",
                                                              "25-54_greater melbourne_employed",
                                                              "55+_greater melbourne_employed",
@@ -180,21 +180,39 @@ viz_gr_yth_lfpart_line <- function(data = filter_dash_data(c("A84424692W",
 
     data <- data %>%
     dplyr::group_by(.data$date) %>%
-    dplyr::summarise(value = ((value[series_id == "25-54_greater melbourne_employed"] +
-                       value[series_id == "25-54_rest of vic._employed"] +
-                       value[series_id == "25-54_greater melbourne_unemployed"] +
-                       value[series_id == "25-54_rest of vic._unemployed"]) /
-                         (value[series_id == "25-54_greater melbourne_employed"] +
-                            value[series_id == "25-54_rest of vic._employed"] +
-                            value[series_id == "25-54_greater melbourne_unemployed"] +
-                            value[series_id == "25-54_rest of vic._unemployed"] +
-                            value[series_id == "25-54_greater melbourne_nilf"] +
-                            value[series_id == "25-54_rest of vic._nilf"]))) %>%
-    dplyr::mutate(series = "Participation rate; 25-54; Victoria",
-                  series_id = "partrate_25-54_vic",
+    dplyr::summarise(value = ((value[series_id == "15-24_greater melbourne_employed"] +
+                       value[series_id == "15-24_rest of vic._employed"] +
+                       value[series_id == "15-24_greater melbourne_unemployed"] +
+                       value[series_id == "15-24_rest of vic._unemployed"]) /
+                         (value[series_id == "15-24_greater melbourne_employed"] +
+                            value[series_id == "15-24_rest of vic._employed"] +
+                            value[series_id == "15-24_greater melbourne_unemployed"] +
+                            value[series_id == "15-24_rest of vic._unemployed"] +
+                            value[series_id == "15-24_greater melbourne_nilf"] +
+                            value[series_id == "15-24_rest of vic._nilf"]))) %>%
+    dplyr::mutate(series = "Participation rate; 15-24; Victoria",
+                  series_id = "partrate_15-14_vic",
                   indicator = "Participation rate",
-                  age = "25-54") %>%
+                  age = "15-24") %>%
     dplyr::bind_rows(data)
+
+    data <- data %>%
+      dplyr::group_by(.data$date) %>%
+      dplyr::summarise(value = ((value[series_id == "25-54_greater melbourne_employed"] +
+                                   value[series_id == "25-54_rest of vic._employed"] +
+                                   value[series_id == "25-54_greater melbourne_unemployed"] +
+                                   value[series_id == "25-54_rest of vic._unemployed"]) /
+                                  (value[series_id == "25-54_greater melbourne_employed"] +
+                                     value[series_id == "25-54_rest of vic._employed"] +
+                                     value[series_id == "25-54_greater melbourne_unemployed"] +
+                                     value[series_id == "25-54_rest of vic._unemployed"] +
+                                     value[series_id == "25-54_greater melbourne_nilf"] +
+                                     value[series_id == "25-54_rest of vic._nilf"]))) %>%
+      dplyr::mutate(series = "Participation rate; 25-54; Victoria",
+                    series_id = "partrate_25-54_vic",
+                    indicator = "Participation rate",
+                    age = "25-54") %>%
+      dplyr::bind_rows(data)
 
     data <- data %>%
       dplyr::group_by(.data$date) %>%
@@ -214,10 +232,10 @@ viz_gr_yth_lfpart_line <- function(data = filter_dash_data(c("A84424692W",
                     age = "55+") %>%
       dplyr::bind_rows(data)
 
-    #drop rows we don't need - doesn't work
+    #drop rows we don't need - now works
     data <- dplyr::filter(data, .data$indicator == "Participation rate")
 
-    # draw line graph - doesn't work either, doesn't filter out the four part rate groups yet
+    # draw line graph
     data %>%
       ungroup() %>%
       djpr_ts_linechart() +
@@ -226,55 +244,6 @@ viz_gr_yth_lfpart_line <- function(data = filter_dash_data(c("A84424692W",
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_lfpart_line2 <- function(data = filter_dash_data(c(
-                                                             "15-24_greater melbourne_employed",
-                                                             "25-54_greater melbourne_employed",
-                                                             "55+_greater melbourne_employed",
-                                                             "15-24_rest of vic._employed",
-                                                             "25-54_rest of vic._employed",
-                                                             "55+_rest of vic._employed",
-                                                             "15-24_greater melbourne_nilf",
-                                                             "25-54_greater melbourne_nilf",
-                                                             "55+_greater melbourne_nilf",
-                                                             "15-24_rest of vic._nilf",
-                                                             "25-54_rest of vic._nilf",
-                                                             "55+_rest of vic._nilf",
-                                                             "15-24_greater melbourne_unemployed",
-                                                             "25-54_greater melbourne_unemployed",
-                                                             "55+_greater melbourne_unemployed",
-                                                             "15-24_rest of vic._unemployed",
-                                                             "25-54_rest of vic._unemployed",
-                                                             "55+_rest of vic._unemployed",
-                                                             "A84591890J"),
-                                                           df = dash_data), title = "") {
-
-  aus <- data %>%
-    filter(gcc_restofstate == "")
-
-  vic <- data %>%
-    filter(gcc_restofstate != "")
-
-  vic_summ <- vic %>%
-    select(date, value, indicator, gcc_restofstate, age) %>%
-    tidyr::spread(key = indicator, value = value) %>%
-    group_by(date, age) %>%
-    summarise(emp = sum(Employed),
-              unemp = sum(Unemployed),
-              nilf = sum(NILF)) %>%
-    ungroup() %>%
-    mutate(value = 100 * ((emp + unemp) / (emp + unemp + nilf)),
-           geog = "Victoria") %>%
-    select(-emp, -unemp, -nilf)
-
-   # aus %>%
-   #   mutate(age)
-
-  vic_summ %>%
-    djpr_ts_linechart(col_var = age) +
-    scale_y_continuous(breaks = scales::breaks_pretty(5),
-                       labels = function(x) paste0(x, "%"))
-
-}
 
 viz_gr_yth_emp_line <- function(data = filter_dash_data(c("15-24_greater melbourne_employed",
                                                              "25-54_greater melbourne_employed",
