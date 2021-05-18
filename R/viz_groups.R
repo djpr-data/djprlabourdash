@@ -226,12 +226,38 @@ viz_gr_yth_lfpart_line <- function(data = filter_dash_data(c("A84424692W",
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_emp_line <- function(data = filter_dash_data(c("[employment 15-24]",
-                                                             "[employment 25-54]",
-                                                             "[employment 55+]"),
+viz_gr_yth_emp_line <- function(data = filter_dash_data(c("15-24_greater melbourne_employed",
+                                                             "25-54_greater melbourne_employed",
+                                                             "55+_greater melbourne_employed",
+                                                             "15-24_rest of vic._employed",
+                                                             "25-54_rest of vic._employed",
+                                                             "55+_rest of vic._employed"),
                                                            df = dash_data), title = "") {
 
-  data %>%
+  data <- data %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::summarise(value = (value[series_id == "15-24_greater melbourne_employed"] +
+                                 value[series_id == "15-24_rest of vic._employed"])) %>%
+    dplyr::mutate(series = "Employed; 15-24; Victoria",
+                  series_id = "emp_15-24_vic",
+                  indicator = "Employed",
+                  age = "15-24") %>%
+    dplyr::bind_rows(data)
+
+  data <- data %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::summarise(value = (value[series_id == "25-54_greater melbourne_employed"] +
+                                value[series_id == "25-54_rest of vic._employed"])) %>%
+    dplyr::mutate(series = "Employed; 25-54; Victoria",
+                  series_id = "emp_25-54_vic",
+                  indicator = "Employed",
+                  age = "25-54") %>%
+    dplyr::bind_rows(data)
+
+  #drop rows we don't need - doesn't work
+  data <- dplyr::filter(data, data$indicator == "Employed")
+
+    data %>%
     djpr_ts_linechart() +
     labs(title = title,
          subtitle = "Employment in Victoria by age",
