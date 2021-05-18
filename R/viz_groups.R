@@ -300,7 +300,7 @@ viz_gr_yth_emp_line <- function(data = filter_dash_data(c("15-24_greater melbour
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c("A84424691V",
+viz_gr_yth_unemp_line <- function(data = filter_dash_data(c("A84424691V",
                                                                 "15-24_greater melbourne_unemployed",
                                                                 "25-54_greater melbourne_unemployed",
                                                                 "55+_greater melbourne_unemployed",
@@ -315,7 +315,7 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c("A84424691V",
                                 value[series_id == "15-24_rest of vic._unemployed"])) %>%
     dplyr::mutate(series = "Unemployed; 15-24; Victoria",
                   series_id = "unemp_15-24_vic",
-                  indicator = "Unemployed",
+                  indicator = "Unemployed_vic",
                   age = "15-24") %>%
     dplyr::bind_rows(data)
 
@@ -325,36 +325,35 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c("A84424691V",
                                 value[series_id == "25-54_rest of vic._unemployed"])) %>%
     dplyr::mutate(series = "Unemployed; 25-54; Victoria",
                   series_id = "unemp_25-54_vic",
-                  indicator = "Unemployed",
+                  indicator = "Unemployed_vic",
                   age = "25-54") %>%
     dplyr::bind_rows(data)
 
-  #drop rows we don't need - doesn't work
-  data <- dplyr::filter(data, data$indicator == "Unemployed")
+  data <- data %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::summarise(value = (value[series_id == "55+_greater melbourne_unemployed"] +
+                                value[series_id == "55+_rest of vic._unemployed"])) %>%
+    dplyr::mutate(series = "Unemployed; 55+; Victoria",
+                  series_id = "unemp_55+_vic",
+                  indicator = "Unemployed_vic",
+                  age = "55+") %>%
+    dplyr::bind_rows(data)
 
+  #drop rows we don't need
+  data <- dplyr::filter(data, .data$indicator == "Unemployed_vic")
+
+  # draw line chart
   data %>%
+    ungroup() %>%
     djpr_ts_linechart() +
+    scale_y_continuous(limits = function(x) c(0, x[2]),
+                       expand = expansion(mult = c(0, 0.05))
+    ) +
     labs(title = title,
          subtitle = "Unemployment in Victoria by age",
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_unemp_line <- function(data = filter_dash_data(c("A84424691V",   # unemployment rate vic 15-24
-                                                          "[unemployment rate 25-54]",
-                                                          "[unemployment rate 55+]",
-                                                          "A84424621L"),    # unemployment rate Aus 15-24
-                                                        df = dash_data) %>%
-                                    dplyr::group_by(series_id) %>%
-                                    dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-                                    dplyr::filter(date >= as.Date("2020-01-01")),
-                                    title = "") {
-
-  data %>%
-    djpr_ts_linechart() +
-    labs(title = title,
-         subtitle = "Unemployment by age",
-         caption = "Source: ABS Labour Force. Note: 12 month average.")
-}
 
 
 
