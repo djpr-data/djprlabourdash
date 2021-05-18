@@ -14,16 +14,9 @@ page_overview <- function(...) {
       br(),
       br(),
       br(),
-      centred_row(h1("Victorian Jobs Dashboard")),
+      centred_row(h1("DJPR Jobs Dashboard")),
       centred_row(htmlOutput("overview_text")),
       br(),
-      # centred_row(
-      #   tagList(
-      #     "Find out more on the ",
-      #     actionLink("link_indicators", "indicators"),
-      #     " page or in the table below."
-      #   )
-      # ),
       centred_row(h3("Overview")),
       centred_row(
         tagList(
@@ -31,6 +24,8 @@ page_overview <- function(...) {
           reactable_caption()
         )
       ),
+      br(),
+      centred_row(htmlOutput("footnote_text")),
       br()
     )
   )

@@ -2,18 +2,7 @@ page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
     h1("Regions of Victoria"),
-    HTML(
-      paste0(
-        "Employment and unemployment is not distributed evenly across Victoria. ",
-        "This page breaks down the data by region - focusing particularly on ",
-        "the 17 different regions at the ",
-        htmltools::a("'statistical area level 4', or SA4 level",
-          href = "https://www.abs.gov.au/websitedbs/D3310114.nsf/home/Australian+Statistical+Geography+Standard+(ASGS)"
-        ),
-        ", as defined by the ABS. Eight of Victoria's 17 SA4 regions are in Greater Melbourne,",
-        " with the balance covering the full breadth of the state."
-      )
-    ),
+    # ADD GCC V REST
     h2("Unemployment by region"),
     djpr_plot_title("The unemployment rate varies widely across Victoria"),
     djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
@@ -77,6 +66,8 @@ page_regions <- function(...) {
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
     br(),
     djpr_plot_ui("reg_unemprate_dispersion"),
+    br(),
+    htmlOutput("footnote_text"),
     br()
   )
 }

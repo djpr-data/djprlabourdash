@@ -15,6 +15,23 @@ labour_server <- function(input, output, session) {
 
   # Overview ------
 
+  output$footnote_text <- renderUI({
+    req(dash_data)
+    latest <- max(ts_summ$latest_date)
+    div(
+    htmltools::HTML(
+    paste0("This dashboard is produced by the <b>Strategy and Priority ",
+           "Projects Data + Analytics</b> team at the Victorian Department ",
+           "of Jobs, Precincts and Regions. The <b>latest data in this ",
+           "dashboard is for ",
+           format(latest, "%B %Y"),
+           "</b>. Please contact Matt Cowgill with any comments or feedback."
+           )
+    ),
+    style = "color: #828282; font-size: 0.75rem"
+    )
+  })
+
   output$overview_text <- renderUI({
     text_overview_summary(ts_summ)
   })
@@ -165,7 +182,6 @@ labour_server <- function(input, output, session) {
                    ),
                    date_slider = FALSE,
                    plt_change = plt_change)
-
 
   # Regions ------
   output$reg_unemprate_map <- leaflet::renderLeaflet({

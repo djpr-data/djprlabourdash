@@ -479,19 +479,19 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
   text_active(
     string = paste0(
       "In March 2020, before COVID-19 struck Victoria, there were XX million ",
-      "people employed in Greater Melbourne. Employment fell to XX million",
+      "people employed in Greater Melbourne. Employment fell to XX million ",
       "people by October 2020 - a decline of XX or XX per cent. Employment ",
       "in the rest of Victoria fell by only XX per cent over the same period. ",
-      "Greater Melbourne employment is XX percent XX pre-COVID levels as at XX, ",
+      "Greater Melbourne employment is XX per cent XX pre-COVID levels as at XX, ",
       "while employment in the rest of Victoria is XX per cent XX where it ",
       "was in March 2020."
     ),
     numbers = c(
       round2(melb_emp_precovid, 2),
       round2(melb_emp_oct20, 2),
-      scales::comma(melb_emp_covid_to_oct_abs),
-      melb_emp_covid_to_oct_perc,
-      rest_emp_covid_to_oct_perc,
+      abs(melb_emp_covid_to_oct_abs),
+      abs(melb_emp_covid_to_oct_perc),
+      abs(rest_emp_covid_to_oct_perc),
       abs(melb_emp_current),
       dplyr::if_else(melb_emp_current > 0, "above", "below"),
       latest_month,

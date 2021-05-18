@@ -69,7 +69,8 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
     dplyr::mutate(label = paste0(
       stringr::str_wrap(state, 10),
       "\n",
-      stringr::str_wrap(round(.data$value, 1), 10)
+      paste0(stringr::str_wrap(round(.data$value, 1), 10),
+             "%")
     ))
 
   df %>%
