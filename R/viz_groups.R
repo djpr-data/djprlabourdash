@@ -140,7 +140,7 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c("A84423355R",
   data %>%
     djpr_ts_linechart() +
     labs(title = title,
-         subtitle = "Participation rate by sex, Victoria",
+         subtitle = "Participation rate by gender, Victoria",
          caption = "Source: ABS Labour Force. Note: seasonally adjusted data.")
 }
 
@@ -157,9 +157,25 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c("A84423354L",
 }
 
 viz_gr_yth_lfpart_line <- function(data = filter_dash_data(c("A84424692W",
-                                                             "[part_rate 25-54]",
-                                                             "[part_rate 55+]",
-                                                             "[part_rate 15-24 Australia]"),
+                                                             "15-24_greater melbourne_employed",
+                                                             "25-54_greater melbourne_employed",
+                                                             "55+_greater melbourne_employed",
+                                                             "15-24_rest of vic._employed",
+                                                             "25-54_rest of vic._employed",
+                                                             "55+_rest of vic._employed",
+                                                             "15-24_greater melbourne_nilf",
+                                                             "25-54_greater melbourne_nilf",
+                                                             "55+_greater melbourne_nilf",
+                                                             "15-24_rest of vic._nilf",
+                                                             "25-54_rest of vic._nilf",
+                                                             "55+_rest of vic._nilf",
+                                                             "15-24_greater melbourne_unemployed",
+                                                             "25-54_greater melbourne_unemployed",
+                                                             "55+_greater melbourne_unemployed",
+                                                             "15-24_rest of vic._unemployed",
+                                                             "25-54_rest of vic._unemployed",
+                                                             "55+_rest of vic._unemployed",
+                                                             "A84424622R"),
                                                            df = dash_data), title = "") {
   data %>%
     djpr_ts_linechart() +
@@ -185,7 +201,11 @@ viz_gr_yth_unemp_line <- function(data = filter_dash_data(c("A84424691V",   # un
                                                           "[unemployment rate 25-54]",
                                                           "[unemployment rate 55+]",
                                                           "A84424621L"),    # unemployment rate Aus 15-24
-                                                        df = dash_data), title = "") {
+                                                        df = dash_data) %>%
+                                    dplyr::group_by(series_id) %>%
+                                    dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
+                                    dplyr::filter(date >= as.Date("2020-01-01")),
+                                    title = "") {
 
   data %>%
     djpr_ts_linechart() +
@@ -194,13 +214,16 @@ viz_gr_yth_unemp_line <- function(data = filter_dash_data(c("A84424691V",   # un
          caption = "Source: ABS Labour Force. Note: 12 month average.")
 }
 
-viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84424600A",
-                                                               "A84424601C",
-                                                               "A84424691V"), df = dash_data) %>%
+viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433473R"),
+                                                             df = dash_data) %>%
                                         dplyr::group_by(series_id) %>%
                                         dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-                                        dplyr::filter(!is.na(value)),
-                                      title = "") {
+                                        dplyr::filter(date >= as.Date("2020-01-01")),
+                                        title = "") {
+
+  #calculate most vulnerable cohort
+
+
 
   data %>%
     djpr_ts_linechart() +
