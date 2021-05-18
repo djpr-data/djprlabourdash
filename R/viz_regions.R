@@ -205,12 +205,7 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = "Cumulative change in employment (%) in Greater Melbourne and the rest of Victoria since March 2020",
-      caption = paste0(
-        "Source: ABS Labour Force.",
-        "Note: Latest data is from ",
-        format(max(df$date), "%B %Y"),
-        ". Not seasonally adjusted. Data smoothed using a 3 month rolling average."
-      )
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
 
@@ -343,11 +338,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = "Unemployment rate by region (SA4), per cent",
-      caption = paste0(
-        "Source: ABS Labour Force. Note: Latest data is from ",
-        format(max(data$date), "%B %Y"),
-        ". Not seasonally adjusted. Data smoothed using a 3 month rolling average."
-      )
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
 
@@ -671,7 +662,8 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     patchwork::plot_layout(heights = c(0.99, 0.01)) +
     patchwork::plot_annotation(
       title = plot_title,
-      caption = "Source: ABS Labour Force Detailed. Notes: Data is not seasonally adjusted; smoothed using a 3 month rolling average.",
+      subtitle = "Gap between unemployment rates across Victorian regions (SA4s), including metropolitan SA4s",
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
       theme = theme_djpr()
     )
 
@@ -844,15 +836,15 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
         sa4,
         dplyr::if_else(sa4_cf_comp == "the same", " and ", " than "),
         "in ",
-        broad_region
+        broad_region,
+        " as a whole"
       ),
       subtitle = paste0(
         "Unemployment rate in ",
         sa4,
         " and ",
         broad_region
-      ),
-      caption = "Source: ABS Labour Force (detailed). Note: Data not seasonally adjusted; smoothed using a 3 month rolling average."
+      )
     )
 }
 
@@ -928,6 +920,11 @@ reactable_region_focus <- function(data = filter_dash_data(
   )
 
   latest_date <- format(max(data$date), "%b %Y")
+
+  data <- data %>%
+    dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
+                                       "North West",
+                                       .data$sa4))
 
   data <- data %>%
     dplyr::mutate(gcc_restofstate = dplyr::if_else(.data$gcc_restofstate ==

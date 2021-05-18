@@ -28,7 +28,7 @@ caption_lfs <- function(df = dash_data,
 }
 
 caption_lfs_det_m <- function(df = dash_data,
-                                   series_for_date = "A84595508F") {
+                              series_for_date = "A84599659L") {
   caption_make(df = df,
                series_for_date = series_for_date,
                release_name = "ABS Labour Force, Detailed (monthly)")

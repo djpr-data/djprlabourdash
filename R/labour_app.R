@@ -11,7 +11,7 @@ labour_server <- function(input, output, session) {
     djprshiny::ts_summarise()
 
   plt_change <- reactive(input$plt_change) %>%
-    debounce(50)
+    debounce(40)
 
   # Overview ------
 
@@ -187,7 +187,81 @@ labour_server <- function(input, output, session) {
                    date_slider = FALSE,
                    plt_change = plt_change)
 
+  # Groups ------
+
+  # Bar chart: LF status by sex, latest month
+
+  djpr_plot_server("gr_gen_emp_bar",
+                   viz_gr_gen_emp_bar,
+                   date_slider = F,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423469L",
+                     "A84423245A",
+                     "A84423801C",
+                     "A84423577W",
+                     "A84423461V",
+                     "A84423237A",
+                     "A84423463X",
+                     "A84423239F",
+                     "A84423462W",
+                     "A84423238C"
+                   ), df = dash_data) %>%
+                     dplyr::group_by(.data$series) %>%
+                     dplyr::filter(.data$date == max(.data$date)))
+
+  # Line chart: participation by sex over time
+  djpr_plot_server("gr_gen_partrate_line",
+                   viz_gr_gen_partrate_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423243W",
+                     "A84423467J"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 5))
+
+  # Line chart: unemployment rate by sex
+  djpr_plot_server("gr_gen_unemp_line",
+                   viz_gr_gen_unemp_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423354L",
+                     "A84423242V",
+                     "A84423466F"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 10))
+
+  # Line chart indexed to COVID: employment by age
+  djpr_plot_server("gr_yth_emp_sincecovid_line",
+                   viz_gr_yth_emp_sincecovid_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "15-24_greater melbourne_employed",
+                     "25-54_greater melbourne_employed",
+                     "55+_greater melbourne_employed",
+                     "15-24_rest of vic._employed",
+                     "25-54_rest of vic._employed",
+                     "55+_rest of vic._employed"
+                   ),
+                   df = dash_data
+                   ) %>%
+                     dplyr::group_by(series_id) %>%
+                     dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
+                     dplyr::filter(date >= as.Date("2020-01-01")),
+                   date_slider = FALSE)
+
+
   # Regions ------
+
+  output$caption_regions_data2 <- output$caption_regions_data1 <- renderUI({
+    djpr_plot_caption(paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."))
+  })
+
   output$reg_unemprate_map <- leaflet::renderLeaflet({
     map_unemprate_vic()
   })
@@ -304,7 +378,9 @@ labour_server <- function(input, output, session) {
       map_reg_sa4(sa4 = input$focus_region)
     },
     height = 350
-  )
+  ) %>%
+    bindCache(input$focus_region,
+              plt_change)
 
   output$table_region_focus <- reactable::renderReactable({
     reactable_region_focus(sa4 = input$focus_region)

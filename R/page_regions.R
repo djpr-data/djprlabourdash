@@ -16,7 +16,7 @@ page_regions <- function(...) {
         plotOutput("reg_unemprate_bar")
       )
     ),
-    djpr_plot_caption("Source: ABS Labour Force. Note: regional data is smoothed using a 3-month rolling average."),
+    djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
     "TEXT HERE",
     djpr_plot_ui("reg_unemprate_multiline"),
@@ -44,20 +44,24 @@ page_regions <- function(...) {
         "Warrnambool and South West"
       )
     ),
+    # Box for regional focus
     fluidRow(
       style = "padding-left: 15px;border: 1px solid #53565A; box-shadow: 3px 3px 2px #AEAEAE;",
       fluidRow(),
       column(
         6,
-        plotOutput("reg_sa4", height = 280),
-        br(),
-        htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE),
-        plotOutput("reg_sa4unemp_cf_broadregion", height = 300)
+        column(1),
+        column(11,
+               plotOutput("reg_sa4", height = 280),
+               br(),
+               htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE),
+               plotOutput("reg_sa4unemp_cf_broadregion", height = 300))
       ),
       column(
         6,
         br(),
         reactable::reactableOutput("table_region_focus"),
+        djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
         br(),
       )
     ),

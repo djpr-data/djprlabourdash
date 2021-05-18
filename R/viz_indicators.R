@@ -126,7 +126,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
     labs(
       title = title,
       subtitle = "Cumulative change in employment since March 2020, per cent",
-      caption = paste0("Source: ABS Labour Force and DJPR calculations. Note: Seasonally adjusted.")
+      caption = caption_lfs()
     )
 }
 
@@ -153,17 +153,19 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
                     .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value)
 
+  latest_month <- format(max(df$date), "%B %Y")
+
   title <- dplyr::if_else(
     vic_latest > aus_latest,
-    "Employment growth in Victoria has outpaced Australia as a whole in the past 12 months",
-    "Employment growth in Victoria has lagged behind Australia as a whole in the past 12 months"
+    paste0("Employment growth in Victoria outpaced Australia as a whole in the 12 months to ", latest_month),
+    paste0("Employment growth in Victoria lagged behind Australia as a whole in 12 months to ", latest_month)
   )
 
   df %>%
     djpr_ts_linechart(col_var = state,
                       y_labels = function(x) paste0(x, "%")) +
     labs(subtitle = "Annual employment growth in Victoria and Australia, per cent",
-         caption = "Source: ABS Labour Force.",
+         caption = caption_lfs(),
          title = title)
 
 }
@@ -213,7 +215,7 @@ viz_ind_emppopratio_line <- function(data = filter_dash_data(c("A84423356T",
                       y_labels = function(x) paste0(x, "%")) +
     labs(title = title,
          subtitle = "Employment to population ratio by sex, Victoria, per cent",
-         caption = "Source: ABS Labour Force")
+         caption = caption_lfs())
 
 }
 
@@ -301,6 +303,6 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
          subtitle = paste0("Unemployment rate in Australian states and territories in ",
                            unique(df$date) %>% format("%B %Y") %>% paste0(collapse = " and ")),
          title = title,
-         caption = "Source: ABS Labour Force.")
+         caption = caption_lfs())
 
 }
