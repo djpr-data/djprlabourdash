@@ -298,9 +298,7 @@ labour_server <- function(input, output, session) {
 
     df %>%
       viz_reg_unemprate_bar()
-  }) %>%
-    bindCache(dash_data)
-
+  })
 
   djpr_plot_server("reg_unemprate_multiline",
     viz_reg_unemprate_multiline,
