@@ -180,13 +180,36 @@ viz_ind_emppopratio_line <- function(data = filter_dash_data(c("A84423356T",
                                        "Persons",
                                        .data$sex))
 
-  df
+  latest_year <- df %>%
+    dplyr::group_by(sex) %>%
+    dplyr::mutate(d_year = value - dplyr::lag(value, 12)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
+    tidyr::spread(key = sex, value = d_year)
+
+  nice_date <- format(latest_year$date, "%B %Y")
+
+  title <- dplyr::case_when(
+    latest_year$Females > 0 &
+      latest_year$Males > 0 ~
+      paste0("A larger proportion of Victorian men and women are in work in ",
+             nice_date, " than a year earlier"),
+    latest_year$Females > 0 &
+      latest_year$Males < 0 ~
+      paste0("The proportion of Victorian women in work rose over the year to ",
+             nice_date, " but the male employment-to-population ratio fell"),
+    latest_year$Females < 0 &
+      latest_year$Males > 0 ~
+      paste0("The proportion of Victorian men in work rose over the year to ",
+             nice_date, " but the female employment-to-population ratio fell"),
+    TRUE ~ "Employment-to-population ratio for Victorian men and women"
+  )
 
   df %>%
     djpr_ts_linechart(col_var = sex,
                       y_labels = function(x) paste0(x, "%")) +
     labs(title = title,
-         subtitle = "Employment to population ratio by sex, Victoria, per cent",
+         subtitle = "Employment to population ratio by sex, Victoria",
          caption = caption_lfs())
 
 }
@@ -212,7 +235,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
                                          .data$state)) %>%
     dplyr::group_by(.data$state) %>%
     dplyr::filter(.data$date %in% c(max(.data$date),
-                                    subtract_years(max.data$date, 1)))
+                                    subtract_years(max(.data$date), 1)))
 
   df_wide <- df %>%
     dplyr::mutate(date_type = dplyr::if_else(date == min(date),
@@ -234,13 +257,16 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     dplyr::pull(.data$rank)
 
   title <- dplyr::case_when(
-    vic_rank == 1 ~ "the highest in Australia",
-    vic_rank == 2 ~ "the second highest in Australia",
-    vic_rank == 8 ~ "the lowest in Australia",
-    vic_rank == 7 ~ "the second lowest in Australia",
-    TRUE ~ "middle of the pack for Australan states and territories"
+    vic_rank == 8 ~ "is the lowest in Australia",
+    vic_rank == 7 ~ "is the second lowest in Australia",
+    vic_rank == 6 ~ "is the third lowest in Australia",
+    vic_rank == 5 ~ "is the fourth lowest in Australia",
+    vic_rank < 5 &
+      df_wide$max_date[df_wide$state == "Victoria"] < df_wide$min_date[df_wide$state == "Victoria"] ~
+      "has fallen over the past year",
+    TRUE ~ "Victoria's unemployment rate compared to other states and territories"
   ) %>%
-    paste0("Victoria's unemployment rate is ", .)
+    paste0("Victoria's unemployment rate ", .)
 
   df %>%
     ggplot(aes(x = reorder(state, value), y = value, col = format(date, "%b %Y"))) +
