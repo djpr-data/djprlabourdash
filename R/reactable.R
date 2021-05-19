@@ -64,14 +64,6 @@ make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = indicator) {
 
-  # Function to avoid adding a lubridate dependency
-  subtract_years <- function(max_date, n_years) {
-    seq(max_date,
-      length = 2,
-      by = paste0("-", n_years, " years")
-    )[2]
-  }
-
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   # Calculate summary data frame - levels and changes -----
