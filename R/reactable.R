@@ -231,8 +231,8 @@ make_reactable <- function(data,
               data = value[[1]],
               height = 50,
               margin = list(
-                top = 20, right = 10,
-                bottom = 20, left = 10
+                top = 7, right = 5,
+                bottom = 7, left = 5
               ),
               components = list(
                 # Create actual sparkline
@@ -240,22 +240,22 @@ make_reactable <- function(data,
                   stroke = colpal[index],
                   showArea = F,
                   fill = colpal[index]
-                ) ,
-                dataui::dui_tooltip(
-                  components = list(
-                    # Create moving tooltip
-                  dataui::dui_sparkverticalrefline(
-                    strokeDasharray = "0, 0",
-                    strokeWidth = 1,
-                    stroke = "#838383"
-                  ) ,
-                  # display tooltip value
-                  dataui::dui_sparkpointseries(
-                    stroke = colpal[index],
-                    fill = "#fff",
-                    renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
-                  )
-                ))
+                )
+#                dataui::dui_tooltip(
+#                  components = list(
+#                    # Create moving tooltip
+#                  dataui::dui_sparkverticalrefline(
+#                    strokeDasharray = "0, 0",
+#                    strokeWidth = 1,
+#                    stroke = "#838383"
+#                  ) ,
+#                  # display tooltip value
+#                  dataui::dui_sparkpointseries(
+#                   stroke = colpal[index],
+#                   fill = "#fff",
+#                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
+
+
               )
             )
           }
