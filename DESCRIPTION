@@ -55,7 +55,8 @@ Imports:
     stringr,
     zoo,
     scales,
-    patchwork
+    patchwork,
+    strayr
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

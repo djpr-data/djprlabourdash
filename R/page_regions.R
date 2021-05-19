@@ -2,25 +2,19 @@ page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
     h1("Regions of Victoria"),
-    # ADD GCC V REST
-    h2("Unemployment by region"),
-    djpr_plot_title(textOutput("title_unemprate_vic")),
-    djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
-    fluidRow(
-      column(
-        6,
-        leaflet::leafletOutput("reg_unemprate_map") %>%
-          djpr_with_spinner()
-      ),
-      column(
-        6,
-        plotOutput("reg_unemprate_bar") %>%
-          djpr_with_spinner()
-      )
+    tagList(
+      "This page contains information about employment and unemployment across",
+      "the different regions of Victoria.",
+      "For more information about overall labour force indicators ",
+      "see the ",
+      actionLink("link_indicators", "indicators page"),
+      ". For information about the labour force status of key groups of Victorians, see the ",
+      actionLink("link_groups", "groups page"), "."
     ),
-    djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
-    br(),
-    djpr_plot_ui("reg_unemprate_multiline"),
+    h2("Greater Melbourne and the rest of Victoria"),
+    djpr_plot_ui("reg_melvic_line"),
+    htmlOutput("text_emp_regions"),
+    djpr_plot_ui("reg_emp_regions_sincecovid_line"),
     h2("Regional focus"),
     selectInput("focus_region",
       label = "Choose a region of Victoria to examine in greater detail",
@@ -72,11 +66,27 @@ page_regions <- function(...) {
         br(),
       )
     ),
-    h2("Employment by region"),
-    htmlOutput("text_emp_regions"),
-    djpr_plot_ui("reg_emp_regions_sincecovid_line"),
+    h2("Unemployment by region"),
+    djpr_plot_title(textOutput("title_unemprate_vic")),
+    djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
+    fluidRow(
+      column(
+        6,
+        leaflet::leafletOutput("reg_unemprate_map") %>%
+          djpr_with_spinner()
+      ),
+      column(
+        6,
+        plotOutput("reg_unemprate_bar") %>%
+          djpr_with_spinner()
+      )
+    ),
+    djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
+    djpr_plot_ui("reg_unemprate_multiline"),
     djpr_plot_ui("reg_unemprate_dispersion"),
+    br(),
+    h2("Employment by region"),
     br(),
     htmlOutput("regions_footnote"),
     br()

@@ -44,6 +44,7 @@ labour_server <- function(input, output, session) {
 
   # Indicators -----
 
+  # Indicators: Employment ----
   output$ind_empgrowth_sincecovid_text <- renderUI({
     text_active(
       paste(
@@ -132,8 +133,24 @@ labour_server <- function(input, output, session) {
 
   # Indicators: table of employment indicators
   output$ind_emp_table <- reactable::renderReactable({
-    indicators_table()
+    table_ind_employment()
   })
+
+  # Indicators: slopgraph of emp-pop ratios in states
+  djpr_plot_server("ind_emppop_state_slope",
+                   viz_ind_emppop_state_slope,
+                   date_slider = FALSE,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423272J",
+                     "A84423356T",
+                     "A84423286W",
+                     "A84423370L",
+                     "A84423328J",
+                     "A84423300F",
+                     "A84423314V",
+                     "A84423342C"
+                   )))
 
   # Indicators: line chart of annual employment growth in Vic & Aus
 
@@ -158,6 +175,12 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 10),
     plt_change = plt_change
   )
+
+  # Indicators: unemployment ------
+  output$ind_unemp_summary <- reactable::renderReactable({
+    table_ind_unemp_summary()
+  }) %>%
+    bindCache(dash_data)
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
@@ -254,6 +277,24 @@ labour_server <- function(input, output, session) {
 
   # Regions ------
 
+  djpr_plot_server("reg_melvic_line",
+    viz_reg_melvic_line,
+    plt_change = plt_change,
+    date_slider_value_min = as.Date("2014-11-01"),
+    data = filter_dash_data(c(
+      "A84600144J",
+      "A84600078W",
+      "A84595516F",
+      "A84595471L"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::group_by(series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+      dplyr::filter(!is.na(value))
+  )
+
+
   output$caption_regions_data2 <- output$caption_regions_data1 <- renderUI({
     djpr_plot_caption(paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."))
   })
@@ -262,9 +303,10 @@ labour_server <- function(input, output, session) {
     title_unemprate_vic()
   })
 
-  output$reg_unemprate_map <- leaflet::renderLeaflet({
-    map_unemprate_vic()
-  }) %>%
+  output$reg_unemprate_map <-
+    leaflet::renderLeaflet({
+      map_unemprate_vic()
+    }) %>%
     bindCache(dash_data)
 
   output$reg_unemprate_bar <- renderPlot({

@@ -158,13 +158,14 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
   title <- dplyr::if_else(
     vic_latest > aus_latest,
     paste0("Employment growth in Victoria outpaced Australia as a whole in the 12 months to ", latest_month),
-    paste0("Employment growth in Victoria lagged behind Australia as a whole in 12 months to ", latest_month)
+    paste0("Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ", latest_month)
   )
 
   df %>%
     djpr_ts_linechart(
       col_var = state,
-      y_labels = function(x) paste0(x, "%")
+      y_labels = function(x) paste0(x, "%"),
+      label_num = paste0(round(.data$value, 1), "%")
     ) +
     labs(
       subtitle = "Annual employment growth in Victoria and Australia, per cent",
@@ -263,7 +264,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     dplyr::select(state, value, date_type) %>%
     tidyr::spread(key = date_type, value = value) %>%
     dplyr::mutate(arrow_max = if_else(max_date > min_date,
-      max_date - 0.05,
+      max(c(min_date, max_date - 0.05)),
       max_date + 0.05
     ))
 
@@ -309,7 +310,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
       inherit.aes = F
     ) +
     ggiraph::geom_point_interactive(
-      size = 3,
+      size = 4,
       aes(tooltip = paste0(
         format(.data$date, "%b %Y"),
         "\n",
@@ -329,6 +330,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     theme_djpr(flipped = T) +
     coord_flip() +
     djpr_colour_manual(2) +
+    scale_y_continuous(labels = function(x) paste0(x, "%")) +
     labs(
       y = "Unemployment rate",
       subtitle = paste0(
@@ -338,4 +340,79 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
       title = title,
       caption = caption_lfs()
     )
+}
+
+
+viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
+                                         "A84423272J",
+                                         "A84423356T",
+                                         "A84423286W",
+                                         "A84423370L",
+                                         "A84423328J",
+                                         "A84423300F",
+                                         "A84423314V",
+                                         "A84423342C"
+                                       ))) {
+
+  df <- data %>%
+    dplyr::filter(date %in% c(max(.data$date),
+                              subtract_years(max(.data$date), 1))) %>%
+    dplyr::mutate(state_abbr = strayr::strayr(.data$state),
+                  state_group = dplyr::if_else(state_abbr %in% c(
+                    "Vic", "NSW"
+                  ),
+                  state_abbr,
+                  "Other"))
+
+  latest <- df %>%
+    dplyr::filter(date == max(date),
+                  !state_abbr %in% c("ACT", "NT"))  %>%
+    dplyr::select(state_abbr, value) %>%
+    dplyr::mutate(rank = dplyr::min_rank(-value))
+
+  vic_rank <- latest$rank[latest$state_abbr == "Vic"]
+  nsw_rank <- latest$rank[latest$state_abbr == "NSW"]
+  vic_level <- paste0(round2(latest$value[latest$state_abbr == "Vic"], 1), "%")
+  vic_change <- df %>%
+    dplyr::filter(state_abbr == "Vic") %>%
+    dplyr::summarise(change = value[date == max(date)] - value[date == subtract_years(max(date), 1)]) %>%
+    dplyr::pull(change)
+
+  title <- dplyr::case_when(
+    vic_rank == 1 ~ paste0(vic_level, " of Victorian adults are employed, the highest ratio of any Australian state"),
+    vic_rank == 2 ~ paste0(vic_level, " of Victorian adults are employed, the second highest ratio of any Australian state"),
+    vic_rank == 3 ~ paste0(vic_level, " of Victorian adults are employed, the third highest ratio of any Australian state"),
+    vic_rank <= 4 & vic_change > 0 ~ paste0("Victoria's employment to population ratio rose by ", round2(vic_change, 1), " percentage points in the year to ", format(max(df$date), "%B %Y")),
+    vic_rank < nsw_rank ~ "Victoria's employment to population ratio is higher than the ratio in New South Wales",
+    TRUE ~ "Victoria's employment to population ratio compared to other states and territories"
+  )
+
+  df %>%
+    ggplot(aes(x = date, y = value, col = state_group, group = state)) +
+    geom_line() +
+    ggiraph::geom_point_interactive( aes(tooltip = paste0(state_abbr, "\n",
+                                                          round2(value, 1))),
+                                     size = 3,
+                   shape = "circle filled",
+                   stroke = 1.5,
+                   fill = "white") +
+    ggrepel::geom_text_repel(direction = "y",
+                             data = ~dplyr::filter(., date == max(date)),
+                             aes(label = state_abbr),
+                             min.segment.length = 25,
+                             nudge_x = 15) +
+    theme_djpr() +
+    scale_x_date(breaks = unique(df$date),
+                 expand = expansion(add = c(10, 50)),
+                 date_labels = "%B\n%Y") +
+    scale_y_continuous(breaks = scales::breaks_pretty(5),
+                       labels = function(x) paste0(x, "%")) +
+    scale_colour_manual(values = c("Vic" = djprtheme::djpr_royal_blue,
+                                   "NSW" = djprtheme::djpr_green,
+                                   "Other" = "grey70")) +
+    theme(axis.title = element_blank() ) +
+    labs(title = title,
+         subtitle = "Employment to population ratio in Australian states and territories",
+         caption = caption_lfs())
+
 }

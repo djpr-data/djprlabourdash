@@ -107,7 +107,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                                 group_by(series_id) %>%
                                 mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                 dplyr::filter(.data$date == max(.data$date)),
-                              title = "") {
+                              zoom = 6) {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- absmapsdata::sa42016 %>%
@@ -147,14 +147,11 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
     dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
 
   # Produce dynamic map, all of Victoria ----
-  # Ignore warning message:
-  # //sf layer has inconsistent datum (+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs).
-  # //Need '+proj=longlat +datum=WGS84'
   map <- mapdata %>%
     leaflet::leaflet() %>%
     leaflet::setView(
       lng = 145.4657, lat = -36.41472, # coordinates of map at first view
-      zoom = 6
+      zoom = zoom
     ) %>%
     # size of map at first view
     leaflet::addPolygons(
@@ -959,7 +956,6 @@ reactable_region_focus <- function(data = filter_dash_data(
                                      dplyr::group_by(series_id) %>%
                                      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
                                    sa4 = "Geelong") {
-
   in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
@@ -1054,7 +1050,7 @@ reactable_region_focus <- function(data = filter_dash_data(
   )
 
   table_df <- table_df %>%
-    dplyr::select(indicator, series, {{sa4}}, dplyr::everything())
+    dplyr::select(indicator, series, {{ sa4 }}, dplyr::everything())
 
   table_df %>%
     rename(
@@ -1091,7 +1087,6 @@ reactable_region_focus <- function(data = filter_dash_data(
           name = names(table_df)[4],
           align = "center",
           minWidth = 40,
-
           headerStyle = col_header_style
         )
       ),
@@ -1117,55 +1112,109 @@ reactable_region_focus <- function(data = filter_dash_data(
     )
 }
 
-viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
-                                                          "A84600078W",
-                                                          "A84595516F",
-                                                          "A84595471L"),
-                                                          df = dash_data) %>%
-                                               dplyr::group_by(series_id) %>%
-                                               dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                  dplyr::filter(!is.na(value)),
-                                title = "") {
+viz_reg_melvic_line <- function(data = filter_dash_data(c(
+                                  "A84600144J",
+                                  "A84600078W",
+                                  "A84595516F",
+                                  "A84595471L"
+                                ),
+                                df = dash_data
+                                ) %>%
+                                  dplyr::group_by(series_id) %>%
+                                  dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  dplyr::filter(!is.na(value))) {
+  latest <- data %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      .data$indicator == "Unemployment rate"
+    ) %>%
+    dplyr::select(.data$value, .data$gcc_restofstate) %>%
+    dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
+    tidyr::spread(key = gcc_restofstate, value = value)
 
-  max_y <- max(data$value)
-  mid_x <- median(data$date)
 
-  data <- data %>%
-    dplyr::mutate(
-      is_mel = dplyr::if_else(.data$gcc_restofstate == "Greater Melbourne", TRUE, FALSE)
-    )
-
-  facet_labels <- data %>%
-    group_by(gcc_restofstate, is_mel) %>%
-    summarise() %>%
-    mutate(
-      x = mid_x,
-      y = max_y
-    )
-
-  data$gcc_restofstate <- factor(data$gcc_restofstate,
-                     levels = c("Greater Melbourne",
-                                sort(unique(data$gcc_restofstate[data$gcc_restofstate != "Greater Melbourne"])))
+  title <- paste0(
+    "The unemployment rate in Greater Melbourne was ",
+    latest$`Greater Melbourne`,
+    " while the rate in the rest of Victoria was ",
+    latest$`Rest of Vic.`,
+    " in ",
+    format(max(data$date), "%B %Y")
   )
 
-  # alternative graph
+  data <- data %>%
+    mutate(gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
+      fixed = TRUE
+    ))
+
+  max_date <- data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    mutate(label = paste0(
+      stringr::str_wrap(.data$gcc_restofstate, 9),
+      "\n",
+      round2(.data$value, 1)
+    ))
+
+  days_in_data <- as.numeric(max(data$date) - min(data$date))
+
   data %>%
+    dplyr::mutate(tooltip = paste0(
+      .data$gcc_restofstate, "\n",
+      format(.data$date, "%B %Y"),
+      "\n",
+      round2(.data$value, 1)
+    )) %>%
     ggplot(aes(x = date, y = value, col = gcc_restofstate)) +
     geom_line() +
+    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
+      size = 3,
+      colour = "white",
+      alpha = 0.01
+    ) +
+    geom_point(
+      data = max_date,
+      fill = "white",
+      stroke = 1.5,
+      size = 2.5,
+      shape = 21
+    ) +
+    ggrepel::geom_label_repel(
+      data = max_date,
+      aes(label = label),
+      hjust = 0,
+      nudge_x = days_in_data * 0.05,
+      label.padding = 0.01,
+      label.size = NA,
+      lineheight = 0.9,
+      point.padding = unit(0, "lines"),
+      direction = "y",
+      seed = 123,
+      show.legend = FALSE,
+      min.segment.length = unit(5, "lines"),
+      size = 14 / .pt
+    ) +
     facet_wrap(~indicator, scales = "free_y") +
     djprtheme::theme_djpr() +
     djpr_colour_manual(2) +
+    scale_y_continuous(
+      breaks = scales::breaks_pretty(4),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_x_date(
+      expand = expansion(
+        add = c(0, days_in_data * 0.25)
+      ),
+      date_labels = "%b\n%Y"
+    ) +
     coord_cartesian(clip = "off") +
     theme(
       axis.title = element_blank(),
-      panel.spacing = unit(1.5, "lines"),
-      axis.text = element_text(size = 12)
-    ) #+
-
-  labs(
-    title = "",
-    subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria, per cent",
-    caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
-  )
-
+      panel.spacing = unit(1.5, "lines")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria",
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
+    )
 }

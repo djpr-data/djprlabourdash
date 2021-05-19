@@ -5,9 +5,10 @@ account: djpr-spp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4017979
-bundleId: 4614381
+bundleId: 4616079
 url: https://djpr-spp.shinyapps.io/djprlabourdash/
-when: 1621402385.36428
-lastSyncTime: 1621402385.3643
+when: 1621431146.91191
+lastSyncTime: 1621431146.91195
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: data-raw

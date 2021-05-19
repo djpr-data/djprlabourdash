@@ -24,30 +24,30 @@
 #' }
 #'
 overview_table <- function(data = filter_dash_data(series_ids = c(
-                             "A84423349V",
-                             "A84423356T",
-                             "A84423355R",
-                             "A84423354L",
-                             "A84423350C",
-                             "A85223451R",
-                             "A84426256L",
-                             "A85223450L",
-                             "A84423357V",
-                             "pt_emp_vic",
-                             "A84423237A",
-                             "A84423461V",
-                             "A84433601W"
+                             "A84423349V", # Employed total
+                             # "A84423356T", # Emp-pop total
+                             "A84423355R", # Part rate
+                             "A84423354L", # Unemp rate
+                             "A84423350C", # Unemp total
+                             "A85223451R", # Underut rate
+                             "A84426256L", # Hours worked
+                             "A85223450L", # Underemp rate
+                             "A84423357V", # Emp FT
+                             "pt_emp_vic" # , # Emp PT
+                             # "A84423237A", # Emp males
+                             # "A84423461V", # Emp females
+                             # "A84433601W"  # Youth unemp
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {
-
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
     # Youth unemployment = 3m rolling average
     dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
-                                 zoo::rollmeanr(.data$value, 12, fill = NA),
-                                 .data$value)) %>%
+      zoo::rollmeanr(.data$value, 12, fill = NA),
+      .data$value
+    )) %>%
     dplyr::ungroup()
 
   make_reactable(
@@ -57,16 +57,50 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
   )
 }
 
-indicators_table <- function(data = filter_dash_data(c(
-                               "A84423349V",
-                               "A84423357V",
-                               "A84423356T",
-                               "A84423244X",
-                               "A84423468K",
-                               "pt_emp_vic"
-                             )),
-                             years_in_sparklines = 2,
-                             row_var = indicator) {
+table_ind_employment <- function(data = filter_dash_data(c(
+                                   "A84423349V",
+                                   "A84423357V",
+                                   "A84423356T",
+                                   "A84423244X",
+                                   "A84423468K",
+                                   "pt_emp_vic"
+                                 )),
+                                 years_in_sparklines = 2,
+                                 row_var = indicator) {
+  table_data <- data %>%
+    mutate(indicator = if_else(sex != "",
+      paste0(indicator, " (", sex, ")"),
+      indicator
+    ))
+
+  overview_table(table_data)
+}
+
+table_ind_unemp_summary <- function(data = filter_dash_data(c(
+                                      "A84423354L", # Unemp rate
+                                      "A84423350C", # Unemp total
+                                      "A85223451R", # Underut rate
+                                      "A84433601W", # Youth unemp,
+                                      "A84423242V", # Male unemp
+                                      "A84423466F" # Female unemp
+                                    )),
+                                    years_in_sparklines = 2,
+                                    row_var = indicator) {
+  table_data <- data %>%
+    mutate(indicator = if_else(sex != "",
+      paste0(indicator, " (", sex, ")"),
+      indicator
+    ))
+
+  overview_table(table_data)
+}
+
+table_ind_hours_summary <- function(data = filter_dash_data(c(
+                                      "A84426256L" # , # Total hours
+                                      # "A84423689R" # Civ pop
+                                    )),
+                                    years_in_sparklines = 2,
+                                    row_var = indicator) {
   table_data <- data %>%
     mutate(indicator = if_else(sex != "",
       paste0(indicator, " (", sex, ")"),
@@ -89,7 +123,6 @@ make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = indicator,
                            row_order = NULL) {
-
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   # Drop unneeded columns -----
@@ -102,17 +135,17 @@ make_reactable <- function(data,
   summary_df <- summary_df %>%
     dplyr::mutate(series = dplyr::case_when(
       .data$series_id == "A84423349V" ~
-        "Employed (persons)",
+      "Employed (persons)",
       .data$series_id == "A84423237A" ~
-        "Employed (males)",
+      "Employed (males)",
       .data$series_id == "A84423461V" ~
-        "Employed (females)",
+      "Employed (females)",
       .data$series_id == "A85223450L" ~
-        "Underemployment rate",
+      "Underemployment rate",
       .data$series_id == "A84423354L" ~
-        "Unemployment rate",
+      "Unemployment rate",
       .data$series_id == "A84433601W" ~
-        "Youth unemployment rate",
+      "Youth unemployment rate",
       TRUE ~ .data$series
     ))
 
@@ -131,7 +164,8 @@ make_reactable <- function(data,
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
       changeinyear = (.data$value - dplyr::lag(.data$value, 12)),
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
-      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])) %>%
+      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
+    ) %>%
     dplyr::filter(.data$date >= startdate)
 
   # Reformat columns -----
@@ -143,30 +177,37 @@ make_reactable <- function(data,
     x <- round2(x, 1)
     x <- x * 1000
 
-    dplyr::if_else(abs(x) >= 1e6,
-                   paste0(round2(x / 1e6, 3), "m"),
-                   scales::comma(x))
+    dplyr::case_when(
+      # Over 10m, round to 1 decimal as in 123.1m
+      abs(x) >= 1e8 ~ paste0(round2(x / 1e6, 1), "m"),
+      # Over 1m, round to 3 decimals, as in 3.445m
+      abs(x) >= 1e6 ~ paste0(round2(x / 1e6, 3), "m"),
+      # Otherwise, format with commas as in 100,000
+      TRUE ~ scales::comma(x)
+    )
   }
 
   summary_df <- summary_df %>%
     dplyr::mutate(across(
       c(dplyr::ends_with("pc")),
-      ~dplyr::if_else(is_level,
-                      paste0(round2(.x, 1), "%"),
-                      "-")
+      ~ dplyr::if_else(is_level,
+        paste0(round2(.x, 1), "%"),
+        "-"
+      )
     ),
     across(
       c(changeinmonth, changeinyear, changesince14),
-      ~dplyr::if_else(is_level,
-                      round_to_thousand(.x),
-                      sprintf("%.1f ppts", .x)
-                      )
+      ~ dplyr::if_else(is_level,
+        round_to_thousand(.x),
+        sprintf("%.1f ppts", .x)
+      )
     ),
     latest_value = dplyr::if_else(
       is_level,
       round_to_thousand(value),
       sprintf("%.1f%%", value)
-    )) %>%
+    )
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::select(-.data$unit, .data$is_level)
 

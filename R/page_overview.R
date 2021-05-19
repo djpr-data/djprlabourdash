@@ -15,8 +15,10 @@ page_overview <- function(...) {
       br(),
       br(),
       centred_row(h1("DJPR Jobs Dashboard")),
-      centred_row(htmlOutput("overview_text")),
-      br(),
+      # centred_row(htmlOutput("overview_text")),
+      centred_row(
+        HTML("Note: this dashboard is a prototype in active development. The content is not yet complete. <a href='mailto:mattcowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard'>Feedback is welcome</a>."),
+      ),
       centred_row(h3("Overview")),
       centred_row(
         tagList(
