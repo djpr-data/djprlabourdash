@@ -20,7 +20,8 @@ page_overview <- function(...) {
       centred_row(h3("Overview")),
       centred_row(
         tagList(
-          reactable::reactableOutput("main_table"),
+          reactable::reactableOutput("main_table") %>%
+            djpr_with_spinner(),
           reactable_caption()
         )
       ),

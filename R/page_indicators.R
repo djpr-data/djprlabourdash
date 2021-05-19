@@ -2,7 +2,8 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Employment"),
-    reactable::reactableOutput("ind_emp_table"),
+    reactable::reactableOutput("ind_emp_table") %>%
+      djpr_with_spinner(),
     reactable_caption(),
     br(),
     htmlOutput("ind_empgrowth_sincecovid_text"),

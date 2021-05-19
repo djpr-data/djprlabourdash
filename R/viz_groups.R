@@ -84,17 +84,21 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::arrange(sex, desc(indicator)) %>%
     dplyr::group_by(sex) %>%
-    dplyr::mutate(perc = value / sum(value),
-                  label_y = cumsum(perc) - (perc / 2)) %>%
+    dplyr::mutate(
+      perc = value / sum(value),
+      label_y = cumsum(perc) - (perc / 2)
+    ) %>%
     dplyr::ungroup()
 
   label_df <- df %>%
     dplyr::filter(sex == "Males") %>%
-    dplyr::mutate(label_y = case_when(indicator == "Employed part-time" ~
-                                        label_y - 0.1,
-                                      indicator == "Not in the labour force" ~
-                                        0.92,
-                                      TRUE ~ label_y))
+    dplyr::mutate(label_y = case_when(
+      indicator == "Employed part-time" ~
+      label_y - 0.1,
+      indicator == "Not in the labour force" ~
+      0.92,
+      TRUE ~ label_y
+    ))
 
   emp_tot <- df %>%
     dplyr::filter(grepl("Employed", .data$indicator)) %>%
@@ -102,40 +106,54 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     dplyr::summarise(emp_tot = sum(.data$perc)) %>%
     tidyr::spread(key = .data$sex, value = .data$emp_tot)
 
-  title <- paste0(round2(emp_tot$Males * 100, 0), " per cent of Victorian men are in paid work, but only ",
-                  round2(emp_tot$Females * 100, 0), " per cent of women")
+  title <- paste0(
+    round2(emp_tot$Males * 100, 0), " per cent of Victorian men are in paid work, but only ",
+    round2(emp_tot$Females * 100, 0), " per cent of women"
+  )
 
   df %>%
     ggplot(aes(x = sex, y = value, fill = indicator)) +
-    geom_col(position = "fill",
-             alpha = 1,
-             col = "grey70") +
+    geom_col(
+      position = "fill",
+      alpha = 1,
+      col = "grey70"
+    ) +
     geom_text(
       aes(y = label_y, label = round2(perc * 100, 1)),
       size = 16 / .pt,
-      colour = "white") +
+      colour = "white"
+    ) +
     # ggrepel::geom_text_repel(
     geom_text(
       data = label_df,
-              aes(y = label_y,
-                  col = indicator,
-                  label = stringr::str_wrap(indicator, 12)),
+      aes(
+        y = label_y,
+        col = indicator,
+        label = stringr::str_wrap(indicator, 12)
+      ),
       size = 14 / .pt,
-              vjust = 0,
-              x = 2.5) +
+      vjust = 0,
+      x = 2.5
+    ) +
     coord_flip() +
     theme_djpr() +
     djpr_fill_manual(4) +
     djpr_colour_manual(4) +
     scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
-    theme(axis.text.x = element_blank(),
-          axis.title = element_blank(),
-          panel.grid = element_blank(),
-          axis.line = element_blank() ) +
-    labs(subtitle = paste0("Labour force status by sex, Victoria, per cent of civilian population aged 15+, ",
-                           format(max(data$date), "%B %Y"), "."),
-         caption = caption_lfs(),
-         title = title)
+    theme(
+      axis.text.x = element_blank(),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      axis.line = element_blank()
+    ) +
+    labs(
+      subtitle = paste0(
+        "Labour force status by sex, Victoria, per cent of civilian population aged 15+, ",
+        format(max(data$date), "%B %Y"), "."
+      ),
+      caption = caption_lfs(),
+      title = title
+    )
 }
 
 
@@ -146,7 +164,6 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
                                      ),
                                      df = dash_data
                                      )) {
-
   df <- data %>%
     dplyr::mutate(sex = dplyr::if_else(sex == "", "Persons", sex))
 
@@ -156,23 +173,31 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
     dplyr::mutate(d_annual = value - lag(value, 12)) %>%
     dplyr::filter(date == max(date)) %>%
     dplyr::select(sex, d_annual) %>%
-    tidyr::spread(key = sex, value  = d_annual)
+    tidyr::spread(key = sex, value = d_annual)
 
   max_date <- format(max(df$date), "%B %Y")
 
   title <- dplyr::case_when(
     change_by_sex$Females > 0 & change_by_sex$Males > 0 ~
-      paste0("Labour force participation rose for both men and women in the year to ",
-             max_date),
+    paste0(
+      "Labour force participation rose for both men and women in the year to ",
+      max_date
+    ),
     change_by_sex$Females > 0 & change_by_sex$Males < 0 ~
-      paste0("Labour force participation rose for women but fell for men in the year to ",
-             max_date),
+    paste0(
+      "Labour force participation rose for women but fell for men in the year to ",
+      max_date
+    ),
     change_by_sex$Females < 0 & change_by_sex$Males < 0 ~
-      paste0("Labour force participation fell for both women and men in the year to ",
-             max_date),
+    paste0(
+      "Labour force participation fell for both women and men in the year to ",
+      max_date
+    ),
     change_by_sex$Females < 0 & change_by_sex$Males > 0 ~
-      paste0("Labour force participation rose for men but fell for women in the year to ",
-             max_date)
+    paste0(
+      "Labour force participation rose for men but fell for women in the year to ",
+      max_date
+    )
   )
 
   df %>%
@@ -190,9 +215,7 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
                                     "A84423466F"
                                   ),
                                   df = dash_data
-                                  )
-                                  ) {
-
+                                  )) {
   df <- data %>%
     dplyr::mutate(sex = dplyr::if_else(sex == "", "Persons", sex))
 
@@ -205,13 +228,19 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     current_ur$Females < current_ur$Males ~
-      paste0("The unemployment rate for women was a little lower than the rate for men in ",
-             max_date),
+    paste0(
+      "The unemployment rate for women was a little lower than the rate for men in ",
+      max_date
+    ),
     current_ur$Females > current_ur$Males ~
-      paste0("The unemployment rate for women was a little higher than the rate for men in ",
-             max_date),
-    TRUE ~ paste0("The unemployment rate for men and women was around the same level in ",
-                  max_date)
+    paste0(
+      "The unemployment rate for women was a little higher than the rate for men in ",
+      max_date
+    ),
+    TRUE ~ paste0(
+      "The unemployment rate for men and women was around the same level in ",
+      max_date
+    )
   )
 
   df %>%
@@ -342,9 +371,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                            ) %>%
                                              dplyr::group_by(series_id) %>%
                                              dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-                                             dplyr::filter(date >= as.Date("2020-01-01"))
-                                           ) {
-
+                                             dplyr::filter(date >= as.Date("2020-01-01"))) {
   data <- data %>%
     group_by(age, date) %>%
     summarise(value = sum(value))

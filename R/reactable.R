@@ -29,7 +29,8 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
                              "A84423355R",
                              "A84423354L",
                              "A84423350C",
-                             "A85223451R"
+                             "A85223451R",
+                             "A84426256L"
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {
@@ -66,54 +67,65 @@ make_reactable <- function(data,
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
-  # Calculate summary data frame - levels and changes -----
+  # Drop unneeded columns -----
   summary_df <- data %>%
     dplyr::select(.data$date, .data$series_id,
       series = {{ row_var }}, .data$value, .data$unit
-    ) %>%
-#    dplyr::filter(.data$date >= startdate) %>%
+    )
+
+  # Calculate change over time -----
+  summary_df <- summary_df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
-      value = dplyr::if_else(.data$unit == "000",
+      is_level = if_else(grepl("000", .data$unit), TRUE, FALSE),
+      value = dplyr::if_else(
+        is_level,
         1000 * .data$value,
         .data$value
       ),
       changeinmonth = (.data$value - dplyr::lag(.data$value)),
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
-      changeinmonthpc = dplyr::if_else(
-        unit == "000",
-        sprintf("%0.1f%%", changeinmonthpc),
-        "-"
-      ),
-      changeinmonth = ifelse(.data$unit == "000",
-        format(round(changeinmonth), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f ppts", .data$changeinmonth)
-      ),
       changeinyear = (.data$value - dplyr::lag(.data$value, 12)),
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
-      changeinyearpc = dplyr::if_else(
-        unit == "000",
-        sprintf("%0.1f%%", changeinyearpc),
-        "-"
-      ),
-      changeinyear = ifelse(.data$unit == "000",
-        format(round(changeinyear), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f ppts", .data$changeinyear)
-      ),
-      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")]),
-      changesince14 = ifelse(.data$unit == "000",
-                            format(round(changesince14), big.mark = ",", scientific = F, trim = T),
-                            sprintf("%.1f ppts", .data$changesince14)
-      ),
-      latest_value = dplyr::if_else(
-        unit == "000",
-        format(round(value), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f%%", value)
-      )
-    ) %>%
-    dplyr::ungroup() %>%
+      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])) %>%
     dplyr::filter(.data$date >= startdate)
+
+  # Reformat columns -----
+  # Function to return rounded numbers, with commas where appropriate
+  # 6175 becomes 6,200. 3445443 becomes 3.445m.
+  round_to_thousand <- function(x) {
+    x <- (x / 1000)
+    x <- round2(x, 1)
+    x <- x * 1000
+
+    dplyr::if_else(x > 1e6,
+                   paste0(round2(x / 1e6, 3), "m"),
+                   scales::comma(x))
+
+  }
+
+  summary_df <- summary_df %>%
+    dplyr::mutate(across(
+      c(dplyr::ends_with("pc")),
+      ~dplyr::if_else(is_level,
+                      paste0(round2(.x, 1), "%"),
+                      "-")
+    ),
+    across(
+      c(changeinmonth, changeinyear, changesince14),
+      ~dplyr::if_else(is_level,
+                      round_to_thousand(.x),
+                      sprintf("%.1f ppts", .x)
+                      )
+    ),
+    latest_value = dplyr::if_else(
+      is_level,
+      round_to_thousand(value),
+      sprintf("%.1f%%", value)
+    )) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-.data$unit, .data$is_level)
 
   # If a number is -0.0, change to 0.0
   summary_df <- summary_df %>%
@@ -149,7 +161,7 @@ make_reactable <- function(data,
     dplyr::select(-.data$date)
 
   ## Define colour palette
-  colpal <- djprtheme::djpr_pal(nrow(sparklinelist))
+  colpal <- suppressWarnings(djprtheme::djpr_pal(nrow(sparklinelist)))
 
   ## Calculate colours for each row
   ts_summ <- djprshiny::ts_summarise(data)
@@ -216,8 +228,9 @@ make_reactable <- function(data,
   }
 
   recol_changeinyearpc <- function(value, index) {
-    c(recol(value, index, ptile_d_year_perc),
-    list(`border-right` = "1px solid #000")
+    c(
+      recol(value, index, ptile_d_year_perc),
+      list(`border-right` = "1px solid #000")
     )
   }
 
@@ -265,19 +278,19 @@ make_reactable <- function(data,
                   showArea = F,
                   fill = colpal[index]
                 )
-#                dataui::dui_tooltip(
-#                  components = list(
-#                    # Create moving tooltip
-#                  dataui::dui_sparkverticalrefline(
-#                    strokeDasharray = "0, 0",
-#                    strokeWidth = 1,
-#                    stroke = "#838383"
-#                  ) ,
-#                  # display tooltip value
-#                  dataui::dui_sparkpointseries(
-#                   stroke = colpal[index],
-#                   fill = "#fff",
-#                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
+                #                dataui::dui_tooltip(
+                #                  components = list(
+                #                    # Create moving tooltip
+                #                  dataui::dui_sparkverticalrefline(
+                #                    strokeDasharray = "0, 0",
+                #                    strokeWidth = 1,
+                #                    stroke = "#838383"
+                #                  ) ,
+                #                  # display tooltip value
+                #                  dataui::dui_sparkpointseries(
+                #                   stroke = colpal[index],
+                #                   fill = "#fff",
+                #                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
               )
             )
           }
@@ -316,7 +329,7 @@ make_reactable <- function(data,
         ),
         changesince14 = reactable::colDef(
           name = "NO.",
-#          style = recol_changeinyear,
+          #          style = recol_changeinyear,
           headerStyle = col_header_style,
           align = "center",
           minWidth = 65,

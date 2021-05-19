@@ -37,36 +37,36 @@
 #' @import djprtheme
 #' @importFrom rlang `:=`
 title_unemprate_vic <- function(data = filter_dash_data(c(
-  "A84599659L",
-  "A84600019W",
-  "A84600187J",
-  "A84599557X",
-  "A84600115W",
-  "A84599851L",
-  "A84599923L",
-  "A84600025T",
-  "A84600193C",
-  "A84599665J",
-  "A84600031L",
-  "A84599671C",
-  "A84599677T",
-  "A84599683L",
-  "A84599929A",
-  "A84600121T",
-  "A84600037A"
-)) %>%
-  group_by(series_id) %>%
-  mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-  dplyr::filter(.data$date == max(.data$date))
-) {
-
+                                  "A84599659L",
+                                  "A84600019W",
+                                  "A84600187J",
+                                  "A84599557X",
+                                  "A84600115W",
+                                  "A84599851L",
+                                  "A84599923L",
+                                  "A84600025T",
+                                  "A84600193C",
+                                  "A84599665J",
+                                  "A84600031L",
+                                  "A84599671C",
+                                  "A84599677T",
+                                  "A84599683L",
+                                  "A84599929A",
+                                  "A84600121T",
+                                  "A84600037A"
+                                )) %>%
+                                  group_by(series_id) %>%
+                                  mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  dplyr::filter(.data$date == max(.data$date))) {
   high_low <- data %>%
     dplyr::ungroup() %>%
-    summarise(min_sa4 = sa4[value == min(value)],
-              min_ur = value[value == min(value)],
-              max_sa4 = sa4[value == max(value)],
-              max_ur = value[value == max(value)],
-              date = unique(date))
+    summarise(
+      min_sa4 = sa4[value == min(value)],
+      min_ur = value[value == min(value)],
+      max_sa4 = sa4[value == max(value)],
+      max_ur = value[value == max(value)],
+      date = unique(date)
+    )
 
   paste0(
     "The unemployment rate across Victoria ranges from ",
@@ -970,8 +970,9 @@ reactable_region_focus <- function(data = filter_dash_data(
 
   data <- data %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
-                                       "North West",
-                                       .data$sa4))
+      "North West",
+      .data$sa4
+    ))
 
   data <- data %>%
     dplyr::mutate(gcc_restofstate = dplyr::if_else(.data$gcc_restofstate ==

@@ -9,11 +9,13 @@ page_regions <- function(...) {
     fluidRow(
       column(
         6,
-        leaflet::leafletOutput("reg_unemprate_map")
+        leaflet::leafletOutput("reg_unemprate_map") %>%
+          djpr_with_spinner()
       ),
       column(
         6,
-        plotOutput("reg_unemprate_bar")
+        plotOutput("reg_unemprate_bar") %>%
+          djpr_with_spinner()
       )
     ),
     djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
@@ -50,16 +52,21 @@ page_regions <- function(...) {
       column(
         6,
         column(1),
-        column(11,
-               plotOutput("reg_sa4", height = 280),
-               br(),
-               htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE),
-               plotOutput("reg_sa4unemp_cf_broadregion", height = 300))
+        column(
+          11,
+          plotOutput("reg_sa4", height = 280),
+          br(),
+          htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
+            djpr_with_spinner(),
+          plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
+            djpr_with_spinner()
+        )
       ),
       column(
         6,
         br(),
-        reactable::reactableOutput("table_region_focus"),
+        reactable::reactableOutput("table_region_focus") %>%
+          djpr_with_spinner(),
         djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
         br(),
       )

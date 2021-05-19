@@ -15,24 +15,21 @@ labour_server <- function(input, output, session) {
 
   # Overview ------
 
-  output$overview_footnote <-
-    output$indicators_footnote <-
-    output$groups_footnote <-
-    output$regions_footnote <-
-    output$industries_footnote <- renderUI({
+  output$overview_footnote <- output$indicators_footnote <- output$groups_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
     req(dash_data)
     latest <- max(ts_summ$latest_date)
     div(
-    htmltools::HTML(
-    paste0("This dashboard is produced by the <b>Strategy and Priority ",
-           "Projects Data + Analytics</b> team at the Victorian Department ",
-           "of Jobs, Precincts and Regions. The <b>latest data in this ",
-           "dashboard is for ",
-           format(latest, "%B %Y"),
-           '</b>. Please <a href="mailto:mattcowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">contact Matt Cowgill</a> with any comments or feedback.'
-           )
-    ),
-    style = "color: #828282; font-size: 0.75rem"
+      htmltools::HTML(
+        paste0(
+          "This dashboard is produced by the <b>Strategy and Priority ",
+          "Projects Data + Analytics</b> team at the Victorian Department ",
+          "of Jobs, Precincts and Regions. The <b>latest data in this ",
+          "dashboard is for ",
+          format(latest, "%B %Y"),
+          '</b>. Please <a href="mailto:mattcowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">contact Matt Cowgill</a> with any comments or feedback.'
+        )
+      ),
+      style = "color: #828282; font-size: 0.75rem"
     )
   })
 
@@ -151,109 +148,118 @@ labour_server <- function(input, output, session) {
   # Indicators: line chart of annual employment growth in Vic & Aus
 
   djpr_plot_server("ind_empgro_line",
-                   viz_ind_empgro_line,
-                   data = filter_dash_data(c(
-                     "A84423349V",
-                     "A84423043C"
-                   )),
-                   date_slider_value_min = Sys.Date() - (365 * 5),
-                   plt_change = plt_change)
+    viz_ind_empgro_line,
+    data = filter_dash_data(c(
+      "A84423349V",
+      "A84423043C"
+    )),
+    date_slider_value_min = Sys.Date() - (365 * 5),
+    plt_change = plt_change
+  )
 
   # Indicators: line chart of emp-pop by sex
   djpr_plot_server("ind_emppopratio_line",
-                   viz_ind_emppopratio_line,
-                   data = filter_dash_data(c("A84423356T",
-                                             "A84423244X",
-                                             "A84423468K")
-                   ),
-                   date_slider_value_min = Sys.Date() - (365.25 * 10),
-                   plt_change = plt_change)
+    viz_ind_emppopratio_line,
+    data = filter_dash_data(c(
+      "A84423356T",
+      "A84423244X",
+      "A84423468K"
+    )),
+    date_slider_value_min = Sys.Date() - (365.25 * 10),
+    plt_change = plt_change
+  )
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
-                   viz_ind_unemp_states_dot,
-                   data = filter_dash_data(
-                     c("A84423354L",
-                       "A84423270C",
-                       "A84423368A",
-                       "A84423340X",
-                       "A84423326C",
-                       "A84423284T",
-                       "A84423312R",
-                       "A84423298F",
-                       "A84423050A")
-
-                   ),
-                   date_slider = FALSE,
-                   plt_change = plt_change)
+    viz_ind_unemp_states_dot,
+    data = filter_dash_data(
+      c(
+        "A84423354L",
+        "A84423270C",
+        "A84423368A",
+        "A84423340X",
+        "A84423326C",
+        "A84423284T",
+        "A84423312R",
+        "A84423298F",
+        "A84423050A"
+      )
+    ),
+    date_slider = FALSE,
+    plt_change = plt_change
+  )
 
   # Groups ------
 
   # Bar chart: LF status by sex, latest month
 
   djpr_plot_server("gr_gen_emp_bar",
-                   viz_gr_gen_emp_bar,
-                   date_slider = F,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423469L",
-                     "A84423245A",
-                     "A84423801C",
-                     "A84423577W",
-                     "A84423461V",
-                     "A84423237A",
-                     "A84423463X",
-                     "A84423239F",
-                     "A84423462W",
-                     "A84423238C"
-                   ), df = dash_data) %>%
-                     dplyr::group_by(.data$series) %>%
-                     dplyr::filter(.data$date == max(.data$date)))
+    viz_gr_gen_emp_bar,
+    date_slider = F,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423469L",
+      "A84423245A",
+      "A84423801C",
+      "A84423577W",
+      "A84423461V",
+      "A84423237A",
+      "A84423463X",
+      "A84423239F",
+      "A84423462W",
+      "A84423238C"
+    ), df = dash_data) %>%
+      dplyr::group_by(.data$series) %>%
+      dplyr::filter(.data$date == max(.data$date))
+  )
 
   # Line chart: participation by sex over time
   djpr_plot_server("gr_gen_partrate_line",
-                   viz_gr_gen_partrate_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423243W",
-                     "A84423467J"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = Sys.Date() - (365.25 * 5))
+    viz_gr_gen_partrate_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423243W",
+      "A84423467J"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (365.25 * 5)
+  )
 
   # Line chart: unemployment rate by sex
   djpr_plot_server("gr_gen_unemp_line",
-                   viz_gr_gen_unemp_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423354L",
-                     "A84423242V",
-                     "A84423466F"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = Sys.Date() - (365.25 * 10))
+    viz_gr_gen_unemp_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423354L",
+      "A84423242V",
+      "A84423466F"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (365.25 * 10)
+  )
 
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
-                   viz_gr_yth_emp_sincecovid_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "15-24_greater melbourne_employed",
-                     "25-54_greater melbourne_employed",
-                     "55+_greater melbourne_employed",
-                     "15-24_rest of vic._employed",
-                     "25-54_rest of vic._employed",
-                     "55+_rest of vic._employed"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(series_id) %>%
-                     dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-                     dplyr::filter(date >= as.Date("2020-01-01")),
-                   date_slider = FALSE)
+    viz_gr_yth_emp_sincecovid_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "15-24_greater melbourne_employed",
+      "25-54_greater melbourne_employed",
+      "55+_greater melbourne_employed",
+      "15-24_rest of vic._employed",
+      "25-54_rest of vic._employed",
+      "55+_rest of vic._employed"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::group_by(series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
+      dplyr::filter(date >= as.Date("2020-01-01")),
+    date_slider = FALSE
+  )
 
 
   # Regions ------
@@ -384,34 +390,44 @@ labour_server <- function(input, output, session) {
     },
     height = 350
   ) %>%
-    bindCache(input$focus_region,
-              dash_data)
+    bindCache(
+      input$focus_region,
+      dash_data
+    )
 
   output$table_region_focus <- reactable::renderReactable({
     reactable_region_focus(sa4 = input$focus_region)
   }) %>%
-    bindCache(input$focus_region,
-              dash_data)
+    bindCache(
+      input$focus_region,
+      dash_data
+    )
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
     viz_reg_sa4unemp_cf_broadregion(sa4 = input$focus_region)
   }) %>%
-    bindCache(input$focus_region,
-              dash_data)
+    bindCache(
+      input$focus_region,
+      dash_data
+    )
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
     djpr_plot_title(extract_labs(reg_sa4unemp_cf_broadregion_withtitle()))
   }) %>%
-    bindCache(input$focus_region,
-              dash_data)
+    bindCache(
+      input$focus_region,
+      dash_data
+    )
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
     plot <- reg_sa4unemp_cf_broadregion_withtitle()
     plot$labels$title <- NULL
     plot
   }) %>%
-    bindCache(input$focus_region,
-              dash_data)
+    bindCache(
+      input$focus_region,
+      dash_data
+    )
 
   # Links to pages -----
   observeEvent(input$link_indicators, {

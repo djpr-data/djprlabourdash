@@ -7,7 +7,6 @@
 #' @examples
 #' subtract_years(Sys.Date(), 5)
 #' subtract_years(as.Date("2020-01-01"), 1)
-#'
 #' \dontrun{
 #' # This returns an error:
 #' subtract_years(Sys.Date(), 1.5)
@@ -20,7 +19,7 @@ subtract_years <- function(date, n_years) {
   stopifnot(as.integer(n_years) == n_years)
 
   seq(date,
-      length = 2,
-      by = paste0("-", n_years, " years")
+    length = 2,
+    by = paste0("-", n_years, " years")
   )[2]
 }
