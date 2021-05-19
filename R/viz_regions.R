@@ -813,7 +813,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
                                               dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                               dplyr::filter(.data$date >= max(.data$date) - (365.25 * 5)),
                                             sa4 = "Geelong") {
-  in_melb <- grepl("Melbourne", sa4)
+  in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
     "Greater Melbourne",
@@ -959,7 +959,8 @@ reactable_region_focus <- function(data = filter_dash_data(
                                      dplyr::group_by(series_id) %>%
                                      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
                                    sa4 = "Geelong") {
-  in_melb <- grepl("Melbourne", sa4)
+
+  in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
     "Greater Melbourne",
@@ -1048,11 +1049,12 @@ reactable_region_focus <- function(data = filter_dash_data(
     dplyr::arrange(desc(indicator), order) %>%
     dplyr::select(-order)
 
-  col_names <- names(table_df)
-
   col_header_style <- list(
     `font-weight` = "600"
   )
+
+  table_df <- table_df %>%
+    dplyr::select(indicator, series, {{sa4}}, dplyr::everything())
 
   table_df %>%
     rename(
@@ -1077,14 +1079,19 @@ reactable_region_focus <- function(data = filter_dash_data(
         ),
         series = reactable::colDef(
           name = "",
-          minWidth = 45
+          minWidth = 30
         ),
         region = reactable::colDef(
-          name = col_names[3],
+          name = names(table_df)[3],
+          align = "center",
+          minWidth = 40,
           headerStyle = col_header_style
         ),
         aggregate = reactable::colDef(
-          name = col_names[4],
+          name = names(table_df)[4],
+          align = "center",
+          minWidth = 40,
+
           headerStyle = col_header_style
         )
       ),

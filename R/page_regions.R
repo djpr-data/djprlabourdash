@@ -54,7 +54,8 @@ page_regions <- function(...) {
         column(1),
         column(
           11,
-          plotOutput("reg_sa4", height = 280),
+          plotOutput("reg_sa4", height = 280) %>%
+            djpr_with_spinner(),
           br(),
           htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
             djpr_with_spinner(),

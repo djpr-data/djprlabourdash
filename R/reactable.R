@@ -228,9 +228,9 @@ make_reactable <- function(data,
   }
 
   cell_padding <- list(
-    `padding-top` = "8px",
+    `padding-top` = "15px",
     `padding-right` = "0px",
-    `padding-bottom` = "7px",
+    `padding-bottom` = "6px",
     `padding-left` = "0px"
   )
 
@@ -376,6 +376,9 @@ make_reactable <- function(data,
           name = "NO.",
           #          style = recol_changeinyear,
           headerStyle = col_header_style,
+          style = c(
+            cell_padding
+          ),
           align = "center",
           minWidth = 65,
           maxWidth = 90
@@ -389,7 +392,7 @@ make_reactable <- function(data,
             list(`border-right` = "1px solid #000")
           ),
           maxWidth = 90,
-          minWidth = 70
+          minWidth = 65
         )
       ),
       columnGroups = list(
