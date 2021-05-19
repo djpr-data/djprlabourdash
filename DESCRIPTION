@@ -56,13 +56,14 @@ Imports:
     zoo,
     scales,
     patchwork,
-    strayr
-Remotes: 
+    strayr (>= 0.0.1)
+Remotes:  
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
     timelyportfolio/dataui,
-    wfmackey/absmapsdata
+    wfmackey/absmapsdata,
+    mattcowgill/strayr
 Depends: 
     R (>= 3.50)
 Suggests: 
