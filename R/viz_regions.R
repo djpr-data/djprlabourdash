@@ -1070,7 +1070,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
                                                dplyr::group_by(series_id) %>%
                                                dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                   dplyr::filter(!is.na(value)),
-                                title = title_reg_melvic_line(data = data)) {
+                                title = "") {
 
   max_y <- max(data$value)
   mid_x <- median(data$date)
@@ -1115,7 +1115,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
 #                                    colour = "white",
 #                                    alpha = 0.01
 #    ) #+
-    facet_wrap(~ factor(gcc_restofstate),
+    facet_wrap(~ factor(indicator),
                scales = "free_x",
                ncol = 6
     ) +
@@ -1130,8 +1130,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
       strip.text = element_blank(),
       panel.spacing = unit(1.5, "lines"),
       axis.text = element_text(size = 12)
-    ) #+
-
+    ) +
     labs(
       title = "",
       subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria, per cent",
