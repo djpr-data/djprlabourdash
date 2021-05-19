@@ -1109,3 +1109,56 @@ reactable_region_focus <- function(data = filter_dash_data(
       )
     )
 }
+
+viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
+                                                          "A84600078W",
+                                                          "A84595516F",
+                                                          "A84595471L"),
+                                                          df = dash_data) %>%
+                                               dplyr::group_by(series_id) %>%
+                                               dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  dplyr::filter(!is.na(value)),
+                                title = "") {
+
+  max_y <- max(data$value)
+  mid_x <- median(data$date)
+
+  data <- data %>%
+    dplyr::mutate(
+      is_mel = dplyr::if_else(.data$gcc_restofstate == "Greater Melbourne", TRUE, FALSE)
+    )
+
+  facet_labels <- data %>%
+    group_by(gcc_restofstate, is_mel) %>%
+    summarise() %>%
+    mutate(
+      x = mid_x,
+      y = max_y
+    )
+
+  data$gcc_restofstate <- factor(data$gcc_restofstate,
+                     levels = c("Greater Melbourne",
+                                sort(unique(data$gcc_restofstate[data$gcc_restofstate != "Greater Melbourne"])))
+  )
+
+  # alternative graph
+  data %>%
+    ggplot(aes(x = date, y = value, col = gcc_restofstate)) +
+    geom_line() +
+    facet_wrap(~indicator, scales = "free_y") +
+    djprtheme::theme_djpr() +
+    djpr_colour_manual(2) +
+    coord_cartesian(clip = "off") +
+    theme(
+      axis.title = element_blank(),
+      panel.spacing = unit(1.5, "lines"),
+      axis.text = element_text(size = 12)
+    ) #+
+
+  labs(
+    title = "",
+    subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria, per cent",
+    caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
+  )
+
+}
