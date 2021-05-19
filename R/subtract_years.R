@@ -8,8 +8,10 @@
 #' subtract_years(Sys.Date(), 5)
 #' subtract_years(as.Date("2020-01-01"), 1)
 #'
+#' \dontrun{
 #' # This returns an error:
 #' subtract_years(Sys.Date(), 1.5)
+#' }
 #' @export
 subtract_years <- function(date, n_years) {
   # Part years cannot be subtracted (eg. 0.5, 1.5).

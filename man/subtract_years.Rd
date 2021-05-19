@@ -19,6 +19,8 @@ Subtract a number of years from a date
 subtract_years(Sys.Date(), 5)
 subtract_years(as.Date("2020-01-01"), 1)
 
+\dontrun{
 # This returns an error:
 subtract_years(Sys.Date(), 1.5)
+}
 }

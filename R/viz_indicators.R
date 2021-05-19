@@ -212,7 +212,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
                                          .data$state)) %>%
     dplyr::group_by(.data$state) %>%
     dplyr::filter(.data$date %in% c(max(.data$date),
-                                    max(.data$date) - lubridate::years(1)))
+                                    subtract_years(max.data$date, 1)))
 
   df_wide <- df %>%
     dplyr::mutate(date_type = dplyr::if_else(date == min(date),

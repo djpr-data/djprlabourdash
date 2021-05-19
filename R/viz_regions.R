@@ -35,7 +35,7 @@
 #' ))
 #' }
 #' @import djprtheme
-#'
+#' @importFrom rlang `:=`
 title_unemprate_vic <- function(data = filter_dash_data(c(
   "A84599659L",
   "A84600019W",
