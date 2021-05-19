@@ -1,10 +1,10 @@
 labour_ui <- function(...) {
   djprshiny::djpr_page(
-    title = "Victorian Jobs Dashboard",
+    title = "DJPR Jobs Dashboard",
     page_overview(),
     page_indicators(),
     page_groups(),
-    page_regions(),
-    page_industries()
+    page_regions() #,
+    # page_industries()
   )
 }

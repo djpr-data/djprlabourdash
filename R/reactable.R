@@ -15,7 +15,7 @@
 #'   "A84423355R",
 #'   "A84423354L",
 #'   "A84423350C",
-#'   "A85223451R
+#'   "A85223451R"
 #' )
 #'
 #' table_data <- filter_dash_data(table_ids)
@@ -40,18 +40,29 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
   )
 }
 
+indicators_table <- function(data = filter_dash_data(c(
+                               "A84423349V",
+                               "A84423357V",
+                               "A84423356T",
+                               "A84423244X",
+                               "A84423468K",
+                               "pt_emp_vic"
+                             )),
+                             years_in_sparklines = 2,
+                             row_var = indicator) {
+  table_data <- data %>%
+    mutate(indicator = if_else(sex != "",
+      paste0(indicator, " (", sex, ")"),
+      indicator
+    ))
+
+  overview_table(table_data)
+}
+
 
 make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = indicator) {
-
-  # Function to avoid adding a lubridate dependency
-  subtract_years <- function(max_date, n_years) {
-    seq(max_date,
-      length = 2,
-      by = paste0("-", n_years, " years")
-    )[2]
-  }
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
@@ -98,11 +109,18 @@ make_reactable <- function(data,
       latest_value = dplyr::if_else(
         unit == "000",
         format(round(value), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f %%", value)
+        sprintf("%.1f%%", value)
       )
     ) %>%
     dplyr::ungroup() %>%
     dplyr::filter(.data$date >= startdate)
+
+  # If a number is -0.0, change to 0.0
+  summary_df <- summary_df %>%
+    dplyr::mutate(dplyr::across(
+      dplyr::starts_with("changein"),
+      ~ gsub("-0.0", "0.0", .x)
+    ))
 
   ## Select only the latest changes
 
@@ -140,11 +158,13 @@ make_reactable <- function(data,
 
   calc_cols <- function(series_ids, item, summ_df = ts_summ) {
     ptiles <- get_summ(series_ids, {{ item }},
-                       df = summ_df)
+      df = summ_df
+    )
 
     # For some indicators, 20 pctile is "bad", for some it is "good"
     up_is_good <- get_summ(series_ids, up_is_good,
-                           df = summ_df)
+      df = summ_df
+    )
     ptiles <- ifelse(up_is_good, ptiles, 1 - ptiles)
 
     ptiles <- round(ptiles * 100, 0)
@@ -185,9 +205,10 @@ make_reactable <- function(data,
   }
 
   recol_changeinmonthpc <- function(value, index) {
-    c(recol(value, index, ptile_d_period_perc),
+    c(
+      recol(value, index, ptile_d_period_perc),
       list(`border-right` = "1px solid #000")
-      )
+    )
   }
 
   recol_changeinyear <- function(value, index) {
@@ -213,10 +234,13 @@ make_reactable <- function(data,
         series = reactable::colDef(
           name = "",
           style = function(value, index) {
-            c(list(
-              fontWeight = "bold"
-            ),
-            cell_padding)
+            c(
+              list(
+                fontWeight = "bold" # ,
+                # color = colpal[index]
+              ),
+              cell_padding
+            )
           },
           minWidth = 100,
         ),
@@ -254,8 +278,6 @@ make_reactable <- function(data,
 #                   stroke = colpal[index],
 #                   fill = "#fff",
 #                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
-
-
               )
             )
           }
@@ -304,8 +326,10 @@ make_reactable <- function(data,
           name = toupper(strftime(max(data$date), "%B %Y")),
           align = "center",
           headerStyle = col_header_style,
-          style = c(cell_padding,
-                    list(`border-right` = "1px solid #000")),
+          style = c(
+            cell_padding,
+            list(`border-right` = "1px solid #000")
+          ),
           maxWidth = 90,
           minWidth = 70
         )
@@ -332,8 +356,10 @@ make_reactable <- function(data,
         highlightColor = "#f0f5f9",
         cellPadding = "7px 1px 1px 1px",
         tableStyle = list(`border-bottom` = "1px solid #000"),
-        headerStyle = list(fontWeight = "normal",
-                           `border-bottom` = "1px solid #000"),
+        headerStyle = list(
+          fontWeight = "normal",
+          `border-bottom` = "1px solid #000"
+        ),
         groupHeaderStyle = list(fontWeight = "normal"),
         style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
       )

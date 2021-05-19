@@ -20,10 +20,12 @@ load_dash_data <- function() {
       "series_type"
     )))
 
-  df <- djprdashdata::download_abs_ts("abs-lfs")
+  lfs <- djprdashdata::download_abs_ts("abs-lfs")
 
-  df %>%
+  lfs <- lfs %>%
     dplyr::left_join(crosstabs,
       by = "series_id"
     )
+
+  lfs
 }

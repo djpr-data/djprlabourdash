@@ -48,7 +48,10 @@ Imports:
     webshot,
     ggiraph,
     ggrepel,
-    stringr
+    stringr,
+    zoo,
+    scales,
+    patchwork
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
