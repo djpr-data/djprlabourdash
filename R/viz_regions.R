@@ -1011,7 +1011,7 @@ reactable_region_focus <- function(data = filter_dash_data(
     )) %>%
     dplyr::mutate(
       value = dplyr::if_else(indicator == "Employed total",
-        paste0(value, "k"),
+        scales::comma(value * 1000),
         paste0(value, "%")
       ),
       d_month = dplyr::if_else(indicator == "Employed total",

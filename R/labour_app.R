@@ -268,7 +268,8 @@ labour_server <- function(input, output, session) {
 
   output$reg_unemprate_map <- leaflet::renderLeaflet({
     map_unemprate_vic()
-  })
+  }) %>%
+    bindCache(dash_data)
 
   output$reg_unemprate_bar <- renderPlot({
     df <- filter_dash_data(c(
@@ -297,7 +298,8 @@ labour_server <- function(input, output, session) {
 
     df %>%
       viz_reg_unemprate_bar()
-  })
+  }) %>%
+    bindCache(dash_data)
 
 
   djpr_plot_server("reg_unemprate_multiline",
@@ -377,6 +379,7 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Regions: Focus box -----
   output$reg_sa4 <- renderPlot(
     {
       map_reg_sa4(sa4 = input$focus_region)
@@ -384,25 +387,33 @@ labour_server <- function(input, output, session) {
     height = 350
   ) %>%
     bindCache(input$focus_region,
-              plt_change)
+              dash_data)
 
   output$table_region_focus <- reactable::renderReactable({
     reactable_region_focus(sa4 = input$focus_region)
-  })
+  }) %>%
+    bindCache(input$focus_region,
+              dash_data)
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
     viz_reg_sa4unemp_cf_broadregion(sa4 = input$focus_region)
-  })
+  }) %>%
+    bindCache(input$focus_region,
+              dash_data)
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
     djpr_plot_title(extract_labs(reg_sa4unemp_cf_broadregion_withtitle()))
-  })
+  }) %>%
+    bindCache(input$focus_region,
+              dash_data)
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
     plot <- reg_sa4unemp_cf_broadregion_withtitle()
     plot$labels$title <- NULL
     plot
-  })
+  }) %>%
+    bindCache(input$focus_region,
+              dash_data)
 
   # Links to pages -----
   observeEvent(input$link_indicators, {

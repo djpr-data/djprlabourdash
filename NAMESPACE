@@ -2,6 +2,7 @@
 
 export("%>%")
 export(load_dash_data)
+export(subtract_years)
 import(djprdashdata)
 import(djprshiny)
 import(djprtheme)
