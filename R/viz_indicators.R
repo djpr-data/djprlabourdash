@@ -197,12 +197,12 @@ viz_ind_emppopratio_line <- function(data = filter_dash_data(c("A84423356T",
     latest_year$Females > 0 &
       latest_year$Males < 0 ~
       paste0("The proportion of Victorian women in work rose over the year to ",
-             nice_date, " but the male employment-to-population ratio fell"),
+             nice_date, " but the male employment to population ratio fell"),
     latest_year$Females < 0 &
       latest_year$Males > 0 ~
       paste0("The proportion of Victorian men in work rose over the year to ",
-             nice_date, " but the female employment-to-population ratio fell"),
-    TRUE ~ "Employment-to-population ratio for Victorian men and women"
+             nice_date, " but the female employment to population ratio fell"),
+    TRUE ~ "Employment to population ratio for Victorian men and women"
   )
 
   df %>%
@@ -264,7 +264,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     vic_rank < 5 &
       df_wide$max_date[df_wide$state == "Victoria"] < df_wide$min_date[df_wide$state == "Victoria"] ~
       "has fallen over the past year",
-    TRUE ~ "Victoria's unemployment rate compared to other states and territories"
+    TRUE ~ "compared to other states and territories"
   ) %>%
     paste0("Victoria's unemployment rate ", .)
 

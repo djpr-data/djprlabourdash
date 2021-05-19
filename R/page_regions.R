@@ -18,7 +18,6 @@ page_regions <- function(...) {
     ),
     djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
-    "TEXT HERE",
     djpr_plot_ui("reg_unemprate_multiline"),
     h2("Regional focus"),
     selectInput("focus_region",
