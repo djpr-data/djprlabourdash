@@ -180,35 +180,7 @@ viz_ind_emppopratio_line <- function(data = filter_dash_data(c("A84423356T",
                                        "Persons",
                                        .data$sex))
 
-  cf_covid <- df %>%
-    dplyr::filter(.data$sex != "Persons") %>%
-    dplyr::group_by(.data$sex) %>%
-    dplyr::mutate(cf_covid = .data$value / .data$value[.data$date ==
-                                                         as.Date("2020-03-01")]) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$sex, .data$cf_covid)
-
-  men_cf_covid <- cf_covid %>%
-    dplyr::filter(.data$sex == "Males") %>%
-    dplyr::pull(.data$cf_covid)
-
-  women_cf_covid <- cf_covid %>%
-    dplyr::filter(.data$sex == "Females") %>%
-    dplyr::pull(.data$cf_covid)
-
-  title <- dplyr::case_when(men_cf_covid > 1 &
-                     women_cf_covid > 1 ~
-                     "Employment for both men and women is now above its pre-COVID levels as a share of the population",
-                   men_cf_covid < 1 &
-                     women_cf_covid > 1 ~
-                     "Male employment is below pre-COVID levels as a share of the population, but female employment is above pre-COVID levels",
-                   men_cf_covid > 1 &
-                     women_cf_covid < 1 ~
-                     "Female employment is below pre-COVID levels as a share of the population, but male employment is above pre-COVID levels",
-                   men_cf_covid < 1 &
-                     women_cf_covid < 1 ~
-                     "Employment of both men and women is below pre-COVID levels as a share of the population",
-                   TRUE ~ "")
+  df
 
   df %>%
     djpr_ts_linechart(col_var = sex,
