@@ -1093,48 +1093,24 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
                                 sort(unique(data$gcc_restofstate[data$gcc_restofstate != "Greater Melbourne"])))
   )
 
+  # alternative graph
   data %>%
-    ggplot(aes(x = date, y = value, col = is_mel)) +
-    geom_line(aes(group = gcc_restofstate)) +
-    geom_label(
-      data = facet_labels,
-      aes(
-        label = stringr::str_wrap(gcc_restofstate, 11),
-        y = max_y,
-        x = mid_x
-      ),
-      nudge_y = 0.1,
-      lineheight = 0.85,
-      label.padding = unit(0.05, "lines"),
-      label.size = 0,
-      size = 12 / .pt
-    ) +
-#    geom_line(data = data) +
-#    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
-#                                    size = 3,
-#                                    colour = "white",
-#                                    alpha = 0.01
-#    ) #+
-    facet_wrap(~ factor(indicator),
-               scales = "free_x",
-               ncol = 6
-    ) +
-    scale_colour_manual(values = c(
-      `TRUE` = "#2A6FA2",
-      `FALSE` = "#62BB46"
-    )) +
+    ggplot(aes(x = date, y = value, col = gcc_restofstate)) +
+    geom_line() +
+    facet_wrap(~indicator, scales = "free_y") +
     djprtheme::theme_djpr() +
+    djpr_colour_manual(2) +
     coord_cartesian(clip = "off") +
     theme(
       axis.title = element_blank(),
-      strip.text = element_blank(),
       panel.spacing = unit(1.5, "lines"),
       axis.text = element_text(size = 12)
-    ) +
-    labs(
-      title = "",
-      subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria, per cent",
-      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
-    )
+    ) #+
+
+  labs(
+    title = "",
+    subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria, per cent",
+    caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
+  )
 
 }
