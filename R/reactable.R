@@ -20,7 +20,7 @@
 #'
 #' table_data <- filter_dash_data(table_ids)
 #'
-#' overview_table(table_data)
+#' overview_table()
 #' }
 #'
 overview_table <- function(data = filter_dash_data(series_ids = c(
@@ -71,7 +71,7 @@ make_reactable <- function(data,
     dplyr::select(.data$date, .data$series_id,
       series = {{ row_var }}, .data$value, .data$unit
     ) %>%
-    dplyr::filter(.data$date >= startdate) %>%
+#    dplyr::filter(.data$date >= startdate) %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
@@ -101,13 +101,19 @@ make_reactable <- function(data,
         format(round(changeinyear), big.mark = ",", scientific = F, trim = T),
         sprintf("%.1f ppts", .data$changeinyear)
       ),
+      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")]),
+      changesince14 = ifelse(.data$unit == "000",
+                            format(round(changesince14), big.mark = ",", scientific = F, trim = T),
+                            sprintf("%.1f ppts", .data$changesince14)
+      ),
       latest_value = dplyr::if_else(
         unit == "000",
         format(round(value), big.mark = ",", scientific = F, trim = T),
         sprintf("%.1f%%", value)
       )
     ) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$date >= startdate)
 
   # If a number is -0.0, change to 0.0
   summary_df <- summary_df %>%
@@ -130,6 +136,7 @@ make_reactable <- function(data,
       .data$changeinmonthpc,
       .data$changeinyear,
       .data$changeinyearpc,
+      .data$changesince14
     ) %>%
     dplyr::ungroup()
 
@@ -209,7 +216,9 @@ make_reactable <- function(data,
   }
 
   recol_changeinyearpc <- function(value, index) {
-    recol(value, index, ptile_d_year_perc)
+    c(recol(value, index, ptile_d_year_perc),
+    list(`border-right` = "1px solid #000")
+    )
   }
 
   col_header_style <- list(
@@ -246,8 +255,8 @@ make_reactable <- function(data,
               data = value[[1]],
               height = 50,
               margin = list(
-                top = 7, right = 3,
-                bottom = 7, left = 3
+                top = 7, right = 5,
+                bottom = 7, left = 5
               ),
               components = list(
                 # Create actual sparkline
@@ -255,23 +264,20 @@ make_reactable <- function(data,
                   stroke = colpal[index],
                   showArea = F,
                   fill = colpal[index]
-                ),
-                dataui::dui_tooltip(
-                  components = list(
-                    # Create moving tooltip
-                    dataui::dui_sparkverticalrefline(
-                      strokeDasharray = "0, 0",
-                      strokeWidth = 1,
-                      stroke = "#838383"
-                    ),
-                    # display tooltip value
-                    dataui::dui_sparkpointseries(
-                      stroke = colpal[index],
-                      fill = "#fff",
-                      renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
-                    )
-                  )
                 )
+#                dataui::dui_tooltip(
+#                  components = list(
+#                    # Create moving tooltip
+#                  dataui::dui_sparkverticalrefline(
+#                    strokeDasharray = "0, 0",
+#                    strokeWidth = 1,
+#                    stroke = "#838383"
+#                  ) ,
+#                  # display tooltip value
+#                  dataui::dui_sparkpointseries(
+#                   stroke = colpal[index],
+#                   fill = "#fff",
+#                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
               )
             )
           }
@@ -308,6 +314,14 @@ make_reactable <- function(data,
           minWidth = 65,
           maxWidth = 90
         ),
+        changesince14 = reactable::colDef(
+          name = "NO.",
+#          style = recol_changeinyear,
+          headerStyle = col_header_style,
+          align = "center",
+          minWidth = 65,
+          maxWidth = 90
+        ),
         latest_value = reactable::colDef(
           name = toupper(strftime(max(data$date), "%B %Y")),
           align = "center",
@@ -327,6 +341,10 @@ make_reactable <- function(data,
         ),
         reactable::colGroup(
           name = "Change over year", columns = c("changeinyear", "changeinyearpc"),
+          headerStyle = list(`font-weight` = "600")
+        ),
+        reactable::colGroup(
+          name = "Change since Nov 2014", columns = c("changesince14"),
           headerStyle = list(`font-weight` = "600")
         )
       ),
