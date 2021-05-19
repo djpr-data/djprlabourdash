@@ -138,7 +138,7 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
   df <- data %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
     dplyr::arrange(.data$date) %>%
-    dplyr::group_by(.data$indicator) %>%
+    dplyr::group_by(.data$indicator, .data$state) %>%
     dplyr::mutate(value = 100 * ((value / lag(value, 12)) - 1)) %>%
     dplyr::filter(!is.na(value)) %>%
     dplyr::ungroup()
