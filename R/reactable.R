@@ -3,7 +3,7 @@
 #' @param years_in_sparklines Numeric; indicating the number of years of data
 #' to include in the sparkline charts in the returned reactable.
 #' @param row_var Unquoted variable name in data to use for row names
-#' @return A reactable (htmlwidget) including sparklines and sortable columns
+#' @return A reactable (htmlwidget) including sparklines
 #' @author Darren Wong, Duy Nguyen
 #' @examples
 #' # Using the data available to this dashboard
@@ -30,10 +30,26 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
                              "A84423354L",
                              "A84423350C",
                              "A85223451R",
-                             "A84426256L"
+                             "A84426256L",
+                             "A85223450L",
+                             "A84423357V",
+                             "pt_emp_vic",
+                             "A84423237A",
+                             "A84423461V",
+                             "A84433601W"
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    # Youth unemployment = 3m rolling average
+    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
+                                 zoo::rollmeanr(.data$value, 12, fill = NA),
+                                 .data$value)) %>%
+    dplyr::ungroup()
+
   make_reactable(
     data = data,
     years_in_sparklines = years_in_sparklines,
@@ -60,10 +76,19 @@ indicators_table <- function(data = filter_dash_data(c(
   overview_table(table_data)
 }
 
+#' @param data a data frame
+#' @param years_in_sparklines number of years prior to latest obs to include
+#' in sparkline
+#' @param row_var unquoted name of column in `data` to use as the row names in
+#' the table
+#' @param row_order If `NULL`, table will be sorted in alphabetical order.
+#' Otherwise, `row_order` should be a vector of row names in the order in which
+#' you want them to appear in the table.
 
 make_reactable <- function(data,
                            years_in_sparklines = 2,
-                           row_var = indicator) {
+                           row_var = indicator,
+                           row_order = NULL) {
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
@@ -72,6 +97,24 @@ make_reactable <- function(data,
     dplyr::select(.data$date, .data$series_id,
       series = {{ row_var }}, .data$value, .data$unit
     )
+
+  # Tweak series names ----
+  summary_df <- summary_df %>%
+    dplyr::mutate(series = dplyr::case_when(
+      .data$series_id == "A84423349V" ~
+        "Employed (persons)",
+      .data$series_id == "A84423237A" ~
+        "Employed (males)",
+      .data$series_id == "A84423461V" ~
+        "Employed (females)",
+      .data$series_id == "A85223450L" ~
+        "Underemployment rate",
+      .data$series_id == "A84423354L" ~
+        "Unemployment rate",
+      .data$series_id == "A84433601W" ~
+        "Youth unemployment rate",
+      TRUE ~ .data$series
+    ))
 
   # Calculate change over time -----
   summary_df <- summary_df %>%
@@ -95,14 +138,14 @@ make_reactable <- function(data,
   # Function to return rounded numbers, with commas where appropriate
   # 6175 becomes 6,200. 3445443 becomes 3.445m.
   round_to_thousand <- function(x) {
+    sign_x <- sign(x)
     x <- (x / 1000)
     x <- round2(x, 1)
     x <- x * 1000
 
-    dplyr::if_else(x > 1e6,
+    dplyr::if_else(abs(x) >= 1e6,
                    paste0(round2(x / 1e6, 3), "m"),
                    scales::comma(x))
-
   }
 
   summary_df <- summary_df %>%
@@ -161,7 +204,8 @@ make_reactable <- function(data,
     dplyr::select(-.data$date)
 
   ## Define colour palette
-  colpal <- suppressWarnings(djprtheme::djpr_pal(nrow(sparklinelist)))
+  n_series <- nrow(sparklinelist)
+  colpal <- colorRampPalette(suppressWarnings(djpr_pal(10)))(n_series)
 
   ## Calculate colours for each row
   ts_summ <- djprshiny::ts_summarise(data)
@@ -243,6 +287,7 @@ make_reactable <- function(data,
   rt1 <- sparklinelist %>%
     dplyr::select(-.data$series_id) %>%
     reactable::reactable(
+      defaultPageSize = 50,
       columns = list(
         series = reactable::colDef(
           name = "",
@@ -362,7 +407,8 @@ make_reactable <- function(data,
         )
       ),
       highlight = TRUE,
-      resizable = TRUE,
+      resizable = FALSE,
+      sortable = FALSE,
       theme = reactable::reactableTheme(
         borderColor = "#dfe2e5",
         stripedColor = "#f6f8fa",

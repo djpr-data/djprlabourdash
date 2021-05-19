@@ -22,7 +22,7 @@ labour_server <- function(input, output, session) {
       htmltools::HTML(
         paste0(
           "This dashboard is produced by the <b>Strategy and Priority ",
-          "Projects Data + Analytics</b> team at the Victorian Department ",
+          "Projects - Data + Analytics</b> team at the Victorian Department ",
           "of Jobs, Precincts and Regions. The <b>latest data in this ",
           "dashboard is for ",
           format(latest, "%B %Y"),
@@ -39,17 +39,7 @@ labour_server <- function(input, output, session) {
 
   output$main_table <- reactable::renderReactable({
     req(dash_data)
-    ids <- c(
-      "A84423349V",
-      "A84423356T",
-      "A84423355R",
-      "A84423354L",
-      "A84423350C"
-    )
-
-    df <- filter_dash_data(ids, dash_data)
-
-    overview_table(data = df)
+    overview_table()
   })
 
   # Indicators -----
