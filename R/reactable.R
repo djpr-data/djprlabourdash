@@ -20,7 +20,7 @@
 #'
 #' table_data <- filter_dash_data(table_ids)
 #'
-#' overview_table(table_data)
+#' overview_table()
 #' }
 #'
 overview_table <- function(data = filter_dash_data(series_ids = c(
@@ -54,14 +54,6 @@ make_reactable <- function(data,
   }
 
   startdate <- subtract_years(max(data$date), years_in_sparklines)
-
-  currentdate <- max(data$date)
-
-
-  nov2014 <- as.Date("1-11-2014","%d-%m-%Y")
-
-
-  timesince14 = (year(currentdate) - year(nov2014)) * 12 + month(currentdate) - month(nov2014)
 
   # Calculate summary data frame - levels and changes -----
   summary_df <- data %>%
@@ -98,16 +90,10 @@ make_reactable <- function(data,
         format(round(changeinyear), big.mark = ",", scientific = F, trim = T),
         sprintf("%.1f ppts", .data$changeinyear)
       ),
-      changesince14 = (.data$value - dplyr::lag(.data$value, timesince14)),
-      changesince14pc = .data$changesince14 / dplyr::lag(.data$value, timesince14) * 100,
+      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")]),
       changesince14 = ifelse(.data$unit == "000",
                             format(round(changesince14), big.mark = ",", scientific = F, trim = T),
                             sprintf("%.1f ppts", .data$changesince14)
-      ),
-      changesince14pc = dplyr::if_else(
-        unit == "000",
-        sprintf("%0.1f%%", changesince14pc),
-        "-"
       ),
       latest_value = dplyr::if_else(
         unit == "000",
@@ -132,8 +118,7 @@ make_reactable <- function(data,
       .data$changeinmonthpc,
       .data$changeinyear,
       .data$changeinyearpc,
-      .data$changesince14,
-      .data$changesince14pc
+      .data$changesince14
     ) %>%
     dplyr::ungroup()
 
@@ -315,13 +300,6 @@ make_reactable <- function(data,
           minWidth = 65,
           maxWidth = 90
         ),
-        changesince14pc = reactable::colDef(
-          name = "PER CENT",
-#          style = recol_changeinyearpc,
-          align = "center",
-          minWidth = 65,
-          maxWidth = 90
-        ),
         latest_value = reactable::colDef(
           name = toupper(strftime(max(data$date), "%B %Y")),
           align = "center",
@@ -342,7 +320,7 @@ make_reactable <- function(data,
           headerStyle = list(`font-weight` = "600")
         ),
         reactable::colGroup(
-          name = "Change since Nov14", columns = c("changesince14", "changesince14pc"),
+          name = "Change since Nov 2014", columns = c("changesince14"),
           headerStyle = list(`font-weight` = "600")
         )
       ),
