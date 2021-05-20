@@ -174,60 +174,6 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_emppopratio_line <- function(data = filter_dash_data(c(
-                                       "A84423356T",
-                                       "A84423244X",
-                                       "A84423468K"
-                                     ))) {
-  df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
-      "Persons",
-      .data$sex
-    ))
-
-  latest_year <- df %>%
-    dplyr::group_by(sex) %>%
-    dplyr::mutate(d_year = value - dplyr::lag(value, 12)) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
-    tidyr::spread(key = sex, value = d_year)
-
-  nice_date <- format(latest_year$date, "%B %Y")
-
-  title <- dplyr::case_when(
-    latest_year$Females > 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "A larger proportion of Victorian men and women are in work in ",
-      nice_date, " than a year earlier"
-    ),
-    latest_year$Females > 0 &
-      latest_year$Males < 0 ~
-    paste0(
-      "The proportion of Victorian women in work rose over the year to ",
-      nice_date, " but the male employment to population ratio fell"
-    ),
-    latest_year$Females < 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "The proportion of Victorian men in work rose over the year to ",
-      nice_date, " but the female employment to population ratio fell"
-    ),
-    TRUE ~ "Employment to population ratio for Victorian men and women"
-  )
-
-  df %>%
-    djpr_ts_linechart(
-      col_var = sex,
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      title = title,
-      subtitle = "Employment to population ratio by sex, Victoria",
-      caption = caption_lfs()
-    )
-}
-
 viz_ind_unemp_states_dot <- function(data = filter_dash_data(
                                        c(
                                          "A84423354L",
@@ -353,20 +299,26 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
                                          "A84423314V",
                                          "A84423342C"
                                        ))) {
-
   df <- data %>%
-    dplyr::filter(date %in% c(max(.data$date),
-                              subtract_years(max(.data$date), 1))) %>%
-    dplyr::mutate(state_abbr = strayr::strayr(.data$state),
-                  state_group = dplyr::if_else(state_abbr %in% c(
-                    "Vic", "NSW"
-                  ),
-                  state_abbr,
-                  "Other"))
+    dplyr::filter(date %in% c(
+      max(.data$date),
+      subtract_years(max(.data$date), 1)
+    )) %>%
+    dplyr::mutate(
+      state_abbr = strayr::strayr(.data$state),
+      state_group = dplyr::if_else(state_abbr %in% c(
+        "Vic", "NSW"
+      ),
+      state_abbr,
+      "Other"
+      )
+    )
 
   latest <- df %>%
-    dplyr::filter(date == max(date),
-                  !state_abbr %in% c("ACT", "NT"))  %>%
+    dplyr::filter(
+      date == max(date),
+      !state_abbr %in% c("ACT", "NT")
+    ) %>%
     dplyr::select(state_abbr, value) %>%
     dplyr::mutate(rank = dplyr::min_rank(-value))
 
@@ -390,29 +342,42 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
   df %>%
     ggplot(aes(x = date, y = value, col = state_group, group = state)) +
     geom_line() +
-    ggiraph::geom_point_interactive( aes(tooltip = paste0(state_abbr, "\n",
-                                                          round2(value, 1))),
-                                     size = 3,
-                   shape = "circle filled",
-                   stroke = 1.5,
-                   fill = "white") +
-    ggrepel::geom_text_repel(direction = "y",
-                             data = ~dplyr::filter(., date == max(date)),
-                             aes(label = state_abbr),
-                             min.segment.length = 25,
-                             nudge_x = 15) +
+    ggiraph::geom_point_interactive(aes(tooltip = paste0(
+      state_abbr, "\n",
+      round2(value, 1)
+    )),
+    size = 3,
+    shape = "circle filled",
+    stroke = 1.5,
+    fill = "white"
+    ) +
+    ggrepel::geom_text_repel(
+      direction = "y",
+      data = ~ dplyr::filter(., date == max(date)),
+      aes(label = state_abbr),
+      size = 14 / .pt,
+      min.segment.length = 25,
+      nudge_x = 15
+    ) +
     theme_djpr() +
-    scale_x_date(breaks = unique(df$date),
-                 expand = expansion(add = c(10, 50)),
-                 date_labels = "%B\n%Y") +
-    scale_y_continuous(breaks = scales::breaks_pretty(5),
-                       labels = function(x) paste0(x, "%")) +
-    scale_colour_manual(values = c("Vic" = djprtheme::djpr_royal_blue,
-                                   "NSW" = djprtheme::djpr_green,
-                                   "Other" = "grey70")) +
-    theme(axis.title = element_blank() ) +
-    labs(title = title,
-         subtitle = "Employment to population ratio in Australian states and territories",
-         caption = caption_lfs())
-
+    scale_x_date(
+      breaks = unique(df$date),
+      expand = expansion(add = c(10, 50)),
+      date_labels = "%B\n%Y"
+    ) +
+    scale_y_continuous(
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_colour_manual(values = c(
+      "Vic" = djprtheme::djpr_royal_blue,
+      "NSW" = djprtheme::djpr_green,
+      "Other" = "grey70"
+    )) +
+    theme(axis.title = element_blank()) +
+    labs(
+      title = title,
+      subtitle = "Employment to population ratio in Australian states and territories",
+      caption = caption_lfs()
+    )
 }

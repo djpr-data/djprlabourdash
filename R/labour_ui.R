@@ -3,8 +3,8 @@ labour_ui <- function(...) {
     title = "DJPR Jobs Dashboard",
     page_overview(),
     page_indicators(),
-    page_groups(),
-    page_regions() # ,
-    # page_industries()
+    page_inclusion(),
+    page_regions(),
+    page_industries()
   )
 }

@@ -253,16 +253,6 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-title_reg_unemprate_multiline <- function(data) {
-  highest_current_ur <- data %>%
-    dplyr::filter(.data$date == max(data$date)) %>%
-    dplyr::filter(.data$value == max(data$value)) %>%
-    dplyr::pull(.data$sa4)
-
-  highest_current_ur <- data$sa4[data$value == max(data$value)]
-  paste0(highest_current_ur, " has the highest unemployment rate in Victoria")
-}
-
 viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                           "A84600253V",
                                           "A84599659L",
@@ -285,8 +275,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                         )) %>%
                                           dplyr::group_by(series_id) %>%
                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                          dplyr::filter(!is.na(value)),
-                                        title = title_reg_unemprate_multiline(data = data)) {
+                                          dplyr::filter(!is.na(value))) {
   data <- data %>%
     dplyr::mutate(
       tooltip = paste0(
@@ -321,6 +310,17 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
 
   data$sa4 <- factor(data$sa4,
     levels = c("Victoria", sort(unique(data$sa4[data$sa4 != "Victoria"])))
+  )
+
+  highest_current_ur <- data %>%
+    dplyr::filter(.data$date == max(data$date)) %>%
+    dplyr::filter(.data$value == max(data$value)) %>%
+    dplyr::pull(.data$sa4)
+
+  highest_current_ur <- data$sa4[data$value == max(data$value)]
+  title <- paste0(
+    highest_current_ur, " had the highest unemployment rate in Victoria in ",
+    format(max(data$date), "%B %Y")
   )
 
   data %>%
@@ -694,7 +694,12 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     dplyr::pull(.data$range) %>%
     round2(1)
 
-  plot_title <- paste0("There is a ", current_range, " percentage point gap between the highest and lowest unemployment rates in Victorian regions")
+  plot_title <- paste0(
+    "There was a ", current_range,
+    " percentage point gap between the highest and lowest ",
+    "unemployment rates in Victorian regions in ",
+    format(max(df_tidy$date), "%B %Y")
+  )
 
   # Combine plots -----
   plots_combined <- patchwork::wrap_plots(plot_high_low,

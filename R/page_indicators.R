@@ -6,7 +6,7 @@ page_indicators <- function(...) {
       "This page contains key labour force indicators, focusing on Victoria as a whole. ",
       "For more information about particular sub-groups of Victorians - like young people, or women - ",
       "see the ",
-      actionLink("link_groups", "groups page"),
+      actionLink("link_inclusion", "inclusion page"),
       ". For information about how employment and unemployment varies across Victoria, see the ",
       actionLink("link_regions", "regions page"), "."
     ),
@@ -19,7 +19,6 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_emppop_state_slope"),
     # htmlOutput("ind_emp_dotpoints"),
     # djpr_plot_ui("ind_empgro_line"),
-    djpr_plot_ui("ind_emppopratio_line"),
     h2("Unemployment & underemployment"),
     reactable::reactableOutput(
       "ind_unemp_summary"

@@ -15,7 +15,7 @@ labour_server <- function(input, output, session) {
 
   # Overview ------
 
-  output$overview_footnote <- output$indicators_footnote <- output$groups_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
+  output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
     req(dash_data)
     latest <- max(ts_summ$latest_date)
     div(
@@ -138,19 +138,20 @@ labour_server <- function(input, output, session) {
 
   # Indicators: slopgraph of emp-pop ratios in states
   djpr_plot_server("ind_emppop_state_slope",
-                   viz_ind_emppop_state_slope,
-                   date_slider = FALSE,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423272J",
-                     "A84423356T",
-                     "A84423286W",
-                     "A84423370L",
-                     "A84423328J",
-                     "A84423300F",
-                     "A84423314V",
-                     "A84423342C"
-                   )))
+    viz_ind_emppop_state_slope,
+    date_slider = FALSE,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423272J",
+      "A84423356T",
+      "A84423286W",
+      "A84423370L",
+      "A84423328J",
+      "A84423300F",
+      "A84423314V",
+      "A84423342C"
+    ))
+  )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
 
@@ -161,18 +162,6 @@ labour_server <- function(input, output, session) {
       "A84423043C"
     )),
     date_slider_value_min = Sys.Date() - (365 * 5),
-    plt_change = plt_change
-  )
-
-  # Indicators: line chart of emp-pop by sex
-  djpr_plot_server("ind_emppopratio_line",
-    viz_ind_emppopratio_line,
-    data = filter_dash_data(c(
-      "A84423356T",
-      "A84423244X",
-      "A84423468K"
-    )),
-    date_slider_value_min = Sys.Date() - (365.25 * 10),
     plt_change = plt_change
   )
 
@@ -202,7 +191,19 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  # Groups ------
+  # Inclusion ------
+
+  # Groups: line chart of emp-pop by sex
+  djpr_plot_server("gr_emppopratio_line",
+                   viz_gr_emppopratio_line,
+                   data = filter_dash_data(c(
+                     "A84423356T",
+                     "A84423244X",
+                     "A84423468K"
+                   )),
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   plt_change = plt_change
+  )
 
   # Bar chart: LF status by sex, latest month
 
@@ -474,8 +475,8 @@ labour_server <- function(input, output, session) {
     updateNavbarPage(session, "navbarpage", "tab-regions")
   })
 
-  observeEvent(input$link_groups, {
-    updateNavbarPage(session, "navbarpage", "tab-groups")
+  observeEvent(input$link_inclusion, {
+    updateNavbarPage(session, "navbarpage", "tab-inclusion")
   })
 
   observeEvent(input$link_industries, {

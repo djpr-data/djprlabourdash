@@ -1,5 +1,5 @@
 
-#' Function to create the graphs for the 'Groups' subpage on the dashboard.
+#' Function to create the graphs for the 'Inclusion' subpage on the dashboard.
 #' @param data the dataframe containing data to visualise
 #' @examples
 #' \dontrun{
@@ -222,7 +222,8 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   current_ur <- df %>%
     dplyr::filter(sex != "Persons", date == max(date)) %>%
     dplyr::select(value, sex) %>%
-    tidyr::spread(key = sex, value = value)
+    tidyr::pivot_wider(names_from = sex)
+  # tidyr::spread(key = sex, value = value)
 
   max_date <- format(max(df$date), "%B %Y")
 
@@ -473,3 +474,76 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c(
       caption = "Source: ABS Labour Force. Note: 12 month average."
     )
 }
+
+viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
+                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                  "A84423687K"
+                                )) %>%
+                                  dplyr::group_by(.data$series_id) %>%
+                                  dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  dplyr::ungroup()
+                                ) {
+  df <- data %>%
+    dplyr::mutate(series = dplyr::if_else(grepl("Unemployed", series),
+      "long-term unemployed",
+      "labour force"
+    )) %>%
+    dplyr::group_by(.data$date, .data$series) %>%
+    dplyr::summarise(value = sum(value))
+}
+
+viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
+  "A84423356T",
+  "A84423244X",
+  "A84423468K"
+))) {
+  df <- data %>%
+    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
+                                       "Persons",
+                                       .data$sex
+    ))
+
+  latest_year <- df %>%
+    dplyr::group_by(sex) %>%
+    dplyr::mutate(d_year = value - dplyr::lag(value, 12)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
+    tidyr::spread(key = sex, value = d_year)
+
+  nice_date <- format(latest_year$date, "%B %Y")
+
+  title <- dplyr::case_when(
+    latest_year$Females > 0 &
+      latest_year$Males > 0 ~
+      paste0(
+        "A larger proportion of Victorian men and women are in work in ",
+        nice_date, " than a year earlier"
+      ),
+    latest_year$Females > 0 &
+      latest_year$Males < 0 ~
+      paste0(
+        "The proportion of Victorian women in work rose over the year to ",
+        nice_date, " but the male employment to population ratio fell"
+      ),
+    latest_year$Females < 0 &
+      latest_year$Males > 0 ~
+      paste0(
+        "The proportion of Victorian men in work rose over the year to ",
+        nice_date, " but the female employment to population ratio fell"
+      ),
+    TRUE ~ "Employment to population ratio for Victorian men and women"
+  )
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = sex,
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Employment to population ratio by sex, Victoria",
+      caption = caption_lfs()
+    )
+}
+
