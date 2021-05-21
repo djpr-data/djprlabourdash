@@ -4,7 +4,8 @@ page_inclusion <- function(...) {
     h1("Key groups"),
     tagList(
       "This page contains information about the labour force status of key groups of ",
-      "Victorians, such as women, and young people.",
+      "Victorians, such as women, and young people. ",
+      htmltools::tags$b("More information will be included with future releases. "),
       "For more information about overall labour force indicators ",
       "see the ",
       actionLink("link_indicators", "indicators page"),

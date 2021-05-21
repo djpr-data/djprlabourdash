@@ -8,39 +8,10 @@
 #' viz_ind_emp_sincecovid_line()
 #' }
 #'
-title_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", "A84423349V"),
-                                            df = dash_data
-                                          )) {
-  df <- data %>%
-    dplyr::filter(.data$date >= as.Date("2020-03-01")) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
-    dplyr::group_by(.data$state, .data$series) %>%
-    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) - 1)) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
-
-  latest <- df %>%
-    dplyr::select(value, state) %>%
-    tidyr::spread(key = state, value = value)
-
-  if (latest$Victoria < 0) {
-    title <- "Victorian employment is below pre-COVID levels"
-  } else {
-    if (round(latest$Victoria, 1) < round(latest$Australia)) {
-      title <- "Victorian employment is above pre-COVID levels, but growth lags behind the national total"
-    } else if (round(latest$Victoria, 1) == round(latest$Australia, 1)) {
-      title <- "Victorian employment is above pre-COVID levels, and has caught up with the national employment growth"
-    } else {
-      title <- "Victorian employment is above pre-COVID levels, and has grown faster than the national total"
-    }
-  }
-  return(title)
-}
 
 viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", "A84423349V"),
                                           df = dash_data
-                                        ),
-                                        title = title_ind_emp_sincecovid_line(data)) {
+                                        )) {
   df <- data %>%
     dplyr::mutate(state = dplyr::if_else(state == "", "Australia", state))
 
@@ -125,7 +96,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
     theme(axis.title.x = element_blank()) +
     coord_cartesian(clip = "off") +
     labs(
-      title = title,
+      title = "Victorian employment compared to the national total",
       subtitle = "Cumulative change in employment since March 2020, per cent",
       caption = caption_lfs()
     )
@@ -381,3 +352,18 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
       caption = caption_lfs()
     )
 }
+
+viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
+                                                               "A85223451R",
+                                                               "A84423354L")
+)) {
+
+  area_df <- data %>%
+    dplyr::filter(!grepl("Underutilisation", series))
+
+  area_df %>%
+    ggplot(aes(x = date, y = value, fill = indicator)) +
+    geom_col(position = "stack",
+             col = NA)
+}
+

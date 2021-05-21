@@ -524,7 +524,7 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
     numbers = c(
       round2(melb_emp_precovid, 2),
       round2(melb_emp_oct20, 2),
-      abs(melb_emp_covid_to_oct_abs),
+      paste0(abs(melb_emp_covid_to_oct_abs), ",000"),
       abs(melb_emp_covid_to_oct_perc),
       abs(rest_emp_covid_to_oct_perc),
       abs(melb_emp_current),
@@ -871,6 +871,9 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
       col_var = col_var,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
+    scale_x_date(breaks = scales::breaks_pretty(5),
+                 date_labels = "%b\n%Y",
+                 expand = expansion(mult = c(0.05, 0.25))) +
     scale_y_continuous(
       limits = function(limits) c(0, limits[2]),
       labels = function(x) paste0(x, "%"),

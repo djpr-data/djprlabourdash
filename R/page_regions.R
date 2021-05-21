@@ -5,6 +5,7 @@ page_regions <- function(...) {
     tagList(
       "This page contains information about employment and unemployment across",
       "the different regions of Victoria.",
+      htmltools::tags$b("More information will be included with future releases. "),
       "For more information about overall labour force indicators ",
       "see the ",
       actionLink("link_indicators", "indicators page"),

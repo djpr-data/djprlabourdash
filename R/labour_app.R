@@ -65,7 +65,7 @@ labour_server <- function(input, output, session) {
           "above",
           "below"
         ),
-        "its pre-COVID level."
+        "its level from a year earlier."
       ),
       c(
         round2(get_summ("A84423349V", latest_value) / 1000000, 3),
