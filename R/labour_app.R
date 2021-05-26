@@ -1,9 +1,13 @@
 #' @import djprshiny
 #' @import djprdashdata
 #' @import shiny
+#' @import dplyr
+#' @import ggplot2
+#' @importFrom rlang .data .env
 
 labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
+
   dash_data <<- load_and_hide()
 
   ts_summ <<- dash_data %>%

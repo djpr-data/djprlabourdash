@@ -5,8 +5,8 @@
 \title{Create a Reactable to summarise key ABS LFS indicators}
 \usage{
 overview_table(
-  data = filter_dash_data(series_ids = c("A84423349V", "A84423356T", "A84423355R",
-    "A84423354L", "A84423350C", "A85223451R")),
+  data = filter_dash_data(series_ids = c("A84423349V", "A84423355R", "A84423354L",
+    "A84423350C", "A85223451R", "A84426256L", "A85223450L", "A84423357V", "pt_emp_vic")),
   years_in_sparklines = 2,
   row_var = indicator
 )
@@ -20,7 +20,7 @@ to include in the sparkline charts in the returned reactable.}
 \item{row_var}{Unquoted variable name in data to use for row names}
 }
 \value{
-A reactable (htmlwidget) including sparklines and sortable columns
+A reactable (htmlwidget) including sparklines
 }
 \description{
 Create a Reactable to summarise key ABS LFS indicators
@@ -40,7 +40,7 @@ table_ids <- c(
 
 table_data <- filter_dash_data(table_ids)
 
-overview_table(table_data)
+overview_table()
 }
 
 }
