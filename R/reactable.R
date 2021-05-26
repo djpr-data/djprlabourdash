@@ -25,7 +25,6 @@
 #'
 overview_table <- function(data = filter_dash_data(series_ids = c(
                              "A84423349V", # Employed total
-                             # "A84423356T", # Emp-pop total
                              "A84423355R", # Part rate
                              "A84423354L", # Unemp rate
                              "A84423350C", # Unemp total
@@ -33,10 +32,8 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
                              "A84426256L", # Hours worked
                              "A85223450L", # Underemp rate
                              "A84423357V", # Emp FT
-                             "pt_emp_vic" # , # Emp PT
-                             # "A84423237A", # Emp males
-                             # "A84423461V", # Emp females
-                             # "A84433601W"  # Youth unemp
+                             "pt_emp_vic"  # Emp PT
+
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {
@@ -69,8 +66,8 @@ table_ind_employment <- function(data = filter_dash_data(c(
                                  row_var = indicator) {
   table_data <- data %>%
     mutate(indicator = if_else(sex != "",
-      paste0(indicator, " (", sex, ")"),
-      indicator
+      paste0(.data$indicator, " (", sex, ")"),
+      .data$indicator
     ))
 
   overview_table(table_data)
@@ -88,8 +85,8 @@ table_ind_unemp_summary <- function(data = filter_dash_data(c(
                                     row_var = indicator) {
   table_data <- data %>%
     mutate(indicator = if_else(sex != "",
-      paste0(indicator, " (", sex, ")"),
-      indicator
+      paste0(.data$indicator, " (", sex, ")"),
+      .data$indicator
     ))
 
   overview_table(table_data)
@@ -103,8 +100,8 @@ table_ind_hours_summary <- function(data = filter_dash_data(c(
                                     row_var = indicator) {
   table_data <- data %>%
     mutate(indicator = if_else(sex != "",
-      paste0(indicator, " (", sex, ")"),
-      indicator
+      paste0(.data$indicator, " (", sex, ")"),
+      .data$indicator
     ))
 
   overview_table(table_data)
@@ -156,7 +153,7 @@ make_reactable <- function(data,
     dplyr::mutate(
       is_level = if_else(grepl("000", .data$unit), TRUE, FALSE),
       value = dplyr::if_else(
-        is_level,
+        .data$is_level,
         1000 * .data$value,
         .data$value
       ),
@@ -190,22 +187,22 @@ make_reactable <- function(data,
   summary_df <- summary_df %>%
     dplyr::mutate(across(
       c(dplyr::ends_with("pc")),
-      ~ dplyr::if_else(is_level,
+      ~ dplyr::if_else(.data$is_level,
         paste0(round2(.x, 1), "%"),
         "-"
       )
     ),
     across(
-      c(changeinmonth, changeinyear, changesince14),
-      ~ dplyr::if_else(is_level,
+      c(.data$changeinmonth, .data$changeinyear, .data$changesince14),
+      ~ dplyr::if_else(.data$is_level,
         round_to_thousand(.x),
         sprintf("%.1f ppts", .x)
       )
     ),
     latest_value = dplyr::if_else(
-      is_level,
-      round_to_thousand(value),
-      sprintf("%.1f%%", value)
+      .data$is_level,
+      round_to_thousand(.data$value),
+      sprintf("%.1f%%", .data$value)
     )
     ) %>%
     dplyr::ungroup() %>%
@@ -239,19 +236,19 @@ make_reactable <- function(data,
   ## Created df in format required for sparkline ----
 
   sparklinelist <- summary_df %>%
-    dplyr::group_by(series) %>%
+    dplyr::group_by(.data$series) %>%
     dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
     dplyr::left_join(changedf, by = "series") %>%
     dplyr::select(-.data$date)
 
   ## Define colour palette
   n_series <- nrow(sparklinelist)
-  colpal <- colorRampPalette(suppressWarnings(djpr_pal(10)))(n_series)
+  colpal <- grDevices::colorRampPalette(suppressWarnings(djpr_pal(10)))(n_series)
 
   ## Calculate colours for each row
   ts_summ <- djprshiny::ts_summarise(data)
 
-  full_pal <- colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
+  full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
 
   calc_cols <- function(series_ids, item, summ_df = ts_summ) {
     ptiles <- get_summ(series_ids, {{ item }},
@@ -298,23 +295,23 @@ make_reactable <- function(data,
   }
 
   recol_changeinmonth <- function(value, index) {
-    recol(value, index, ptile_d_period_abs)
+    recol(value, index, .data$ptile_d_period_abs)
   }
 
   recol_changeinmonthpc <- function(value, index) {
     c(
-      recol(value, index, ptile_d_period_perc),
+      recol(value, index, .data$ptile_d_period_perc),
       list(`border-right` = "1px solid #000")
     )
   }
 
   recol_changeinyear <- function(value, index) {
-    recol(value, index, ptile_d_year_abs)
+    recol(value, index, .data$ptile_d_year_abs)
   }
 
   recol_changeinyearpc <- function(value, index) {
     c(
-      recol(value, index, ptile_d_year_perc),
+      recol(value, index, .data$ptile_d_year_perc),
       list(`border-right` = "1px solid #000")
     )
   }

@@ -245,7 +245,7 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col = sex) +
+    djpr_ts_linechart(col_var = sex) +
     labs(
       title = title,
       subtitle = "Unemployment by sex, Victoria",
