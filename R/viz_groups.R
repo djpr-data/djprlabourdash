@@ -55,24 +55,24 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
                                  dplyr::filter(.data$date == max(.data$date))) {
   df <- data %>%
     dplyr::ungroup() %>%
-    dplyr::select(sex, indicator, value) %>%
-    tidyr::spread(key = indicator, value = value) %>%
+    dplyr::select(.data$sex, .data$indicator, .data$value) %>%
+    tidyr::spread(key = .data$indicator, value = .data$value) %>%
     dplyr::mutate(
-      `Not in the labour force` = `Civilian population aged 15 years and over` -
-        `Labour force total`,
-      `Employed part-time` = `Employed total` - `Employed full-time`
+      `Not in the labour force` = .data$`Civilian population aged 15 years and over` -
+        .data$`Labour force total`,
+      `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`
     ) %>%
     dplyr::select(
-      -`Civilian population aged 15 years and over`,
-      -`Employed total`,
-      -`Labour force total`
+      -.data$`Civilian population aged 15 years and over`,
+      -.data$`Employed total`,
+      -.data$`Labour force total`
     ) %>%
-    dplyr::rename(Unemployed = `Unemployed total`) %>%
+    dplyr::rename(Unemployed = .data$`Unemployed total`) %>%
     tidyr::gather(
-      key = indicator, value = value,
-      -sex
+      key = "indicator", value = "value",
+      -.data$sex
     ) %>%
-    dplyr::mutate(indicator = factor(indicator,
+    dplyr::mutate(indicator = factor(.data$indicator,
       levels = c(
         "Not in the labour force",
         "Unemployed",
@@ -82,22 +82,22 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     ))
 
   df <- df %>%
-    dplyr::arrange(sex, desc(indicator)) %>%
-    dplyr::group_by(sex) %>%
+    dplyr::arrange(.data$sex, desc(.data$indicator)) %>%
+    dplyr::group_by(.data$sex) %>%
     dplyr::mutate(
-      perc = value / sum(value),
-      label_y = cumsum(perc) - (perc / 2)
+      perc = .data$value / sum(.data$value),
+      label_y = cumsum(.data$perc) - (.data$perc / 2)
     ) %>%
     dplyr::ungroup()
 
   label_df <- df %>%
-    dplyr::filter(sex == "Males") %>%
+    dplyr::filter(.data$sex == "Males") %>%
     dplyr::mutate(label_y = case_when(
-      indicator == "Employed part-time" ~
-      label_y - 0.1,
-      indicator == "Not in the labour force" ~
+      .data$indicator == "Employed part-time" ~
+        .data$label_y - 0.1,
+      .data$indicator == "Not in the labour force" ~
       0.92,
-      TRUE ~ label_y
+      TRUE ~ .data$label_y
     ))
 
   emp_tot <- df %>%
@@ -112,14 +112,14 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    ggplot(aes(x = sex, y = value, fill = indicator)) +
+    ggplot(aes(x = .data$sex, y = .data$value, fill = .data$indicator)) +
     geom_col(
       position = "fill",
       alpha = 1,
       col = "grey70"
     ) +
     geom_text(
-      aes(y = label_y, label = round2(perc * 100, 1)),
+      aes(y = .data$label_y, label = round2(.data$perc * 100, 1)),
       size = 16 / .pt,
       colour = "white"
     ) +
@@ -127,9 +127,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     geom_text(
       data = label_df,
       aes(
-        y = label_y,
-        col = indicator,
-        label = stringr::str_wrap(indicator, 12)
+        y = .data$label_y,
+        col = .data$indicator,
+        label = stringr::str_wrap(.data$indicator, 12)
       ),
       size = 14 / .pt,
       vjust = 0,
@@ -165,15 +165,15 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
                                      df = dash_data
                                      )) {
   df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(sex == "", "Persons", sex))
+    dplyr::mutate(sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex))
 
   change_by_sex <- df %>%
-    dplyr::filter(sex != "Persons") %>%
-    dplyr::group_by(sex) %>%
-    dplyr::mutate(d_annual = value - lag(value, 12)) %>%
-    dplyr::filter(date == max(date)) %>%
-    dplyr::select(sex, d_annual) %>%
-    tidyr::spread(key = sex, value = d_annual)
+    dplyr::filter(.data$sex != "Persons") %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::mutate(d_annual = .data$value - lag(.data$value, 12)) %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::select(.data$sex, .data$d_annual) %>%
+    tidyr::spread(key = .data$sex, value = .data$d_annual)
 
   max_date <- format(max(df$date), "%B %Y")
 
@@ -201,7 +201,7 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = sex) +
+    djpr_ts_linechart(col_var = .data$sex) +
     labs(
       title = title,
       subtitle = "Participation rate by sex, Victoria",
@@ -217,13 +217,12 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
                                   df = dash_data
                                   )) {
   df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(sex == "", "Persons", sex))
+    dplyr::mutate(sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex))
 
   current_ur <- df %>%
-    dplyr::filter(sex != "Persons", date == max(date)) %>%
-    dplyr::select(value, sex) %>%
-    tidyr::pivot_wider(names_from = sex)
-  # tidyr::spread(key = sex, value = value)
+    dplyr::filter(.data$sex != "Persons", date == max(.data$date)) %>%
+    dplyr::select(.data$value, .data$sex) %>%
+    tidyr::pivot_wider(names_from = .data$sex)
 
   max_date <- format(max(df$date), "%B %Y")
 
@@ -245,7 +244,7 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = sex) +
+    djpr_ts_linechart(col_var = .data$sex) +
     labs(
       title = title,
       subtitle = "Unemployment by sex, Victoria",
@@ -278,8 +277,8 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
                                          "55+_rest of vic._unemployed",
                                          "A84424622R"
                                        ), df = dash_data) %>%
-                                         dplyr::group_by(series_id) %>%
-                                         dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)),
+                                         dplyr::group_by(.data$series_id) %>%
+                                         dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)),
                                        title = "") {
   data <- data %>%
     dplyr::group_by(.data$date) %>%
@@ -346,7 +345,8 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
 
   # draw line graph
   data %>%
-    ungroup() %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup() %>%
     djpr_ts_linechart() +
     scale_y_continuous(
       breaks = scales::breaks_pretty(5),
@@ -370,29 +370,31 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                            ),
                                            df = dash_data
                                            ) %>%
-                                             dplyr::group_by(series_id) %>%
-                                             dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-                                             dplyr::filter(date >= as.Date("2020-01-01"))) {
+                                             dplyr::group_by(.data$series_id) %>%
+                                             dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)) %>%
+                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))
+                                           ) {
   data <- data %>%
-    group_by(age, date) %>%
-    summarise(value = sum(value))
+    dplyr::group_by(.data$age, .data$date) %>%
+    dplyr::summarise(value = sum(.data$value))
 
   # Indexing to Covid start
   data <- data %>%
-    dplyr::group_by(age) %>%
-    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) - 1))
+    dplyr::group_by(.data$age) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   latest <- data %>%
-    dplyr::filter(date == max(date)) %>%
-    dplyr::select(-date)
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(-.data$date)
 
   latest <- latest %>%
-    tidyr::spread(key = age, value = value)
+    tidyr::spread(key = .data$age, value = .data$value)
 
   # draw line graph
   data %>%
     djpr_ts_linechart(
-      col_var = age,
+      col_var = .data$age,
       label_num = paste0(round(.data$value, 1), "%"),
       hline = 0
     ) +
@@ -462,7 +464,8 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c(
 
   # draw line chart
   data %>%
-    ungroup() %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup() %>%
     djpr_ts_linechart() +
     scale_y_continuous(
       limits = function(x) c(0, x[2]),
@@ -475,23 +478,23 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                                  "A84423687K"
-                                )) %>%
-                                  dplyr::group_by(.data$series_id) %>%
-                                  dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                  dplyr::ungroup()
-                                ) {
-  df <- data %>%
-    dplyr::mutate(series = dplyr::if_else(grepl("Unemployed", series),
-      "long-term unemployed",
-      "labour force"
-    )) %>%
-    dplyr::group_by(.data$date, .data$series) %>%
-    dplyr::summarise(value = sum(value))
-}
+# viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
+#                                   "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+#                                   "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+#                                   "A84423687K"
+#                                 )) %>%
+#                                   dplyr::group_by(.data$series_id) %>%
+#                                   dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+#                                   dplyr::ungroup()
+#                                 ) {
+#   df <- data %>%
+#     dplyr::mutate(series = dplyr::if_else(grepl("Unemployed", .data$series),
+#       "long-term unemployed",
+#       "labour force"
+#     )) %>%
+#     dplyr::group_by(.data$date, .data$series) %>%
+#     dplyr::summarise(value = sum(.data$value))
+# }
 
 viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
   "A84423356T",
@@ -505,11 +508,11 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
     ))
 
   latest_year <- df %>%
-    dplyr::group_by(sex) %>%
-    dplyr::mutate(d_year = value - dplyr::lag(value, 12)) %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(.data$date, .data$sex, .data$d_year) %>%
-    tidyr::spread(key = sex, value = d_year)
+    tidyr::spread(key = .data$sex, value = .data$d_year)
 
   nice_date <- format(latest_year$date, "%B %Y")
 
@@ -537,7 +540,7 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
 
   df %>%
     djpr_ts_linechart(
-      col_var = sex,
+      col_var = .data$sex,
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(

@@ -35,7 +35,6 @@ Imports:
     ggplot2,
     htmltools (>= 0.5.1.1),
     htmlwidgets,
-    janitor,
     leaflet,
     leaflet.extras,
     purrr,
@@ -64,5 +63,6 @@ Remotes:
 Depends: 
     R (>= 3.50)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    vdiffr
 Config/testthat/edition: 3

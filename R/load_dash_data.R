@@ -10,8 +10,10 @@ load_and_hide <- function() {
 }
 
 #' Load data for the DJPR Labour Dashboard
+#'
+#' @param branch Github branch of `djprdashdata` repo from which to load dash data
 #' @export
-load_dash_data <- function() {
+load_dash_data <- function(branch = "main") {
   crosstabs <- djprdashdata::lfs_lookup %>%
     dplyr::select(-dplyr::one_of(c(
       "cat_no",
@@ -20,7 +22,7 @@ load_dash_data <- function() {
       "series_type"
     )))
 
-  lfs <- djprdashdata::download_abs_ts("abs-lfs")
+  lfs <- djprdashdata::download_abs_ts("abs-lfs", branch = branch)
 
   lfs <- lfs %>%
     dplyr::left_join(crosstabs,

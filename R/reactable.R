@@ -20,10 +20,10 @@
 #'
 #' table_data <- filter_dash_data(table_ids)
 #'
-#' overview_table()
+#' table_overview()
 #' }
 #'
-overview_table <- function(data = filter_dash_data(series_ids = c(
+table_overview <- function(data = filter_dash_data(series_ids = c(
                              "A84423349V", # Employed total
                              "A84423355R", # Part rate
                              "A84423354L", # Unemp rate
@@ -65,12 +65,12 @@ table_ind_employment <- function(data = filter_dash_data(c(
                                  years_in_sparklines = 2,
                                  row_var = indicator) {
   table_data <- data %>%
-    mutate(indicator = if_else(sex != "",
-      paste0(.data$indicator, " (", sex, ")"),
+    mutate(indicator = if_else(.data$sex != "",
+      paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  overview_table(table_data)
+  make_reactable(table_data)
 }
 
 table_ind_unemp_summary <- function(data = filter_dash_data(c(
@@ -84,29 +84,33 @@ table_ind_unemp_summary <- function(data = filter_dash_data(c(
                                     years_in_sparklines = 2,
                                     row_var = indicator) {
   table_data <- data %>%
-    mutate(indicator = if_else(sex != "",
-      paste0(.data$indicator, " (", sex, ")"),
+    mutate(indicator = if_else(.data$sex != "",
+      paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  overview_table(table_data)
+  make_reactable(table_data)
 }
 
 table_ind_hours_summary <- function(data = filter_dash_data(c(
                                       "A84426256L" # , # Total hours
-                                      # "A84423689R" # Civ pop
                                     )),
                                     years_in_sparklines = 2,
                                     row_var = indicator) {
   table_data <- data %>%
-    mutate(indicator = if_else(sex != "",
-      paste0(.data$indicator, " (", sex, ")"),
+    mutate(indicator = if_else(.data$sex != "",
+      paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  overview_table(table_data)
+  make_reactable(table_data)
 }
 
+#' Make a reactable with standard formatting
+#'
+#' Each row is an indicator; columns are levels / change over particular periods
+#' Conditional formatting is applied, sparklines are included.
+#'
 #' @param data a data frame
 #' @param years_in_sparklines number of years prior to latest obs to include
 #' in sparkline

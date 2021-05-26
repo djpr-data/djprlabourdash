@@ -47,7 +47,7 @@ labour_server <- function(input, output, session) {
 
   output$main_table <- reactable::renderReactable({
     req(dash_data)
-    overview_table()
+    table_overview()
   })
 
   # Indicators -----

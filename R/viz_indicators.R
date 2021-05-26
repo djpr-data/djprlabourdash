@@ -209,12 +209,12 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     paste0("Victoria's unemployment rate ", .)
 
   df %>%
-    ggplot(aes(x = reorder(state, value), y = value, col = format(date, "%b %Y"))) +
+    ggplot(aes(x = stats::reorder(state, value), y = value, col = format(date, "%b %Y"))) +
     geom_segment(
       data = df_wide,
       aes(
-        x = reorder(state, max_date),
-        xend = reorder(state, max_date),
+        x = stats::reorder(state, max_date),
+        xend = stats::reorder(state, max_date),
         y = min_date,
         yend = arrow_max
       ),
