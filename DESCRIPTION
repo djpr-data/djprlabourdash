@@ -46,7 +46,6 @@ Imports:
     sf,
     shiny (>= 1.6.0),
     shinyjs,
-    tibble,
     tidyr,
     ggiraph,
     ggrepel,

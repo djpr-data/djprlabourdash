@@ -11,7 +11,7 @@ labour_server <- function(input, output, session) {
   dash_data <<- load_and_hide()
 
   ts_summ <<- dash_data %>%
-    tidyr::unnest(cols = data) %>%
+    tidyr::unnest(cols = .data$data) %>%
     djprshiny::ts_summarise()
 
   plt_change <- reactive(input$plt_change) %>%
@@ -19,7 +19,7 @@ labour_server <- function(input, output, session) {
 
   # Overview ------
 
-  output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
+  footnote <- reactive({
     req(dash_data)
     latest <- max(ts_summ$latest_date)
     div(
@@ -35,6 +35,10 @@ labour_server <- function(input, output, session) {
       ),
       style = "color: #828282; font-size: 0.75rem"
     )
+  })
+
+  output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
+    footnote()
   })
 
   output$overview_text <- renderUI({
@@ -56,30 +60,30 @@ labour_server <- function(input, output, session) {
         "Employment grew by XX per cent over the year to XX,",
         "a",
         dplyr::case_when(
-          get_summ("A84423349V", ptile_d_year_abs) < 0.33 ~
+          get_summ("A84423349V", .data$ptile_d_year_abs) < 0.33 ~
           "relatively sluggish",
-          get_summ("A84423349V", ptile_d_year_abs) > 0.67 ~
+          get_summ("A84423349V", .data$ptile_d_year_abs) > 0.67 ~
           "relatively rapid",
           TRUE ~ "normal"
         ),
         "pace of growth for Victoria compared to historical trends.",
         "Over the past year, employment across Australia grew by XX per cent.",
         "Employment in Victoria is XX per cent",
-        dplyr::if_else(sign(get_summ("A84423349V", d_year_perc)) > 0,
+        dplyr::if_else(sign(get_summ("A84423349V", .data$d_year_perc)) > 0,
           "above",
           "below"
         ),
         "its level from a year earlier."
       ),
       c(
-        round2(get_summ("A84423349V", latest_value) / 1000000, 3),
-        get_summ("A84423349V", latest_period),
-        round2(get_summ("A84423349V", prev_value) / 1000000, 3),
-        format(get_summ("A84423349V", prev_date), "%B"),
-        round2(get_summ("A84423349V", d_year_perc), 1),
-        format(get_summ("A84423349V", latest_date), "%B"),
-        round2(get_summ("A84423043C", d_year_perc), 1),
-        round2(get_summ("A84423349V", d_year_perc), 1)
+        round2(get_summ("A84423349V", .data$latest_value) / 1000000, 3),
+        get_summ("A84423349V", .data$latest_period),
+        round2(get_summ("A84423349V", .data$prev_value) / 1000000, 3),
+        format(get_summ("A84423349V", .data$prev_date), "%B"),
+        round2(get_summ("A84423349V", .data$d_year_perc), 1),
+        format(get_summ("A84423349V", .data$latest_date), "%B"),
+        round2(get_summ("A84423043C", .data$d_year_perc), 1),
+        round2(get_summ("A84423349V", .data$d_year_perc), 1)
       )
     )
   })
@@ -273,9 +277,9 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ) %>%
-      dplyr::group_by(series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-      dplyr::filter(date >= as.Date("2020-01-01")),
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)) %>%
+      dplyr::filter(.data$date >= as.Date("2020-01-01")),
     date_slider = FALSE
   )
 
@@ -294,9 +298,9 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ) %>%
-      dplyr::group_by(series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-      dplyr::filter(!is.na(value))
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::filter(!is.na(.data$value))
   )
 
 
@@ -335,8 +339,8 @@ labour_server <- function(input, output, session) {
       "A84600121T",
       "A84600037A"
     )) %>%
-      dplyr::group_by(series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
       dplyr::filter(.data$date == max(.data$date))
 
     df %>%
@@ -366,9 +370,9 @@ labour_server <- function(input, output, session) {
       "A84600121T",
       "A84600037A"
     )) %>%
-      dplyr::group_by(series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-      dplyr::filter(!is.na(value)),
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::filter(!is.na(.data$value)),
     date_slider_value_min = as.Date("2014-11-29"),
     plt_change = plt_change
   )
@@ -384,9 +388,9 @@ labour_server <- function(input, output, session) {
       "A84600141A",
       "A84600075R"
     )) %>%
-      dplyr::group_by(series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-      dplyr::filter(date >= as.Date("2020-01-01")),
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::filter(.data$date >= as.Date("2020-01-01")),
     plt_change = plt_change
   )
 
@@ -414,8 +418,8 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ) %>%
-      dplyr::group_by(series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
     date_slider_value_min = as.Date("2014-01-01"),
     plt_change = plt_change
   )

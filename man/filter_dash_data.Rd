@@ -18,6 +18,8 @@ An unnested tbl_df containing only the specified series ID(s)
 Convenience function to extract specified ABS series IDs from \code{dash_data}
 }
 \examples{
+\dontrun{
 dash_data <- load_dash_data()
 filter_dash_data("A84423354L")
+}
 }

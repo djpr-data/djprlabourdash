@@ -1,14 +1,13 @@
 #' Convenience function to extract specified ABS series IDs from `dash_data`
-#' @name filter_dash_data
 #' @param series_ids Vector of series ID(s)
 #' @param df Data frame, expected to be the df returned by `load_dash_data()`
 #' @return An unnested tbl_df containing only the specified series ID(s)
 #' @examples
+#' \dontrun{
 #' dash_data <- load_dash_data()
 #' filter_dash_data("A84423354L")
+#' }
 #' @import dplyr
-
-
 filter_dash_data <- function(series_ids, df = dash_data) {
   out <- df %>%
     dplyr::filter(.data$series_id %in% series_ids) %>%
