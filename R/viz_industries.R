@@ -61,13 +61,19 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c("A
     dplyr::group_by(.data$series) %>%
     dplyr::filter(.data$date == max(.data$date))
 
-  #create new column for industry names from series_ID
-  data$industries <- data$series_id
+  #add entry for data$industry for Victoria; employed total
+  data <- data %>%
+    dplyr::mutate(
+      industry = dplyr::if_else(.data$industry == "",
+                           "Victoria, all industries",
+                           .data$industry
+      )
+    )
 
   #draw bar chart for all 19 industries plus Vic total
   data %>%
     ggplot(aes(
-      x = reorder(series, value),
+      x = reorder(industry, value),
       y = value
     )) +
     geom_col(
