@@ -135,12 +135,6 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                                 .data$industry)
     )
 
-  vic_total <- grepl("Victoria, all industries", .data$industry)
-
-  industries <- dplyr::if_else(vic_total,
-                                 "Victoria, all industries",
-                                 chosen_industry)
-
   #filter out the chosen industry and vic_total
   data <- data %>%
     group_by(indicator) %>%
