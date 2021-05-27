@@ -4,7 +4,10 @@
 \alias{load_dash_data}
 \title{Load data for the DJPR Labour Dashboard}
 \usage{
-load_dash_data()
+load_dash_data(branch = "main")
+}
+\arguments{
+\item{branch}{Github branch of \code{djprdashdata} repo from which to load dash data}
 }
 \description{
 Load data for the DJPR Labour Dashboard

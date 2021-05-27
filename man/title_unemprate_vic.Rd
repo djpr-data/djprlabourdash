@@ -8,8 +8,9 @@ title_unemprate_vic(
   data = filter_dash_data(c("A84599659L", "A84600019W", "A84600187J", "A84599557X",
     "A84600115W", "A84599851L", "A84599923L", "A84600025T", "A84600193C", "A84599665J",
     "A84600031L", "A84599671C", "A84599677T", "A84599683L", "A84599929A", "A84600121T",
-    "A84600037A")) \%>\% group_by(series_id) \%>\% mutate(value = zoo::rollmeanr(value,
-    3, fill = NA)) \%>\% dplyr::filter(.data$date == max(.data$date))
+    "A84600037A")) \%>\% group_by(.data$series_id) \%>\% mutate(value =
+    zoo::rollmeanr(.data$value, 3, fill = NA)) \%>\% dplyr::filter(.data$date ==
+    max(.data$date))
 )
 }
 \arguments{

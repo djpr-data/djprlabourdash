@@ -30,7 +30,7 @@ labour_server <- function(input, output, session) {
           "of Jobs, Precincts and Regions. The <b>latest data in this ",
           "dashboard is for ",
           format(latest, "%B %Y"),
-          '</b>. Please <a href="mailto:mattcowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">contact Matt Cowgill</a> with any comments or feedback.'
+          '</b>. Please <a href="mailto:matt.cowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">contact Matt Cowgill</a> with any comments or feedback.'
         )
       ),
       style = "color: #828282; font-size: 0.75rem"
@@ -47,7 +47,7 @@ labour_server <- function(input, output, session) {
 
   output$main_table <- reactable::renderReactable({
     req(dash_data)
-    overview_table()
+    table_overview()
   })
 
   # Indicators -----
@@ -203,14 +203,14 @@ labour_server <- function(input, output, session) {
 
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_emppopratio_line",
-                   viz_gr_emppopratio_line,
-                   data = filter_dash_data(c(
-                     "A84423356T",
-                     "A84423244X",
-                     "A84423468K"
-                   )),
-                   date_slider_value_min = Sys.Date() - (365.25 * 10),
-                   plt_change = plt_change
+    viz_gr_emppopratio_line,
+    data = filter_dash_data(c(
+      "A84423356T",
+      "A84423244X",
+      "A84423468K"
+    )),
+    date_slider_value_min = Sys.Date() - (365.25 * 10),
+    plt_change = plt_change
   )
 
   # Bar chart: LF status by sex, latest month
@@ -437,7 +437,7 @@ labour_server <- function(input, output, session) {
     )
 
   output$table_region_focus <- reactable::renderReactable({
-    reactable_region_focus(sa4 = input$focus_region)
+    table_region_focus(sa4 = input$focus_region)
   }) %>%
     bindCache(
       input$focus_region,

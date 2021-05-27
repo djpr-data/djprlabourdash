@@ -28,14 +28,13 @@ RoxygenNote: 7.1.1
 Imports: 
     absmapsdata,
     dataui (>= 0.0.1),
-    djprdashdata (>= 0.0.0.9000),
+    djprdashdata (>= 0.0.2.9002),
     djprshiny (>= 0.0.0.9000),
     djprtheme (>= 0.0.0.9000),
     dplyr,
     ggplot2,
     htmltools (>= 0.5.1.1),
     htmlwidgets,
-    janitor,
     leaflet,
     leaflet.extras,
     purrr,
@@ -64,5 +63,6 @@ Remotes:
 Depends: 
     R (>= 3.50)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    vdiffr
 Config/testthat/edition: 3

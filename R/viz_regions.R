@@ -55,17 +55,17 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
                                   "A84600121T",
                                   "A84600037A"
                                 )) %>%
-                                  group_by(series_id) %>%
-                                  mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  group_by(.data$series_id) %>%
+                                  mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
                                   dplyr::filter(.data$date == max(.data$date))) {
   high_low <- data %>%
     dplyr::ungroup() %>%
     summarise(
-      min_sa4 = sa4[value == min(value)],
-      min_ur = value[value == min(value)],
-      max_sa4 = sa4[value == max(value)],
-      max_ur = value[value == max(value)],
-      date = unique(date)
+      min_sa4 = .data$sa4[.data$value == min(.data$value)],
+      min_ur = .data$value[.data$value == min(.data$value)],
+      max_sa4 = .data$sa4[.data$value == max(.data$value)],
+      max_ur = .data$value[.data$value == max(.data$value)],
+      date = unique(.data$date)
     )
 
   paste0(
@@ -104,8 +104,8 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                                 "A84600121T",
                                 "A84600037A"
                               )) %>%
-                                group_by(series_id) %>%
-                                mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                group_by(.data$series_id) %>%
+                                mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
                                 dplyr::filter(.data$date == max(.data$date)),
                               zoom = 6) {
 
@@ -287,7 +287,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
 
 
   max_y <- max(data$value)
-  mid_x <- median(data$date)
+  mid_x <- stats::median(data$date)
 
   data <- data %>%
     dplyr::mutate(
@@ -410,8 +410,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
                                   ) %>%
                                     dplyr::group_by(series_id) %>%
                                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                    dplyr::filter(.data$date == max(.data$date)),
-                                  title = "") {
+                                    dplyr::filter(.data$date == max(.data$date))) {
   data <- data %>%
     dplyr::filter(.data$sa4 != "") %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
@@ -421,16 +420,16 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
 
   data %>%
     ggplot(aes(
-      x = reorder(sa4, value),
-      y = value
+      x = stats::reorder(.data$sa4, .data$value),
+      y = .data$value
     )) +
     geom_col(
       col = "grey85",
-      aes(fill = -value)
+      aes(fill = -.data$value)
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = round(value, 1)),
+      aes(label = round(.data$value, 1)),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -445,7 +444,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
       axis.text.y = element_text(size = 12),
       axis.text.x = element_blank()
     ) +
-    labs(title = title)
+    labs(title = "")
 }
 
 text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
@@ -453,9 +452,9 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
                                           "A84600075R"
                                         ))) {
   emp_gcc_rest <- data %>%
-    dplyr::group_by(series_id) %>%
-    dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-    dplyr::filter(date >= as.Date("2020-01-01")) %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+    dplyr::filter(.data$date >= as.Date("2020-01-01")) %>%
     dplyr::ungroup()
 
   emp_gcc_rest <- emp_gcc_rest %>%
@@ -465,18 +464,18 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
       max(.data$date)
     )) %>%
     dplyr::select(.data$date, .data$value, .data$gcc_restofstate) %>%
-    dplyr::group_by(gcc_restofstate) %>%
+    dplyr::group_by(.data$gcc_restofstate) %>%
     dplyr::mutate(
       d_sincecovid_abs = .data$value - .data$value[date == as.Date("2020-03-01")],
       d_sincecovid_perc = 100 * ((.data$value /
         .data$value[date == as.Date("2020-03-01")]) - 1),
-      gcc_restofstate = dplyr::if_else(gcc_restofstate == "Greater Melbourne",
+      gcc_restofstate = dplyr::if_else(.data$gcc_restofstate == "Greater Melbourne",
         "melb", "rest"
       )
     )
 
   emp_gcc_rest <- emp_gcc_rest %>%
-    split(.$gcc_restofstate)
+    split(emp_gcc_rest$gcc_restofstate)
 
   melb_emp_precovid <- emp_gcc_rest$melb %>%
     dplyr::filter(.data$date == min(.data$date)) %>%
@@ -495,7 +494,7 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
 
   rest_emp_covid_to_oct_perc <- emp_gcc_rest$rest %>%
     dplyr::filter(.data$date == as.Date("2020-10-01")) %>%
-    pull(d_sincecovid_perc) %>%
+    dplyr::pull(.data$d_sincecovid_perc) %>%
     round2(1)
 
   melb_emp_current <- (emp_gcc_rest$melb %>%
@@ -559,8 +558,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                          df = dash_data
                                          ) %>%
                                            dplyr::group_by(series_id) %>%
-                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
-                                         title = "") {
+                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA))) {
   df_summ <- data %>%
     dplyr::filter(!is.na(value)) %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
@@ -741,29 +739,29 @@ map_reg_sa4 <- function(sa4 = c(
   sa4 <- match.arg(sa4)
 
   all_areas <- absmapsdata::sa42016 %>%
-    filter(state_name_2016 == "Victoria") %>%
-    mutate(selected = dplyr::if_else(.data$sa4_name_2016 == .env$sa4, TRUE, FALSE))
+    dplyr::filter(.data$state_name_2016 == "Victoria") %>%
+    dplyr::mutate(selected = dplyr::if_else(.data$sa4_name_2016 == .env$sa4, TRUE, FALSE))
 
   selected_area <- all_areas %>%
-    dplyr::filter(selected == TRUE)
+    dplyr::filter(.data$selected == TRUE)
 
   all_areas %>%
     ggplot() +
-    geom_sf(aes(alpha = selected),
+    geom_sf(aes(alpha = .data$selected),
       size = 0.25,
       fill = djprtheme::djpr_royal_blue,
       colour = djprtheme::djpr_cool_grey_11
     ) +
     geom_curve(
       data = selected_area,
-      aes(x = cent_long, y = cent_lat),
+      aes(x = .data$cent_long, y = .data$cent_lat),
       xend = 147, yend = -35,
       curvature = 0.2,
       colour = "#1F1547"
     ) +
     geom_point(
       data = selected_area,
-      aes(x = cent_long, y = cent_lat),
+      aes(x = .data$cent_long, y = .data$cent_lat),
       colour = "#1F1547",
       size = 3,
       shape = "circle filled",
@@ -871,9 +869,11 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
       col_var = col_var,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
-    scale_x_date(breaks = scales::breaks_pretty(5),
-                 date_labels = "%b\n%Y",
-                 expand = expansion(mult = c(0.05, 0.25))) +
+    scale_x_date(
+      breaks = scales::breaks_pretty(5),
+      date_labels = "%b\n%Y",
+      expand = expansion(mult = c(0.05, 0.25))
+    ) +
     scale_y_continuous(
       limits = function(limits) c(0, limits[2]),
       labels = function(x) paste0(x, "%"),
@@ -900,7 +900,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
     )
 }
 
-reactable_region_focus <- function(data = filter_dash_data(
+table_region_focus <- function(data = filter_dash_data(
                                      c(
                                        "A84600141A",
                                        "A84600144J",
@@ -961,8 +961,8 @@ reactable_region_focus <- function(data = filter_dash_data(
                                        "A84600037A"
                                      )
                                    ) %>%
-                                     dplyr::group_by(series_id) %>%
-                                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
+                                     dplyr::group_by(.data$series_id) %>%
+                                     dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
                                    sa4 = "Geelong") {
   in_melb <- grepl("Melbourne|Mornington", sa4)
 
@@ -992,15 +992,15 @@ reactable_region_focus <- function(data = filter_dash_data(
     dplyr::filter(.data$geog %in% c(.env$broad_region, .env$sa4))
 
   table_df <- data %>%
-    dplyr::group_by(geog, indicator) %>%
+    dplyr::group_by(.data$geog, .data$indicator) %>%
     dplyr::mutate(
-      d_month = dplyr::if_else(.data$indicator == "Employed total",
-        100 * ((value / dplyr::lag(value, 1)) - 1),
-        value - dplyr::lag(value, 1)
+      d_month = dplyr::if_else(indicator == "Employed total",
+        100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
+        .data$value - dplyr::lag(.data$value, 1)
       ),
       d_year = dplyr::if_else(.data$indicator == "Employed total",
-        100 * ((value / dplyr::lag(value, 12)) - 1),
-        value - dplyr::lag(value, 12)
+        100 * ((.data$value / dplyr::lag(.data$value, 12)) - 1),
+        .data$value - dplyr::lag(.data$value, 12)
       )
     ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -1012,36 +1012,36 @@ reactable_region_focus <- function(data = filter_dash_data(
 
   table_df <- table_df %>%
     dplyr::mutate(across(
-      c(value, d_month, d_year),
+      c(.data$value, .data$d_month, .data$d_year),
       ~ round2(.x, 1)
     )) %>%
     dplyr::mutate(
-      value = dplyr::if_else(indicator == "Employed total",
-        scales::comma(value * 1000),
-        paste0(value, "%")
+      value = dplyr::if_else(.data$indicator == "Employed total",
+        scales::comma(.data$value * 1000),
+        paste0(.data$value, "%")
       ),
-      d_month = dplyr::if_else(indicator == "Employed total",
-        paste0(d_month, "%"),
-        paste0(d_month, " ppts")
+      d_month = dplyr::if_else(.data$indicator == "Employed total",
+        paste0(.data$d_month, "%"),
+        paste0(.data$d_month, " ppts")
       ),
-      d_year = dplyr::if_else(indicator == "Employed total",
-        paste0(d_year, "%"),
-        paste0(d_year, " ppts")
+      d_year = dplyr::if_else(.data$indicator == "Employed total",
+        paste0(.data$d_year, "%"),
+        paste0(.data$d_year, " ppts")
       )
     )
 
   table_df <- table_df %>%
-    dplyr::rename({{ latest_date }} := value,
-      `Change over month` = d_month,
-      `Change over year` = d_year
+    dplyr::rename({{ latest_date }} := .data$value,
+      `Change over month` = .data$d_month,
+      `Change over year` = .data$d_year
     )
 
   table_df <- table_df %>%
     tidyr::gather(
-      key = series, value = value,
-      -indicator, -geog
+      key = "series", value = "value",
+      -.data$indicator, -.data$geog
     ) %>%
-    tidyr::spread(key = geog, value = value)
+    tidyr::spread(key = .data$geog, value = .data$value)
 
   table_df <- table_df %>%
     dplyr::group_by(.data$indicator) %>%
@@ -1050,15 +1050,15 @@ reactable_region_focus <- function(data = filter_dash_data(
       series == "Change over year" ~ 3,
       TRUE ~ 1
     )) %>%
-    dplyr::arrange(desc(indicator), order) %>%
-    dplyr::select(-order)
+    dplyr::arrange(desc(.data$indicator), .data$order) %>%
+    dplyr::select(-.data$order)
 
   col_header_style <- list(
     `font-weight` = "600"
   )
 
   table_df <- table_df %>%
-    dplyr::select(indicator, series, {{ sa4 }}, dplyr::everything())
+    dplyr::select(.data$indicator, .data$series, {{ sa4 }}, dplyr::everything())
 
   table_df %>%
     rename(
