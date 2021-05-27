@@ -135,9 +135,16 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                                 .data$industry)
     )
 
-  #start off with the chosen industry
+  vic_total <- grepl("Victoria, all industries", .data$industry)
+
+  industries <- dplyr::if_else(vic_total,
+                                 "Victoria, all industries",
+                                 chosen_industry)
+
+  #filter out the chosen industry and vic_total
   data <- data %>%
-    dplyr::filter(.data$industry %in% .env$chosen_industry)
+    group_by(indicator) %>%
+    dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
 
   table_df <- data %>%
     dplyr::group_by(industry, indicator) %>%
@@ -209,8 +216,8 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
 
   my_table <- table_df %>%
     rename(
-      region = 2,
-      aggregate = 3
+      region = 3,
+      aggregate = 4
     ) %>%
     reactable::reactable(
       columns = list(
