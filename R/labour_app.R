@@ -30,7 +30,7 @@ labour_server <- function(input, output, session) {
           "of Jobs, Precincts and Regions. The <b>latest data in this ",
           "dashboard is for ",
           format(latest, "%B %Y"),
-          '</b>. Please <a href="mailto:mattcowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">contact Matt Cowgill</a> with any comments or feedback.'
+          '</b>. Please <a href="mailto:matt.cowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">contact Matt Cowgill</a> with any comments or feedback.'
         )
       ),
       style = "color: #828282; font-size: 0.75rem"
