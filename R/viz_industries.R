@@ -121,11 +121,146 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                                                                 "A84601641R",
                                                                 "A84601716W",
                                                                 "A84601662A",
-                                                             df = dash_data)))
+                                                             df = dash_data)),
+                                     chosen_industry = "Agriculture, Forestry and Fishing")
 {
 
+  latest_date <- format(max(data$date), "%b %Y")
 
+  #add entry for data$industry for Victoria; employed total
+  data <- data %>%
+    dplyr::mutate(
+      industry = dplyr::if_else(.data$industry == "",
+                                "Victoria, all industries",
+                                .data$industry)
+    )
 
+  #start off with the chosen industry
+  data <- data %>%
+    dplyr::filter(.data$industry %in% .env$chosen_industry)
 
+  table_df <- data %>%
+    dplyr::group_by(industry, indicator) %>%
+    dplyr::mutate(
+      d_month = dplyr::if_else(.data$indicator == "Employed total",
+                               100 * ((value / dplyr::lag(value, 1)) - 1),
+                               value - dplyr::lag(value, 1)
+      ),
+      d_year = dplyr::if_else(.data$indicator == "Employed total",
+                              100 * ((value / dplyr::lag(value, 12)) - 1),
+                              value - dplyr::lag(value, 12)
+      )
+    ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(
+      .data$indicator, .data$value, .data$industry,
+      .data$d_month, .data$d_year
+    ) %>%
+    dplyr::ungroup()
+
+  table_df <- table_df %>%
+    dplyr::mutate(across(
+      c(value, d_month, d_year),
+      ~ round2(.x, 1)
+    )) %>%
+    dplyr::mutate(
+      value = dplyr::if_else(indicator == "Employed total",
+                             paste0(value, "k"),
+                             paste0(value, "%")
+      ),
+      d_month = dplyr::if_else(indicator == "Employed total",
+                               paste0(d_month, "%"),
+                               paste0(d_month, " ppts")
+      ),
+      d_year = dplyr::if_else(indicator == "Employed total",
+                              paste0(d_year, "%"),
+                              paste0(d_year, " ppts")
+      )
+    )
+
+  table_df <- table_df %>%
+    dplyr::rename({{ latest_date }} := value,
+                  `Change over month` = d_month,
+                  `Change over year` = d_year
+    )
+
+  table_df <- table_df %>%
+    tidyr::gather(
+      key = series, value = value,
+      -indicator, -industry
+    ) %>%
+    tidyr::spread(key = industry, value = value)
+
+  table_df <- table_df %>%
+    dplyr::group_by(.data$indicator) %>%
+    mutate(order = dplyr::case_when(
+      series == "Change over month" ~ 2,
+      series == "Change over year" ~ 3,
+      TRUE ~ 1
+    )) %>%
+    dplyr::arrange(desc(indicator), order) %>%
+    dplyr::select(-order)
+
+  col_names <- names(table_df)
+
+  col_header_style <- list(
+    `font-weight` = "600"
+  )
+
+  my_table <- table_df %>%
+    rename(
+      region = 2,
+      aggregate = 3
+    ) %>%
+    reactable::reactable(
+      columns = list(
+        indicator = reactable::colDef(
+          name = "",
+          minWidth = 65,
+          style = reactable::JS("function(rowInfo, colInfo, state) {
+        var firstSorted = state.sorted[0]
+        // Merge cells if unsorted
+        if (!firstSorted || firstSorted.id === 'indicator') {
+          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
+          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
+            return { visibility: 'hidden' }
+          }
+        }
+      }")
+        ),
+        series = reactable::colDef(
+          name = "",
+          minWidth = 45
+        ),
+        region = reactable::colDef(
+          name = col_names[3],
+          headerStyle = col_header_style
+        ),
+        aggregate = reactable::colDef(
+          name = col_names[4],
+          headerStyle = col_header_style
+        )
+      ),
+      defaultColDef = reactable::colDef(
+        minWidth = 50
+      ),
+      highlight = TRUE,
+      resizable = TRUE,
+      sortable = FALSE,
+      theme = reactable::reactableTheme(
+        borderColor = "#dfe2e5",
+        stripedColor = "#f6f8fa",
+        highlightColor = "#f0f5f9",
+        cellPadding = "7px 1px 1px 1px",
+        tableStyle = list(`border-bottom` = "1px solid #000"),
+        headerStyle = list(
+          fontWeight = "normal",
+          `border-bottom` = "1px solid #000"
+        ),
+        groupHeaderStyle = list(fontWeight = "normal"),
+        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
+      )
+    )
+  my_table
 }
 
