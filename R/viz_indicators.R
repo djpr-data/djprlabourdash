@@ -8,7 +8,6 @@
 #' viz_ind_emp_sincecovid_line()
 #' }
 #'
-
 viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", "A84423349V"),
                                           df = dash_data
                                         )) {
@@ -353,17 +352,18 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
-                                                               "A85223451R",
-                                                               "A84423354L")
-)) {
-
+viz_ind_underut_area <- function(data = filter_dash_data(c(
+                                   "A85223450L",
+                                   "A85223451R",
+                                   "A84423354L"
+                                 ))) {
   area_df <- data %>%
     dplyr::filter(!grepl("Underutilisation", series))
 
   area_df %>%
     ggplot(aes(x = date, y = value, fill = indicator)) +
-    geom_col(position = "stack",
-             col = NA)
+    geom_col(
+      position = "stack",
+      col = NA
+    )
 }
-

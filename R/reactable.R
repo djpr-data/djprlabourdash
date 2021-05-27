@@ -32,8 +32,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
                              "A84426256L", # Hours worked
                              "A85223450L", # Underemp rate
                              "A84423357V", # Emp FT
-                             "pt_emp_vic"  # Emp PT
-
+                             "pt_emp_vic" # Emp PT
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {

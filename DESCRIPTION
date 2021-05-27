@@ -28,7 +28,7 @@ RoxygenNote: 7.1.1
 Imports: 
     absmapsdata,
     dataui (>= 0.0.1),
-    djprdashdata (>= 0.0.0.9000),
+    djprdashdata (>= 0.0.2.9002),
     djprshiny (>= 0.0.0.9000),
     djprtheme (>= 0.0.0.9000),
     dplyr,

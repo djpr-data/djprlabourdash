@@ -1,6 +1,6 @@
 
-load_and_hide <- function() {
-  df <- load_dash_data()
+load_and_hide <- function(branch = "main") {
+  df <- load_dash_data(branch = branch)
 
   if (shiny::isRunning()) {
     shinyjs::hide("loading_page")

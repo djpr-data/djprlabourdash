@@ -410,8 +410,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
                                   ) %>%
                                     dplyr::group_by(series_id) %>%
                                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                    dplyr::filter(.data$date == max(.data$date)),
-                                  title = "") {
+                                    dplyr::filter(.data$date == max(.data$date))) {
   data <- data %>%
     dplyr::filter(.data$sa4 != "") %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
@@ -445,7 +444,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
       axis.text.y = element_text(size = 12),
       axis.text.x = element_blank()
     ) +
-    labs(title = title)
+    labs(title = "")
 }
 
 text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
@@ -559,8 +558,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                          df = dash_data
                                          ) %>%
                                            dplyr::group_by(series_id) %>%
-                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
-                                         title = "") {
+                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA))) {
   df_summ <- data %>%
     dplyr::filter(!is.na(value)) %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
@@ -871,9 +869,11 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
       col_var = col_var,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
-    scale_x_date(breaks = scales::breaks_pretty(5),
-                 date_labels = "%b\n%Y",
-                 expand = expansion(mult = c(0.05, 0.25))) +
+    scale_x_date(
+      breaks = scales::breaks_pretty(5),
+      date_labels = "%b\n%Y",
+      expand = expansion(mult = c(0.05, 0.25))
+    ) +
     scale_y_continuous(
       limits = function(limits) c(0, limits[2]),
       labels = function(x) paste0(x, "%"),
@@ -900,7 +900,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
     )
 }
 
-reactable_region_focus <- function(data = filter_dash_data(
+table_region_focus <- function(data = filter_dash_data(
                                      c(
                                        "A84600141A",
                                        "A84600144J",

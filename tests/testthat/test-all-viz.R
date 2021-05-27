@@ -11,15 +11,19 @@ test_that("all viz_*() functions at least produce a plot", {
 
   # Re-nest
   dash_data <- dash_data %>%
-    group_by(select(cur_data_all(),
-                    -one_of(c("date",
-                              "value",
-                              "series",
-                              "series_type",
-                              "table_no",
-                              "data_type",
-                              "frequency",
-                              "unit")))) %>%
+    group_by(select(
+      cur_data_all(),
+      -one_of(c(
+        "date",
+        "value",
+        "series",
+        "series_type",
+        "table_no",
+        "data_type",
+        "frequency",
+        "unit"
+      ))
+    )) %>%
     dplyr::group_nest()
 
   # Evaluate each viz function -----
@@ -27,7 +31,7 @@ test_that("all viz_*() functions at least produce a plot", {
 
   name_to_eval <- function(func_name_as_string) {
     suppressMessages(
-    eval(str2lang(paste0(func_name_as_string, "()")))
+      eval(str2lang(paste0(func_name_as_string, "()")))
     )
   }
 
@@ -43,9 +47,10 @@ test_that("all viz_*() functions at least produce a plot", {
   )
 
   for (i in seq_along(viz_funcs)) {
-    vdiffr::expect_doppelganger(title = viz_funcs[i],
-                                fig = plots[[i]],
-                                path = "")
+    vdiffr::expect_doppelganger(
+      title = viz_funcs[i],
+      fig = plots[[i]],
+      path = ""
+    )
   }
-
 })
