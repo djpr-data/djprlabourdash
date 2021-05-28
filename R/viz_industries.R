@@ -167,7 +167,7 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
 
   latest_date <- format(max(data$date), "%b %Y")
 
-  #add entry for data$industry for Victoria; employed total
+  #add entry for data$industry for "Victoria, all industries" where ""
   data <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
@@ -187,21 +187,21 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                                100 * ((value / dplyr::lag(value, 1)) - 1),
                                value - dplyr::lag(value, 1)
       ),
-      d_year = dplyr::if_else(.data$indicator == "Employed total",
-                              100 * ((value / dplyr::lag(value, 12)) - 1),
-                              value - dplyr::lag(value, 12)
+      d_quarter = dplyr::if_else(.data$indicator == "Employed total",
+                              100 * ((value / dplyr::lag(value,3)) - 1),
+                              value - dplyr::lag(value,3)
       )
     ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
       .data$indicator, .data$value, .data$industry,
-      .data$d_month, .data$d_year
+      .data$d_month, .data$d_quarter
     ) %>%
     dplyr::ungroup()
 
   table_df <- table_df %>%
     dplyr::mutate(across(
-      c(value, d_month, d_year),
+      c(value, d_month, d_quarter),
       ~ round2(.x, 1)
     )) %>%
     dplyr::mutate(
@@ -213,16 +213,16 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                                paste0(d_month, "%"),
                                paste0(d_month, " ppts")
       ),
-      d_year = dplyr::if_else(indicator == "Employed total",
-                              paste0(d_year, "%"),
-                              paste0(d_year, " ppts")
+      d_quarter = dplyr::if_else(indicator == "Employed total",
+                              paste0(d_quarter, "%"),
+                              paste0(d_quarter, " ppts")
       )
     )
 
   table_df <- table_df %>%
     dplyr::rename({{ latest_date }} := value,
                   `Change over month` = d_month,
-                  `Change over year` = d_year
+                  `Change over quarter` = d_quarter
     )
 
   table_df <- table_df %>%
@@ -236,7 +236,7 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
     dplyr::group_by(.data$indicator) %>%
     mutate(order = dplyr::case_when(
       series == "Change over month" ~ 2,
-      series == "Change over year" ~ 3,
+      series == "Change over quarter" ~ 3,
       TRUE ~ 1
     )) %>%
     dplyr::arrange(desc(indicator), order) %>%
