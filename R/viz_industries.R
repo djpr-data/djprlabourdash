@@ -66,8 +66,7 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c("A
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
                            "Victoria, all industries",
-                           .data$industry
-      )
+                           .data$industry)
     )
 
   #draw bar chart for all 19 industries plus Vic total
