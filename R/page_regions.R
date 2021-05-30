@@ -66,30 +66,22 @@ page_regions <- function(...) {
       )
     ),
     # Box for regional focus
-    fluidRow(
-      style = "padding-left: 15px;border: 1px solid #53565A; box-shadow: 3px 3px 2px #AEAEAE;",
-      fluidRow(),
-      column(
-        6,
-        column(1),
-        column(
-          11,
+    focus_box(
+      column(6,
           plotOutput("reg_sa4", height = 280) %>%
             djpr_with_spinner(),
           br(),
           htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
             djpr_with_spinner(),
           plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
-            djpr_with_spinner()
-        )
+            djpr_with_spinner(),
       ),
       column(
         6,
         br(),
         reactable::reactableOutput("table_region_focus") %>%
           djpr_with_spinner(),
-        djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
-        br(),
+        djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average.")
       )
     ),
     br(),

@@ -3,6 +3,7 @@
 #' @import shiny
 #' @import dplyr
 #' @import ggplot2
+#' @import djprtheme
 #' @importFrom rlang .data .env
 
 labour_server <- function(input, output, session) {
@@ -282,6 +283,33 @@ labour_server <- function(input, output, session) {
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
     date_slider = FALSE
   )
+
+  # Inclusion: youth focus box -----
+
+  djpr_plot_server(id = "gr_youth_states_dot",
+                   viz_gr_youth_states_dot,
+                   date_slider = FALSE,
+                   width_percent = 45,
+                   data = dash_data,
+                   height_percent = 1.5,
+                   plt_change = plt_change)
+
+  djpr_plot_server(id = "gr_ages_line",
+                   viz_gr_ages_line,
+                   date_slider = FALSE,
+                   width_percent = 45,
+                   data = calc_lfs_age_state_gcc(dash_data),
+                   height_percent = 0.75,
+                   plt_change = plt_change)
+
+
+  djpr_plot_server(id = "gr_yth_melbvrest_line",
+                   viz_gr_yth_melbvrest_line,
+                   width_percent = 45,
+                   data = calc_lfs_age_state_gcc(dash_data) %>%
+                     mutate(chart_id = "gr_yth_melbvrest_line"),
+                   height_percent = 0.75,
+                   plt_change = plt_change)
 
 
   # Regions ------

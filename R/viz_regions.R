@@ -34,7 +34,6 @@
 #'   "A84600037A"
 #' ))
 #' }
-#' @import djprtheme
 #' @importFrom rlang `:=`
 title_unemprate_vic <- function(data = filter_dash_data(c(
                                   "A84599659L",
@@ -110,7 +109,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                               zoom = 6) {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
-  sa4_shp <- absmapsdata::sa42016 %>%
+  sa4_shp <- sa42016 %>%
     dplyr::filter(.data$state_name_2016 == "Victoria") %>%
     dplyr::filter(.data$sa4_code_2016 < 297)
 
@@ -313,11 +312,11 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
   )
 
   highest_current_ur <- data %>%
-    dplyr::filter(.data$date == max(data$date)) %>%
-    dplyr::filter(.data$value == max(data$value)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::filter(.data$value == max(.data$value)) %>%
     dplyr::pull(.data$sa4)
 
-  highest_current_ur <- data$sa4[data$value == max(data$value)]
   title <- paste0(
     highest_current_ur, " had the highest unemployment rate in Victoria in ",
     format(max(data$date), "%B %Y")
@@ -738,7 +737,7 @@ map_reg_sa4 <- function(sa4 = c(
                         )) {
   sa4 <- match.arg(sa4)
 
-  all_areas <- absmapsdata::sa42016 %>%
+  all_areas <- sa42016 %>%
     dplyr::filter(.data$state_name_2016 == "Victoria") %>%
     dplyr::mutate(selected = dplyr::if_else(.data$sa4_name_2016 == .env$sa4, TRUE, FALSE))
 
