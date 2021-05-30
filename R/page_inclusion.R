@@ -25,7 +25,8 @@ page_inclusion <- function(...) {
                      djpr_plot_ui("gr_youth_states_dot")
                      ),
               column(6,
-                     djpr_plot_ui("gr_ages_line")
+                     djpr_plot_ui("gr_ages_line"),
+                     djpr_plot_ui("gr_yth_melbvrest_line")
                      )
     )
               ),

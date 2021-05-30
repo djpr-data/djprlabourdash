@@ -290,7 +290,7 @@ labour_server <- function(input, output, session) {
                    date_slider = FALSE,
                    width_percent = 45,
                    data = dash_data,
-                   height_scale = 1.5,
+                   height_percent = 1.5,
                    plt_change = plt_change)
 
   djpr_plot_server(id = "gr_ages_line",
@@ -298,7 +298,16 @@ labour_server <- function(input, output, session) {
                    date_slider = FALSE,
                    width_percent = 45,
                    data = calc_lfs_age_state_gcc(dash_data),
-                   height_scale = 0.75,
+                   height_percent = 0.75,
+                   plt_change = plt_change)
+
+
+  djpr_plot_server(id = "gr_yth_melbvrest_line",
+                   viz_gr_yth_melbvrest_line,
+                   width_percent = 45,
+                   data = calc_lfs_age_state_gcc(dash_data) %>%
+                     mutate(chart_id = "gr_yth_melbvrest_line"),
+                   height_percent = 0.75,
                    plt_change = plt_change)
 
 
