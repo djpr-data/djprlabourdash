@@ -3,6 +3,7 @@
 #' @import shiny
 #' @import dplyr
 #' @import ggplot2
+#' @import djprtheme
 #' @importFrom rlang .data .env
 
 labour_server <- function(input, output, session) {

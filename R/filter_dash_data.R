@@ -7,7 +7,6 @@
 #' dash_data <- load_dash_data()
 #' filter_dash_data("A84423354L")
 #' }
-#' @import dplyr
 filter_dash_data <- function(series_ids, df = dash_data) {
   out <- df %>%
     dplyr::filter(.data$series_id %in% series_ids) %>%
