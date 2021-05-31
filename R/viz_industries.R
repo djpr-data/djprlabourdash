@@ -209,11 +209,11 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                              paste0(value, "k"),
                              paste0(value, "%")
       ),
-      d_month = dplyr::if_else(indicator == "Employed total",
+      d_quarter = dplyr::if_else(indicator == "Employed total",
                                paste0(d_quarter, "%"),
                                paste0(d_quarter, " ppts")
       ),
-      d_quarter = dplyr::if_else(indicator == "Employed total",
+      d_year = dplyr::if_else(indicator == "Employed total",
                               paste0(d_year, "%"),
                               paste0(d_year, " ppts")
       )
