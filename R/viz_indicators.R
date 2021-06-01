@@ -367,3 +367,22 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
       col = NA
     )
 }
+
+viz_ind_partrate_line <- function(data = filter_dash_data(c("A84423355R",
+                                                            "A84423051C"), df = dash_data))
+{
+
+
+
+    data <- data %>%
+      dplyr::mutate(series = dplyr::if_else(.data$series == "Participation rate ;  Persons ;  Australia ;",
+                                            "Australia", .data$series))
+    data <- data %>%
+      dplyr::mutate(series = dplyr::if_else(.data$series == "Participation rate ;  Persons ;  > Victoria ;",
+                                            "Victoria", .data$series))
+    data %>%
+      djpr_ts_linechart(col_var = .data$series)
+
+
+
+}
