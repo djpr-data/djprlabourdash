@@ -201,6 +201,19 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: Participation ------
+
+  djpr_plot_server("ind_partrate_line",
+                   plot_function = viz_ind_partrate_line,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423051C"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change)
+
+
   # Inclusion ------
 
   # Groups: line chart of emp-pop by sex

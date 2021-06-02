@@ -28,6 +28,8 @@ page_indicators <- function(...) {
     reactable_caption("Youth unemployment rate is not seasonally adjusted. It is smoothed using a 3 month rolling average."),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
-    htmlOutput("indicators_footnote")
+    htmlOutput("indicators_footnote"),
+    h2("Participation"),
+    djpr_plot_ui("ind_partrate_line")
   )
 }
