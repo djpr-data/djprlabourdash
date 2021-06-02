@@ -305,32 +305,4 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
   my_table
 }
 
-new_function <- function(data = filter_dash_data(c("A84601680F",
-                                                   "A84601683L",
-                                                   "A84601686V",
-                                                   "A84601665J",
-                                                   "A84601704L",
-                                                   "A84601707V",
-                                                   "A84601710J",
-                                                   "A84601638A",
-                                                   "A84601653X",
-                                                   "A84601689A",
-                                                   "A84601656F",
-                                                   "A84601713R",
-                                                   "A84601668R",
-                                                   "A84601695W",
-                                                   "A84601698C",
-                                                   "A84601650T",
-                                                   "A84601671C",
-                                                   "A84601641R",
-                                                   "A84601716W",
-                                                   "A84601662A",
-                                                   df = dash_data)) %>%
-                                                   dplyr::group_by(.data$series) %>%
-                                                   dplyr::filter(.data$date == max(.data$date)))
-{
-
-
-
-}
 
