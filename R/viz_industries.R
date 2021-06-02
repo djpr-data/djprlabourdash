@@ -183,14 +183,8 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
   table_df <- data %>%
     dplyr::group_by(industry, indicator) %>%
     dplyr::mutate(
-      d_quarter = dplyr::if_else(.data$indicator == "Employed total",
-                               100 * ((value / dplyr::lag(value,1)) - 1),
-                               value - dplyr::lag(value, 1)
-      ),
-      d_year = dplyr::if_else(.data$indicator == "Employed total",
-                              100 * ((value / dplyr::lag(value,4)) - 1),
-                              value - dplyr::lag(value,4)
-      )
+      d_quarter = 100 * ((value / dplyr::lag(value,1)) - 1),
+      d_year = 100 * ((value / dplyr::lag(value,4)) - 1)
     ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
@@ -199,40 +193,36 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
     ) %>%
     dplyr::ungroup()
 
-  table_df2 <- table_df %>%
+  table_df <- table_df %>%
+    dplyr::mutate(across(
+      c(value, d_quarter, d_year),
+      ~ round2(.x, 1)
+    ))
+
+  table_df <- table_df %>%
     dplyr::mutate(across(
       c(value, d_quarter, d_year),
       ~ round2(.x, 1)
     )) %>%
     dplyr::mutate(
-      value = dplyr::if_else(indicator == "Employed total",
-                             paste0(value, "k"),
-                             paste0(value, "%")
-      ),
-      d_quarter = dplyr::if_else(indicator == "Employed total",
-                               paste0(d_quarter, "%"),
-                               paste0(d_quarter, " ppts")
-      ),
-      d_year = dplyr::if_else(indicator == "Employed total",
-                              paste0(d_year, "%"),
-                              paste0(d_year, " ppts")
-      )
-    )
+      value = scales::comma(value * 1000),
+      d_quarter = paste0(d_quarter, "%"),
+      d_year = paste0(d_year, "%"))
 
-  table_df3 <- table_df2 %>%
+  table_df <- table_df %>%
     dplyr::rename({{ latest_date }} := value,
                   `Change over quarter` = d_quarter,
                   `Change over year` = d_year
     )
 
-  table_df4 <- table_df3 %>%
+  table_df <- table_df %>%
     tidyr::gather(
       key = series, value = value,
       -indicator, -industry
     ) %>%
     tidyr::spread(key = industry, value = value)
 
-  table_df5 <- table_df4 %>%
+  table_df <- table_df %>%
     dplyr::group_by(.data$indicator) %>%
     mutate(order = dplyr::case_when(
       series == "Change over quarter" ~ 2,
@@ -242,15 +232,15 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
     dplyr::arrange(desc(indicator), order) %>%
     dplyr::select(-order)
 
-  col_names <- names(table_df5)
+  col_names <- names(table_df)
 
   col_header_style <- list(
     `font-weight` = "600"
   )
 
-  my_table <- table_df5 %>%
+  my_table <- table_df %>%
     rename(
-      region = 3,
+      industry = 3,
       aggregate = 4
     ) %>%
     reactable::reactable(
@@ -273,7 +263,7 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
           name = "",
           minWidth = 45
         ),
-        region = reactable::colDef(
+        industry = reactable::colDef(
           name = col_names[3],
           headerStyle = col_header_style
         ),
@@ -302,6 +292,7 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
         style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
       )
     )
+
   my_table
 }
 
