@@ -199,7 +199,7 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
     ) %>%
     dplyr::ungroup()
 
-  table_df <- table_df %>%
+  table_df2 <- table_df %>%
     dplyr::mutate(across(
       c(value, d_quarter, d_year),
       ~ round2(.x, 1)
@@ -219,20 +219,20 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
       )
     )
 
-  table_df <- table_df %>%
+  table_df3 <- table_df2 %>%
     dplyr::rename({{ latest_date }} := value,
                   `Change over quarter` = d_quarter,
                   `Change over year` = d_year
     )
 
-  table_df <- table_df %>%
+  table_df4 <- table_df3 %>%
     tidyr::gather(
       key = series, value = value,
       -indicator, -industry
     ) %>%
     tidyr::spread(key = industry, value = value)
 
-  table_df <- table_df %>%
+  table_df5 <- table_df4 %>%
     dplyr::group_by(.data$indicator) %>%
     mutate(order = dplyr::case_when(
       series == "Change over quarter" ~ 2,
@@ -242,13 +242,13 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
     dplyr::arrange(desc(indicator), order) %>%
     dplyr::select(-order)
 
-  col_names <- names(table_df)
+  col_names <- names(table_df5)
 
   col_header_style <- list(
     `font-weight` = "600"
   )
 
-  my_table <- table_df %>%
+  my_table <- table_df5 %>%
     rename(
       region = 3,
       aggregate = 4
