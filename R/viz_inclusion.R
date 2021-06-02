@@ -422,14 +422,14 @@ viz_gr_youth_states_dot <- function(data = dash_data,
 
   df %>%
     ggplot(aes(
-      x = reorder(geog, rank),
+      x = stats::reorder(geog, rank),
       y = value, col = factor(date)
     )) +
     geom_segment(
       data = df_wide,
       aes(
-        x = reorder(geog, rank),
-        xend = reorder(geog, rank),
+        x = stats::reorder(geog, rank),
+        xend = stats::reorder(geog, rank),
         y = min_date, yend = arrow_end
       ),
       arrow = arrow(
