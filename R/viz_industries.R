@@ -296,4 +296,59 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
   my_table
 }
 
+viz_industries_emp_line <- function(data = filter_dash_data(c("A84601680F",
+                                                               "A84601683L",
+                                                               "A84601686V",
+                                                               "A84601665J",
+                                                               "A84601704L",
+                                                               "A84601707V",
+                                                               "A84601710J",
+                                                               "A84601638A",
+                                                               "A84601653X",
+                                                               "A84601689A",
+                                                               "A84601656F",
+                                                               "A84601713R",
+                                                               "A84601668R",
+                                                               "A84601695W",
+                                                               "A84601698C",
+                                                               "A84601650T",
+                                                               "A84601671C",
+                                                               "A84601641R",
+                                                               "A84601716W",
+                                                               "A84601662A",
+                                                               df = dash_data)),
+                                     chosen_industry = "Agriculture, Forestry and Fishing")
+{
 
+  latest_date <- format(max(data$date), "%b %Y")
+
+  data <- data %>%
+    dplyr::mutate(
+      industry = dplyr::if_else(.data$industry == "",
+                                "Victoria, all industries",
+                                .data$industry)
+    )
+
+  data <- data %>%
+    dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
+
+  data <- data %>%
+    dplyr::group_by(industry) %>%
+    dplyr::mutate(
+      d_year = 100 * ((value / dplyr::lag(value,4)) - 1)
+    )   %>%
+    select(date, industry, d_year) %>%
+    dplyr::ungroup()
+
+  data %>%
+    djpr_ts_linechart(
+      col_var = .data$industry,
+      label_num = paste0(round(.data$d_year, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Change in total employment",
+      caption = caption_lfs(),
+      title = title
+      )
+}
