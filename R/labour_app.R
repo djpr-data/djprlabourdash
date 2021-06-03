@@ -287,6 +287,15 @@ labour_server <- function(input, output, session) {
 
   # Inclusion: youth focus box -----
 
+  selected_youth_focus <- reactive(input$youth_focus)
+
+  output$gr_youth_states_dot <- ggiraph::renderGirafe({
+    djprshiny::djpr_girafe(
+      viz_gr_youth_states_dot(dash_data)
+    )
+  })
+
+
   djpr_plot_server(
     id = "gr_youth_states_dot",
     viz_gr_youth_states_dot,
@@ -294,7 +303,8 @@ labour_server <- function(input, output, session) {
     width_percent = 45,
     data = dash_data,
     height_percent = 150,
-    plt_change = plt_change
+    plt_change = plt_change,
+    selected_indicator = selected_youth_focus
   )
 
   djpr_plot_server(
@@ -303,7 +313,7 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE,
     width_percent = 45,
     data = calc_lfs_age_state_gcc(dash_data),
-    height_percent = 75,
+    height_percent = 70,
     plt_change = plt_change
   )
 
@@ -314,7 +324,8 @@ labour_server <- function(input, output, session) {
     width_percent = 45,
     data = calc_lfs_age_state_gcc(dash_data) %>%
       mutate(chart_id = "gr_yth_melbvrest_line"),
-    height_percent = 75,
+    height_percent = 70,
+    date_slider = FALSE,
     plt_change = plt_change
   )
 

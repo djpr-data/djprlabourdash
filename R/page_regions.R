@@ -42,31 +42,32 @@ page_regions <- function(...) {
 
     # Regional focus box ------
     h2("Regional focus"),
-    selectInput("focus_region",
-      label = "Choose a region of Victoria to examine in greater detail",
-      selected = "Ballarat",
-      choices = c(
-        "Ballarat",
-        "Bendigo",
-        "Geelong",
-        "Hume",
-        "Latrobe - Gippsland",
-        "Melbourne - Inner",
-        "Melbourne - Inner East",
-        "Melbourne - Inner South",
-        "Melbourne - North East",
-        "Melbourne - North West",
-        "Melbourne - Outer East",
-        "Melbourne - South East",
-        "Melbourne - West",
-        "Mornington Peninsula",
-        "North West",
-        "Shepparton",
-        "Warrnambool and South West"
-      )
-    ),
     # Box for regional focus
     focus_box(
+      selectInput("focus_region",
+                  label = "Choose a region of Victoria to examine in greater detail",
+                  selected = "Ballarat",
+                  choices = c(
+                    "Ballarat",
+                    "Bendigo",
+                    "Geelong",
+                    "Hume",
+                    "Latrobe - Gippsland",
+                    "Melbourne - Inner",
+                    "Melbourne - Inner East",
+                    "Melbourne - Inner South",
+                    "Melbourne - North East",
+                    "Melbourne - North West",
+                    "Melbourne - Outer East",
+                    "Melbourne - South East",
+                    "Melbourne - West",
+                    "Mornington Peninsula",
+                    "North West",
+                    "Shepparton",
+                    "Warrnambool and South West"
+                  ),
+                  width = "100%"
+      ),
       column(
         6,
         plotOutput("reg_sa4", height = 280) %>%

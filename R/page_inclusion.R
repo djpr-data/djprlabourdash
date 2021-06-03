@@ -20,17 +20,23 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_gen_partrate_line"),
     h2("Young people"),
     djpr_plot_ui("gr_yth_emp_sincecovid_line"),
-    # focus_box(
-    #   column(
-    #     6,
-    #     djpr_plot_ui("gr_youth_states_dot")
-    #   ),
-    #   column(
-    #     6,
-    #     djpr_plot_ui("gr_ages_line"),
-    #     djpr_plot_ui("gr_yth_melbvrest_line")
-    #   )
-    # ),
+    br(),
+    focus_box(
+      shiny::selectInput("youth_focus",
+                         "Select an indicator",
+                         choices = c("unemp_rate",
+                                     "part_rate",
+                                     "emp_pop")),
+      column(
+        6,
+        djpr_plot_ui("gr_youth_states_dot")
+      ),
+      column(
+        6,
+        djpr_plot_ui("gr_ages_line"),
+        djpr_plot_ui("gr_yth_melbvrest_line")
+      )
+    ),
     h2("Long-term unemployed"),
     htmlOutput("inclusion_footnote"),
     br()

@@ -14,7 +14,7 @@ page_indicators <- function(...) {
     h2("Employment"),
     htmlOutput("ind_empgrowth_sincecovid_text"),
     reactable::reactableOutput("ind_emp_table") %>%
-      djpr_with_spinner(),
+      djpr_with_spinner(hide.ui = TRUE),
     reactable_caption(),
     djpr_plot_ui("ind_emp_sincecovid_line"),
     djpr_plot_ui("ind_emppop_state_slope"),
@@ -24,7 +24,7 @@ page_indicators <- function(...) {
     reactable::reactableOutput(
       "ind_unemp_summary"
     ) %>%
-      djpr_with_spinner(),
+      djpr_with_spinner(hide.ui = TRUE),
     reactable_caption("Youth unemployment rate is not seasonally adjusted. It is smoothed using a 3 month rolling average."),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),

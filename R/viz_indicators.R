@@ -269,6 +269,7 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
                                          "A84423314V",
                                          "A84423342C"
                                        ))) {
+
   df <- data %>%
     dplyr::filter(date %in% c(
       max(.data$date),

@@ -147,7 +147,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
 
   # Produce dynamic map, all of Victoria ----
   map <- mapdata %>%
-    leaflet::leaflet() %>%
+    leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
     leaflet::setView(
       lng = 145.4657, lat = -36.41472, # coordinates of map at first view
       zoom = zoom
@@ -198,10 +198,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
       opacity = 1,
       color = "black",
       weight = 1
-    ) %>%
-    # thickness of metro outline
-    leaflet.extras::setMapWidgetStyle(list(background = "white")) # background colour
-
+    )
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
 }
