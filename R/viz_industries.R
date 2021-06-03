@@ -320,8 +320,6 @@ viz_industries_emp_line <- function(data = filter_dash_data(c("A84601680F",
                                      chosen_industry = "Agriculture, Forestry and Fishing")
 {
 
-  latest_date <- format(max(data$date), "%b %Y")
-
   data <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
@@ -335,15 +333,15 @@ viz_industries_emp_line <- function(data = filter_dash_data(c("A84601680F",
   data <- data %>%
     dplyr::group_by(industry) %>%
     dplyr::mutate(
-      d_year = 100 * ((value / dplyr::lag(value,4)) - 1)
+      value = 100 * ((value / dplyr::lag(value,4)) - 1)
     )   %>%
-    select(date, industry, d_year) %>%
+    select(date, industry, value) %>%
     dplyr::ungroup()
 
   data %>%
     djpr_ts_linechart(
       col_var = .data$industry,
-      label_num = paste0(round(.data$d_year, 1), "%"),
+      label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
