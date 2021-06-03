@@ -1,4 +1,4 @@
-#' Function to create the graphs for the 'Regions' subpage on the dashboard.
+?#' Function to create the graphs for the 'Regions' subpage on the dashboard.
 #' @param data the dataframe containing data to visualise
 #' @examples
 #' \dontrun{
