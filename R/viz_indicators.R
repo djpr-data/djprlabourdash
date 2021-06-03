@@ -377,15 +377,16 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c("A84423355R",
     data <- data %>%
       dplyr::mutate(series = dplyr::if_else(.data$series == "Participation rate ;  Persons ;  Australia ;",
                                             "Australia", series))
-    data <- data %>%
+    data<- data %>%
       dplyr::mutate(series = dplyr::if_else(.data$series == "Participation rate ;  Persons ;  > Victoria ;",
                                             "Victoria", series))
     data %>%
-      djpr_ts_linechart(col_var = series) +
+      djpr_ts_linechart(col_var = .data$series) +
       labs(
         title = title,
         subtitle = "Participation rate Australia & Victoria",
-        caption = caption_lfs()
+        caption = "Notes and source goes here"
+
 )
 
 }
