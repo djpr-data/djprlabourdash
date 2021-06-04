@@ -368,7 +368,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
     )
 }
 
-ind_partrate_bar <- function(data = filter_dash_data(c(
+viz_ind_partrate_bar <- function(data = filter_dash_data(c(
                                               "A84423355R",
                                               "A84423271F",
                                               "A84423369C",
@@ -385,42 +385,45 @@ ind_partrate_bar <- function(data = filter_dash_data(c(
 {
 
 
-
     data <- data %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "",
+      dplyr::mutate(state = dplyr::if_else(.data$state == "",
                                          "Australia",
-                                         .data$state
-    )) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "Australian Capital Territory",
-                                         "ACT",
-                                         .data$state
-    )) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "Tasmania",
-                                         "TAS",
-                                         .data$state)) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "New South Wales",
-                                         "NSW",
-                                         .data$state)) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "Western Australia",
-                                         "WA",
-                                         .data$state)) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "South Australia",
-                                         "SA",
-                                         .data$state)) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "Queensland",
-                                         "QLD",
-                                         .data$state)) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "Northern Territory",
-                                         "NT",
-                                         .data$state)) %>%
-    dplyr::mutate(state = dplyr::if_else(.data$state == "Victoria",
-                                         "VIC",
-                                         .data$state))
+                                         .data$state),
+                  state = strayr::strayr(.data$state))
+
+
   data<- data %>%
     dplyr::group_by(.data$state) %>%
-    dplyr::filter(.data$date == max(.data$date))
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
 
 
+  # Create title
+  vic_rank <- data%>%
+    dplyr::filter(
+      .data$state != "Australia",
+      .data$date == max(.data$date)
+    ) %>%
+
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value)) %>%
+    dplyr::filter(.data$state == "Vic") %>%
+    dplyr::pull(.data$rank)
+
+  title <- dplyr::case_when(
+    vic_rank == 8 ~ "was the lowest in Australia",
+    vic_rank == 7 ~ "was the second lowest in Australia",
+    vic_rank == 6 ~ "was the third lowest in Australia",
+    vic_rank == 5 ~ "was the fourth lowest in Australia",
+    vic_rank == 4 ~ "was the fourth highest in Australia",
+    vic_rank == 3 ~ "was the third highest in Australia",
+    vic_rank == 2 ~ "was the second highest in Australia",
+    vic_rank == 1 ~ "was the highest in Australia",
+    TRUE ~ "compared to to other states and territories")
+
+  title <- paste0("Victoria's participation rate ", title,
+                  " in ", format(max(data$date), "%B %Y") )
+
+  # Create plot
   data %>%
     ggplot(aes(
       x = stats::reorder(.data$state, .data$value),
@@ -451,39 +454,9 @@ ind_partrate_bar <- function(data = filter_dash_data(c(
     ) +
 
     labs(
-      title = "title",
-      subtitle = "Participation rate in Australian states and territorie",
+      title = title,
+      subtitle = "Participation rate in Australian states and territories",
       caption = caption_lfs())
-
-
-  vic_rank <- data%>%
-        dplyr::filter(
-      .data$state != "Australia",
-      .data$date == max(.data$date)
-    ) %>%
-
-    dplyr::mutate(rank = dplyr::min_rank(-.data$value)) %>%
-    dplyr::filter(.data$state == "VIC") %>%
-    dplyr::pull(.data$rank)
-
-  title <- dplyr::case_when(
-    vic_rank == 8 ~ "is the lowest in Australia",
-    vic_rank == 7 ~ "is the second lowest in Australia",
-    vic_rank == 6 ~ "is the third lowest in Australia",
-    vic_rank == 5 ~ "is the fourth lowest in Australia",
-    vic_rank == 4 ~ "is the fourth highest in Australia"
-    vic_rank == 3 ~ "is the third highest in Australia",
-    vic_rank == 2 ~ "is the second highest in Australia",
-    vic_rank == 1 ~ "is the highest in Australia"
-    TRUE ~ "Victoria's participation rate compared to to otherand territories")
-
-    #paste0("Victoria's participation rate", .)
-
-    #labs(title = "Participation rate in Australian states and territories")
-
-  # data <- data %>%
-    # dplyr::mutate(geog = if_else(state == "", "Australia", Tasmania="TAS", Victoria ="VIC","New South Wales"= "NSW","Western Australia" = "WA", "South Australia" = "SA", Queensland = "QLD", "Northern Territor" = "NT","Australian Capital Territory" = "ACT", state))
-
 
 }
 
