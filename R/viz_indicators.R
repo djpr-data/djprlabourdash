@@ -378,10 +378,10 @@ ind_partrate_bar <- function(data = filter_dash_data(c(
                                               "A84423313T",
                                               "A84423299J",
                                               "A84423051C"
-                                              )),
+                                              ),
 
                                             df = dash_data
-                                            )
+                                            ))
 {
 
 
@@ -416,10 +416,70 @@ ind_partrate_bar <- function(data = filter_dash_data(c(
     dplyr::mutate(state = dplyr::if_else(.data$state == "Victoria",
                                          "VIC",
                                          .data$state))
-  State_latest<- data %>%
+  data<- data %>%
     dplyr::group_by(.data$state) %>%
     dplyr::filter(.data$date == max(.data$date))
 
+
+  data %>%
+    ggplot(aes(
+      x = stats::reorder(.data$state, .data$value),
+      y =.data$value
+    )) +
+
+    geom_col(
+      aes(fill = -.data$value)
+    ) +
+
+    geom_text(
+      nudge_y = 0.1,
+      aes(label =paste0(round(.data$value, 1),"%")),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+
+  coord_flip(clip = "off") +
+    #scale_fill_distiller(palette = "Blues") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+
+    labs(
+      title = "title",
+      subtitle = "Participation rate in Australian states and territorie",
+      caption = caption_lfs())
+
+
+  vic_rank <- data%>%
+        dplyr::filter(
+      .data$state != "Australia",
+      .data$date == max(.data$date)
+    ) %>%
+
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value)) %>%
+    dplyr::filter(.data$state == "VIC") %>%
+    dplyr::pull(.data$rank)
+
+  title <- dplyr::case_when(
+    vic_rank == 8 ~ "is the lowest in Australia",
+    vic_rank == 7 ~ "is the second lowest in Australia",
+    vic_rank == 6 ~ "is the third lowest in Australia",
+    vic_rank == 5 ~ "is the fourth lowest in Australia",
+    vic_rank == 4 ~ "is the fourth highest in Australia"
+    vic_rank == 3 ~ "is the third highest in Australia",
+    vic_rank == 2 ~ "is the second highest in Australia",
+    vic_rank == 1 ~ "is the highest in Australia"
+    TRUE ~ "Victoria's participation rate compared to to otherand territories")
+
+    #paste0("Victoria's participation rate", .)
+
+    #labs(title = "Participation rate in Australian states and territories")
 
   # data <- data %>%
     # dplyr::mutate(geog = if_else(state == "", "Australia", Tasmania="TAS", Victoria ="VIC","New South Wales"= "NSW","Western Australia" = "WA", "South Australia" = "SA", Queensland = "QLD", "Northern Territor" = "NT","Australian Capital Territory" = "ACT", state))
