@@ -384,13 +384,14 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
                                             ))
 {
 
-
+#name Australia
     data <- data %>%
       dplyr::mutate(state = dplyr::if_else(.data$state == "",
                                          "Australia",
                                          .data$state),
                   state = strayr::strayr(.data$state))
 
+#select the latest date
 
   data<- data %>%
     dplyr::group_by(.data$state) %>%
@@ -398,7 +399,7 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     dplyr::ungroup()
 
 
-  # Create title
+  # Create title long title
   vic_rank <- data%>%
     dplyr::filter(
       .data$state != "Australia",
