@@ -65,8 +65,7 @@ page_regions <- function(...) {
                     "North West",
                     "Shepparton",
                     "Warrnambool and South West"
-                  ),
-                  width = "100%"
+                  )
       ),
       column(
         6,

@@ -385,8 +385,20 @@ viz_gr_youth_states_dot <- function(data = dash_data,
       indicator == "Unemployment rate" ~ "unemp_rate",
       indicator == "Participation rate" ~ "part_rate",
       indicator == "Employment to population ratio" ~ "emp_pop"
-    )) %>%
-    dplyr::filter(indicator_short == selected_indicator) %>%
+    ))
+
+
+  if (is.reactive(selected_indicator)) {
+    print("it's reactive")
+    df <- df %>%
+      dplyr::filter(indicator_short == selected_indicator())
+
+  } else {
+    df <- df %>%
+      dplyr::filter(indicator_short == selected_indicator)
+  }
+
+  df <- df %>%
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(
       value = zoo::rollmeanr(value, 12, fill = NA),
