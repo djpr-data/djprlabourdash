@@ -368,3 +368,63 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
     )
 }
 
+ind_partrate_bar <- function(data = filter_dash_data(c(
+                                              "A84423355R",
+                                              "A84423271F",
+                                              "A84423369C",
+                                              "A84423341A",
+                                              "A84423327F",
+                                              "A84423285V",
+                                              "A84423313T",
+                                              "A84423299J",
+                                              "A84423051C"
+                                              )),
+
+                                            df = dash_data
+                                            )
+{
+
+
+
+    data <- data %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "",
+                                         "Australia",
+                                         .data$state
+    )) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Australian Capital Territory",
+                                         "ACT",
+                                         .data$state
+    )) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Tasmania",
+                                         "TAS",
+                                         .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "New South Wales",
+                                         "NSW",
+                                         .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Western Australia",
+                                         "WA",
+                                         .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "South Australia",
+                                         "SA",
+                                         .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Queensland",
+                                         "QLD",
+                                         .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Northern Territory",
+                                         "NT",
+                                         .data$state)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "Victoria",
+                                         "VIC",
+                                         .data$state))
+  State_latest<- data %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+
+  # data <- data %>%
+    # dplyr::mutate(geog = if_else(state == "", "Australia", Tasmania="TAS", Victoria ="VIC","New South Wales"= "NSW","Western Australia" = "WA", "South Australia" = "SA", Queensland = "QLD", "Northern Territor" = "NT","Australian Capital Territory" = "ACT", state))
+
+
+}
+
+
