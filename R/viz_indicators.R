@@ -508,11 +508,14 @@ data %>%
 
 
 viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
-                                                              "A85223451R
-                                                         A84423354L"),
+                                                            "A85223451R",
+                                                            "A84423354L"),
 
                                                         df = dash_data
 ))
+
+
+
 {
 
 
