@@ -461,4 +461,12 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
 
 }
 
+viz_ind_unemprate_line <- function(data = filter_dash_data(c(
+                                                           "A84423354L",
+                                                          "A84423050A"
 
+),
+df = dash_data
+)) {
+
+}
