@@ -465,8 +465,56 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
                                                            "A84423354L",
                                                           "A84423050A"
 
-),
-df = dash_data
-)) {
+                                                                    ),
+                                                    df = dash_data
+))
+  {
+
+  data <- data %>%
+  mutate(geog = if_else(state == "", "Australia", state))
+
+latest_values <- data %>%
+  filter(date == max(date)) %>%
+  mutate(
+    value = round(value, 1),
+    date = format(date, "%B %Y")
+  ) %>%
+  select(geog, value, date) %>%
+  tidyr::spread(key = geog, value = value)
+
+title <- dplyr::case_when(
+  latest_values$Victoria > latest_values$Australia ~
+    paste0("Victoria's unemployment rate in ", latest_values$date, " was higher than Australia's"),
+  latest_values$Victoria < latest_values$Australia ~
+    paste0("Victoria's unemployment rate in ", latest_values$date, " was lower than Australia's"),
+  latest_values$Victoria == latest_values$Australia ~
+    paste0("Victoria's unemployment rate in ", latest_values$date, " was the same as Australia's"),
+  TRUE ~ "Labour force unemployment in Victoria and Australia"
+)
+
+data %>%
+  djpr_ts_linechart(
+    col_var = geog,
+    label_num = paste0(round(.data$value, 1), "%"),
+    y_labels = function(x) paste0(x, "%")
+  ) +
+  labs(
+    subtitle = "Unemployment rate in Victoria and Australia",
+    caption = caption_lfs(),
+    title = title
+  )
+
+}
+
+
+viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
+                                                              "A85223451R
+                                                         A84423354L"),
+
+                                                        df = dash_data
+))
+{
+
+
 
 }
