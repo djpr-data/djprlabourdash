@@ -510,14 +510,55 @@ data %>%
 viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
                                                             "A85223451R",
                                                             "A84423354L"),
-
-                                                        df = dash_data
+                                                         df = dash_data
 ))
 
 
 
 {
+  data <- data %>%
+    dplyr::mutate(indicator= dplyr::if_else(.data$indicator == "Underemployment rate (proportion of labour force)", "Underemployment rate", .data$indicator))
+  max_date <- data %>%
+    dplyr::filter(date == max(.data$date))
 
+  lab_df <- data %>%
+    dplyr::mutate(tooltip = paste0(
+      indicator,
+      "\n",
+      format(
+        .data$date,
+        "%b %Y"
+      ),
+      "\n",
+      round(.data$value, 1)
+    ))
+
+  data %>%
+    ggplot(aes(x=.data$date, y =.data$value, fill= indicator )) +
+    geom_area(colour="black",size=0.2,alpha=0.4) +
+    labs(subtitle = "Victoria's Unemployment,underemployment & underutilisation rate ",
+      caption = caption_lfs(),
+      title = title)
+  # , position =position_stack(`Unemployment rate`,`Underemployment rate`##`Underutilisiation rate`))  +
+    geom_point(
+      data = max_date,
+      fill = "white",
+      stroke = 1.5,
+      size = 2.5,
+      shape = 21
+    ) +
+    scale_y_continuous(
+      expand = expansion(mult = 0.1),
+      labels = function(x) paste0(x, "%"),
+      axis.title = element_blank())
+
+
+    labs(
+      subtitle = "Victoria's Unemployment,underemployment & underutilisation rate ",
+      caption = caption_lfs(),
+      title = title
+    )
 
 
 }
+
