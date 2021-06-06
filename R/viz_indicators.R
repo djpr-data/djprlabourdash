@@ -276,7 +276,7 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
       subtract_years(max(.data$date), 1)
     )) %>%
     dplyr::mutate(
-      state_abbr = strayr::strayr(.data$state),
+      state_abbr = strayr::clean_state(.data$state),
       state_group = dplyr::if_else(state_abbr %in% c(
         "Vic", "NSW"
       ),

@@ -26,15 +26,22 @@ page_inclusion <- function(...) {
                          "Select an indicator",
                          choices = c("unemp_rate",
                                      "part_rate",
-                                     "emp_pop")),
+                                     "emp_pop"),
+                         width = "100%"),
       column(
         6,
-        djpr_plot_ui("gr_youth_states_dot")
+        djpr_plot_ui("gr_youth_states_dot",
+                     height = "600px")
+        # plotOutput("gr_youth_states_dot",
+        #            height = "600px")
       ),
       column(
         6,
-        djpr_plot_ui("gr_ages_line"),
-        djpr_plot_ui("gr_yth_melbvrest_line")
+        plotOutput("gr_ages_line",
+                   height = "300px"),
+        br(),
+        plotOutput("gr_yth_melbvrest_line",
+                   height = "300px")
       )
     ),
     h2("Long-term unemployed"),

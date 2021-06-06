@@ -388,15 +388,8 @@ viz_gr_youth_states_dot <- function(data = dash_data,
     ))
 
 
-  if (is.reactive(selected_indicator)) {
-    print("it's reactive")
-    df <- df %>%
-      dplyr::filter(indicator_short == selected_indicator())
-
-  } else {
-    df <- df %>%
+  df <- df %>%
       dplyr::filter(indicator_short == selected_indicator)
-  }
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
