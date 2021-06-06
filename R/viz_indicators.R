@@ -517,7 +517,8 @@ viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
 
 {
   data <- data %>%
-    dplyr::mutate(if_else(.data$indicator == "Underemployment rate (proportion of labour force)", "Underemployment rate", .data$indicator))
+    dplyr::mutate(under = if_else(indicator == "Underemployment rate (proportion of labour force)"
+, "Underemployment rate", indicator))
 
   data <- data %>%
     dplyr::filter(!grepl("Underutilisation", series))
@@ -529,28 +530,31 @@ viz_ind_underut_area <- function(data = filter_dash_data(c("A85223450L",
        # caption = caption_lfs(),
 
   data %>%
-    ggplot(aes(x = date, y = value, fill = indicator)) +
+    ggplot(aes(x = date, y = value, fill = under)) +
     geom_area() +
-    geom_point(data = ~ filter(., date == max(date)),
-                        size = 3,
-                        shape = 21,
-                        strok = 1.5,
-                        fill="white") +
+    # geom_point(data = ~ filter(., date == max(date)),
+    #                     size = 3,
+    #                     shape = 21,
+    #                     strok = 1.5,
+    #                     fill="white") +
     djpr_colour_manual(2) +
     theme_djpr() +
     theme(axis.title = element_blank(),
           axis.text.y = element_text(size = 12))+
-   scale_x_date(
+
+    scale_x_date(
     date_labels = "%b\n %Y") +
-    scale_y_continuous(
-      labels = function(x) paste0(x, "%")) +
 
-  labs(
-    subtitle = "Unemployment, Underempoyment rate and Underutilisation rate in Victoria\n   (percentage)",
-    caption=caption_lfs(),
-    title=title
+   scale_y_continuous(
+      labels = function(x) paste0(x, "%")
+      )
 
-    )
+  # labs(
+  #
+  #   subtitle = "Unemployment rate, Underempoyment rate and Underutilisation rate in Victoria\n(percentage)",
+  #   caption = caption_lfs(),
+  #   title = title
+  #   )
 
 
 }
