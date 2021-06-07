@@ -387,7 +387,6 @@ viz_gr_youth_states_dot <- function(data = dash_data,
       indicator == "Employment to population ratio" ~ "emp_pop"
     ))
 
-
   df <- df %>%
       dplyr::filter(indicator_short == selected_indicator)
 
@@ -395,7 +394,9 @@ viz_gr_youth_states_dot <- function(data = dash_data,
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(
       value = zoo::rollmeanr(value, 12, fill = NA),
-      geog = dplyr::if_else(state == "", "Australia", .data$state)
+      geog = dplyr::if_else(state == "", "Australia", .data$state),
+      geog_long = geog,
+      geog = strayr::clean_state(geog)
     ) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
@@ -456,15 +457,17 @@ viz_gr_youth_states_dot <- function(data = dash_data,
     ) +
     ggrepel::geom_text_repel(
       data = df %>%
-        dplyr::filter(geog == "Victoria"),
+        dplyr::filter(geog == "Vic"),
       aes(label = format(.data$date, "%b %Y")),
       size = 14 / .pt,
       direction = "y",
       min.segment.length = unit(10, "lines"),
-      nudge_x = 0.5
+      nudge_x = 0.33
     ) +
     coord_flip() +
-    scale_y_continuous(labels = function(x) paste0(x, "%")) +
+    scale_y_continuous(labels = function(x) paste0(x, "%"),
+                       breaks = scales::breaks_pretty(4),
+                       expand = expansion(add = 0.5)) +
     djpr_colour_manual(2) +
     theme_djpr(flipped = T) +
     theme(axis.title = element_blank())
