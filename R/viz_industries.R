@@ -506,24 +506,32 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c("females_grea
                                                                      "A84423461V",
                                                                      "A84423237A"), df = dash_data) %>%
                                                   dplyr::group_by(.data$series) %>%
-                                                  dplyr::filter(.data$date == max(.data$date)),
+                                                  dplyr::filter(.data$date == max(.data$date)) %>%
+                                                  dplyr::ungroup(),
                                                   chosen_industry = "Agriculture, Forestry and Fishing")
 {
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
                                 "Victoria, all industries",
                                 .data$industry)
     )
 
-  data <- data %>%
+  df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
-    select(date, value, series, indicator, sex, industry)
+    select(date, value, series, indicator, sex, industry, gcc_restofstate)
 
+  df_summ <- df %>%
+    group_by(.data$sex, .data$industry) %>%
+    summarise(value = sum(value),
+              date = max(date)) %>%
+    ungroup()
 
-  # calculate female/male employed per industry)
-  df_sexvic <- data.frame("2021-04-01", 0, "Male employed", "employed total", "Males", "Victoria, all industries")
-  df_sexvic <- data.frame("2021-04-01", 0, "Female employed", "employed total", "Females", "Victoria, all industries")
+  df_summ <- df_summ %>%
+    dplyr::group_by(industry) %>%
+    mutate(perc = value / sum(value)) %>%
+    ungroup()
+
 
 }
 
