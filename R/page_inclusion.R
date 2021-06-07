@@ -32,16 +32,14 @@ page_inclusion <- function(...) {
         6,
         djpr_plot_ui("gr_youth_states_dot",
                      height = "600px")
-        # plotOutput("gr_youth_states_dot",
-        #            height = "600px")
       ),
       column(
         6,
-        plotOutput("gr_ages_line",
-                   height = "300px"),
+        djpr_plot_ui("gr_ages_line",
+                     height = "300px"),
         br(),
-        plotOutput("gr_yth_melbvrest_line",
-                   height = "300px")
+        djpr_plot_ui("gr_yth_melbvrest_line",
+                     height = "300px")
       )
     ),
     h2("Long-term unemployed"),

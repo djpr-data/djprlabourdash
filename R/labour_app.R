@@ -287,11 +287,6 @@ labour_server <- function(input, output, session) {
 
   # Inclusion: youth focus box -----
 
-  # output$gr_youth_states_dot <- ggiraph::renderGirafe({
-  #   djprshiny::djpr_girafe(
-  #     viz_gr_youth_states_dot(dash_data)
-  #   )
-  # })
   djpr_plot_server("gr_youth_states_dot",
                    viz_gr_youth_states_dot,
                    data = dash_data,
@@ -302,17 +297,33 @@ labour_server <- function(input, output, session) {
                    download_button = FALSE,
                    selected_indicator = reactive({input$youth_focus}))
 
-  output$gr_youth_states_dot <- renderPlot({
-    viz_gr_youth_states_dot(selected_indicator = input$youth_focus)
-  })
+  djpr_plot_server("gr_ages_line",
+                   viz_gr_ages_line,
+                   data = calc_lfs_age_state_gcc(),
+                   plt_change = plt_change,
+                   width_percent = 45,
+                   height_percent = 70,
+                   date_slider = FALSE,
+                   download_button = FALSE,
+                   selected_indicator = reactive({input$youth_focus}))
 
-  output$gr_ages_line <- renderPlot({
-    viz_gr_ages_line(selected_indicator = input$youth_focus)
-  })
+  djpr_plot_server("gr_yth_melbvrest_line",
+                   viz_gr_yth_melbvrest_line,
+                   data = calc_lfs_age_state_gcc(),
+                   plt_change = plt_change,
+                   width_percent = 45,
+                   height_percent = 70,
+                   date_slider = FALSE,
+                   download_button = FALSE,
+                   selected_indicator = reactive({input$youth_focus}))
 
-  output$gr_yth_melbvrest_line <- renderPlot({
-    viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
-  })
+  # output$gr_ages_line <- renderPlot({
+  #   viz_gr_ages_line(selected_indicator = input$youth_focus)
+  # })
+  #
+  # output$gr_yth_melbvrest_line <- renderPlot({
+  #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
+  # })
 
 
 

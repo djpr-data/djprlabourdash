@@ -47,6 +47,7 @@ page_regions <- function(...) {
       selectInput("focus_region",
                   label = "Choose a region of Victoria to examine in greater detail",
                   selected = "Ballarat",
+                  width = "100%",
                   choices = c(
                     "Ballarat",
                     "Bendigo",
