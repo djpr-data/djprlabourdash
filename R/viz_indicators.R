@@ -607,7 +607,12 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c("A84426256L",
 df = dash_data
 )) {
   data <- data %>%
-    mutate(geog = if_else(state == "", "Australia", state))
+    mutate(geog = if_else(state == "", "Australia", state)) %>%
+    dplyr::select(series,date,value) %>%
+    tidyr::pivot_wider(names_from=series, values_from=value ) %>%
+    mutate(aust_ratio=`Monthly hours worked in all jobs ;  Persons ;`/`Civilian population aged 15 years and over ;  Persons ;  Australia ;`,
+           Vic_ratio =`Monthly hours worked in all jobs ;  > Victoria ;`/`Civilian population aged 15 years and over ;  Persons ;  > Victoria ;`) %>%
+    tidyr::pivot_longer(!date,names_to="series",values_to = "value")
 
   latest_values <- data %>%
     filter(date == max(date)) %>%
