@@ -610,8 +610,11 @@ df = dash_data
     mutate(geog = if_else(state == "", "Australia", state)) %>%
     dplyr::select(series,date,value) %>%
     tidyr::pivot_wider(names_from=series, values_from=value ) %>%
-    mutate(aust_ratio=`Monthly hours worked in all jobs ;  Persons ;`/`Civilian population aged 15 years and over ;  Persons ;  Australia ;`,
+    mutate(aust_ratio =`Monthly hours worked in all jobs ;  Persons ;`/`Civilian population aged 15 years and over ;  Persons ;  Australia ;`,
            Vic_ratio =`Monthly hours worked in all jobs ;  > Victoria ;`/`Civilian population aged 15 years and over ;  Persons ;  > Victoria ;`) %>%
+
+    #tidyr::pivot_wider(names_from=series, values_from=value ) %>%
+
     tidyr::pivot_longer(!date,names_to="series",values_to = "value")
 
   latest_values <- data %>%
