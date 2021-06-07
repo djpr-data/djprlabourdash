@@ -519,19 +519,59 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c("females_grea
 
   df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
-    select(date, value, series, indicator, sex, industry, gcc_restofstate)
+    dplyr::select(date, value, series, indicator, sex, industry, gcc_restofstate)
 
-  df_summ <- df %>%
-    group_by(.data$sex, .data$industry) %>%
-    summarise(value = sum(value),
+  df <- df %>%
+    dplyr::group_by(.data$sex, .data$industry) %>%
+    dplyr::summarise(value = sum(value),
               date = max(date)) %>%
-    ungroup()
+    dplyr::ungroup()
 
-  df_summ <- df_summ %>%
+  df <- df %>%
     dplyr::group_by(industry) %>%
-    mutate(perc = value / sum(value)) %>%
-    ungroup()
+    dplyr::mutate(perc = value / sum(value)) %>%
+    dplyr::ungroup()
 
+  df %>%
+    ggplot(aes(x = industry, y = value, fill = sex)) +
+    geom_col(position = "fill",
+      alpha = 1,
+      col = "grey70") +
+    geom_text(
+      aes(y = .df$perc, label = round2(.data$perc * 100, 1)),
+      size = 16 / .pt,
+      colour = "white"
+    ) +
+    geom_text(
+      data = df,
+      aes(
+        y = .df$perc,
+        col = .df$sex,
+        label = stringr::str_wrap(.df$perc, 12)
+      ),
+      size = 14 / .pt,
+      vjust = 0,
+      x = 2.5
+    ) +
+    coord_flip() +
+    theme_djpr() +
+    djpr_fill_manual(2) +
+    djpr_colour_manual(2) +
+    scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      axis.line = element_blank()
+    ) +
+    labs(
+      subtitle = paste0(
+        "Percentage share of men and women employed in industries",
+        format(max(df$date), "%B %Y"), "."
+      ),
+      caption = caption_lfs(),
+      title = title
+    )
 
 }
 
