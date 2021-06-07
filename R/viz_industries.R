@@ -160,8 +160,8 @@ viz_industries_emp_table <- function(data = filter_dash_data(c("A84601680F",
                                                                 "A84601673J",
                                                                 "A84601643V",
                                                                 "A84601718A",
-                                                                "A84601664F",
-                                                             df = dash_data)),
+                                                                "A84601664F"),
+                                                             df = dash_data),
                                      chosen_industry = "Agriculture, Forestry and Fishing")
 {
 
@@ -315,8 +315,8 @@ viz_industries_emp_line <- function(data = filter_dash_data(c("A84601680F",
                                                                "A84601671C",
                                                                "A84601641R",
                                                                "A84601716W",
-                                                               "A84601662A",
-                                                               df = dash_data)),
+                                                               "A84601662A"),
+                                                               df = dash_data),
                                      chosen_industry = "Agriculture, Forestry and Fishing")
 {
 
@@ -350,3 +350,196 @@ viz_industries_emp_line <- function(data = filter_dash_data(c("A84601680F",
       title = title
       )
 }
+
+viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c("females_greater melbourne_accommodation and food services_employed full-time",
+                                                                     "females_greater melbourne_administrative and support services_employed full-time",
+                                                                     "females_greater melbourne_agriculture, forestry and fishing_employed full-time",
+                                                                     "females_greater melbourne_arts and recreation services_employed full-time",
+                                                                     "females_greater melbourne_construction_employed full-time",
+                                                                     "females_greater melbourne_education and training_employed full-time",
+                                                                     "females_greater melbourne_electricity, gas, water and waste services_employed full-time",
+                                                                     "females_greater melbourne_financial and insurance services_employed full-time",
+                                                                     "females_greater melbourne_health care and social assistance_employed full-time",
+                                                                     "females_greater melbourne_information media and telecommunications_employed full-time",
+                                                                     "females_greater melbourne_manufacturing_employed full-time",
+                                                                     "females_greater melbourne_mining_employed full-time",
+                                                                     "females_greater melbourne_other services_employed full-time",
+                                                                     "females_greater melbourne_professional, scientific and technical services_employed full-time",
+                                                                     "females_greater melbourne_public administration and safety_employed full-time",
+                                                                     "females_greater melbourne_rental, hiring and real estate services_employed full-time",
+                                                                     "females_greater melbourne_retail trade_employed full-time",
+                                                                     "females_greater melbourne_transport, postal and warehousing_employed full-time",
+                                                                     "females_greater melbourne_wholesale trade_employed full-time",
+                                                                     "males_greater melbourne_accommodation and food services_employed full-time",
+                                                                     "males_greater melbourne_administrative and support services_employed full-time",
+                                                                     "males_greater melbourne_agriculture, forestry and fishing_employed full-time",
+                                                                     "males_greater melbourne_arts and recreation services_employed full-time",
+                                                                     "males_greater melbourne_construction_employed full-time",
+                                                                     "males_greater melbourne_education and training_employed full-time",
+                                                                     "males_greater melbourne_electricity, gas, water and waste services_employed full-time",
+                                                                     "males_greater melbourne_financial and insurance services_employed full-time",
+                                                                     "males_greater melbourne_health care and social assistance_employed full-time",
+                                                                     "males_greater melbourne_information media and telecommunications_employed full-time",
+                                                                     "males_greater melbourne_manufacturing_employed full-time",
+                                                                     "males_greater melbourne_mining_employed full-time",
+                                                                     "males_greater melbourne_other services_employed full-time",
+                                                                     "males_greater melbourne_professional, scientific and technical services_employed full-time",
+                                                                     "males_greater melbourne_public administration and safety_employed full-time",
+                                                                     "males_greater melbourne_rental, hiring and real estate services_employed full-time",
+                                                                     "males_greater melbourne_retail trade_employed full-time",
+                                                                     "males_greater melbourne_transport, postal and warehousing_employed full-time",
+                                                                     "males_greater melbourne_wholesale trade_employed full-time",
+                                                                     "females_rest of vic._accommodation and food services_employed full-time",
+                                                                     "females_rest of vic._administrative and support services_employed full-time",
+                                                                     "females_rest of vic._agriculture, forestry and fishing_employed full-time",
+                                                                     "females_rest of vic._arts and recreation services_employed full-time",
+                                                                     "females_rest of vic._construction_employed full-time",
+                                                                     "females_rest of vic._education and training_employed full-time",
+                                                                     "females_rest of vic._electricity, gas, water and waste services_employed full-time",
+                                                                     "females_rest of vic._financial and insurance services_employed full-time",
+                                                                     "females_rest of vic._health care and social assistance_employed full-time",
+                                                                     "females_rest of vic._information media and telecommunications_employed full-time",
+                                                                     "females_rest of vic._manufacturing_employed full-time",
+                                                                     "females_rest of vic._mining_employed full-time",
+                                                                     "females_rest of vic._other services_employed full-time",
+                                                                     "females_rest of vic._professional, scientific and technical services_employed full-time",
+                                                                     "females_rest of vic._public administration and safety_employed full-time",
+                                                                     "females_rest of vic._rental, hiring and real estate services_employed full-time",
+                                                                     "females_rest of vic._retail trade_employed full-time",
+                                                                     "females_rest of vic._transport, postal and warehousing_employed full-time",
+                                                                     "females_rest of vic._wholesale trade_employed full-time",
+                                                                     "males_rest of vic._accommodation and food services_employed full-time",
+                                                                     "males_rest of vic._administrative and support services_employed full-time",
+                                                                     "males_rest of vic._agriculture, forestry and fishing_employed full-time",
+                                                                     "males_rest of vic._arts and recreation services_employed full-time",
+                                                                     "males_rest of vic._construction_employed full-time",
+                                                                     "males_rest of vic._education and training_employed full-time",
+                                                                     "males_rest of vic._electricity, gas, water and waste services_employed full-time",
+                                                                     "males_rest of vic._financial and insurance services_employed full-time",
+                                                                     "males_rest of vic._health care and social assistance_employed full-time",
+                                                                     "males_rest of vic._information media and telecommunications_employed full-time",
+                                                                     "males_rest of vic._manufacturing_employed full-time",
+                                                                     "males_rest of vic._mining_employed full-time",
+                                                                     "males_rest of vic._other services_employed full-time",
+                                                                     "males_rest of vic._professional, scientific and technical services_employed full-time",
+                                                                     "males_rest of vic._public administration and safety_employed full-time",
+                                                                     "males_rest of vic._rental, hiring and real estate services_employed full-time",
+                                                                     "males_rest of vic._retail trade_employed full-time",
+                                                                     "males_rest of vic._transport, postal and warehousing_employed full-time",
+                                                                     "males_rest of vic._wholesale trade_employed full-time",
+                                                                     "females_greater melbourne_accommodation and food services_employed part-time",
+                                                                     "females_greater melbourne_administrative and support services_employed part-time",
+                                                                     "females_greater melbourne_agriculture, forestry and fishing_employed part-time",
+                                                                     "females_greater melbourne_arts and recreation services_employed part-time",
+                                                                     "females_greater melbourne_construction_employed part-time",
+                                                                     "females_greater melbourne_education and training_employed part-time",
+                                                                     "females_greater melbourne_electricity, gas, water and waste services_employed part-time",
+                                                                     "females_greater melbourne_financial and insurance services_employed part-time",
+                                                                     "females_greater melbourne_health care and social assistance_employed part-time",
+                                                                     "females_greater melbourne_information media and telecommunications_employed part-time",
+                                                                     "females_greater melbourne_manufacturing_employed part-time",
+                                                                     "females_greater melbourne_mining_employed part-time",
+                                                                     "females_greater melbourne_other services_employed part-time",
+                                                                     "females_greater melbourne_professional, scientific and technical services_employed part-time",
+                                                                     "females_greater melbourne_public administration and safety_employed part-time",
+                                                                     "females_greater melbourne_rental, hiring and real estate services_employed part-time",
+                                                                     "females_greater melbourne_retail trade_employed part-time",
+                                                                     "females_greater melbourne_transport, postal and warehousing_employed part-time",
+                                                                     "females_greater melbourne_wholesale trade_employed part-time",
+                                                                     "males_greater melbourne_accommodation and food services_employed part-time",
+                                                                     "males_greater melbourne_administrative and support services_employed part-time",
+                                                                     "males_greater melbourne_agriculture, forestry and fishing_employed part-time",
+                                                                     "males_greater melbourne_arts and recreation services_employed part-time",
+                                                                     "males_greater melbourne_construction_employed part-time",
+                                                                     "males_greater melbourne_education and training_employed part-time",
+                                                                     "males_greater melbourne_electricity, gas, water and waste services_employed part-time",
+                                                                     "males_greater melbourne_financial and insurance services_employed part-time",
+                                                                     "males_greater melbourne_health care and social assistance_employed part-time",
+                                                                     "males_greater melbourne_information media and telecommunications_employed part-time",
+                                                                     "males_greater melbourne_manufacturing_employed part-time",
+                                                                     "males_greater melbourne_mining_employed part-time",
+                                                                     "males_greater melbourne_other services_employed part-time",
+                                                                     "males_greater melbourne_professional, scientific and technical services_employed part-time",
+                                                                     "males_greater melbourne_public administration and safety_employed part-time",
+                                                                     "males_greater melbourne_rental, hiring and real estate services_employed part-time",
+                                                                     "males_greater melbourne_retail trade_employed part-time",
+                                                                     "males_greater melbourne_transport, postal and warehousing_employed part-time",
+                                                                     "males_greater melbourne_wholesale trade_employed part-time",
+                                                                     "females_rest of vic._accommodation and food services_employed part-time",
+                                                                     "females_rest of vic._administrative and support services_employed part-time",
+                                                                     "females_rest of vic._agriculture, forestry and fishing_employed part-time",
+                                                                     "females_rest of vic._arts and recreation services_employed part-time",
+                                                                     "females_rest of vic._construction_employed part-time",
+                                                                     "females_rest of vic._education and training_employed part-time",
+                                                                     "females_rest of vic._electricity, gas, water and waste services_employed part-time",
+                                                                     "females_rest of vic._financial and insurance services_employed part-time",
+                                                                     "females_rest of vic._health care and social assistance_employed part-time",
+                                                                     "females_rest of vic._information media and telecommunications_employed part-time",
+                                                                     "females_rest of vic._manufacturing_employed part-time",
+                                                                     "females_rest of vic._mining_employed part-time",
+                                                                     "females_rest of vic._other services_employed part-time",
+                                                                     "females_rest of vic._professional, scientific and technical services_employed part-time",
+                                                                     "females_rest of vic._public administration and safety_employed part-time",
+                                                                     "females_rest of vic._rental, hiring and real estate services_employed part-time",
+                                                                     "females_rest of vic._retail trade_employed part-time",
+                                                                     "females_rest of vic._transport, postal and warehousing_employed part-time",
+                                                                     "females_rest of vic._wholesale trade_employed part-time",
+                                                                     "males_rest of vic._accommodation and food services_employed part-time",
+                                                                     "males_rest of vic._administrative and support services_employed part-time",
+                                                                     "males_rest of vic._agriculture, forestry and fishing_employed part-time",
+                                                                     "males_rest of vic._arts and recreation services_employed part-time",
+                                                                     "males_rest of vic._construction_employed part-time",
+                                                                     "males_rest of vic._education and training_employed part-time",
+                                                                     "males_rest of vic._electricity, gas, water and waste services_employed part-time",
+                                                                     "males_rest of vic._financial and insurance services_employed part-time",
+                                                                     "males_rest of vic._health care and social assistance_employed part-time",
+                                                                     "males_rest of vic._information media and telecommunications_employed part-time",
+                                                                     "males_rest of vic._manufacturing_employed part-time",
+                                                                     "males_rest of vic._mining_employed part-time",
+                                                                     "males_rest of vic._other services_employed part-time",
+                                                                     "males_rest of vic._professional, scientific and technical services_employed part-time",
+                                                                     "males_rest of vic._public administration and safety_employed part-time",
+                                                                     "males_rest of vic._rental, hiring and real estate services_employed part-time",
+                                                                     "males_rest of vic._retail trade_employed part-time",
+                                                                     "males_rest of vic._transport, postal and warehousing_employed part-time",
+                                                                     "males_rest of vic._wholesale trade_employed part-time",
+                                                                     "A84423461V",
+                                                                     "A84423237A"), df = dash_data) %>%
+                                                  dplyr::group_by(.data$series) %>%
+                                                  dplyr::filter(.data$date == max(.data$date)),
+                                                  chosen_industry = "Agriculture, Forestry and Fishing")
+{
+  data <- data %>%
+    dplyr::mutate(
+      industry = dplyr::if_else(.data$industry == "",
+                                "Victoria, all industries",
+                                .data$industry)
+    )
+
+  data <- data %>%
+    dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
+    select(date, value, series, indicator, sex, industry)
+
+
+  # calculate female/male employed per industry)
+  df_sexvic <- data.frame("2021-04-01", 0, "Male employed", "employed total", "Males", "Victoria, all industries")
+  df_sexvic <- data.frame("2021-04-01", 0, "Female employed", "employed total", "Females", "Victoria, all industries")
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
