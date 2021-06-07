@@ -532,45 +532,54 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c("females_grea
     dplyr::mutate(perc = value / sum(value)) %>%
     dplyr::ungroup()
 
+  df <- df %>%
+    mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
+
+  label_df <- df %>%
+    group_by(industry) %>%
+    arrange(desc(sex)) %>%
+    mutate(label_y = cumsum(perc) - perc + (perc / 2))
+
+  legend_df <- label_df %>%
+    dplyr::filter(.data$industry != "Victoria, all industries")
+
   df %>%
-    ggplot(aes(x = industry, y = value, fill = sex)) +
+    ggplot(aes(x = reorder(stringr::str_wrap(industry, 15), -order),
+               y = value, fill = sex)) +
     geom_col(position = "fill",
       alpha = 1,
       col = "grey70") +
     geom_text(
-      aes(y = .df$perc, label = round2(.data$perc * 100, 1)),
+      data = label_df,
+      aes(y = .data$label_y, label = paste0(round2(.data$perc * 100, 1), "%")),
       size = 16 / .pt,
       colour = "white"
     ) +
     geom_text(
-      data = df,
-      aes(
-        y = .df$perc,
-        col = .df$sex,
-        label = stringr::str_wrap(.df$perc, 12)
-      ),
-      size = 14 / .pt,
-      vjust = 0,
-      x = 2.5
+      data = legend_df,
+      aes(y = .data$label_y, label = .data$sex, col = .data$sex),
+      nudge_x = 0.5,
+      size = 14 / .pt
     ) +
     coord_flip() +
     theme_djpr() +
     djpr_fill_manual(2) +
     djpr_colour_manual(2) +
-    scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
+    # scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
     theme(
       axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
       axis.title = element_blank(),
       panel.grid = element_blank(),
       axis.line = element_blank()
     ) +
     labs(
       subtitle = paste0(
-        "Percentage share of men and women employed in industries",
+        "Percentage share of men and women employed in industries in ",
         format(max(df$date), "%B %Y"), "."
       ),
       caption = caption_lfs(),
-      title = title
+      title = "INSERT TITLE HERE"
     )
 
 }
