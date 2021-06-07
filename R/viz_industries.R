@@ -533,12 +533,12 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c("females_grea
     dplyr::ungroup()
 
   df <- df %>%
-    mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
+    dply::mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
 
   label_df <- df %>%
-    group_by(industry) %>%
-    arrange(desc(sex)) %>%
-    mutate(label_y = cumsum(perc) - perc + (perc / 2))
+    dply::group_by(industry) %>%
+    dply::arrange(desc(sex)) %>%
+    dply::mutate(label_y = cumsum(perc) - perc + (perc / 2))
 
   legend_df <- label_df %>%
     dplyr::filter(.data$industry != "Victoria, all industries")
