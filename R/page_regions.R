@@ -67,14 +67,15 @@ page_regions <- function(...) {
     ),
     # Box for regional focus
     focus_box(
-      column(6,
-          plotOutput("reg_sa4", height = 280) %>%
-            djpr_with_spinner(),
-          br(),
-          htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
-            djpr_with_spinner(),
-          plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
-            djpr_with_spinner(),
+      column(
+        6,
+        plotOutput("reg_sa4", height = 280) %>%
+          djpr_with_spinner(),
+        br(),
+        htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
+          djpr_with_spinner(),
+        plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
+          djpr_with_spinner(),
       ),
       column(
         6,
