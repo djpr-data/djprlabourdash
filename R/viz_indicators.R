@@ -597,3 +597,45 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
       title = title
     )
 }
+
+
+viz_ind_hoursworked_line <- function(data = filter_dash_data(c("A84426256L",
+                                                                 "A84426277X",
+                                                                 "A84423689R",
+                                                                 "A84423091W"),
+
+df = dash_data
+)) {
+  data <- data %>%
+    mutate(geog = if_else(state == "", "Australia", state))
+
+  latest_values <- data %>%
+    filter(date == max(date)) %>%
+    mutate(
+      value = round(value, 1),
+      date = format(date, "%B %Y")
+    ) %>%
+    select(geog, value, date) %>%
+    tidyr::spread(key = geog, value = value)
+
+  title <- dplyr::case_when(
+    latest_values$Victoria > latest_values$Australia ~
+      paste0("Victoria's monthly hours worked per civilian popn. in ", latest_values$date, " was higher than Australia's"),
+    latest_values$Victoria < latest_values$Australia ~
+      paste0("Victoria's monthly hours worked per civilian popn. in ", latest_values$date, " was lower than Australia's"),
+    latest_values$Victoria == latest_values$Australia ~
+      paste0("Victoria's monthly hours worked per civilian popn. in ", latest_values$date, " was the same as Australia's"),
+    TRUE ~ "Monthly hours worked per civilian popn in Victoria and Australia"
+  )
+  data %>%
+    djpr_ts_linechart(
+      col_var = geog,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Monthly hours worked per civilian popn. in Victoria and Australia",
+      caption = caption_lfs(),
+      title = title
+    )
+}
