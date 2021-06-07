@@ -539,10 +539,12 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
       )
     )
 
-  title <- paste0("In ", format(unique(label_df$date), "%B %Y"), ", ",
-         round(label_df$value[label_df$under == "Underutilisation rate"], 1),
-         " per cent of the Victorian labour force was either unemployed",
-         " or underemployed")
+  title <- paste0(
+    "In ", format(unique(label_df$date), "%B %Y"), ", ",
+    round(label_df$value[label_df$under == "Underutilisation rate"], 1),
+    " per cent of the Victorian labour force was either unemployed",
+    " or underemployed"
+  )
 
   data %>%
     dplyr::filter(!grepl("Underutilisation", series)) %>%
@@ -599,23 +601,22 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
 }
 
 
-viz_ind_hoursworked_line <- function(data = filter_dash_data(c("A84426256L",
-                                                                 "A84426277X",
-                                                                 "A84423689R",
-                                                                 "A84423091W"),
-
-df = dash_data
-)) {
+viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
+                                       "A84426256L",
+                                       "A84426277X",
+                                       "A84423689R",
+                                       "A84423091W"
+                                     ),
+                                     df = dash_data
+                                     )) {
   data <- data %>%
     mutate(geog = if_else(state == "", "Australia", state)) %>%
-    dplyr::select(series,date,value) %>%
-    tidyr::pivot_wider(names_from=series, values_from=value ) %>%
-    mutate(aust_ratio =`Monthly hours worked in all jobs ;  Persons ;`/`Civilian population aged 15 years and over ;  Persons ;  Australia ;`,
-           Vic_ratio =`Monthly hours worked in all jobs ;  > Victoria ;`/`Civilian population aged 15 years and over ;  Persons ;  > Victoria ;`) %>%
-
-    #tidyr::pivot_wider(names_from=series, values_from=value ) %>%
-
-    tidyr::pivot_longer(!date,names_to="series",values_to = "value")
+    dplyr::select(indicator, date, value, geog) %>%
+    tidyr::pivot_wider(names_from = indicator, values_from = value) %>%
+    dplyr::rename(civ_pop = starts_with("Civilian population"),
+                  hours = starts_with("Monthly hours")) %>%
+    dplyr::mutate(value = hours / civ_pop) %>%
+    dplyr::filter(!is.na(value))
 
   latest_values <- data %>%
     filter(date == max(date)) %>%
@@ -628,22 +629,21 @@ df = dash_data
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
-      paste0("Victoria's monthly hours worked per civilian popn. in ", latest_values$date, " was higher than Australia's"),
+    paste0("Victorian adults worked more hours on average in ", latest_values$date, " than Australian adults"),
     latest_values$Victoria < latest_values$Australia ~
-      paste0("Victoria's monthly hours worked per civilian popn. in ", latest_values$date, " was lower than Australia's"),
+    paste0("Victorian adults worked fewer hours on average in ", latest_values$date, " than Australian adults"),
     latest_values$Victoria == latest_values$Australia ~
-      paste0("Victoria's monthly hours worked per civilian popn. in ", latest_values$date, " was the same as Australia's"),
-    TRUE ~ "Monthly hours worked per civilian popn in Victoria and Australia"
+    paste0("In ", latest_values$date, ", Victorian and Australian adults worked the same number of hours on average"),
+    TRUE ~ "Monthly hours worked per civilian population in Victoria and Australia"
   )
+
   data %>%
     djpr_ts_linechart(
-      col_var = geog,
-      label_num = paste0(round(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
+      col_var = geog
     ) +
     labs(
-      subtitle = "Monthly hours worked per civilian popn. in Victoria and Australia",
-      caption = caption_lfs(),
+      subtitle = "Average monthly hours worked per civilian adult in Victoria and Australia",
+      caption = paste0(caption_lfs(), " Civilian adults are all residents aged 15 and above who are not in active military service."),
       title = title
     )
 }
