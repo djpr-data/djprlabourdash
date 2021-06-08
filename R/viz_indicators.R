@@ -376,7 +376,7 @@ gr_yth_unemprate_map <- function(data = filter_dash_data(c("to be done")) %>%
 title = "") {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
-  sa4_shp <- absmapsdata::sa42016 %>%
+  sa4_shp <- sa42016 %>%
     dplyr::filter(.data$state_name_2016 == "Victoria") %>%
     dplyr::filter(.data$sa4_code_2016 < 297)
 
@@ -468,9 +468,7 @@ title = "") {
       opacity = 1,
       color = "black",
       weight = 1
-    ) %>%
-    # thickness of metro outline
-    leaflet.extras::setMapWidgetStyle(list(background = "white")) # background colour
+    )
 
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
