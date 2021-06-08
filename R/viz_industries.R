@@ -55,13 +55,17 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
                                                       "A84601662A"
                                                     ),
                                                     df = dash_data
-                                                    ) %>%
-                                                      dplyr::group_by(.data$series) %>%
-                                                      dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-02-01")]) - 1))) {
+                                                    ) ) {
+
+  data <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-02-01")]) - 1))
+
   # reduce to only latest month (indexing already done above in data input into function)                                {
   data <- data %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::filter(.data$date == max(.data$date))
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
 
   # add entry for data$industry for Victoria; employed total
   data <- data %>%
@@ -72,26 +76,51 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
       )
     )
 
+  lab_df <- data %>%
+    dplyr::select(industry, value) %>%
+    dplyr::mutate(lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
+                  lab_hjust = dplyr::if_else(value >= 0, 0, 1))
+
+  title <- paste0(
+    "Employment in ",
+    data$industry[data$value == max(data$value)],
+    dplyr::if_else(max(data$value) > 0, " grew", " shrank"),
+    " by ",
+    round2(max(data$value), 1),
+    " per cent between February 2020 and ",
+    format(max(data$date), "%B %Y"),
+    ", while employment in ",
+    data$industry[data$value == min(data$value)],
+    dplyr::if_else(min(data$value) > 0, " grew", " shrank"),
+    " by ",
+    round2(abs(min(data$value)), 1),
+    " per cent"
+  )
+
   # draw bar chart for all 19 industries plus Vic total
   data %>%
     ggplot(aes(
       x = reorder(industry, value),
       y = value
     )) +
+
     geom_col(
-      col = "grey85",
       aes(fill = -value)
     ) +
     geom_text(
-      nudge_y = 0.1,
-      aes(label = round(value, 1)),
+      data = lab_df,
+      aes(y = lab_y,
+          hjust = lab_hjust,
+          label = paste0(round(value, 1), "%")),
       colour = "black",
-      hjust = 0,
-      size = 12 / .pt
+      size = 11 / .pt
+    ) +
+    geom_hline(
+      yintercept = 0
     ) +
     coord_flip(clip = "off") +
+    scale_y_continuous(expand = expansion(mult = c(0.2, 0.15))) +
     scale_fill_distiller(palette = "Blues") +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     djprtheme::theme_djpr(flipped = TRUE) +
     theme(
       axis.title.x = element_blank(),
@@ -99,10 +128,13 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
       axis.text.y = element_text(size = 12),
       axis.text.x = element_blank()
     ) +
-    labs(title = title)
+    labs(title = title,
+         subtitle = paste0("Growth in employment by industry between February 2020 and ",
+                           format(max(data$date), "%B %Y")),
+         caption = caption_lfs_det_q())
 }
 
-viz_industries_emp_table <- function(data = filter_dash_data(c(
+table_industries_employment <- function(data = filter_dash_data(c(
                                        "A84601680F",
                                        "A84601683L",
                                        "A84601686V",
@@ -226,15 +258,21 @@ viz_industries_emp_table <- function(data = filter_dash_data(c(
     ) %>%
     tidyr::spread(key = industry, value = value)
 
+
+
   table_df <- table_df %>%
-    dplyr::group_by(.data$indicator) %>%
-    mutate(order = dplyr::case_when(
+    dplyr::mutate(indic_order = dplyr::case_when(
+      indicator == "Employed total" ~ 1,
+      indicator == "Employed full-time" ~ 2,
+      indicator == "Employed part-time" ~ 3
+    )) %>%
+    mutate(series_order = dplyr::case_when(
       series == "Change over quarter" ~ 2,
       series == "Change over year" ~ 3,
       TRUE ~ 1
     )) %>%
-    dplyr::arrange(desc(indicator), order) %>%
-    dplyr::select(-order)
+    dplyr::arrange(indic_order, series_order) %>%
+    dplyr::select(-ends_with("order"))
 
   col_names <- names(table_df)
 
@@ -345,6 +383,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::ungroup()
 
   data %>%
+    dplyr::filter(!is.na(value)) %>%
     djpr_ts_linechart(
       col_var = .data$industry,
       label_num = paste0(round(.data$value, 1), "%"),
@@ -352,8 +391,10 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       subtitle = "Change in total employment",
-      caption = caption_lfs(),
-      title = title
+      caption = caption_lfs_det_q(),
+      title = paste0("Annual employment growth in ",
+                     chosen_industry,
+                     " compared to Victorian average")
     )
 }
 
@@ -543,15 +584,33 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     dplyr::ungroup()
 
   df <- df %>%
-    dply::mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
+    dplyr::mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
 
   label_df <- df %>%
-    dply::group_by(industry) %>%
-    dply::arrange(desc(sex)) %>%
-    dply::mutate(label_y = cumsum(perc) - perc + (perc / 2))
+    dplyr::group_by(industry) %>%
+    dplyr::arrange(desc(sex)) %>%
+    dplyr::mutate(label_y = cumsum(perc) - perc + (perc / 2))
 
   legend_df <- label_df %>%
     dplyr::filter(.data$industry != "Victoria, all industries")
+
+  chosen_industry_female_share <- round2(df$perc[df$sex == "Females" & df$industry != "Victoria, all industries"] * 100, 1)
+  vic_female_share <- round2(df$perc[df$sex == "Females" & df$industry == "Victoria, all industries"] * 100, 1)
+
+  title <- paste0(
+    "Women account for ",
+    chosen_industry_female_share,
+    " per cent of workers in the ",
+    chosen_industry,
+    " industry, which is ",
+    dplyr::case_when(chosen_industry_female_share > vic_female_share ~
+                       "higher than",
+                     chosen_industry_female_share < vic_female_share ~
+                       "lower than",
+                     chosen_industry_female_share == vic_female_share ~
+                       "the same as"),
+    " the Victorian average"
+  )
 
   df %>%
     ggplot(aes(
@@ -572,7 +631,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     geom_text(
       data = legend_df,
       aes(y = .data$label_y, label = .data$sex, col = .data$sex),
-      nudge_x = 0.5,
+      nudge_x = 0.55,
       size = 14 / .pt
     ) +
     coord_flip() +
@@ -592,7 +651,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
         "Percentage share of men and women employed in industries in ",
         format(max(df$date), "%B %Y"), "."
       ),
-      caption = caption_lfs(),
-      title = "INSERT TITLE HERE"
+      caption = caption_lfs_det_q(),
+      title = title
     )
 }

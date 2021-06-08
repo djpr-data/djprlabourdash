@@ -59,8 +59,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                               )) %>%
                                 group_by(series_id) %>%
                                 mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                dplyr::filter(.data$date == max(.data$date)),
-                              title = "") {
+                                dplyr::filter(.data$date == max(.data$date))) {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- absmapsdata::sa42016 %>%

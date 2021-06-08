@@ -4,7 +4,7 @@ labour_ui <- function(...) {
     page_overview(),
     page_indicators(),
     page_groups(),
-    page_regions() #,
-    # page_industries()
+    page_regions(),
+    page_industries()
   )
 }

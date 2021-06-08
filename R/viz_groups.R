@@ -51,8 +51,7 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
                                  "A84423238C"
                                ), df = dash_data) %>%
                                  dplyr::group_by(.data$series) %>%
-                                 dplyr::filter(.data$date == max(.data$date)),
-                               title = "") {
+                                 dplyr::filter(.data$date == max(.data$date))) {
   df <- data %>%
     dplyr::ungroup() %>%
     dplyr::select(sex, indicator, value) %>%

@@ -5,10 +5,10 @@
 \title{Function to create the graphs for the 'Groups' subpage on the dashboard.}
 \usage{
 viz_gr_gen_emp_bar(
-  data = filter_dash_data(c("A84423349V", "A84423237A", "A84423461V", "A84423357V",
-    "A84423245A", "A84423469L", "A84423350C", "A84423238C", "A84423462W", "pt_emp_vic"),
-    df = dash_data),
-  title = ""
+  data = filter_dash_data(c("A84423469L", "A84423245A", "A84423801C", "A84423577W",
+    "A84423461V", "A84423237A", "A84423463X", "A84423239F", "A84423462W", "A84423238C"),
+    df = dash_data) \%>\% dplyr::group_by(.data$series) \%>\% dplyr::filter(.data$date ==
+    max(.data$date))
 )
 }
 \arguments{

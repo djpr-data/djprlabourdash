@@ -22,7 +22,7 @@ page_regions <- function(...) {
     djpr_plot_ui("reg_unemprate_multiline"),
     h2("Regional focus"),
     selectInput("focus_region",
-      label = "Choose a region of Victoria to examine in greater detail",
+      label = "Choose a region of Victoria",
       selected = "Ballarat",
       choices = c(
         "Ballarat",

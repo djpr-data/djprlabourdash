@@ -10,8 +10,7 @@ map_unemprate_vic(
     "A84600193C", "A84600079X", "A84599665J", "A84600031L", "A84599671C", "A84599677T",
     "A84599683L", "A84599929A", "A84600121T", "A84600037A")) \%>\% group_by(series_id)
     \%>\% mutate(value = zoo::rollmeanr(value, 3, fill = NA)) \%>\%
-    dplyr::filter(.data$date == max(.data$date)),
-  title = ""
+    dplyr::filter(.data$date == max(.data$date))
 )
 }
 \arguments{
