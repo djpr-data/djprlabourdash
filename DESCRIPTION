@@ -3,6 +3,10 @@ Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
     c(
+    person(given = "Annett",
+           family = "Finger",
+           role = "ctb",
+           email = "annett.finger@ecodev.vic.gov.au"),
     person(given = "Darren",
            family = "Wong",
            role = "ctb",
@@ -22,45 +26,37 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    absmapsdata,
     dataui (>= 0.0.1),
-    djprdashdata (>= 0.0.0.9000),
+    djprdashdata (>= 0.0.2.9002),
     djprshiny (>= 0.0.0.9000),
     djprtheme (>= 0.0.0.9000),
-    dplyr,
+    dplyr (>= 1.0.5),
     ggplot2,
     htmltools (>= 0.5.1.1),
-    htmlwidgets,
-    janitor,
     leaflet,
-    leaflet.extras,
-    mapview,
-    purrr,
-    RColorBrewer,
     pkgload,
     reactable,
     rlang,
     sf,
     shiny (>= 1.6.0),
     shinyjs,
-    tibble,
     tidyr,
-    webshot,
     ggiraph,
     ggrepel,
     stringr,
     zoo,
     scales,
     patchwork,
-    lubridate
-Remotes: 
+    strayr (>= 0.0.1)
+Remotes:  
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
     timelyportfolio/dataui,
-    wfmackey/absmapsdata
+    mattcowgill/strayr
 Depends: 
     R (>= 3.50)
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    vdiffr
 Config/testthat/edition: 3

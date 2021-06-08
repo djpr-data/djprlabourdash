@@ -1,3 +1,3 @@
 utils::globalVariables(c(
-  "dash_data", "sex"
+  "dash_data", "ts_summ", "data", "date", "indicator"
 ))

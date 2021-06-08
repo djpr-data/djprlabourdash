@@ -4,7 +4,7 @@
 map_unemprate_vic <- function(data) {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
-  sa4_shp <- absmapsdata::sa42016 %>%
+  sa4_shp <- sa42016 %>%
     dplyr::filter(state_name_2016 == "Victoria") %>%
     dplyr::filter(sa4_code_2016 < 297)
 

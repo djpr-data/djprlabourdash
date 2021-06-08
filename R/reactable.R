@@ -3,7 +3,7 @@
 #' @param years_in_sparklines Numeric; indicating the number of years of data
 #' to include in the sparkline charts in the returned reactable.
 #' @param row_var Unquoted variable name in data to use for row names
-#' @return A reactable (htmlwidget) including sparklines and sortable columns
+#' @return A reactable (htmlwidget) including sparklines
 #' @author Darren Wong, Duy Nguyen
 #' @examples
 #' # Using the data available to this dashboard
@@ -20,19 +20,32 @@
 #'
 #' table_data <- filter_dash_data(table_ids)
 #'
-#' overview_table(table_data)
+#' table_overview()
 #' }
 #'
-overview_table <- function(data = filter_dash_data(series_ids = c(
-                             "A84423349V",
-                             "A84423356T",
-                             "A84423355R",
-                             "A84423354L",
-                             "A84423350C",
-                             "A85223451R"
+table_overview <- function(data = filter_dash_data(series_ids = c(
+                             "A84423349V", # Employed total
+                             "A84423355R", # Part rate
+                             "A84423354L", # Unemp rate
+                             "A84423350C", # Unemp total
+                             "A85223451R", # Underut rate
+                             "A84426256L", # Hours worked
+                             "A85223450L", # Underemp rate
+                             "A84423357V", # Emp FT
+                             "pt_emp_vic" # Emp PT
                            )),
                            years_in_sparklines = 2,
                            row_var = indicator) {
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    # Youth unemployment = 3m rolling average
+    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
+      zoo::rollmeanr(.data$value, 12, fill = NA),
+      .data$value
+    )) %>%
+    dplyr::ungroup()
+
   make_reactable(
     data = data,
     years_in_sparklines = years_in_sparklines,
@@ -40,82 +53,163 @@ overview_table <- function(data = filter_dash_data(series_ids = c(
   )
 }
 
-indicators_table <- function(data = filter_dash_data(c(
-                               "A84423349V",
-                               "A84423357V",
-                               "A84423356T",
-                               "A84423244X",
-                               "A84423468K",
-                               "pt_emp_vic"
-                             )),
-                             years_in_sparklines = 2,
-                             row_var = indicator) {
+table_ind_employment <- function(data = filter_dash_data(c(
+                                   "A84423349V",
+                                   "A84423357V",
+                                   "A84423356T",
+                                   "A84423244X",
+                                   "A84423468K",
+                                   "pt_emp_vic"
+                                 )),
+                                 years_in_sparklines = 2,
+                                 row_var = indicator) {
   table_data <- data %>%
-    mutate(indicator = if_else(sex != "",
-      paste0(indicator, " (", sex, ")"),
-      indicator
+    mutate(indicator = if_else(.data$sex != "",
+      paste0(.data$indicator, " (", .data$sex, ")"),
+      .data$indicator
     ))
 
-  overview_table(table_data)
+  make_reactable(table_data)
 }
 
+table_ind_unemp_summary <- function(data = filter_dash_data(c(
+                                      "A84423354L", # Unemp rate
+                                      "A84423350C", # Unemp total
+                                      "A85223451R", # Underut rate
+                                      "A84433601W", # Youth unemp,
+                                      "A84423242V", # Male unemp
+                                      "A84423466F" # Female unemp
+                                    )),
+                                    years_in_sparklines = 2,
+                                    row_var = indicator) {
+  table_data <- data %>%
+    mutate(indicator = if_else(.data$sex != "",
+      paste0(.data$indicator, " (", .data$sex, ")"),
+      .data$indicator
+    ))
+
+  make_reactable(table_data)
+}
+
+table_ind_hours_summary <- function(data = filter_dash_data(c(
+                                      "A84426256L" # , # Total hours
+                                    )),
+                                    years_in_sparklines = 2,
+                                    row_var = indicator) {
+  table_data <- data %>%
+    mutate(indicator = if_else(.data$sex != "",
+      paste0(.data$indicator, " (", .data$sex, ")"),
+      .data$indicator
+    ))
+
+  make_reactable(table_data)
+}
+
+#' Make a reactable with standard formatting
+#'
+#' Each row is an indicator; columns are levels / change over particular periods
+#' Conditional formatting is applied, sparklines are included.
+#'
+#' @param data a data frame
+#' @param years_in_sparklines number of years prior to latest obs to include
+#' in sparkline
+#' @param row_var unquoted name of column in `data` to use as the row names in
+#' the table
+#' @param row_order If `NULL`, table will be sorted in alphabetical order.
+#' Otherwise, `row_order` should be a vector of row names in the order in which
+#' you want them to appear in the table.
 
 make_reactable <- function(data,
                            years_in_sparklines = 2,
-                           row_var = indicator) {
-
-  # Function to avoid adding a lubridate dependency
-  subtract_years <- function(max_date, n_years) {
-    seq(max_date,
-      length = 2,
-      by = paste0("-", n_years, " years")
-    )[2]
-  }
-
+                           row_var = indicator,
+                           row_order = NULL) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
-  # Calculate summary data frame - levels and changes -----
+  # Drop unneeded columns -----
   summary_df <- data %>%
     dplyr::select(.data$date, .data$series_id,
       series = {{ row_var }}, .data$value, .data$unit
-    ) %>%
-    dplyr::filter(.data$date >= startdate) %>%
+    )
+
+  # Tweak series names ----
+  summary_df <- summary_df %>%
+    dplyr::mutate(series = dplyr::case_when(
+      .data$series_id == "A84423349V" ~
+      "Employed (persons)",
+      .data$series_id == "A84423237A" ~
+      "Employed (males)",
+      .data$series_id == "A84423461V" ~
+      "Employed (females)",
+      .data$series_id == "A85223450L" ~
+      "Underemployment rate",
+      .data$series_id == "A84423354L" ~
+      "Unemployment rate",
+      .data$series_id == "A84433601W" ~
+      "Youth unemployment rate",
+      TRUE ~ .data$series
+    ))
+
+  # Calculate change over time -----
+  summary_df <- summary_df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
-      value = dplyr::if_else(.data$unit == "000",
+      is_level = if_else(grepl("000", .data$unit), TRUE, FALSE),
+      value = dplyr::if_else(
+        .data$is_level,
         1000 * .data$value,
         .data$value
       ),
       changeinmonth = (.data$value - dplyr::lag(.data$value)),
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
-      changeinmonthpc = dplyr::if_else(
-        unit == "000",
-        sprintf("%0.1f%%", changeinmonthpc),
-        "-"
-      ),
-      changeinmonth = ifelse(.data$unit == "000",
-        format(round(changeinmonth), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f ppts", .data$changeinmonth)
-      ),
       changeinyear = (.data$value - dplyr::lag(.data$value, 12)),
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
-      changeinyearpc = dplyr::if_else(
-        unit == "000",
-        sprintf("%0.1f%%", changeinyearpc),
-        "-"
-      ),
-      changeinyear = ifelse(.data$unit == "000",
-        format(round(changeinyear), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f ppts", .data$changeinyear)
-      ),
-      latest_value = dplyr::if_else(
-        unit == "000",
-        format(round(value), big.mark = ",", scientific = F, trim = T),
-        sprintf("%.1f %%", value)
-      )
+      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
     ) %>%
-    dplyr::ungroup()
+    dplyr::filter(.data$date >= startdate)
+
+  # Reformat columns -----
+  # Function to return rounded numbers, with commas where appropriate
+  # 6175 becomes 6,200. 3445443 becomes 3.445m.
+  round_to_thousand <- function(x) {
+    sign_x <- sign(x)
+    x <- (x / 1000)
+    x <- round2(x, 1)
+    x <- x * 1000
+
+    dplyr::case_when(
+      # Over 10m, round to 1 decimal as in 123.1m
+      abs(x) >= 1e8 ~ paste0(round2(x / 1e6, 1), "m"),
+      # Over 1m, round to 3 decimals, as in 3.445m
+      abs(x) >= 1e6 ~ paste0(round2(x / 1e6, 3), "m"),
+      # Otherwise, format with commas as in 100,000
+      TRUE ~ scales::comma(x)
+    )
+  }
+
+  summary_df <- summary_df %>%
+    dplyr::mutate(across(
+      c(dplyr::ends_with("pc")),
+      ~ dplyr::if_else(.data$is_level,
+        paste0(round2(.x, 1), "%"),
+        "-"
+      )
+    ),
+    across(
+      c(.data$changeinmonth, .data$changeinyear, .data$changesince14),
+      ~ dplyr::if_else(.data$is_level,
+        round_to_thousand(.x),
+        sprintf("%.1f ppts", .x)
+      )
+    ),
+    latest_value = dplyr::if_else(
+      .data$is_level,
+      round_to_thousand(.data$value),
+      sprintf("%.1f%%", .data$value)
+    )
+    ) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-.data$unit, .data$is_level)
 
   # If a number is -0.0, change to 0.0
   summary_df <- summary_df %>%
@@ -138,24 +232,26 @@ make_reactable <- function(data,
       .data$changeinmonthpc,
       .data$changeinyear,
       .data$changeinyearpc,
+      .data$changesince14
     ) %>%
     dplyr::ungroup()
 
   ## Created df in format required for sparkline ----
 
   sparklinelist <- summary_df %>%
-    dplyr::group_by(series) %>%
+    dplyr::group_by(.data$series) %>%
     dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
     dplyr::left_join(changedf, by = "series") %>%
     dplyr::select(-.data$date)
 
   ## Define colour palette
-  colpal <- djprtheme::djpr_pal(nrow(sparklinelist))
+  n_series <- nrow(sparklinelist)
+  colpal <- grDevices::colorRampPalette(suppressWarnings(djpr_pal(10)))(n_series)
 
   ## Calculate colours for each row
   ts_summ <- djprshiny::ts_summarise(data)
 
-  full_pal <- colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
+  full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
 
   calc_cols <- function(series_ids, item, summ_df = ts_summ) {
     ptiles <- get_summ(series_ids, {{ item }},
@@ -173,9 +269,9 @@ make_reactable <- function(data,
   }
 
   cell_padding <- list(
-    `padding-top` = "8px",
+    `padding-top` = "15px",
     `padding-right` = "0px",
-    `padding-bottom` = "7px",
+    `padding-bottom` = "6px",
     `padding-left` = "0px"
   )
 
@@ -202,22 +298,25 @@ make_reactable <- function(data,
   }
 
   recol_changeinmonth <- function(value, index) {
-    recol(value, index, ptile_d_period_abs)
+    recol(value, index, .data$ptile_d_period_abs)
   }
 
   recol_changeinmonthpc <- function(value, index) {
     c(
-      recol(value, index, ptile_d_period_perc),
+      recol(value, index, .data$ptile_d_period_perc),
       list(`border-right` = "1px solid #000")
     )
   }
 
   recol_changeinyear <- function(value, index) {
-    recol(value, index, ptile_d_year_abs)
+    recol(value, index, .data$ptile_d_year_abs)
   }
 
   recol_changeinyearpc <- function(value, index) {
-    recol(value, index, ptile_d_year_perc)
+    c(
+      recol(value, index, .data$ptile_d_year_perc),
+      list(`border-right` = "1px solid #000")
+    )
   }
 
   col_header_style <- list(
@@ -229,6 +328,7 @@ make_reactable <- function(data,
   rt1 <- sparklinelist %>%
     dplyr::select(-.data$series_id) %>%
     reactable::reactable(
+      defaultPageSize = 50,
       columns = list(
         series = reactable::colDef(
           name = "",
@@ -254,8 +354,8 @@ make_reactable <- function(data,
               data = value[[1]],
               height = 50,
               margin = list(
-                top = 7, right = 3,
-                bottom = 7, left = 3
+                top = 7, right = 5,
+                bottom = 7, left = 5
               ),
               components = list(
                 # Create actual sparkline
@@ -263,23 +363,20 @@ make_reactable <- function(data,
                   stroke = colpal[index],
                   showArea = F,
                   fill = colpal[index]
-                ),
-                dataui::dui_tooltip(
-                  components = list(
-                    # Create moving tooltip
-                    dataui::dui_sparkverticalrefline(
-                      strokeDasharray = "0, 0",
-                      strokeWidth = 1,
-                      stroke = "#838383"
-                    ),
-                    # display tooltip value
-                    dataui::dui_sparkpointseries(
-                      stroke = colpal[index],
-                      fill = "#fff",
-                      renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
-                    )
-                  )
                 )
+                #                dataui::dui_tooltip(
+                #                  components = list(
+                #                    # Create moving tooltip
+                #                  dataui::dui_sparkverticalrefline(
+                #                    strokeDasharray = "0, 0",
+                #                    strokeWidth = 1,
+                #                    stroke = "#838383"
+                #                  ) ,
+                #                  # display tooltip value
+                #                  dataui::dui_sparkpointseries(
+                #                   stroke = colpal[index],
+                #                   fill = "#fff",
+                #                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
               )
             )
           }
@@ -316,6 +413,17 @@ make_reactable <- function(data,
           minWidth = 65,
           maxWidth = 90
         ),
+        changesince14 = reactable::colDef(
+          name = "NO.",
+          #          style = recol_changeinyear,
+          headerStyle = col_header_style,
+          style = c(
+            cell_padding
+          ),
+          align = "center",
+          minWidth = 65,
+          maxWidth = 90
+        ),
         latest_value = reactable::colDef(
           name = toupper(strftime(max(data$date), "%B %Y")),
           align = "center",
@@ -325,7 +433,7 @@ make_reactable <- function(data,
             list(`border-right` = "1px solid #000")
           ),
           maxWidth = 90,
-          minWidth = 70
+          minWidth = 65
         )
       ),
       columnGroups = list(
@@ -336,10 +444,15 @@ make_reactable <- function(data,
         reactable::colGroup(
           name = "Change over year", columns = c("changeinyear", "changeinyearpc"),
           headerStyle = list(`font-weight` = "600")
+        ),
+        reactable::colGroup(
+          name = "Change since Nov 2014", columns = c("changesince14"),
+          headerStyle = list(`font-weight` = "600")
         )
       ),
       highlight = TRUE,
-      resizable = TRUE,
+      resizable = FALSE,
+      sortable = FALSE,
       theme = reactable::reactableTheme(
         borderColor = "#dfe2e5",
         stripedColor = "#f6f8fa",

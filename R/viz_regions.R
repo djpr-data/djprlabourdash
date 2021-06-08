@@ -34,7 +34,53 @@
 #'   "A84600037A"
 #' ))
 #' }
-#' @import djprtheme
+#' @importFrom rlang `:=`
+title_unemprate_vic <- function(data = filter_dash_data(c(
+                                  "A84599659L",
+                                  "A84600019W",
+                                  "A84600187J",
+                                  "A84599557X",
+                                  "A84600115W",
+                                  "A84599851L",
+                                  "A84599923L",
+                                  "A84600025T",
+                                  "A84600193C",
+                                  "A84599665J",
+                                  "A84600031L",
+                                  "A84599671C",
+                                  "A84599677T",
+                                  "A84599683L",
+                                  "A84599929A",
+                                  "A84600121T",
+                                  "A84600037A"
+                                )) %>%
+                                  group_by(.data$series_id) %>%
+                                  mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+                                  dplyr::filter(.data$date == max(.data$date))) {
+  high_low <- data %>%
+    dplyr::ungroup() %>%
+    summarise(
+      min_sa4 = .data$sa4[.data$value == min(.data$value)],
+      min_ur = .data$value[.data$value == min(.data$value)],
+      max_sa4 = .data$sa4[.data$value == max(.data$value)],
+      max_ur = .data$value[.data$value == max(.data$value)],
+      date = unique(.data$date)
+    )
+
+  paste0(
+    "The unemployment rate across Victoria ranges from ",
+    round2(high_low$min_ur, 1),
+    " per cent in ",
+    high_low$min_sa4,
+    " to ",
+    round2(high_low$max_ur, 1),
+    " per cent in ",
+    high_low$max_sa4,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
+}
+
 map_unemprate_vic <- function(data = filter_dash_data(c(
                                 "A84600253V",
                                 "A84600145K",
@@ -57,12 +103,13 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                                 "A84600121T",
                                 "A84600037A"
                               )) %>%
-                                group_by(series_id) %>%
-                                mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                dplyr::filter(.data$date == max(.data$date))) {
+                                group_by(.data$series_id) %>%
+                                mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+                                dplyr::filter(.data$date == max(.data$date)),
+                              zoom = 6) {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
-  sa4_shp <- absmapsdata::sa42016 %>%
+  sa4_shp <- sa42016 %>%
     dplyr::filter(.data$state_name_2016 == "Victoria") %>%
     dplyr::filter(.data$sa4_code_2016 < 297)
 
@@ -99,14 +146,11 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
     dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
 
   # Produce dynamic map, all of Victoria ----
-  # Ignore warning message:
-  # //sf layer has inconsistent datum (+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs).
-  # //Need '+proj=longlat +datum=WGS84'
   map <- mapdata %>%
-    leaflet::leaflet() %>%
+    leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
     leaflet::setView(
       lng = 145.4657, lat = -36.41472, # coordinates of map at first view
-      zoom = 6
+      zoom = zoom
     ) %>%
     # size of map at first view
     leaflet::addPolygons(
@@ -154,10 +198,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
       opacity = 1,
       color = "black",
       weight = 1
-    ) %>%
-    # thickness of metro outline
-    leaflet.extras::setMapWidgetStyle(list(background = "white")) # background colour
-
+    )
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
 }
@@ -208,16 +249,6 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-title_reg_unemprate_multiline <- function(data) {
-  highest_current_ur <- data %>%
-    dplyr::filter(.data$date == max(data$date)) %>%
-    dplyr::filter(.data$value == max(data$value)) %>%
-    dplyr::pull(.data$sa4)
-
-  highest_current_ur <- data$sa4[data$value == max(data$value)]
-  paste0(highest_current_ur, " has the highest unemployment rate in Victoria")
-}
-
 viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                           "A84600253V",
                                           "A84599659L",
@@ -240,8 +271,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                         )) %>%
                                           dplyr::group_by(series_id) %>%
                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                          dplyr::filter(!is.na(value)),
-                                        title = title_reg_unemprate_multiline(data = data)) {
+                                          dplyr::filter(!is.na(value))) {
   data <- data %>%
     dplyr::mutate(
       tooltip = paste0(
@@ -253,7 +283,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
 
 
   max_y <- max(data$value)
-  mid_x <- median(data$date)
+  mid_x <- stats::median(data$date)
 
   data <- data %>%
     dplyr::mutate(
@@ -276,6 +306,17 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
 
   data$sa4 <- factor(data$sa4,
     levels = c("Victoria", sort(unique(data$sa4[data$sa4 != "Victoria"])))
+  )
+
+  highest_current_ur <- data %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::filter(.data$value == max(.data$value)) %>%
+    dplyr::pull(.data$sa4)
+
+  title <- paste0(
+    highest_current_ur, " had the highest unemployment rate in Victoria in ",
+    format(max(data$date), "%B %Y")
   )
 
   data %>%
@@ -365,8 +406,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
                                   ) %>%
                                     dplyr::group_by(series_id) %>%
                                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                    dplyr::filter(.data$date == max(.data$date)),
-                                  title = "") {
+                                    dplyr::filter(.data$date == max(.data$date))) {
   data <- data %>%
     dplyr::filter(.data$sa4 != "") %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
@@ -376,16 +416,16 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
 
   data %>%
     ggplot(aes(
-      x = reorder(sa4, value),
-      y = value
+      x = stats::reorder(.data$sa4, .data$value),
+      y = .data$value
     )) +
     geom_col(
       col = "grey85",
-      aes(fill = -value)
+      aes(fill = -.data$value)
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = round(value, 1)),
+      aes(label = round(.data$value, 1)),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -400,7 +440,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
       axis.text.y = element_text(size = 12),
       axis.text.x = element_blank()
     ) +
-    labs(title = title)
+    labs(title = "")
 }
 
 text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
@@ -408,9 +448,9 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
                                           "A84600075R"
                                         ))) {
   emp_gcc_rest <- data %>%
-    dplyr::group_by(series_id) %>%
-    dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-    dplyr::filter(date >= as.Date("2020-01-01")) %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+    dplyr::filter(.data$date >= as.Date("2020-01-01")) %>%
     dplyr::ungroup()
 
   emp_gcc_rest <- emp_gcc_rest %>%
@@ -420,18 +460,18 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
       max(.data$date)
     )) %>%
     dplyr::select(.data$date, .data$value, .data$gcc_restofstate) %>%
-    dplyr::group_by(gcc_restofstate) %>%
+    dplyr::group_by(.data$gcc_restofstate) %>%
     dplyr::mutate(
       d_sincecovid_abs = .data$value - .data$value[date == as.Date("2020-03-01")],
       d_sincecovid_perc = 100 * ((.data$value /
         .data$value[date == as.Date("2020-03-01")]) - 1),
-      gcc_restofstate = dplyr::if_else(gcc_restofstate == "Greater Melbourne",
+      gcc_restofstate = dplyr::if_else(.data$gcc_restofstate == "Greater Melbourne",
         "melb", "rest"
       )
     )
 
   emp_gcc_rest <- emp_gcc_rest %>%
-    split(.$gcc_restofstate)
+    split(emp_gcc_rest$gcc_restofstate)
 
   melb_emp_precovid <- emp_gcc_rest$melb %>%
     dplyr::filter(.data$date == min(.data$date)) %>%
@@ -450,7 +490,7 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
 
   rest_emp_covid_to_oct_perc <- emp_gcc_rest$rest %>%
     dplyr::filter(.data$date == as.Date("2020-10-01")) %>%
-    pull(d_sincecovid_perc) %>%
+    dplyr::pull(.data$d_sincecovid_perc) %>%
     round2(1)
 
   melb_emp_current <- (emp_gcc_rest$melb %>%
@@ -479,7 +519,7 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
     numbers = c(
       round2(melb_emp_precovid, 2),
       round2(melb_emp_oct20, 2),
-      abs(melb_emp_covid_to_oct_abs),
+      paste0(abs(melb_emp_covid_to_oct_abs), ",000"),
       abs(melb_emp_covid_to_oct_perc),
       abs(rest_emp_covid_to_oct_perc),
       abs(melb_emp_current),
@@ -514,8 +554,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                          df = dash_data
                                          ) %>%
                                            dplyr::group_by(series_id) %>%
-                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
-                                         title = "") {
+                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA))) {
   df_summ <- data %>%
     dplyr::filter(!is.na(value)) %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
@@ -649,7 +688,12 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     dplyr::pull(.data$range) %>%
     round2(1)
 
-  plot_title <- paste0("There is a ", current_range, " percentage point gap between the highest and lowest unemployment rates in Victorian regions")
+  plot_title <- paste0(
+    "There was a ", current_range,
+    " percentage point gap between the highest and lowest ",
+    "unemployment rates in Victorian regions in ",
+    format(max(df_tidy$date), "%B %Y")
+  )
 
   # Combine plots -----
   plots_combined <- patchwork::wrap_plots(plot_high_low,
@@ -690,30 +734,30 @@ map_reg_sa4 <- function(sa4 = c(
                         )) {
   sa4 <- match.arg(sa4)
 
-  all_areas <- absmapsdata::sa42016 %>%
-    filter(state_name_2016 == "Victoria") %>%
-    mutate(selected = dplyr::if_else(.data$sa4_name_2016 == .env$sa4, TRUE, FALSE))
+  all_areas <- sa42016 %>%
+    dplyr::filter(.data$state_name_2016 == "Victoria") %>%
+    dplyr::mutate(selected = dplyr::if_else(.data$sa4_name_2016 == .env$sa4, TRUE, FALSE))
 
   selected_area <- all_areas %>%
-    dplyr::filter(selected == TRUE)
+    dplyr::filter(.data$selected == TRUE)
 
   all_areas %>%
     ggplot() +
-    geom_sf(aes(alpha = selected),
+    geom_sf(aes(alpha = .data$selected),
       size = 0.25,
       fill = djprtheme::djpr_royal_blue,
       colour = djprtheme::djpr_cool_grey_11
     ) +
     geom_curve(
       data = selected_area,
-      aes(x = cent_long, y = cent_lat),
+      aes(x = .data$cent_long, y = .data$cent_lat),
       xend = 147, yend = -35,
       curvature = 0.2,
       colour = "#1F1547"
     ) +
     geom_point(
       data = selected_area,
-      aes(x = cent_long, y = cent_lat),
+      aes(x = .data$cent_long, y = .data$cent_lat),
       colour = "#1F1547",
       size = 3,
       shape = "circle filled",
@@ -765,7 +809,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
                                               dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                               dplyr::filter(.data$date >= max(.data$date) - (365.25 * 5)),
                                             sa4 = "Geelong") {
-  in_melb <- grepl("Melbourne", sa4)
+  in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
     "Greater Melbourne",
@@ -821,6 +865,11 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
       col_var = col_var,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
+    scale_x_date(
+      breaks = scales::breaks_pretty(5),
+      date_labels = "%b\n%Y",
+      expand = expansion(mult = c(0.05, 0.25))
+    ) +
     scale_y_continuous(
       limits = function(limits) c(0, limits[2]),
       labels = function(x) paste0(x, "%"),
@@ -847,71 +896,71 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
     )
 }
 
-reactable_region_focus <- function(data = filter_dash_data(
-                                     c(
-                                       "A84600141A",
-                                       "A84600144J",
-                                       "A84600145K",
-                                       "A84599655C",
-                                       "A84599658K",
-                                       "A84599659L",
-                                       "A84600015L",
-                                       "A84600018V",
-                                       "A84600019W",
-                                       "A84600183X",
-                                       "A84600186F",
-                                       "A84600187J",
-                                       "A84599553R",
-                                       "A84599556W",
-                                       "A84599557X",
-                                       "A84600111L",
-                                       "A84600114V",
-                                       "A84600115W",
-                                       "A84599847W",
-                                       "A84599850K",
-                                       "A84599851L",
-                                       "A84599919W",
-                                       "A84599922K",
-                                       "A84599923L",
-                                       "A84600021J",
-                                       "A84600024R",
-                                       "A84600025T",
-                                       "A84600189L",
-                                       "A84600192A",
-                                       "A84600193C",
-                                       "A84600075R",
-                                       "A84600078W",
-                                       "A84600079X",
-                                       "A84599661X",
-                                       "A84599664F",
-                                       "A84599665J",
-                                       "A84600027W",
-                                       "A84600030K",
-                                       "A84600031L",
-                                       "A84599667L",
-                                       "A84599670A",
-                                       "A84599671C",
-                                       "A84599673J",
-                                       "A84599676R",
-                                       "A84599677T",
-                                       "A84599679W",
-                                       "A84599682K",
-                                       "A84599683L",
-                                       "A84599925T",
-                                       "A84599928X",
-                                       "A84599929A",
-                                       "A84600117A",
-                                       "A84600120R",
-                                       "A84600121T",
-                                       "A84600033T",
-                                       "A84600036X",
-                                       "A84600037A"
-                                     )
-                                   ) %>%
-                                     dplyr::group_by(series_id) %>%
-                                     dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)),
-                                   sa4 = "Geelong") {
-  in_melb <- grepl("Melbourne", sa4)
+table_region_focus <- function(data = filter_dash_data(
+                                 c(
+                                   "A84600141A",
+                                   "A84600144J",
+                                   "A84600145K",
+                                   "A84599655C",
+                                   "A84599658K",
+                                   "A84599659L",
+                                   "A84600015L",
+                                   "A84600018V",
+                                   "A84600019W",
+                                   "A84600183X",
+                                   "A84600186F",
+                                   "A84600187J",
+                                   "A84599553R",
+                                   "A84599556W",
+                                   "A84599557X",
+                                   "A84600111L",
+                                   "A84600114V",
+                                   "A84600115W",
+                                   "A84599847W",
+                                   "A84599850K",
+                                   "A84599851L",
+                                   "A84599919W",
+                                   "A84599922K",
+                                   "A84599923L",
+                                   "A84600021J",
+                                   "A84600024R",
+                                   "A84600025T",
+                                   "A84600189L",
+                                   "A84600192A",
+                                   "A84600193C",
+                                   "A84600075R",
+                                   "A84600078W",
+                                   "A84600079X",
+                                   "A84599661X",
+                                   "A84599664F",
+                                   "A84599665J",
+                                   "A84600027W",
+                                   "A84600030K",
+                                   "A84600031L",
+                                   "A84599667L",
+                                   "A84599670A",
+                                   "A84599671C",
+                                   "A84599673J",
+                                   "A84599676R",
+                                   "A84599677T",
+                                   "A84599679W",
+                                   "A84599682K",
+                                   "A84599683L",
+                                   "A84599925T",
+                                   "A84599928X",
+                                   "A84599929A",
+                                   "A84600117A",
+                                   "A84600120R",
+                                   "A84600121T",
+                                   "A84600033T",
+                                   "A84600036X",
+                                   "A84600037A"
+                                 )
+                               ) %>%
+                                 dplyr::group_by(.data$series_id) %>%
+                                 dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
+                               sa4 = "Geelong") {
+  in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
     "Greater Melbourne",
@@ -922,8 +971,9 @@ reactable_region_focus <- function(data = filter_dash_data(
 
   data <- data %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
-                                       "North West",
-                                       .data$sa4))
+      "North West",
+      .data$sa4
+    ))
 
   data <- data %>%
     dplyr::mutate(gcc_restofstate = dplyr::if_else(.data$gcc_restofstate ==
@@ -938,15 +988,15 @@ reactable_region_focus <- function(data = filter_dash_data(
     dplyr::filter(.data$geog %in% c(.env$broad_region, .env$sa4))
 
   table_df <- data %>%
-    dplyr::group_by(geog, indicator) %>%
+    dplyr::group_by(.data$geog, .data$indicator) %>%
     dplyr::mutate(
-      d_month = dplyr::if_else(.data$indicator == "Employed total",
-        100 * ((value / dplyr::lag(value, 1)) - 1),
-        value - dplyr::lag(value, 1)
+      d_month = dplyr::if_else(indicator == "Employed total",
+        100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
+        .data$value - dplyr::lag(.data$value, 1)
       ),
       d_year = dplyr::if_else(.data$indicator == "Employed total",
-        100 * ((value / dplyr::lag(value, 12)) - 1),
-        value - dplyr::lag(value, 12)
+        100 * ((.data$value / dplyr::lag(.data$value, 12)) - 1),
+        .data$value - dplyr::lag(.data$value, 12)
       )
     ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -958,36 +1008,36 @@ reactable_region_focus <- function(data = filter_dash_data(
 
   table_df <- table_df %>%
     dplyr::mutate(across(
-      c(value, d_month, d_year),
+      c(.data$value, .data$d_month, .data$d_year),
       ~ round2(.x, 1)
     )) %>%
     dplyr::mutate(
-      value = dplyr::if_else(indicator == "Employed total",
-        paste0(value, "k"),
-        paste0(value, "%")
+      value = dplyr::if_else(.data$indicator == "Employed total",
+        scales::comma(.data$value * 1000),
+        paste0(.data$value, "%")
       ),
-      d_month = dplyr::if_else(indicator == "Employed total",
-        paste0(d_month, "%"),
-        paste0(d_month, " ppts")
+      d_month = dplyr::if_else(.data$indicator == "Employed total",
+        paste0(.data$d_month, "%"),
+        paste0(.data$d_month, " ppts")
       ),
-      d_year = dplyr::if_else(indicator == "Employed total",
-        paste0(d_year, "%"),
-        paste0(d_year, " ppts")
+      d_year = dplyr::if_else(.data$indicator == "Employed total",
+        paste0(.data$d_year, "%"),
+        paste0(.data$d_year, " ppts")
       )
     )
 
   table_df <- table_df %>%
-    dplyr::rename({{ latest_date }} := value,
-      `Change over month` = d_month,
-      `Change over year` = d_year
+    dplyr::rename({{ latest_date }} := .data$value,
+      `Change over month` = .data$d_month,
+      `Change over year` = .data$d_year
     )
 
   table_df <- table_df %>%
     tidyr::gather(
-      key = series, value = value,
-      -indicator, -geog
+      key = "series", value = "value",
+      -.data$indicator, -.data$geog
     ) %>%
-    tidyr::spread(key = geog, value = value)
+    tidyr::spread(key = .data$geog, value = .data$value)
 
   table_df <- table_df %>%
     dplyr::group_by(.data$indicator) %>%
@@ -996,14 +1046,15 @@ reactable_region_focus <- function(data = filter_dash_data(
       series == "Change over year" ~ 3,
       TRUE ~ 1
     )) %>%
-    dplyr::arrange(desc(indicator), order) %>%
-    dplyr::select(-order)
-
-  col_names <- names(table_df)
+    dplyr::arrange(desc(.data$indicator), .data$order) %>%
+    dplyr::select(-.data$order)
 
   col_header_style <- list(
     `font-weight` = "600"
   )
+
+  table_df <- table_df %>%
+    dplyr::select(.data$indicator, .data$series, {{ sa4 }}, dplyr::everything())
 
   table_df %>%
     rename(
@@ -1028,14 +1079,18 @@ reactable_region_focus <- function(data = filter_dash_data(
         ),
         series = reactable::colDef(
           name = "",
-          minWidth = 45
+          minWidth = 30
         ),
         region = reactable::colDef(
-          name = col_names[3],
+          name = names(table_df)[3],
+          align = "center",
+          minWidth = 40,
           headerStyle = col_header_style
         ),
         aggregate = reactable::colDef(
-          name = col_names[4],
+          name = names(table_df)[4],
+          align = "center",
+          minWidth = 40,
           headerStyle = col_header_style
         )
       ),
@@ -1061,55 +1116,109 @@ reactable_region_focus <- function(data = filter_dash_data(
     )
 }
 
-viz_reg_melvic_line <- function(data = filter_dash_data(c("A84600144J",
-                                                          "A84600078W",
-                                                          "A84595516F",
-                                                          "A84595471L"),
-                                                          df = dash_data) %>%
-                                               dplyr::group_by(series_id) %>%
-                                               dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                  dplyr::filter(!is.na(value)),
-                                title = "") {
+viz_reg_melvic_line <- function(data = filter_dash_data(c(
+                                  "A84600144J",
+                                  "A84600078W",
+                                  "A84595516F",
+                                  "A84595471L"
+                                ),
+                                df = dash_data
+                                ) %>%
+                                  dplyr::group_by(series_id) %>%
+                                  dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  dplyr::filter(!is.na(value))) {
+  latest <- data %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      .data$indicator == "Unemployment rate"
+    ) %>%
+    dplyr::select(.data$value, .data$gcc_restofstate) %>%
+    dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
+    tidyr::spread(key = gcc_restofstate, value = value)
 
-  max_y <- max(data$value)
-  mid_x <- median(data$date)
 
-  data <- data %>%
-    dplyr::mutate(
-      is_mel = dplyr::if_else(.data$gcc_restofstate == "Greater Melbourne", TRUE, FALSE)
-    )
-
-  facet_labels <- data %>%
-    group_by(gcc_restofstate, is_mel) %>%
-    summarise() %>%
-    mutate(
-      x = mid_x,
-      y = max_y
-    )
-
-  data$gcc_restofstate <- factor(data$gcc_restofstate,
-                     levels = c("Greater Melbourne",
-                                sort(unique(data$gcc_restofstate[data$gcc_restofstate != "Greater Melbourne"])))
+  title <- paste0(
+    "The unemployment rate in Greater Melbourne was ",
+    latest$`Greater Melbourne`,
+    " while the rate in the rest of Victoria was ",
+    latest$`Rest of Vic.`,
+    " in ",
+    format(max(data$date), "%B %Y")
   )
 
-  # alternative graph
+  data <- data %>%
+    mutate(gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
+      fixed = TRUE
+    ))
+
+  max_date <- data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    mutate(label = paste0(
+      stringr::str_wrap(.data$gcc_restofstate, 9),
+      "\n",
+      round2(.data$value, 1)
+    ))
+
+  days_in_data <- as.numeric(max(data$date) - min(data$date))
+
   data %>%
+    dplyr::mutate(tooltip = paste0(
+      .data$gcc_restofstate, "\n",
+      format(.data$date, "%B %Y"),
+      "\n",
+      round2(.data$value, 1)
+    )) %>%
     ggplot(aes(x = date, y = value, col = gcc_restofstate)) +
     geom_line() +
+    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
+      size = 3,
+      colour = "white",
+      alpha = 0.01
+    ) +
+    geom_point(
+      data = max_date,
+      fill = "white",
+      stroke = 1.5,
+      size = 2.5,
+      shape = 21
+    ) +
+    ggrepel::geom_label_repel(
+      data = max_date,
+      aes(label = label),
+      hjust = 0,
+      nudge_x = days_in_data * 0.05,
+      label.padding = 0.01,
+      label.size = NA,
+      lineheight = 0.9,
+      point.padding = unit(0, "lines"),
+      direction = "y",
+      seed = 123,
+      show.legend = FALSE,
+      min.segment.length = unit(5, "lines"),
+      size = 14 / .pt
+    ) +
     facet_wrap(~indicator, scales = "free_y") +
     djprtheme::theme_djpr() +
     djpr_colour_manual(2) +
+    scale_y_continuous(
+      breaks = scales::breaks_pretty(4),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_x_date(
+      expand = expansion(
+        add = c(0, days_in_data * 0.25)
+      ),
+      date_labels = "%b\n%Y"
+    ) +
     coord_cartesian(clip = "off") +
     theme(
       axis.title = element_blank(),
-      panel.spacing = unit(1.5, "lines"),
-      axis.text = element_text(size = 12)
-    ) #+
-
-  labs(
-    title = "",
-    subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria, per cent",
-    caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
-  )
-
+      panel.spacing = unit(1.5, "lines")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria",
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
+    )
 }

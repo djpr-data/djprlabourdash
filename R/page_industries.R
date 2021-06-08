@@ -1,6 +1,7 @@
 page_industries <- function(...) {
   djpr_tab_panel(
     title = "Industries",
+    h1("Victoria's industries"),
     br(),
     djpr_plot_ui("industries_empchange_sincecovid_bar"),
     br(),

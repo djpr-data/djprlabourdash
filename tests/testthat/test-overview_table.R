@@ -1,4 +1,4 @@
-test_that("overview_table() returns a reactable htmlwidget", {
+test_that("table_overview() returns a reactable htmlwidget", {
   dash_data <- load_dash_data() %>%
     tidyr::unnest(everything())
 
@@ -14,7 +14,7 @@ test_that("overview_table() returns a reactable htmlwidget", {
     dplyr::filter(.data$series_id %in% series_ids) %>%
     tidyr::unnest(cols = everything())
 
-  x <- overview_table(data = data)
+  x <- table_overview(data = data)
 
   expect_s3_class(x, "reactable")
   expect_s3_class(x, "htmlwidget")
