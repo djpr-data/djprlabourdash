@@ -45,7 +45,7 @@ page_regions <- function(...) {
     # Box for regional focus
     focus_box(
       selectInput("focus_region",
-                  label = "Choose a region of Victoria to examine in greater detail",
+                  label = "Choose a region of Victoria",
                   selected = "Ballarat",
                   width = "100%",
                   choices = c(
