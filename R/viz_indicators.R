@@ -352,22 +352,6 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_underut_area <- function(data = filter_dash_data(c(
-                                   "A85223450L",
-                                   "A85223451R",
-                                   "A84423354L"
-                                 ))) {
-  area_df <- data %>%
-    dplyr::filter(!grepl("Underutilisation", series))
-
-  area_df %>%
-    ggplot(aes(x = date, y = value, fill = indicator)) +
-    geom_col(
-      position = "stack",
-      col = NA
-    )
-}
-
 viz_ind_partrate_bar <- function(data = filter_dash_data(c(
                                    "A84423355R",
                                    "A84423271F",
@@ -427,6 +411,11 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     " in ", format(max(data$date), "%B %Y")
   )
 
+  data <- data %>%
+    mutate(fill_col = dplyr::if_else(
+      .data$state %in% c("Vic", "Aus"), .data$state, "Other")
+    )
+
   # Create plot
   data %>%
     ggplot(aes(
@@ -434,7 +423,8 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
       y = .data$value
     )) +
     geom_col(
-      aes(fill = -.data$value)
+      aes(fill = .data$fill_col),
+      alpha = 0.9
     ) +
     geom_text(
       nudge_y = 0.1,
@@ -444,7 +434,11 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
       size = 12 / .pt
     ) +
     coord_flip(clip = "off") +
-    # scale_fill_distiller(palette = "Blues") +
+    scale_fill_manual(
+      values = c("Vic" = djprtheme::djpr_royal_blue,
+                 "Aus" = djprtheme::djpr_green,
+                 "Other" = "grey70")
+    ) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
     djprtheme::theme_djpr(flipped = TRUE) +
     theme(
@@ -491,13 +485,18 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
   data %>%
     djpr_ts_linechart(
       col_var = geog,
-      label_num = paste0(round(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
+      label_num = paste0(round(.data$value, 1), "%")
     ) +
     labs(
       subtitle = "Unemployment rate in Victoria and Australia",
       caption = caption_lfs(),
       title = title
+    ) +
+    scale_y_continuous(
+      limits = function(x) c(0, x[2]),
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(5),
+      expand = expansion(mult = c(0, 0.05))
     )
 }
 
@@ -586,7 +585,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
       axis.text.y = element_text(size = 12)
     ) +
     scale_x_date(
-      expand = expansion(add = c(30, 365 * 11)),
+      expand = expansion(mult = c(.02, .25)),
       date_labels = "%b\n %Y"
     ) +
     scale_y_continuous(
