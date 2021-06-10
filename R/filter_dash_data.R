@@ -2,6 +2,7 @@
 #' @param series_ids Vector of series ID(s)
 #' @param df Data frame, expected to be the df returned by `load_dash_data()`
 #' @return An unnested tbl_df containing only the specified series ID(s)
+#' @export
 #' @examples
 #' \dontrun{
 #' dash_data <- load_dash_data()

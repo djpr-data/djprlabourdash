@@ -4,13 +4,13 @@ test_that("all viz_*() functions at least produce a plot", {
   # Use `<<-` so that dash_data is available to viz functions
   dash_data <<- load_dash_data()
 
-  dash_data <- dash_data %>%
+  dash_data <<- dash_data %>%
     tidyr::unnest(cols = .data$data) %>%
     # Restrict date range so that chart doesn't change as new data comes in
-    dplyr::filter(.data$date <= as.Date("2021-05-26"))
+    dplyr::filter(.data$date <= as.Date("2021-03-01"))
 
   # Re-nest
-  dash_data <- dash_data %>%
+  dash_data <<- dash_data %>%
     group_by(select(
       cur_data_all(),
       -one_of(c(
@@ -35,16 +35,15 @@ test_that("all viz_*() functions at least produce a plot", {
     )
   }
 
-  plots <- purrr::map(
-    .x = viz_funcs,
-    .f = name_to_eval
-  )
+  plots <- list()
+  for (f in viz_funcs) {
+    plots[[f]] <- name_to_eval(f)
+  }
 
   # Test every result is a ggplot -----
-  purrr::map(
-    plots,
-    ~ expect_s3_class(.x, "ggplot")
-  )
+
+  lapply(plots,
+         function(x) expect_s3_class(x, "ggplot"))
 
   for (i in seq_along(viz_funcs)) {
     vdiffr::expect_doppelganger(
