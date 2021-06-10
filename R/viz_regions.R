@@ -1,4 +1,5 @@
-? #' Function to create the graphs for the 'Regions' subpage on the dashboard.
+#' Function to create the graphs for the 'Regions' subpage on the dashboard.
+#' @name title_unemprate_vic
 #' @param data the dataframe containing data to visualise
 #' @examples
 #' \dontrun{
