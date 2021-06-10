@@ -181,6 +181,17 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(dash_data)
 
+  # Indicators: line chart of Aus v Vic
+  djpr_plot_server("ind_unemprate_line",
+                   viz_ind_unemprate_line,
+                   data = filter_dash_data(c(
+                     "A84423354L",
+                     "A84423050A"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change)
+
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
     viz_ind_unemp_states_dot,
@@ -200,6 +211,53 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE,
     plt_change = plt_change
   )
+
+  djpr_plot_server("ind_underut_area",
+                   viz_ind_underut_area,
+                   data = filter_dash_data(c(
+                     "A85223450L",
+                     "A85223451R",
+                     "A84423354L"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (10 * 365),
+                   plt_change = plt_change)
+
+  # Indicators: hours worked ----
+
+  djpr_plot_server("ind_hoursworked_line",
+                   viz_ind_hoursworked_line,
+                   data = filter_dash_data(c(
+                     "A84426256L",
+                     "A84426277X",
+                     "A84423689R",
+                     "A84423091W"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = Sys.Date() - (20 * 365))
+
+  # Indicators: participation ----
+  djpr_plot_server("ind_partrate_bar",
+                   viz_ind_partrate_bar,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423271F",
+                     "A84423369C",
+                     "A84423341A",
+                     "A84423327F",
+                     "A84423285V",
+                     "A84423313T",
+                     "A84423299J",
+                     "A84423051C"
+                   ),
+                   df = dash_data
+                   ),
+                   height_percent = 75,
+                   plt_change = plt_change,
+                   date_slider = FALSE)
 
   # Inclusion ------
 
@@ -286,6 +344,7 @@ labour_server <- function(input, output, session) {
   )
 
   # Inclusion: youth focus box -----
+
 
   djpr_plot_server("gr_youth_states_dot",
     viz_gr_youth_states_dot,
