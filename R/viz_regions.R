@@ -270,9 +270,9 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                           "A84600121T",
                                           "A84600037A"
                                         )) %>%
-                                          dplyr::group_by(series_id) %>%
-                                          dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
-                                          dplyr::filter(!is.na(value))) {
+                                          dplyr::group_by(.data$series_id) %>%
+                                          dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+                                          dplyr::filter(!is.na(.data$value))) {
   data <- data %>%
     dplyr::mutate(
       tooltip = paste0(
@@ -294,15 +294,15 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
 
 
   vic <- data %>%
-    filter(sa4 == "Victoria") %>%
-    select(-sa4)
+    filter(.data$sa4 == "Victoria") %>%
+    select(-.data$sa4)
 
   facet_labels <- data %>%
-    group_by(sa4, is_vic) %>%
-    summarise() %>%
-    mutate(
-      x = mid_x,
-      y = max_y
+    dplyr::group_by(.data$sa4, .data$is_vic) %>%
+    dplyr::summarise() %>%
+    dplyr::mutate(
+      x = .env$mid_x,
+      y = .env$max_y
     )
 
   data$sa4 <- factor(data$sa4,
@@ -321,14 +321,14 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
   )
 
   data %>%
-    ggplot(aes(x = date, y = value, col = is_vic)) +
-    geom_line(aes(group = sa4)) +
+    ggplot(aes(x = .data$date, y = .data$value, col = .data$is_vic)) +
+    geom_line(aes(group = .data$sa4)) +
     geom_label(
-      data = facet_labels,
+      data = .data$facet_labels,
       aes(
-        label = stringr::str_wrap(sa4, 11),
-        y = max_y,
-        x = mid_x
+        label = stringr::str_wrap(.data$sa4, 11),
+        y = .data$max_y,
+        x = .data$mid_x
       ),
       nudge_y = 0.1,
       lineheight = 0.85,
@@ -342,7 +342,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
       colour = "white",
       alpha = 0.01
     ) +
-    facet_wrap(~ factor(sa4),
+    facet_wrap(~ factor(.data$sa4),
       scales = "free_x",
       ncol = 6
     ) +
