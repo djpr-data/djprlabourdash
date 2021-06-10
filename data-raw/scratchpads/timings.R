@@ -24,6 +24,3 @@ plots %>%
   arrange(median)
 
 View(plots)
-
-
-
