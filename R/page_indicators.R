@@ -34,6 +34,10 @@ page_indicators <- function(...) {
     h2("Hours worked"),
     djpr_plot_ui("ind_hoursworked_line"),
     br(),
+    h2("Participation"),
+    br(),
+    djpr_plot_ui("ind_partrate_bar"),
+    br(),
     htmlOutput("indicators_footnote")
   )
 }

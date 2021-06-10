@@ -238,6 +238,25 @@ labour_server <- function(input, output, session) {
                    plt_change = plt_change,
                    date_slider_value_min = Sys.Date() - (20 * 365))
 
+  # Indicators: participation ----
+  djpr_plot_server("ind_partrate_bar",
+                   viz_ind_partrate_bar,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423271F",
+                     "A84423369C",
+                     "A84423341A",
+                     "A84423327F",
+                     "A84423285V",
+                     "A84423313T",
+                     "A84423299J",
+                     "A84423051C"
+                   ),
+                   df = dash_data
+                   ),
+                   height_percent = 75,
+                   plt_change = plt_change,
+                   date_slider = FALSE)
 
   # Inclusion ------
 
