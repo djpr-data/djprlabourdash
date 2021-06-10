@@ -8,22 +8,26 @@
 #' viz_ind_emp_sincecovid_line()
 #' }
 #'
-viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", "A84423349V"),
+viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C",
+                                                                  "A84423349V"),
                                           df = dash_data
                                         )) {
   df <- data %>%
-    dplyr::mutate(state = dplyr::if_else(state == "", "Australia", state))
+    dplyr::mutate(state = dplyr::if_else(.data$state == "",
+                                         "Australia",
+                                         .data$state))
 
   df <- df %>%
-    dplyr::group_by(state) %>%
-    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) - 1))
+    dplyr::group_by(.data$state) %>%
+    dplyr::mutate(value = 100 * ((.data$value
+                                  / .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   max_date <- df %>%
     dplyr::filter(date == max(.data$date))
 
   df <- df %>%
     dplyr::mutate(tooltip = paste0(
-      state,
+      .data$state,
       "\n",
       format(
         .data$date,
@@ -37,7 +41,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
 
   lab_df <- max_date %>%
     dplyr::mutate(label = paste0(
-      stringr::str_wrap(state, 10),
+      stringr::str_wrap(.data$state, 10),
       "\n",
       paste0(
         stringr::str_wrap(round(.data$value, 1), 10),
@@ -63,7 +67,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C", 
     ) +
     ggrepel::geom_label_repel(
       data = lab_df,
-      aes(label = label),
+      aes(label = .data$label),
       hjust = 0,
       nudge_x = days_in_data * 0.033,
       label.padding = 0.01,
@@ -109,8 +113,8 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
     dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$state) %>%
-    dplyr::mutate(value = 100 * ((value / lag(value, 12)) - 1)) %>%
-    dplyr::filter(!is.na(value)) %>%
+    dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12)) - 1)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
   vic_latest <- df %>%
@@ -133,7 +137,7 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
 
   df %>%
     djpr_ts_linechart(
-      col_var = state,
+      col_var = .data$state,
       y_labels = function(x) paste0(x, "%"),
       label_num = paste0(round(.data$value, 1), "%")
     ) +
@@ -269,7 +273,6 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
                                          "A84423314V",
                                          "A84423342C"
                                        ))) {
-
   df <- data %>%
     dplyr::filter(date %in% c(
       max(.data$date),
@@ -277,29 +280,30 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::mutate(
       state_abbr = strayr::clean_state(.data$state),
-      state_group = dplyr::if_else(state_abbr %in% c(
+      state_group = dplyr::if_else(.data$state_abbr %in% c(
         "Vic", "NSW"
       ),
-      state_abbr,
+      .data$state_abbr,
       "Other"
       )
     )
 
   latest <- df %>%
     dplyr::filter(
-      date == max(date),
-      !state_abbr %in% c("ACT", "NT")
+      .data$date == max(.data$date),
+      !.data$state_abbr %in% c("ACT", "NT")
     ) %>%
-    dplyr::select(state_abbr, value) %>%
-    dplyr::mutate(rank = dplyr::min_rank(-value))
+    dplyr::select(.data$state_abbr, .data$value) %>%
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value))
 
   vic_rank <- latest$rank[latest$state_abbr == "Vic"]
   nsw_rank <- latest$rank[latest$state_abbr == "NSW"]
   vic_level <- paste0(round2(latest$value[latest$state_abbr == "Vic"], 1), "%")
   vic_change <- df %>%
-    dplyr::filter(state_abbr == "Vic") %>%
-    dplyr::summarise(change = value[date == max(date)] - value[date == subtract_years(max(date), 1)]) %>%
-    dplyr::pull(change)
+    dplyr::filter(.data$state_abbr == "Vic") %>%
+    dplyr::summarise(change = .data$value[.data$date == max(.data$date)] -
+                       .data$value[.data$date == subtract_years(max(.data$date), 1)]) %>%
+    dplyr::pull(.data$change)
 
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(vic_level, " of Victorian adults are employed, the highest ratio of any Australian state"),
@@ -311,11 +315,12 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    ggplot(aes(x = date, y = value, col = state_group, group = state)) +
+    ggplot(aes(x = .data$date, y = .data$value,
+               col = .data$state_group, group = .data$state)) +
     geom_line() +
     ggiraph::geom_point_interactive(aes(tooltip = paste0(
-      state_abbr, "\n",
-      round2(value, 1)
+      .data$state_abbr, "\n",
+      round2(.data$value, 1)
     )),
     size = 3,
     shape = "circle filled",
@@ -324,8 +329,8 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     ) +
     ggrepel::geom_text_repel(
       direction = "y",
-      data = ~ dplyr::filter(., date == max(date)),
-      aes(label = state_abbr),
+      data = ~ dplyr::filter(., date == max(.data$date)),
+      aes(label = .data$state_abbr),
       size = 14 / .pt,
       min.segment.length = 25,
       nudge_x = 15
@@ -646,109 +651,4 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
       caption = paste0(caption_lfs(), " Civilian adults are all residents aged 15 and above who are not in active military service."),
       title = title
     )
-}
-
-gr_yth_unemprate_map <- function(data = filter_dash_data(c("to be done")) %>%
-  group_by(series_id) %>%
-  mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-  dplyr::filter(.data$date == max(.data$date)),
-title = "") {
-
-  # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
-  sa4_shp <- sa42016 %>%
-    dplyr::filter(.data$state_name_2016 == "Victoria") %>%
-    dplyr::filter(.data$sa4_code_2016 < 297)
-
-  # Fix issue with different naming for North West region in Victoria
-  data <- data %>%
-    dplyr::mutate(
-      sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
-                           "North West",
-                           .data$sa4
-      )
-    )
-
-  # Join shape file with data to create mapdata ----
-  mapdata <- sa4_shp %>%
-    dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
-
-  # Create colour palette
-  # Switched here from binned to continuous colours
-  # pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
-  pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
-
-  # Create metro boundary (Greater Melbourne) ----
-  metro_boundary_sa4 <- c(
-    "Melbourne - Inner", "Melbourne - Inner East", "Melbourne - Inner South", "Melbourne - North East",
-    "Melbourne - North West", "Melbourne - Outer East", "Melbourne - South East", "Melbourne - West",
-    "Mornington Peninsula"
-  )
-
-  mapdata <- mapdata %>%
-    sf::st_transform("+proj=longlat +datum=WGS84")
-
-  metro_outline <- mapdata %>%
-    dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
-    dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
-
-  # Produce dynamic map, all of Victoria ----
-  # Ignore warning message:
-  # //sf layer has inconsistent datum (+proj=longlat +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +no_defs).
-  # //Need '+proj=longlat +datum=WGS84'
-  map <- mapdata %>%
-    leaflet::leaflet() %>%
-    leaflet::setView(
-      lng = 145.4657, lat = -36.41472, # coordinates of map at first view
-      zoom = 6
-    ) %>%
-    # size of map at first view
-    leaflet::addPolygons(
-      color = "grey", # colour of boundary lines, 'transparent' for no lines
-      weight = 1, # thickness of boundary lines
-      fillColor = ~ pal(mapdata$value), # pre-defined above
-      fillOpacity = 1.0, # strength of fill colour
-      smoothFactor = 0.5, # smoothing between region
-      stroke = T,
-      highlightOptions = leaflet::highlightOptions( # to highlight regions as you hover over them
-        color = "black", # boundary colour of region you hover over
-        weight = 2, # thickness of region boundary
-        bringToFront = FALSE
-      ), # FALSE = metro outline remains
-      label = sprintf( # region label definition
-        "<strong>%s</strong><br/>Youth Unemployment rate: %.1f", # label title, strong = bold, %.1f = 1 dec points
-        mapdata$sa4_name_2016, # region name displayed in label
-        mapdata$value
-      ) %>% # eco data displayed in label
-        lapply(htmltools::HTML),
-      labelOptions = leaflet::labelOptions( # label options
-        style = list(
-          "font-weight" = "normal", # "bold" makes it so
-          padding = "3px 8px"
-        ),
-        textsize = "12px", # text size of label
-        noHide = FALSE, # TRUE makes labels permanently visible (messy)
-        direction = "auto"
-      ) # text box flips from side to side as needed
-    ) %>%
-    leaflet::addLegend(
-      position = "topright", # options: topright, bottomleft etc.
-      pal = pal, # colour palette as defined
-      values = mapdata$value, # fill data
-      bins = 3,
-      labFormat = leaflet::labelFormat(transform = identity),
-      title = "Youth Unemployment<br/>rate (per cent)", # label title
-      opacity = 1,
-    ) %>%
-    # label opacity
-    leaflet::addPolygons(
-      data = metro_outline, #
-      fill = F,
-      stroke = T,
-      opacity = 1,
-      color = "black",
-      weight = 1
-    )
-
-  # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
-  map
 }
