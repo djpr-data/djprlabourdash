@@ -16,7 +16,7 @@ labour_server <- function(input, output, session) {
     djprshiny::ts_summarise()
 
   plt_change <- reactive(input$plt_change) %>%
-    debounce(40)
+    debounce(10)
 
   # Overview ------
 
@@ -289,7 +289,35 @@ labour_server <- function(input, output, session) {
 
   djpr_plot_server("gr_youth_states_dot",
                    viz_gr_youth_states_dot,
-                   data = dash_data,
+                   data = filter_dash_data(c(
+                     "A84433601W",
+                     "A84433602X",
+                     "A84433603A",
+                     "A84433505W",
+                     "A84433503T",
+                     "A84433504V",
+                     "A84433519K",
+                     "A84433517F",
+                     "A84433518J",
+                     "A84433533F",
+                     "A84433531A",
+                     "A84433532C",
+                     "A84433617R",
+                     "A84433615K",
+                     "A84433616L",
+                     "A84433575C",
+                     "A84433573X",
+                     "A84433574A",
+                     "A84433547V",
+                     "A84433545R",
+                     "A84433546T",
+                     "A84433589T",
+                     "A84433587L",
+                     "A84433588R",
+                     "A84433561R",
+                     "A84433559C",
+                     "A84433560L"
+                   ), df = dash_data),
                    plt_change = plt_change,
                    width_percent = 45,
                    height_percent = 150,
@@ -299,21 +327,55 @@ labour_server <- function(input, output, session) {
 
   djpr_plot_server("gr_ages_line",
                    viz_gr_ages_line,
-                   data = calc_lfs_age_state_gcc(),
+                   data = filter_dash_data(
+                     c(
+                       "15-24_greater melbourne_employed",
+                       "25-54_greater melbourne_employed",
+                       "55+_greater melbourne_employed",
+                       "15-24_rest of vic._employed",
+                       "25-54_rest of vic._employed",
+                       "55+_rest of vic._employed",
+                       "15-24_greater melbourne_nilf",
+                       "25-54_greater melbourne_nilf",
+                       "55+_greater melbourne_nilf",
+                       "15-24_rest of vic._nilf",
+                       "25-54_rest of vic._nilf",
+                       "55+_rest of vic._nilf",
+                       "15-24_greater melbourne_unemployed",
+                       "25-54_greater melbourne_unemployed",
+                       "55+_greater melbourne_unemployed",
+                       "15-24_rest of vic._unemployed",
+                       "25-54_rest of vic._unemployed",
+                       "55+_rest of vic._unemployed"
+                     ),
+                     df = dash_data
+                   ),
                    plt_change = plt_change,
                    width_percent = 45,
                    height_percent = 70,
-                   date_slider = FALSE,
+                   date_slider = TRUE,
+                   date_slider_value_min = as.Date("2014-11-01"),
                    download_button = FALSE,
                    selected_indicator = reactive({input$youth_focus}))
 
   djpr_plot_server("gr_yth_melbvrest_line",
                    viz_gr_yth_melbvrest_line,
-                   data = calc_lfs_age_state_gcc(),
+                   data = filter_dash_data(
+                     c(
+                       "15-24_greater melbourne_employed",
+                       "15-24_rest of vic._employed",
+                       "15-24_greater melbourne_nilf",
+                       "15-24_rest of vic._nilf",
+                       "15-24_greater melbourne_unemployed",
+                       "15-24_rest of vic._unemployed"
+                     ),
+                     df = dash_data
+                   ),
                    plt_change = plt_change,
                    width_percent = 45,
                    height_percent = 70,
-                   date_slider = FALSE,
+                   date_slider = TRUE,
+                   date_slider_value_min = as.Date("2014-11-01"),
                    download_button = FALSE,
                    selected_indicator = reactive({input$youth_focus}))
 
@@ -416,7 +478,7 @@ labour_server <- function(input, output, session) {
       dplyr::group_by(.data$series_id) %>%
       dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
       dplyr::filter(!is.na(.data$value)),
-    date_slider_value_min = as.Date("2014-11-29"),
+    date_slider_value_min = as.Date("2018-01-01"),
     plt_change = plt_change
   )
 
@@ -463,7 +525,7 @@ labour_server <- function(input, output, session) {
     ) %>%
       dplyr::group_by(.data$series_id) %>%
       dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
-    date_slider_value_min = as.Date("2014-01-01"),
+    date_slider_value_min = as.Date("2014-11-01"),
     plt_change = plt_change
   )
 

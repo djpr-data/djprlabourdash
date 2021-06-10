@@ -1,12 +1,16 @@
 Package: djprlabourdash
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     c(
     person(given = "Annett",
            family = "Finger",
            role = "ctb",
            email = "annett.finger@ecodev.vic.gov.au"),
+    person(given = "Emma",
+           family = "Seyoum-Tegegn",
+           role = "ctb",
+           email = "emma.seyoum-tegegn@ecodev.vic.gov.au"),
     person(given = "Darren",
            family = "Wong",
            role = "ctb",
@@ -28,7 +32,7 @@ RoxygenNote: 7.1.1
 Imports: 
     dataui (>= 0.0.1),
     djprdashdata (>= 0.0.2.9002),
-    djprshiny (>= 0.0.0.9000),
+    djprshiny (>= 0.0.3.902),
     djprtheme (>= 0.0.0.9000),
     dplyr (>= 1.0.5),
     ggplot2,

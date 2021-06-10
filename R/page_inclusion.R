@@ -30,8 +30,8 @@ page_inclusion <- function(...) {
                          width = "100%"),
       column(
         6,
-        djpr_plot_ui("gr_youth_states_dot",
-                     height = "600px")
+        # djpr_plot_ui("gr_youth_states_dot",
+        #              height = "600px")
       ),
       column(
         6,
