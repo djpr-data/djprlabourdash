@@ -18,6 +18,7 @@ page_indicators <- function(...) {
     reactable_caption(),
     djpr_plot_ui("ind_emp_sincecovid_line"),
     djpr_plot_ui("ind_emppop_state_slope"),
+    djpr_plot_ui("ind_empgro_line"),
     # htmlOutput("ind_emp_dotpoints"),
     # djpr_plot_ui("ind_empgro_line"),
     h2("Unemployment & underemployment"),

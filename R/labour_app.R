@@ -97,7 +97,6 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
-    date_slider_value_min = as.Date("2020-01-01"),
     plt_change = plt_change
   )
 

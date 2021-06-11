@@ -324,11 +324,11 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
     ggplot(aes(x = .data$date, y = .data$value, col = .data$is_vic)) +
     geom_line(aes(group = .data$sa4)) +
     geom_label(
-      data = .data$facet_labels,
+      data = facet_labels,
       aes(
         label = stringr::str_wrap(.data$sa4, 11),
-        y = .data$max_y,
-        x = .data$mid_x
+        y = .data$y,
+        x = .data$x
       ),
       nudge_y = 0.1,
       lineheight = 0.85,
