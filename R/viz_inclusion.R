@@ -815,3 +815,29 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
       caption = caption_lfs()
     )
 }
+
+#long-term unemployment
+
+viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
+  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)",
+  "A84423687K",
+  "A84423091W",
+  "A84597687K",
+  "A84597693F",
+  "A84597723J",
+  "A84597729W",
+  "A84597681W",
+  "A84597699V",
+  "A84597705C"),df = dash_data)){
+
+  data<-data %>%
+  dplyr::group_by(.data$series_id) %>%
+  dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA))
+
+  }
+
