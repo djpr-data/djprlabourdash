@@ -516,7 +516,7 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
       indicator = "Participation rate",
       age = "15-24"
     ) %>%
-    dplyr::bind_rows(data)
+    dplyr::bind_rows(df)
 
   df <- df %>%
     dplyr::group_by(.data$date) %>%
