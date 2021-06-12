@@ -24,7 +24,7 @@ page_overview <- function(...) {
         tagList(
           reactable::reactableOutput("main_table") %>%
             djpr_with_spinner(hide.ui = TRUE),
-          reactable_caption("All data seasonally adjusted, other than the youth unemployment which is a 3 month rolling average of unadjusted data.")
+          caption_reactable("All data seasonally adjusted, other than the youth unemployment which is a 3 month rolling average of unadjusted data.")
         )
       ),
       br(),

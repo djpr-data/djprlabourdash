@@ -378,16 +378,15 @@ youth_focus_box_data <- function() {
       unemp_rate = .data$Unemployed /
         (.data$Employed + .data$Unemployed),
       part_rate = (.data$Employed + .data$Unemployed) /
-        (.data$Employed + .data$Unemployed + .data$NILF))
+        (.data$Employed + .data$Unemployed + .data$NILF)
+    )
 
   df
 }
 
 
-viz_gr_ages_line <- function(data = youth_focus_box_data()
-                             ,
+viz_gr_ages_line <- function(data = youth_focus_box_data(),
                              selected_indicator = "unemp_rate") {
-
   df <- data %>%
     dplyr::rename(value = selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$value)
@@ -705,7 +704,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 #   df %>%
 #     ggplot(aes(x = date, y = value, fill = desc(age))) +
 #     geom_area(col = NA)
-#}
+# }
 
 # viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 #                                   "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",

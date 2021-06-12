@@ -57,8 +57,9 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
                                 )) %>%
                                   group_by(.data$series_id) %>%
                                   mutate(value = slider::slide_mean(.data$value,
-                                                                    before = 2,
-                                                                    complete = TRUE)) %>%
+                                    before = 2,
+                                    complete = TRUE
+                                  )) %>%
                                   dplyr::filter(.data$date == max(.data$date))) {
   high_low <- data %>%
     dplyr::ungroup() %>%
@@ -108,8 +109,9 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                               )) %>%
                                 group_by(.data$series_id) %>%
                                 mutate(value = slider::slide_mean(.data$value,
-                                                                  before = 2,
-                                                                  complete = TRUE)) %>%
+                                  before = 2,
+                                  complete = TRUE
+                                )) %>%
                                 dplyr::filter(.data$date == max(.data$date)),
                               zoom = 6) {
 
@@ -234,8 +236,9 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
                                                 )) %>%
                                                   dplyr::group_by(series_id) %>%
                                                   dplyr::mutate(value = slider::slide_mean(value,
-                                                                                           before = 2,
-                                                                                           complete = T)) %>%
+                                                    before = 2,
+                                                    complete = T
+                                                  )) %>%
                                                   dplyr::filter(date >= as.Date("2020-01-01")),
                                                 title = title_reg_emp_regions_sincecovid_line(data = data)) {
   df <- data %>%
@@ -278,8 +281,9 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                         )) %>%
                                           dplyr::group_by(.data$series_id) %>%
                                           dplyr::mutate(value = slider::slide_mean(.data$value,
-                                                                               before = 2,
-                                                                               complete = TRUE)) %>%
+                                            before = 2,
+                                            complete = TRUE
+                                          )) %>%
                                           dplyr::filter(!is.na(.data$value))) {
   data <- data %>%
     dplyr::mutate(
@@ -290,7 +294,6 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
       sa4 = gsub(" and South ", " & S. ", .data$sa4, fixed = TRUE)
     )
 
-
   max_y <- max(data$value)
   mid_x <- stats::median(data$date)
 
@@ -300,21 +303,36 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
       is_vic = dplyr::if_else(.data$sa4 == "Victoria", TRUE, FALSE)
     )
 
+  data <- data %>%
+    dplyr::mutate(
+      line_col =
+        dplyr::case_when(
+          .data$is_vic ~
+          "Victoria",
+          grepl("Melbourne|Mornington", .data$sa4) ~
+          "Greater Melbourne",
+          TRUE ~ "Rest of Victoria"
+        )
+    )
+
 
   vic <- data %>%
     filter(.data$sa4 == "Victoria") %>%
     select(-.data$sa4)
 
   facet_labels <- data %>%
-    dplyr::group_by(.data$sa4, .data$is_vic) %>%
+    dplyr::group_by(.data$sa4, .data$is_vic, .data$line_col) %>%
     dplyr::summarise() %>%
     dplyr::mutate(
       x = .env$mid_x,
       y = .env$max_y
     )
 
+  reg_sa4s <- sort(unique(data$sa4[data$line_col == "Rest of Victoria"]))
+  melb_sa4s <- sort(unique(data$sa4[data$line_col == "Greater Melbourne"]))
+
   data$sa4 <- factor(data$sa4,
-    levels = c("Victoria", sort(unique(data$sa4[data$sa4 != "Victoria"])))
+    levels = c("Victoria", reg_sa4s, melb_sa4s)
   )
 
   highest_current_ur <- data %>%
@@ -329,8 +347,25 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
   )
 
   data %>%
-    ggplot(aes(x = .data$date, y = .data$value, col = .data$is_vic)) +
-    geom_line(aes(group = .data$sa4)) +
+    djpr_ts_linechart(
+      col_var = line_col,
+      label = F,
+      dot = F
+    ) +
+    scale_y_continuous(
+      labels = function(x) paste0(x, "%"),
+      limits = function(limits) c(0, limits[2]),
+      breaks = function(limits) {
+        c(
+          0,
+          min(c(
+            limits[2],
+            10
+          ))
+        )
+      },
+      expand = expansion(mult = c(0, 0.1))
+    ) +
     geom_label(
       data = facet_labels,
       aes(
@@ -345,41 +380,12 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
       size = 12 / .pt
     ) +
     geom_line(data = vic) +
-    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
-      size = 3,
-      colour = "white",
-      alpha = 0.01
-    ) +
-    facet_wrap(~ factor(.data$sa4),
-      scales = "free_x",
-      ncol = 6
-    ) +
-    scale_colour_manual(values = c(
-      `TRUE` = "#2A6FA2",
-      `FALSE` = "#62BB46"
-    )) +
-    djprtheme::theme_djpr() +
-    coord_cartesian(clip = "off") +
-    scale_y_continuous(
-      expand = expansion(mult = c(0, 0.1)),
-      limits = function(limits) c(0, limits[2]),
-      breaks = function(limits) {
-        c(
-          0,
-          min(c(
-            limits[2],
-            10
-          ))
-        )
-      },
-      labels = function(x) paste0(round2(x), "%")
-    ) +
+    facet_wrap(~ factor(sa4), ncol = 6, scales = "free_x") +
     scale_x_date(
-      date_labels = "%Y",
+      # date_labels = "%Y",
       breaks = scales::breaks_pretty(n = 3)
     ) +
     theme(
-      axis.title = element_blank(),
       strip.text = element_blank(),
       panel.spacing = unit(1.5, "lines"),
       axis.text = element_text(size = 12)
@@ -415,8 +421,9 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
                                   ) %>%
                                     dplyr::group_by(series_id) %>%
                                     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                                                             before = 2,
-                                                                             complete = TRUE)) %>%
+                                      before = 2,
+                                      complete = TRUE
+                                    )) %>%
                                     dplyr::filter(.data$date == max(.data$date))) {
   data <- data %>%
     dplyr::filter(.data$sa4 != "") %>%
@@ -461,8 +468,9 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
   emp_gcc_rest <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE)) %>%
+      before = 2,
+      complete = TRUE
+    )) %>%
     dplyr::filter(.data$date >= as.Date("2020-01-01")) %>%
     dplyr::ungroup()
 

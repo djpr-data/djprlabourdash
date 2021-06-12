@@ -8,13 +8,14 @@
 #' viz_ind_emp_sincecovid_line()
 #' }
 #'
-viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C",
-                                                                  "A84423349V"),
-                                          df = dash_data
+viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
+                                          "A84423043C",
+                                          "A84423349V"
+                                        ),
+                                        df = dash_data
                                         ) %>%
                                           dplyr::filter(date >=
-                                                          as.Date("2020-01-01"))
-                                        ) {
+                                            as.Date("2020-01-01"))) {
   df <- data %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "",
       "Australia",
@@ -27,23 +28,29 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c("A84423043C",
       / .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   latest_vic <- df %>%
-    dplyr::filter(.data$state == "Victoria",
-                  .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)  %>%
+    dplyr::filter(
+      .data$state == "Victoria",
+      .data$date == max(.data$date)
+    ) %>%
+    dplyr::pull(.data$value) %>%
     round2(1)
 
   title <- paste0(
     "The number of Victorians employed is ",
-    dplyr::case_when(latest_vic > 0 ~ paste0(latest_vic, " per cent higher than "),
-                     latest_vic == 0 ~ "the same as ",
-                     latest_vic < 0 ~ paste0(latest_vic, " per cent lower than ")),
+    dplyr::case_when(
+      latest_vic > 0 ~ paste0(latest_vic, " per cent higher than "),
+      latest_vic == 0 ~ "the same as ",
+      latest_vic < 0 ~ paste0(latest_vic, " per cent lower than ")
+    ),
     "it was in March 2020"
   )
 
   df %>%
-    djpr_ts_linechart(col_var = .data$state,
-                      label_num = paste0(round2(.data$value, 1), "%"),
-                      y_labels = function(x) paste0(x, "%")) +
+    djpr_ts_linechart(
+      col_var = .data$state,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
     labs(
       title = title,
       subtitle = "Cumulative change in employment since March 2020, per cent",
