@@ -833,10 +833,9 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
   "A84597729W",
   "A84597681W",
   "A84597699V",
-  "A84597705C"),df = dash_data)){
-
+  "A84597705C"),df = dash_data)) {
   data<-data %>%
-  dplyr::group_by(.data$series_id) %>%
+  dplyr::mutate(state = ifelse(startsWith(.data$series_id, "A84"), "Australia", "Victoria"),.data$state) %>%
   dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA))
 
   }
