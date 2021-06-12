@@ -16,7 +16,7 @@ labour_server <- function(input, output, session) {
     djprshiny::ts_summarise()
 
   plt_change <- reactive(input$plt_change) %>%
-    debounce(40)
+    debounce(10)
 
   # Overview ------
 
@@ -50,7 +50,7 @@ labour_server <- function(input, output, session) {
     req(dash_data)
     table_overview()
   }) %>%
-    bindCache(dash_data)
+    bindCache(ts_summ)
 
   # Indicators -----
 
@@ -97,7 +97,6 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
-    date_slider_value_min = as.Date("2020-01-01"),
     plt_change = plt_change
   )
 
@@ -179,7 +178,19 @@ labour_server <- function(input, output, session) {
   output$ind_unemp_summary <- reactable::renderReactable({
     table_ind_unemp_summary()
   }) %>%
-    bindCache(dash_data)
+    bindCache(ts_summ)
+
+  # Indicators: line chart of Aus v Vic
+  djpr_plot_server("ind_unemprate_line",
+    viz_ind_unemprate_line,
+    data = filter_dash_data(c(
+      "A84423354L",
+      "A84423050A"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change
+  )
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
@@ -201,7 +212,55 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  # Indicators: Participation ------
+  djpr_plot_server("ind_underut_area",
+    viz_ind_underut_area,
+    data = filter_dash_data(c(
+      "A85223450L",
+      "A85223451R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (10 * 365),
+    plt_change = plt_change
+  )
+
+  # Indicators: hours worked ----
+
+  djpr_plot_server("ind_hoursworked_line",
+    viz_ind_hoursworked_line,
+    data = filter_dash_data(c(
+      "A84426256L",
+      "A84426277X",
+      "A84423689R",
+      "A84423091W"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = Sys.Date() - (20 * 365)
+  )
+
+  # Indicators: participation ----
+  djpr_plot_server("ind_partrate_bar",
+    viz_ind_partrate_bar,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423271F",
+      "A84423369C",
+      "A84423341A",
+      "A84423327F",
+      "A84423285V",
+      "A84423313T",
+      "A84423299J",
+      "A84423051C"
+    ),
+    df = dash_data
+    ),
+    height_percent = 75,
+    plt_change = plt_change,
+    date_slider = FALSE
+  )
 
   djpr_plot_server("ind_partrate_line",
                    plot_function = viz_ind_partrate_line,
@@ -212,7 +271,6 @@ labour_server <- function(input, output, session) {
                    df = dash_data
                    ),
                    plt_change = plt_change)
-
 
   # Inclusion ------
 
@@ -293,43 +351,101 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
     date_slider = FALSE
   )
 
   # Inclusion: youth focus box -----
 
-  djpr_plot_server(
-    id = "gr_youth_states_dot",
+
+  djpr_plot_server("gr_youth_states_dot",
     viz_gr_youth_states_dot,
-    date_slider = FALSE,
+    data = filter_dash_data(c(
+      "A84433601W",
+      "A84433602X",
+      "A84433603A",
+      "A84433505W",
+      "A84433503T",
+      "A84433504V",
+      "A84433519K",
+      "A84433517F",
+      "A84433518J",
+      "A84433533F",
+      "A84433531A",
+      "A84433532C",
+      "A84433617R",
+      "A84433615K",
+      "A84433616L",
+      "A84433575C",
+      "A84433573X",
+      "A84433574A",
+      "A84433547V",
+      "A84433545R",
+      "A84433546T",
+      "A84433589T",
+      "A84433587L",
+      "A84433588R",
+      "A84433561R",
+      "A84433559C",
+      "A84433560L"
+    ), df = dash_data),
+    plt_change = plt_change,
     width_percent = 45,
-    data = dash_data,
     height_percent = 150,
-    plt_change = plt_change
-  )
-
-  djpr_plot_server(
-    id = "gr_ages_line",
-    viz_gr_ages_line,
     date_slider = FALSE,
-    width_percent = 45,
-    data = calc_lfs_age_state_gcc(dash_data),
-    height_percent = 75,
-    plt_change = plt_change
+    download_button = FALSE,
+    selected_indicator = reactive({
+      input$youth_focus
+    })
   )
 
+  djpr_plot_server("gr_ages_line",
+    viz_gr_ages_line,
+    data = youth_focus_box_data(),
+    plt_change = plt_change,
+    width_percent = 45,
+    height_percent = 70,
+    date_slider = TRUE,
+    date_slider_value_min = as.Date("2014-11-01"),
+    download_button = FALSE,
+    selected_indicator = reactive({
+      input$youth_focus
+    })
+  )
 
-  djpr_plot_server(
-    id = "gr_yth_melbvrest_line",
+  djpr_plot_server("gr_yth_melbvrest_line",
     viz_gr_yth_melbvrest_line,
+    data = filter_dash_data(
+      c(
+        "15-24_greater melbourne_employed",
+        "15-24_rest of vic._employed",
+        "15-24_greater melbourne_nilf",
+        "15-24_rest of vic._nilf",
+        "15-24_greater melbourne_unemployed",
+        "15-24_rest of vic._unemployed"
+      ),
+      df = dash_data
+    ),
+    plt_change = plt_change,
     width_percent = 45,
-    data = calc_lfs_age_state_gcc(dash_data) %>%
-      mutate(chart_id = "gr_yth_melbvrest_line"),
-    height_percent = 75,
-    plt_change = plt_change
+    height_percent = 70,
+    date_slider = TRUE,
+    date_slider_value_min = as.Date("2014-11-01"),
+    download_button = FALSE,
+    selected_indicator = reactive({
+      input$youth_focus
+    })
   )
+
+  # output$gr_ages_line <- renderPlot({
+  #   viz_gr_ages_line(selected_indicator = input$youth_focus)
+  # })
+  #
+  # output$gr_yth_melbvrest_line <- renderPlot({
+  #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
+  # })
+
 
 
   # Regions ------
@@ -347,7 +463,7 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(!is.na(.data$value))
   )
 
@@ -364,7 +480,7 @@ labour_server <- function(input, output, session) {
     leaflet::renderLeaflet({
       map_unemprate_vic()
     }) %>%
-    bindCache(dash_data)
+    bindCache(ts_summ)
 
   output$reg_unemprate_bar <- renderPlot({
     df <- filter_dash_data(c(
@@ -388,7 +504,7 @@ labour_server <- function(input, output, session) {
       "A84600037A"
     )) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(.data$date == max(.data$date))
 
     df %>%
@@ -398,6 +514,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("reg_unemprate_multiline",
     viz_reg_unemprate_multiline,
     date_slider = TRUE,
+    height_percent = 125,
     data = filter_dash_data(c(
       "A84600253V",
       "A84599659L",
@@ -419,9 +536,9 @@ labour_server <- function(input, output, session) {
       "A84600037A"
     )) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(!is.na(.data$value)),
-    date_slider_value_min = as.Date("2014-11-29"),
+    date_slider_value_min = as.Date("2018-01-01"),
     plt_change = plt_change
   )
 
@@ -437,7 +554,7 @@ labour_server <- function(input, output, session) {
       "A84600075R"
     )) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
     plt_change = plt_change
   )
@@ -467,8 +584,8 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
-    date_slider_value_min = as.Date("2014-01-01"),
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)),
+    date_slider_value_min = as.Date("2014-11-01"),
     plt_change = plt_change
   )
 
@@ -481,7 +598,7 @@ labour_server <- function(input, output, session) {
   ) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   output$table_region_focus <- reactable::renderReactable({
@@ -489,7 +606,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
@@ -497,7 +614,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
@@ -505,7 +622,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
@@ -515,8 +632,250 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
+
+  # Industries ------
+
+  djpr_plot_server("industries_empchange_sincecovid_bar",
+    plot_function = viz_industries_empchange_sincecovid_bar,
+    data = filter_dash_data(c(
+      "A84601680F",
+      "A84601683L",
+      "A84601686V",
+      "A84601665J",
+      "A84601704L",
+      "A84601707V",
+      "A84601710J",
+      "A84601638A",
+      "A84601653X",
+      "A84601689A",
+      "A84601656F",
+      "A84601713R",
+      "A84601668R",
+      "A84601695W",
+      "A84601698C",
+      "A84601650T",
+      "A84601671C",
+      "A84601641R",
+      "A84601716W",
+      "A84601662A"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE
+  )
+
+  djpr_plot_server("industries_emp_line",
+    plot_function = viz_industries_emp_line,
+    data = filter_dash_data(c(
+      "A84601680F",
+      "A84601683L",
+      "A84601686V",
+      "A84601665J",
+      "A84601704L",
+      "A84601707V",
+      "A84601710J",
+      "A84601638A",
+      "A84601653X",
+      "A84601689A",
+      "A84601656F",
+      "A84601713R",
+      "A84601668R",
+      "A84601695W",
+      "A84601698C",
+      "A84601650T",
+      "A84601671C",
+      "A84601641R",
+      "A84601716W",
+      "A84601662A"
+    ),
+    df = dash_data
+    ),
+    chosen_industry = reactive({
+      input$chosen_industry
+    }),
+    plt_change = plt_change,
+    date_slider = TRUE,
+    date_slider_value_min = Sys.Date() - (365 * 10),
+    width_percent = 45,
+    height_percent = 75
+  )
+
+  djpr_plot_server("industries_emp_bysex_bar",
+    plot_function = viz_industries_emp_bysex_bar,
+    data = filter_dash_data(c(
+      "females_greater melbourne_accommodation and food services_employed full-time",
+      "females_greater melbourne_administrative and support services_employed full-time",
+      "females_greater melbourne_agriculture, forestry and fishing_employed full-time",
+      "females_greater melbourne_arts and recreation services_employed full-time",
+      "females_greater melbourne_construction_employed full-time",
+      "females_greater melbourne_education and training_employed full-time",
+      "females_greater melbourne_electricity, gas, water and waste services_employed full-time",
+      "females_greater melbourne_financial and insurance services_employed full-time",
+      "females_greater melbourne_health care and social assistance_employed full-time",
+      "females_greater melbourne_information media and telecommunications_employed full-time",
+      "females_greater melbourne_manufacturing_employed full-time",
+      "females_greater melbourne_mining_employed full-time",
+      "females_greater melbourne_other services_employed full-time",
+      "females_greater melbourne_professional, scientific and technical services_employed full-time",
+      "females_greater melbourne_public administration and safety_employed full-time",
+      "females_greater melbourne_rental, hiring and real estate services_employed full-time",
+      "females_greater melbourne_retail trade_employed full-time",
+      "females_greater melbourne_transport, postal and warehousing_employed full-time",
+      "females_greater melbourne_wholesale trade_employed full-time",
+      "males_greater melbourne_accommodation and food services_employed full-time",
+      "males_greater melbourne_administrative and support services_employed full-time",
+      "males_greater melbourne_agriculture, forestry and fishing_employed full-time",
+      "males_greater melbourne_arts and recreation services_employed full-time",
+      "males_greater melbourne_construction_employed full-time",
+      "males_greater melbourne_education and training_employed full-time",
+      "males_greater melbourne_electricity, gas, water and waste services_employed full-time",
+      "males_greater melbourne_financial and insurance services_employed full-time",
+      "males_greater melbourne_health care and social assistance_employed full-time",
+      "males_greater melbourne_information media and telecommunications_employed full-time",
+      "males_greater melbourne_manufacturing_employed full-time",
+      "males_greater melbourne_mining_employed full-time",
+      "males_greater melbourne_other services_employed full-time",
+      "males_greater melbourne_professional, scientific and technical services_employed full-time",
+      "males_greater melbourne_public administration and safety_employed full-time",
+      "males_greater melbourne_rental, hiring and real estate services_employed full-time",
+      "males_greater melbourne_retail trade_employed full-time",
+      "males_greater melbourne_transport, postal and warehousing_employed full-time",
+      "males_greater melbourne_wholesale trade_employed full-time",
+      "females_rest of vic._accommodation and food services_employed full-time",
+      "females_rest of vic._administrative and support services_employed full-time",
+      "females_rest of vic._agriculture, forestry and fishing_employed full-time",
+      "females_rest of vic._arts and recreation services_employed full-time",
+      "females_rest of vic._construction_employed full-time",
+      "females_rest of vic._education and training_employed full-time",
+      "females_rest of vic._electricity, gas, water and waste services_employed full-time",
+      "females_rest of vic._financial and insurance services_employed full-time",
+      "females_rest of vic._health care and social assistance_employed full-time",
+      "females_rest of vic._information media and telecommunications_employed full-time",
+      "females_rest of vic._manufacturing_employed full-time",
+      "females_rest of vic._mining_employed full-time",
+      "females_rest of vic._other services_employed full-time",
+      "females_rest of vic._professional, scientific and technical services_employed full-time",
+      "females_rest of vic._public administration and safety_employed full-time",
+      "females_rest of vic._rental, hiring and real estate services_employed full-time",
+      "females_rest of vic._retail trade_employed full-time",
+      "females_rest of vic._transport, postal and warehousing_employed full-time",
+      "females_rest of vic._wholesale trade_employed full-time",
+      "males_rest of vic._accommodation and food services_employed full-time",
+      "males_rest of vic._administrative and support services_employed full-time",
+      "males_rest of vic._agriculture, forestry and fishing_employed full-time",
+      "males_rest of vic._arts and recreation services_employed full-time",
+      "males_rest of vic._construction_employed full-time",
+      "males_rest of vic._education and training_employed full-time",
+      "males_rest of vic._electricity, gas, water and waste services_employed full-time",
+      "males_rest of vic._financial and insurance services_employed full-time",
+      "males_rest of vic._health care and social assistance_employed full-time",
+      "males_rest of vic._information media and telecommunications_employed full-time",
+      "males_rest of vic._manufacturing_employed full-time",
+      "males_rest of vic._mining_employed full-time",
+      "males_rest of vic._other services_employed full-time",
+      "males_rest of vic._professional, scientific and technical services_employed full-time",
+      "males_rest of vic._public administration and safety_employed full-time",
+      "males_rest of vic._rental, hiring and real estate services_employed full-time",
+      "males_rest of vic._retail trade_employed full-time",
+      "males_rest of vic._transport, postal and warehousing_employed full-time",
+      "males_rest of vic._wholesale trade_employed full-time",
+      "females_greater melbourne_accommodation and food services_employed part-time",
+      "females_greater melbourne_administrative and support services_employed part-time",
+      "females_greater melbourne_agriculture, forestry and fishing_employed part-time",
+      "females_greater melbourne_arts and recreation services_employed part-time",
+      "females_greater melbourne_construction_employed part-time",
+      "females_greater melbourne_education and training_employed part-time",
+      "females_greater melbourne_electricity, gas, water and waste services_employed part-time",
+      "females_greater melbourne_financial and insurance services_employed part-time",
+      "females_greater melbourne_health care and social assistance_employed part-time",
+      "females_greater melbourne_information media and telecommunications_employed part-time",
+      "females_greater melbourne_manufacturing_employed part-time",
+      "females_greater melbourne_mining_employed part-time",
+      "females_greater melbourne_other services_employed part-time",
+      "females_greater melbourne_professional, scientific and technical services_employed part-time",
+      "females_greater melbourne_public administration and safety_employed part-time",
+      "females_greater melbourne_rental, hiring and real estate services_employed part-time",
+      "females_greater melbourne_retail trade_employed part-time",
+      "females_greater melbourne_transport, postal and warehousing_employed part-time",
+      "females_greater melbourne_wholesale trade_employed part-time",
+      "males_greater melbourne_accommodation and food services_employed part-time",
+      "males_greater melbourne_administrative and support services_employed part-time",
+      "males_greater melbourne_agriculture, forestry and fishing_employed part-time",
+      "males_greater melbourne_arts and recreation services_employed part-time",
+      "males_greater melbourne_construction_employed part-time",
+      "males_greater melbourne_education and training_employed part-time",
+      "males_greater melbourne_electricity, gas, water and waste services_employed part-time",
+      "males_greater melbourne_financial and insurance services_employed part-time",
+      "males_greater melbourne_health care and social assistance_employed part-time",
+      "males_greater melbourne_information media and telecommunications_employed part-time",
+      "males_greater melbourne_manufacturing_employed part-time",
+      "males_greater melbourne_mining_employed part-time",
+      "males_greater melbourne_other services_employed part-time",
+      "males_greater melbourne_professional, scientific and technical services_employed part-time",
+      "males_greater melbourne_public administration and safety_employed part-time",
+      "males_greater melbourne_rental, hiring and real estate services_employed part-time",
+      "males_greater melbourne_retail trade_employed part-time",
+      "males_greater melbourne_transport, postal and warehousing_employed part-time",
+      "males_greater melbourne_wholesale trade_employed part-time",
+      "females_rest of vic._accommodation and food services_employed part-time",
+      "females_rest of vic._administrative and support services_employed part-time",
+      "females_rest of vic._agriculture, forestry and fishing_employed part-time",
+      "females_rest of vic._arts and recreation services_employed part-time",
+      "females_rest of vic._construction_employed part-time",
+      "females_rest of vic._education and training_employed part-time",
+      "females_rest of vic._electricity, gas, water and waste services_employed part-time",
+      "females_rest of vic._financial and insurance services_employed part-time",
+      "females_rest of vic._health care and social assistance_employed part-time",
+      "females_rest of vic._information media and telecommunications_employed part-time",
+      "females_rest of vic._manufacturing_employed part-time",
+      "females_rest of vic._mining_employed part-time",
+      "females_rest of vic._other services_employed part-time",
+      "females_rest of vic._professional, scientific and technical services_employed part-time",
+      "females_rest of vic._public administration and safety_employed part-time",
+      "females_rest of vic._rental, hiring and real estate services_employed part-time",
+      "females_rest of vic._retail trade_employed part-time",
+      "females_rest of vic._transport, postal and warehousing_employed part-time",
+      "females_rest of vic._wholesale trade_employed part-time",
+      "males_rest of vic._accommodation and food services_employed part-time",
+      "males_rest of vic._administrative and support services_employed part-time",
+      "males_rest of vic._agriculture, forestry and fishing_employed part-time",
+      "males_rest of vic._arts and recreation services_employed part-time",
+      "males_rest of vic._construction_employed part-time",
+      "males_rest of vic._education and training_employed part-time",
+      "males_rest of vic._electricity, gas, water and waste services_employed part-time",
+      "males_rest of vic._financial and insurance services_employed part-time",
+      "males_rest of vic._health care and social assistance_employed part-time",
+      "males_rest of vic._information media and telecommunications_employed part-time",
+      "males_rest of vic._manufacturing_employed part-time",
+      "males_rest of vic._mining_employed part-time",
+      "males_rest of vic._other services_employed part-time",
+      "males_rest of vic._professional, scientific and technical services_employed part-time",
+      "males_rest of vic._public administration and safety_employed part-time",
+      "males_rest of vic._rental, hiring and real estate services_employed part-time",
+      "males_rest of vic._retail trade_employed part-time",
+      "males_rest of vic._transport, postal and warehousing_employed part-time",
+      "males_rest of vic._wholesale trade_employed part-time",
+      "A84423461V",
+      "A84423237A"
+    ), df = dash_data) %>%
+      dplyr::group_by(.data$series) %>%
+      dplyr::filter(.data$date == max(.data$date)) %>%
+      dplyr::ungroup(),
+    plt_change = plt_change,
+    chosen_industry = reactive({
+      input$chosen_industry
+    }),
+    date_slider = FALSE,
+    height_percent = 65,
+    width_percent = 100
+  )
+
+  output$industries_employment <- reactable::renderReactable({
+    table_industries_employment(chosen_industry = input$chosen_industry)
+  })
 
   # Links to pages -----
   observeEvent(input$link_indicators, {

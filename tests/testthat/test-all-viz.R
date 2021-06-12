@@ -41,9 +41,10 @@ test_that("all viz_*() functions at least produce a plot", {
   }
 
   # Test every result is a ggplot -----
-  purrr::map(
+
+  lapply(
     plots,
-    ~ expect_s3_class(.x, "ggplot")
+    function(x) expect_s3_class(x, "ggplot")
   )
 
   for (i in seq_along(viz_funcs)) {

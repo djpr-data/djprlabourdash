@@ -1,12 +1,16 @@
 Package: djprlabourdash
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     c(
     person(given = "Annett",
            family = "Finger",
            role = "ctb",
            email = "annett.finger@ecodev.vic.gov.au"),
+    person(given = "Emma",
+           family = "Seyoum-Tegegn",
+           role = "ctb",
+           email = "emma.seyoum-tegegn@ecodev.vic.gov.au"),
     person(given = "Darren",
            family = "Wong",
            role = "ctb",
@@ -22,22 +26,17 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     dataui (>= 0.0.1),
     djprdashdata (>= 0.0.2.9002),
-    djprshiny (>= 0.0.0.9000),
+    djprshiny (>= 0.0.3.902),
     djprtheme (>= 0.0.0.9000),
-    dplyr,
+    dplyr (>= 1.0.5),
     ggplot2,
     htmltools (>= 0.5.1.1),
-    htmlwidgets,
     leaflet,
-    leaflet.extras,
-    purrr,
-    RColorBrewer,
     pkgload,
     reactable,
     rlang,
@@ -48,11 +47,11 @@ Imports:
     ggiraph,
     ggrepel,
     stringr,
-    zoo,
     scales,
     patchwork,
-    strayr (>= 0.0.1)
-Remotes:  
+    strayr (>= 0.0.1),
+    slider
+Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
