@@ -39,6 +39,8 @@ page_indicators <- function(...) {
     br(),
     djpr_plot_ui("ind_partrate_bar"),
     br(),
+    djpr_plot_ui("ind_partrate_line"),
+    br(),
     htmlOutput("indicators_footnote")
   )
 }

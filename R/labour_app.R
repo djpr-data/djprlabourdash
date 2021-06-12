@@ -262,6 +262,16 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE
   )
 
+  djpr_plot_server("ind_partrate_line",
+                   plot_function = viz_ind_partrate_line,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423051C"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change)
+
   # Inclusion ------
 
   # Groups: line chart of emp-pop by sex
@@ -504,6 +514,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("reg_unemprate_multiline",
     viz_reg_unemprate_multiline,
     date_slider = TRUE,
+    height_percent = 125,
     data = filter_dash_data(c(
       "A84600253V",
       "A84599659L",

@@ -633,3 +633,44 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
       title = title
     )
 }
+
+viz_ind_partrate_line <- function(data = filter_dash_data(c(
+                                    "A84423355R",
+                                    "A84423051C"
+                                  ),
+                                  df = dash_data
+                                  )) {
+  data <- data %>%
+    mutate(geog = if_else(state == "", "Australia", state))
+
+  latest_values <- data %>%
+    filter(date == max(date)) %>%
+    mutate(
+      value = round(value, 1),
+      date = format(date, "%B %Y")
+    ) %>%
+    select(geog, value, date) %>%
+    tidyr::spread(key = geog, value = value)
+
+  title <- dplyr::case_when(
+    latest_values$Victoria > latest_values$Australia ~
+    paste0("Victoria's participation rate in ", latest_values$date, " was higher than Australia's"),
+    latest_values$Victoria < latest_values$Australia ~
+    paste0("Victoria's participation rate in ", latest_values$date, " was lower than Australia's"),
+    latest_values$Victoria == latest_values$Australia ~
+    paste0("Victoria's participation rate in ", latest_values$date, " was the same as Australia's"),
+    TRUE ~ "Labour force participation in Victoria and Australia"
+  )
+
+  data %>%
+    djpr_ts_linechart(
+      col_var = geog,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Participation rate in Victoria and Australia",
+      caption = caption_lfs(),
+      title = title
+    )
+}
