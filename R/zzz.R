@@ -1,8 +1,7 @@
 .onLoad <- function(libname, pkgname) {
-  shinyOptions(
-    cache = cachem::cache_disk(
-      dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache"),
-      max_age =
-      )
-  )
+  # shinyOptions(
+  #   cache = cachem::cache_disk(
+  #     dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache")
+  #     )
+  # )
 }
