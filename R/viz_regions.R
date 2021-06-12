@@ -56,7 +56,9 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
                                   "A84600037A"
                                 )) %>%
                                   group_by(.data$series_id) %>%
-                                  mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+                                  mutate(value = slider::slide_mean(.data$value,
+                                                                    before = 2,
+                                                                    complete = TRUE)) %>%
                                   dplyr::filter(.data$date == max(.data$date))) {
   high_low <- data %>%
     dplyr::ungroup() %>%
@@ -105,7 +107,9 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
                                 "A84600037A"
                               )) %>%
                                 group_by(.data$series_id) %>%
-                                mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+                                mutate(value = slider::slide_mean(.data$value,
+                                                                  before = 2,
+                                                                  complete = TRUE)) %>%
                                 dplyr::filter(.data$date == max(.data$date)),
                               zoom = 6) {
 
@@ -229,7 +233,9 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
                                                   "A84600075R"
                                                 )) %>%
                                                   dplyr::group_by(series_id) %>%
-                                                  dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                                  dplyr::mutate(value = slider::slide_mean(value,
+                                                                                           before = 2,
+                                                                                           complete = T)) %>%
                                                   dplyr::filter(date >= as.Date("2020-01-01")),
                                                 title = title_reg_emp_regions_sincecovid_line(data = data)) {
   df <- data %>%
@@ -271,7 +277,9 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
                                           "A84600037A"
                                         )) %>%
                                           dplyr::group_by(.data$series_id) %>%
-                                          dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+                                          dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                                               before = 2,
+                                                                               complete = TRUE)) %>%
                                           dplyr::filter(!is.na(.data$value))) {
   data <- data %>%
     dplyr::mutate(
@@ -406,7 +414,9 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
                                   df = dash_data
                                   ) %>%
                                     dplyr::group_by(series_id) %>%
-                                    dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                                             before = 2,
+                                                                             complete = TRUE)) %>%
                                     dplyr::filter(.data$date == max(.data$date))) {
   data <- data %>%
     dplyr::filter(.data$sa4 != "") %>%
@@ -450,7 +460,9 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
                                         ))) {
   emp_gcc_rest <- data %>%
     dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2,
+                                             complete = TRUE)) %>%
     dplyr::filter(.data$date >= as.Date("2020-01-01")) %>%
     dplyr::ungroup()
 
@@ -555,7 +567,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                          df = dash_data
                                          ) %>%
                                            dplyr::group_by(series_id) %>%
-                                           dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA))) {
+                                           dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE))) {
   df_summ <- data %>%
     dplyr::filter(!is.na(value)) %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
@@ -807,7 +819,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
                                               )
                                             ) %>%
                                               dplyr::group_by(series_id) %>%
-                                              dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                              dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                               dplyr::filter(.data$date >= max(.data$date) - (365.25 * 5)),
                                             sa4 = "Geelong") {
   in_melb <- grepl("Melbourne|Mornington", sa4)
@@ -959,7 +971,7 @@ table_region_focus <- function(data = filter_dash_data(
                                  )
                                ) %>%
                                  dplyr::group_by(.data$series_id) %>%
-                                 dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
+                                 dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)),
                                sa4 = "Geelong") {
   in_melb <- grepl("Melbourne|Mornington", sa4)
 
@@ -1126,7 +1138,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
                                 df = dash_data
                                 ) %>%
                                   dplyr::group_by(series_id) %>%
-                                  dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
+                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                   dplyr::filter(!is.na(value))) {
   latest <- data %>%
     dplyr::ungroup() %>%

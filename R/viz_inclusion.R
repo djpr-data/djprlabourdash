@@ -281,7 +281,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
   # Take 12m rolling ave
   df <- df %>%
     dplyr::group_by(.data$gcc_restofstate, .data$indicator) %>%
-    dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, na.pad = TRUE)) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
@@ -306,7 +306,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
 
 
   df <- df %>%
-    dplyr::rename(value = {{ selected_indicator }}) %>%
+    dplyr::rename(value = selected_indicator) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::select(
       .data$gcc_restofstate, .data$date,
@@ -324,42 +324,38 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
 }
 
 # Line chart --- unemployment rate by age, Victoria ------
-viz_gr_ages_line <- function(data = filter_dash_data(
-                               c(
-                                 "15-24_greater melbourne_employed",
-                                 "25-54_greater melbourne_employed",
-                                 "55+_greater melbourne_employed",
-                                 "15-24_rest of vic._employed",
-                                 "25-54_rest of vic._employed",
-                                 "55+_rest of vic._employed",
-                                 "15-24_greater melbourne_nilf",
-                                 "25-54_greater melbourne_nilf",
-                                 "55+_greater melbourne_nilf",
-                                 "15-24_rest of vic._nilf",
-                                 "25-54_rest of vic._nilf",
-                                 "55+_rest of vic._nilf",
-                                 "15-24_greater melbourne_unemployed",
-                                 "25-54_greater melbourne_unemployed",
-                                 "55+_greater melbourne_unemployed",
-                                 "15-24_rest of vic._unemployed",
-                                 "25-54_rest of vic._unemployed",
-                                 "55+_rest of vic._unemployed"
-                               ),
-                               df = dash_data
-                             ),
-                             selected_indicator = "unemp_rate") {
-  df <- data %>%
+youth_focus_box_data <- function() {
+  df <- filter_dash_data(
+    c(
+      "15-24_greater melbourne_employed",
+      "25-54_greater melbourne_employed",
+      "55+_greater melbourne_employed",
+      "15-24_rest of vic._employed",
+      "25-54_rest of vic._employed",
+      "55+_rest of vic._employed",
+      "15-24_greater melbourne_nilf",
+      "25-54_greater melbourne_nilf",
+      "55+_greater melbourne_nilf",
+      "15-24_rest of vic._nilf",
+      "25-54_rest of vic._nilf",
+      "55+_rest of vic._nilf",
+      "15-24_greater melbourne_unemployed",
+      "25-54_greater melbourne_unemployed",
+      "55+_greater melbourne_unemployed",
+      "15-24_rest of vic._unemployed",
+      "25-54_rest of vic._unemployed",
+      "55+_rest of vic._unemployed"
+    ),
+    df = dash_data
+  ) %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup() %>%
     dplyr::select(
       .data$gcc_restofstate, .data$date, .data$value,
       .data$age, .data$indicator
     )
-
-  # Take 12m rolling ave
-  df <- df %>%
-    dplyr::group_by(.data$gcc_restofstate, .data$age, .data$indicator) %>%
-    dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, na.pad = TRUE)) %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::ungroup()
 
   # Collapse Greater Melb + Rest of Vic into one series
   df <- df %>%
@@ -382,9 +378,18 @@ viz_gr_ages_line <- function(data = filter_dash_data(
       unemp_rate = .data$Unemployed /
         (.data$Employed + .data$Unemployed),
       part_rate = (.data$Employed + .data$Unemployed) /
-        (.data$Employed + .data$Unemployed + .data$NILF)
-    ) %>%
-    dplyr::rename(value = {{ selected_indicator }}) %>%
+        (.data$Employed + .data$Unemployed + .data$NILF))
+
+  df
+}
+
+
+viz_gr_ages_line <- function(data = youth_focus_box_data()
+                             ,
+                             selected_indicator = "unemp_rate") {
+
+  df <- data %>%
+    dplyr::rename(value = selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$value)
 
   df %>%
@@ -435,7 +440,7 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(
-      value = zoo::rollmeanr(.data$value, 12, fill = NA),
+      value = slider::slide_mean(.data$value, before = 11, complete = TRUE),
       geog = dplyr::if_else(.data$state == "",
         "Australia",
         .data$state
@@ -547,7 +552,7 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
 #                                          "A84424622R"
 #                                        ), df = dash_data) %>%
 #                                          dplyr::group_by(.data$series_id) %>%
-#                                          dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA))) {
+#                                          dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE))) {
 #   data <- data %>%
 #     dplyr::group_by(.data$date) %>%
 #     dplyr::summarise(value = (100 * (value[series_id == "15-24_greater melbourne_employed"] +
@@ -639,7 +644,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                            df = dash_data
                                            ) %>%
                                              dplyr::group_by(.data$series_id) %>%
-                                             dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)) %>%
+                                             dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
                                              dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
@@ -687,7 +692,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 # df = dash_data
 # ) %>%
 #   dplyr::group_by(.data$series_id) %>%
-#   dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA))
+#   dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE))
 # ) {
 #
 #   df <- data %>%
@@ -708,7 +713,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 #                                   "A84423687K"
 #                                 )) %>%
 #                                   dplyr::group_by(.data$series_id) %>%
-#                                   dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+#                                   dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
 #                                   dplyr::ungroup()
 #                                 ) {
 #   df <- data %>%

@@ -41,7 +41,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
     dplyr::arrange(.data$date) %>%
     # Youth unemployment = 3m rolling average
     dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
-      zoo::rollmeanr(.data$value, 12, fill = NA),
+      slider::slide_mean(.data$value, before = 11, complete = TRUE),
       .data$value
     )) %>%
     dplyr::ungroup()
