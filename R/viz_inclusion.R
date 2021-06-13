@@ -818,8 +818,7 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
 
 #long-term unemployment
 
-viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+viz_gr_ltunemp_line <- function(data = filter_dash_data(c("unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
   "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
   "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
   "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
@@ -833,10 +832,19 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
   "A84597729W",
   "A84597681W",
   "A84597699V",
-  "A84597705C"),df = dash_data)) {
-  data<-data %>%
-  dplyr::mutate(state = ifelse(startsWith(.data$series_id, "A84"), "Australia", "Victoria"),.data$state) %>%
-  dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA))
+  "A84597705C")),df = dash_data) {
+
+
+  data_Vic <- data %>%
+    dplyr::filter(grepl("Victoria", series))
+
+  data_Aus <- data %>%
+    dplyr::filter(!grepl("Victoria", series)) %>%
+    dplyr::mutate(state = dplyr::if_else(.data$state == "",
+                           "Australia",
+                           .data$state))
+
+
 
   }
 
