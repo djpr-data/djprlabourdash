@@ -836,15 +836,27 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c("unemployed total ('00
 
 
   data_Vic <- data %>%
-    dplyr::filter(grepl("Victoria", series))
+        dplyr::filter(grepl("Victoria", series)) %>%
+        dplyr::select(series, value, date, state) %>%
+        tidyr::pivot_wider(
+        names_from = series,
+        values_from = value) %>%
+        dplyr::rename(
+      Un_2years&over = `Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)`,
+  Un_3_6months = `Unemployed total ('000) ; Victoria ; 13 weeks and under 26 weeks (3-6 months)`,
+  Un_6_12months = `Unemployed total ('000) ; Victoria ; 26 weeks and under 52 weeks (6-12 months)`,
+  Un_1_3months =`Unemployed total ('000) ; Victoria ; 4 weeks and under 13 weeks (1-3 months)`,
+  Un_1_2years = `Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`,
+  Un_less_1month =  `Unemployed total ('000) ; Victoria ; Under 4 weeks (under 1 month)`)
 
-  data_Aus <- data %>%
+
+
+
+    data_Aus <- data %>%
     dplyr::filter(!grepl("Victoria", series)) %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "",
                            "Australia",
                            .data$state))
-
-
 
   }
 
