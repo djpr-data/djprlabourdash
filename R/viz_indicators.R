@@ -546,7 +546,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
         " ", round2(.data$value, 1), "%"
       ),
       label_y = if_else(.data$under == "Underutilisation rate",
-                        .data$value,
+        .data$value,
         (cumsum(.data$value) - .data$value) + (.data$value / 2)
       )
     )
@@ -560,7 +560,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
 
   data %>%
     dplyr::filter(!grepl("Underutilisation", .data$series)) %>%
-    ggplot(aes(x =.data$date, y = .data$value, fill = .data$under)) +
+    ggplot(aes(x = .data$date, y = .data$value, fill = .data$under)) +
     geom_area(colour = NA) +
     geom_label(
       data = label_df,
@@ -601,8 +601,10 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
       expand = expansion(mult = c(.02, .25)),
       date_labels = "%b\n %Y",
       breaks = djprtheme::breaks_right(
-        limits = c(min(data$date),
-                   max(data$date))
+        limits = c(
+          min(data$date),
+          max(data$date)
+        )
       )
     ) +
     scale_y_continuous(
@@ -627,12 +629,17 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
                                      )) {
   data <- data %>%
     mutate(geog = if_else(.data$state == "",
-                          "Australia",
-                          .data$state)) %>%
-    dplyr::select(.data$indicator, .data$date,
-                        .data$value, .data$geog) %>%
-    tidyr::pivot_wider(names_from = .data$indicator,
-                       values_from = .data$value) %>%
+      "Australia",
+      .data$state
+    )) %>%
+    dplyr::select(
+      .data$indicator, .data$date,
+      .data$value, .data$geog
+    ) %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    ) %>%
     dplyr::rename(
       civ_pop = starts_with("Civilian population"),
       hours = starts_with("Monthly hours")
@@ -646,11 +653,15 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
       value = round2(.data$value, 1),
       date = format(.data$date, "%B %Y")
     ) %>%
-    dplyr::select(.data$geog,
-                  .data$value,
-                  .data$date) %>%
-    tidyr::spread(key = .data$geog,
-                  value = .data$value)
+    dplyr::select(
+      .data$geog,
+      .data$value,
+      .data$date
+    ) %>%
+    tidyr::spread(
+      key = .data$geog,
+      value = .data$value
+    )
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
