@@ -816,62 +816,120 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
     )
 }
 
-# long-term unemployment
 
-viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                                  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-                                  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-                                  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                                  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)",
-                                  "A84423687K",
-                                  "A84423089K",
-                                  "A84597687K",
-                                  "A84597693F",
-                                  "A84597723J",
-                                  "A84597729W",
-                                  "A84597681W",
-                                  "A84597699V",
-                                  "A84597705C"
-                                ), df = dash_data)) {
+#long-term unemployment
+
+viz_gr_ltunemp_line <- function(data = filter_dash_data(c("unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                                                               "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                                                                               "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                                                                               "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                                                                               "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                                                               "unemployed total ('000)_victoria_under 4 weeks (under 1 month)",
+                                                                               "A84423687K",
+                                                                               "A84423089K",
+                                                                               "A84597687K",
+                                                                               "A84597693F",
+                                                                               "A84597723J",
+                                                                               "A84597729W",
+                                                                               "A84597681W",
+                                                                               "A84597699V",
+                                                                               "A84597705C"),df = dash_data)) {
+
+  #selcting data for Victoria and rename data
   data_Vic <- data %>%
-    dplyr::filter(grepl("Victoria", series)) %>%
-    dplyr::select(series, value, date, state) %>%
-    tidyr::pivot_wider(
-      names_from = series,
-      values_from = value
-    ) %>%
-    dplyr::rename(
+        dplyr::filter(grepl("Victoria", series)) %>%
+        dplyr::select(series, value, date, state) %>%
+        tidyr::pivot_wider(
+        names_from = series,
+        values_from = value) %>%
+        dplyr::rename(
       Un_2years_over = "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)",
-      Un_3_6months = "Unemployed total ('000) ; Victoria ; 13 weeks and under 26 weeks (3-6 months)",
-      Un_6_12months = "Unemployed total ('000) ; Victoria ; 26 weeks and under 52 weeks (6-12 months)",
-      Un_1_3months = "Unemployed total ('000) ; Victoria ; 4 weeks and under 13 weeks (1-3 months)",
-      Un_1_2years = "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)",
-      Un_less_1month = "Unemployed total ('000) ; Victoria ; Under 4 weeks (under 1 month)",
-      labour_force = "Labour force total ;  Persons ;  > Victoria ;"
-    ) %>%
-    dplyr::mutate(
-      Un_2years_over = zoo::rollmeanr(Un_2years_over, 3, fill = NA),
-      Un_3_6months = zoo::rollmeanr(Un_3_6months, 3, fill = NA),
-      Un_6_12months = zoo::rollmeanr(Un_6_12months, 3, fill = NA),
-      Un_1_3months = zoo::rollmeanr(Un_1_3months, 3, fill = NA),
-      Un_1_2years = zoo::rollmeanr(Un_1_2years, 3, fill = NA),
-      Un_less_1month = zoo::rollmeanr(Un_less_1month, 3, fill = NA),
-      labour_force = zoo::rollmeanr(labour_force, 3, fill = NA),
-    ) %>%
-    dplyr::filter(date >= as.Date("1991-03-01"))
+  Un_3_6months = "Unemployed total ('000) ; Victoria ; 13 weeks and under 26 weeks (3-6 months)",
+  Un_6_12months = "Unemployed total ('000) ; Victoria ; 26 weeks and under 52 weeks (6-12 months)",
+  Un_1_3months ="Unemployed total ('000) ; Victoria ; 4 weeks and under 13 weeks (1-3 months)",
+  Un_1_2years = "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)",
+  Un_less_1month =  "Unemployed total ('000) ; Victoria ; Under 4 weeks (under 1 month)",
+  labour_force = "Labour force total ;  Persons ;  > Victoria ;" ) %>%
 
+  dplyr::mutate(Un_2years_over = zoo::rollmeanr(Un_2years_over, 3, fill = NA),
+                Un_3_6months = zoo::rollmeanr(Un_3_6months, 3, fill = NA),
+                Un_6_12months = zoo::rollmeanr(Un_6_12months , 3, fill = NA),
+                Un_1_3months = zoo::rollmeanr(Un_1_3months , 3, fill = NA),
+                Un_1_2years = zoo::rollmeanr( Un_1_2years, 3, fill = NA),
+                Un_less_1month = zoo::rollmeanr(Un_less_1month , 3, fill = NA),
+                labour_force = zoo::rollmeanr(labour_force, 3, fill = NA),) %>%
+
+  dplyr::filter(date  >= as.Date("1991-03-01"))
+
+  #create data frame
   data_vic_LR_rate <- data_Vic %>%
-    dplyr::select(date, state, Un_2years_over, Un_1_2years, labour_force) %>%
-    dplyr::mutate(LT_un_rate = 100 * (Un_2years_over + Un_1_2years) / labour_force)
+    dplyr::select(date, state, Un_2years_over, Un_1_2years,labour_force) %>%
+    dplyr::mutate(LT_un_rate = 100 *(Un_2years_over + Un_1_2years)/labour_force) %>%
+    dplyr::select(date, state, LT_un_rate)
 
-
+  #create data frame for Australia
   data_Aus <- data %>%
     dplyr::filter(!grepl("Victoria", series)) %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "",
-      "Australia",
-      .data$state
-    )) %>%
-    dplyr::select(series, value, date, state)
-}
+                           "Australia",
+                           .data$state)) %>%
+  dplyr::select(series, value, date, state) %>%
+  tidyr::pivot_wider(
+    names_from = series,
+    values_from = value) %>%
+   dplyr::select (date, state, "Labour force total ;  Persons ;  Australia ;","52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;") %>%
+    dplyr::rename(
+      LT_un_52weeks_above ="52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;",
+     labour_force = "Labour force total ;  Persons ;  Australia ;") %>%
+    dplyr::mutate(LT_un_52weeks_above= zoo::rollmeanr(LT_un_52weeks_above, 3, fill = NA),
+                  labour_force = zoo::rollmeanr(labour_force, 3, fill = NA),)  %>%
+
+    dplyr::filter(date >= as.Date("1991-03-01"))
+
+  data_Aus_LT_Rate <-data_Aus %>%
+    dplyr::select(date, state, LT_un_52weeks_above, labour_force) %>%
+    dplyr::mutate(LT_un_rate = 100 *( LT_un_52weeks_above)/labour_force) %>%
+    dplyr::select(date, state, LT_un_rate)
+
+  #join Victoria and Australia and rename
+  Data_LR_Un <- rbind(data_Aus_LT_Rate,data_vic_LR_rate) %>%
+    dplyr::mutate(value = LT_un_rate)
+
+
+  latest_values <- Data_LR_Un %>%
+    filter(date == max(date)) %>%
+    mutate(
+      value = round(value, 1),
+      date = format(date, "%B %Y")
+    ) %>%
+    select(state, value, date) %>%
+    tidyr::spread(key = state, value = value)
+
+  title <- dplyr::case_when(
+    latest_values$Victoria > latest_values$Australia ~
+      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
+    latest_values$Victoria < latest_values$Australia ~
+      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
+    latest_values$Victoria == latest_values$Australia ~
+      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
+    TRUE ~ "LOng-term unemployment rate in Victoria and Australia"
+  )
+
+  Data_LR_Un %>%
+    djpr_ts_linechart(
+      col_var = state,
+      label_num = paste0(round(.data$value, 1), "%")
+    ) +
+    labs(
+      subtitle = "Long-term unemployment rate in Victoria and Australia",
+      caption = caption_lfs(),
+      title = title
+    ) +
+    scale_y_continuous(
+      limits = function(x) c(0, x[2]),
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(5),
+      expand = expansion(mult = c(0, 0.05))
+    )
+  }
+
