@@ -1218,7 +1218,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Unemployment rate and employment to population ratio in Greater Melbourne and the rest of Victoria",
+      subtitle = "Employment to population ratio and unemployment rate and in Greater Melbourne and the rest of Victoria",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
