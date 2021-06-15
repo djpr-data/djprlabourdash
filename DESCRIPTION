@@ -50,8 +50,9 @@ Imports:
     zoo,
     scales,
     patchwork,
-    strayr (>= 0.0.1)
-Remotes:  
+    strayr (>= 0.0.1),
+    slider
+Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
