@@ -404,7 +404,7 @@ labour_server <- function(input, output, session) {
     viz_gr_ages_line,
     data = youth_focus_box_data(),
     plt_change = plt_change,
-    width_percent = 45,
+    width_percent = 47,
     height_percent = 70,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
@@ -428,7 +428,7 @@ labour_server <- function(input, output, session) {
       df = dash_data
     ),
     plt_change = plt_change,
-    width_percent = 45,
+    width_percent = 47,
     height_percent = 70,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
