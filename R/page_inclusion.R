@@ -25,9 +25,9 @@ page_inclusion <- function(...) {
       shiny::selectInput("youth_focus",
         "Select an indicator",
         choices = c(
-          "unemp_rate",
-          "part_rate",
-          "emp_pop"
+          "Unemployment rate" = "unemp_rate",
+          "Participation rate" = "part_rate",
+          "Employment-to-population ratio" = "emp_pop"
         ),
         width = "100%"
       ),

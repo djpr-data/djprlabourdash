@@ -254,8 +254,108 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
     )
 }
 
-# viz_gr_yth_table - not done yet
-# big table with demographics figures and %
+viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
+  "15-24_greater melbourne_employed",
+  "25-54_greater melbourne_employed",
+  "55+_greater melbourne_employed",
+  "15-24_rest of vic._employed",
+  "25-54_rest of vic._employed",
+  "55+_rest of vic._employed"
+),
+df = dash_data
+) %>%
+  dplyr::group_by(.data$series_id) %>%
+  dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+  dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
+  data <- data %>%
+    dplyr::group_by(.data$age, .data$date) %>%
+    dplyr::summarise(value = sum(.data$value))
+
+  # Indexing to Covid start
+  data <- data %>%
+    dplyr::group_by(.data$age) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+
+  latest <- data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(-.data$date)
+
+  latest <- latest %>%
+    tidyr::spread(key = .data$age, value = .data$value)
+
+  # draw line graph
+  data %>%
+    djpr_ts_linechart(
+      col_var = .data$age,
+      label_num = paste0(round(.data$value, 1), "%"),
+      hline = 0
+    ) +
+    scale_y_continuous(
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = "Employment for young people fell much faster after the COVID shock than employment for other Victorians",
+      subtitle = "Cumulative change in employment for different age groups since March 2020, per cent",
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
+    )
+}
+
+
+viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
+  "A84423356T",
+  "A84423244X",
+  "A84423468K"
+))) {
+  df <- data %>%
+    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
+                                       "Persons",
+                                       .data$sex
+    ))
+
+  latest_year <- df %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
+    tidyr::spread(key = .data$sex, value = .data$d_year)
+
+  nice_date <- format(latest_year$date, "%B %Y")
+
+  title <- dplyr::case_when(
+    latest_year$Females > 0 &
+      latest_year$Males > 0 ~
+      paste0(
+        "A larger proportion of Victorian men and women are in work in ",
+        nice_date, " than a year earlier"
+      ),
+    latest_year$Females > 0 &
+      latest_year$Males < 0 ~
+      paste0(
+        "The proportion of Victorian women in work rose over the year to ",
+        nice_date, " but the male employment to population ratio fell"
+      ),
+    latest_year$Females < 0 &
+      latest_year$Males > 0 ~
+      paste0(
+        "The proportion of Victorian men in work rose over the year to ",
+        nice_date, " but the female employment to population ratio fell"
+      ),
+    TRUE ~ "Employment to population ratio for Victorian men and women"
+  )
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$sex,
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Employment to population ratio by sex, Victoria",
+      caption = caption_lfs()
+    )
+}
 
 
 # Line chart -- youth unemp in Greater Melb v Rest of State -----
@@ -306,21 +406,51 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
 
 
   df <- df %>%
-    dplyr::rename(value = selected_indicator) %>%
+    dplyr::rename(value = .env$selected_indicator) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::select(
       .data$gcc_restofstate, .data$date,
       .data$value
     )
 
+  latest_values <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(value = round2(.data$value * 100, 1)) %>%
+    tidyr::pivot_wider(names_from = .data$gcc_restofstate,
+                       values_from = .data$value)
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "unemployment rate",
+    selected_indicator == "part_rate" ~ "participation rate",
+    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    TRUE ~ NA_character_)
+
+  title <- paste0("The ",
+    dplyr::case_when(
+      latest_values$`Greater Melbourne` > latest_values$`Rest of Vic.` ~
+        paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
+      latest_values$`Greater Melbourne` < latest_values$`Rest of Vic.` ~
+        paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
+      latest_values$`Greater Melbourne` == latest_values$`Rest of Vic.` ~
+        paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
+      TRUE ~ paste0("Youth ", indic_long, " in Greater Melbourne and the rest of Victoria in ")
+  ))
+
+  title <- paste0(title, format(latest_values$date, "%B %Y") )
+
   df %>%
     dplyr::mutate(gcc_restofstate = gsub("Melbourne", "Melb.", .data$gcc_restofstate,
       fixed = TRUE
     )) %>%
-    djpr_ts_linechart(col_var = .data$gcc_restofstate) +
+    djpr_ts_linechart(col_var = .data$gcc_restofstate,
+                      y_labels = function(x) paste0(x * 100, "%"),
+                      label_num = paste0(round2(.data$value * 100, 1), "%")) +
     scale_colour_manual(values = suppressWarnings(
       djpr_pal(10)[c(5, 10)]
-    ))
+    )) +
+    labs(title = title,
+         subtitle = "Unemployment rate for people aged 15-24",
+         caption = paste0(caption_lfs(), " Smoothed using a 12 month rolling average."))
 }
 
 # Line chart --- unemployment rate by age, Victoria ------
@@ -391,8 +521,47 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
     dplyr::rename(value = selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$value)
 
+  latest <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(value = round2(.data$value * 100, 1)) %>%
+    tidyr::pivot_wider(names_from = .data$age,
+                       values_from = .data$value)
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "unemployment rate",
+    selected_indicator == "part_rate" ~ "participation rate",
+    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    TRUE ~ NA_character_)
+
+  higher_or_lower <- dplyr::case_when(
+    latest$`15-24` > latest$`25-54` ~ "higher than",
+    latest$`15-24` < latest$`25-54` ~ "lower than",
+    latest$`15-24` == latest$`25-54` ~ "the same as",
+    TRUE ~ NA_character_)
+
+  diff <- dplyr::if_else(latest$`15-24` != latest$`25-54`,
+                         paste0(abs(latest$`15-24` - latest$`25-54`), " percentage points "),
+                         "")
+
+  title <- paste0(
+    "The youth ",
+    indic_long,
+    " is ",
+    diff,
+    higher_or_lower,
+    " the rate for people aged 25-54"
+  )
+
+
   df %>%
-    djpr_ts_linechart(col_var = .data$age)
+    djpr_ts_linechart(col_var = .data$age,
+                      label_num = paste0(round2(.data$value * 100, 1), "%")
+                      ) +
+    djpr_y_continuous(limits = function(x) c(0, x[2]),
+                      labels = function(x) paste0(x * 100, "%")) +
+    labs(title = title,
+         subtitle = "Unemployment rate by age, Victoria",
+         caption = paste0(caption_lfs(), " Smoothed using 12 month moving average."))
 }
 
 # Dot plot -- youth unemployment rate by state -------
@@ -474,6 +643,30 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
       .data$max_date + 0.08
     ))
 
+  latest_values <- df %>%
+    dplyr::filter(.data$date == max(.data$date),
+                  .data$geog %in% c("Vic", "Aus")) %>%
+    dplyr::select(.data$geog, .data$value, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$geog, values_from = .data$value)
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "unemployment rate",
+    selected_indicator == "part_rate" ~ "participation rate",
+    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    TRUE ~ NA_character_)
+
+  title <- paste0(
+    "The youth ",
+    indic_long,
+    " in Victoria was ",
+    round2(latest_values$Vic, 1),
+    " per cent in ",
+    format(latest_values$date, "%B %Y"),
+    ", compared to ",
+    round2(latest_values$Aus, 1),
+    " per cent across Australia"
+  )
+
 
   df %>%
     ggplot(aes(
@@ -524,7 +717,10 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
       values = suppressWarnings(djpr_pal(10)[c(1, 8)])
     ) +
     theme_djpr(flipped = T) +
-    theme(axis.title = element_blank())
+    labs(title = title,
+         subtitle = "Unemployment rate for people aged 15-24, by state and territory",
+         caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
+         y = "Youth unemployment rate")
 }
 
 
@@ -631,54 +827,6 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
 #     )
 # }
 
-
-viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
-                                             "15-24_greater melbourne_employed",
-                                             "25-54_greater melbourne_employed",
-                                             "55+_greater melbourne_employed",
-                                             "15-24_rest of vic._employed",
-                                             "25-54_rest of vic._employed",
-                                             "55+_rest of vic._employed"
-                                           ),
-                                           df = dash_data
-                                           ) %>%
-                                             dplyr::group_by(.data$series_id) %>%
-                                             dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
-  data <- data %>%
-    dplyr::group_by(.data$age, .data$date) %>%
-    dplyr::summarise(value = sum(.data$value))
-
-  # Indexing to Covid start
-  data <- data %>%
-    dplyr::group_by(.data$age) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
-
-  latest <- data %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(-.data$date)
-
-  latest <- latest %>%
-    tidyr::spread(key = .data$age, value = .data$value)
-
-  # draw line graph
-  data %>%
-    djpr_ts_linechart(
-      col_var = .data$age,
-      label_num = paste0(round(.data$value, 1), "%"),
-      hline = 0
-    ) +
-    scale_y_continuous(
-      breaks = scales::breaks_pretty(5),
-      labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      title = "Employment for young people fell much faster after the COVID shock than employment for other Victorians",
-      subtitle = "Cumulative change in employment for different age groups since March 2020, per cent",
-      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
-    )
-}
 #
 # viz_gr_yth_unemprate_area <- function(data = filter_dash_data(c(
 #   "15-24_greater melbourne_unemployed",
@@ -723,57 +871,3 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 #     dplyr::group_by(.data$date, .data$series) %>%
 #     dplyr::summarise(value = sum(.data$value))
 # }
-
-viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
-                                      "A84423356T",
-                                      "A84423244X",
-                                      "A84423468K"
-                                    ))) {
-  df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
-      "Persons",
-      .data$sex
-    ))
-
-  latest_year <- df %>%
-    dplyr::group_by(.data$sex) %>%
-    dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
-    tidyr::spread(key = .data$sex, value = .data$d_year)
-
-  nice_date <- format(latest_year$date, "%B %Y")
-
-  title <- dplyr::case_when(
-    latest_year$Females > 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "A larger proportion of Victorian men and women are in work in ",
-      nice_date, " than a year earlier"
-    ),
-    latest_year$Females > 0 &
-      latest_year$Males < 0 ~
-    paste0(
-      "The proportion of Victorian women in work rose over the year to ",
-      nice_date, " but the male employment to population ratio fell"
-    ),
-    latest_year$Females < 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "The proportion of Victorian men in work rose over the year to ",
-      nice_date, " but the female employment to population ratio fell"
-    ),
-    TRUE ~ "Employment to population ratio for Victorian men and women"
-  )
-
-  df %>%
-    djpr_ts_linechart(
-      col_var = .data$sex,
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      title = title,
-      subtitle = "Employment to population ratio by sex, Victoria",
-      caption = caption_lfs()
-    )
-}
