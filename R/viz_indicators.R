@@ -130,15 +130,15 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     ))
 
   df_wide <- df %>%
-    dplyr::mutate(date_type = dplyr::if_else(date == min(date),
+    dplyr::mutate(date_type = dplyr::if_else(.data$date == min(.data$date),
       "min_date",
       "max_date"
     )) %>%
-    dplyr::select(state, value, date_type) %>%
-    tidyr::spread(key = date_type, value = value) %>%
-    dplyr::mutate(arrow_max = if_else(max_date > min_date,
-      max(c(min_date, max_date - 0.05)),
-      max_date + 0.05
+    dplyr::select(.data$state, .data$value, .data$date_type) %>%
+    tidyr::spread(key = .data$date_type, value = .data$value) %>%
+    dplyr::mutate(arrow_max = if_else(.data$max_date > .data$min_date,
+      max(c(.data$min_date, .data$max_date - 0.05)),
+      .data$max_date + 0.05
     ))
 
 
@@ -161,18 +161,20 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
       df_wide$max_date[df_wide$state == "Victoria"] < df_wide$min_date[df_wide$state == "Victoria"] ~
     "has fallen over the past year",
     TRUE ~ "compared to other states and territories"
-  ) %>%
-    paste0("Victoria's unemployment rate ", .)
+  )
+
+  title <- paste0("Victoria's unemployment rate ", title)
 
   df %>%
-    ggplot(aes(x = stats::reorder(state, value), y = value, col = format(date, "%b %Y"))) +
+    ggplot(aes(x = stats::reorder(.data$state, .data$value),
+               y = .data$value, col = format(.data$date, "%b %Y"))) +
     geom_segment(
       data = df_wide,
       aes(
-        x = stats::reorder(state, max_date),
-        xend = stats::reorder(state, max_date),
-        y = min_date,
-        yend = arrow_max
+        x = stats::reorder(.data$state, .data$max_date),
+        xend = stats::reorder(.data$state, .data$max_date),
+        y = .data$min_date,
+        yend = .data$arrow_max
       ),
       colour = djprtheme::djpr_cool_grey_11,
       arrow = arrow(
@@ -193,7 +195,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     ggrepel::geom_label_repel(
       data = ~ dplyr::filter(., .data$state == "Victoria"),
       aes(label = format(.data$date, "%b %Y")),
-      direction = "y",
+      direction = "x",
       label.padding = unit(0.1, "lines"),
       size = 14 / .pt,
       min.segment.length = unit(10000, "lines"),

@@ -392,9 +392,9 @@ labour_server <- function(input, output, session) {
     ), df = dash_data),
     plt_change = plt_change,
     width_percent = 45,
-    height_percent = 150,
+    height_percent = 160,
     date_slider = FALSE,
-    download_button = FALSE,
+    download_button = T,
     selected_indicator = reactive({
       input$youth_focus
     })
@@ -408,7 +408,7 @@ labour_server <- function(input, output, session) {
     height_percent = 70,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
-    download_button = FALSE,
+    download_button = T,
     selected_indicator = reactive({
       input$youth_focus
     })
@@ -432,7 +432,7 @@ labour_server <- function(input, output, session) {
     height_percent = 70,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
-    download_button = FALSE,
+    download_button = T,
     selected_indicator = reactive({
       input$youth_focus
     })
