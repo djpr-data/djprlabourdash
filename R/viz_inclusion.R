@@ -830,18 +830,18 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
                                 )) {
 
   # selecting data for Victoria and rename data
-  data_Vic <- data %>%
+  data_vic <- data %>%
     dplyr::filter(grepl("Victoria", series)) %>%
     dplyr::select(series, value, date, state)
 
-  data_Vic <- data_Vic %>%
+  data_vic <- data_vic %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(value,
                                              before = 2,
                                              complete = TRUE)) %>%
     dplyr::ungroup()
 
-  data_Vic <- data_Vic %>%
+  data_vic <- data_vic %>%
     tidyr::pivot_wider(
       names_from = series,
       values_from = value
@@ -876,15 +876,15 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::filter(!is.na(lt_unemp))
 
-  Data_LR_Un <- dplyr::bind_rows(
-    data_Vic, data_Aus
+  data_lr_un <- dplyr::bind_rows(
+    data_vic, data_Aus
   )
 
-  Data_LR_Un <- Data_LR_Un %>%
+  data_lr_un <- data_lr_un %>%
     dplyr::mutate(value = 100 * (lt_unemp) / labour_force) %>%
     dplyr::select(date, state, value)
 
-  latest_values <- Data_LR_Un %>%
+  latest_values <- data_lr_un %>%
     filter(date == max(date)) %>%
     mutate(
       value = round(value, 1),
@@ -903,7 +903,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     TRUE ~ "LOng-term unemployment rate in Victoria and Australia"
   )
 
-  Data_LR_Un %>%
+  data_lr_un %>%
     djpr_ts_linechart(
       col_var = state,
       label_num = paste0(round(.data$value, 1), "%")
