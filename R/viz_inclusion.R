@@ -475,7 +475,7 @@ viz_gr_youth_states_dot <- function(data = dash_data,
 
 
 viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
-                                         "A84424692W",
+                                    #     "A84423691A",
                                          "15-24_greater melbourne_employed",
                                          "25-54_greater melbourne_employed",
                                          "55+_greater melbourne_employed",
@@ -497,7 +497,9 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
                                          "A84424622R"
                                        ), df = dash_data) %>%
                                          dplyr::group_by(.data$series_id) %>%
-                                         dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA))) {
+                                         dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                                                 before = 11,
+                                                                                 complete = TRUE))) {
   data <- data %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(value = (100 * (value[series_id == "15-24_greater melbourne_employed"] +
@@ -511,8 +513,8 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
         value[series_id == "15-24_greater melbourne_nilf"] +
         value[series_id == "15-24_rest of vic._nilf"]))) %>%
     dplyr::mutate(
-      series = "Participation rate; 15-24; Victoria",
-      series_id = "partrate_15-14_vic",
+      series = "15-24; Victoria",
+      series_id = "partrate_15-24_vic",
       indicator = "Participation rate",
       age = "15-24"
       ) %>%
@@ -531,7 +533,7 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
         value[series_id == "25-54_greater melbourne_nilf"] +
         value[series_id == "25-54_rest of vic._nilf"]))) %>%
     dplyr::mutate(
-      series = "Participation rate; 25-54; Victoria",
+      series = "25-54; Victoria",
       series_id = "partrate_25-54_vic",
       indicator = "Participation rate",
       age = "25-54"
@@ -551,7 +553,7 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
         value[series_id == "55+_greater melbourne_nilf"] +
         value[series_id == "55+_rest of vic._nilf"]))) %>%
     dplyr::mutate(
-      series = "Participation rate; 55+; Victoria",
+      series = "55+; Victoria",
       series_id = "partrate_55+_vic",
       indicator = "Participation rate",
       age = "55+"
@@ -561,11 +563,54 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
   # drop rows we don't need
   data <- dplyr::filter(data, .data$indicator == "Participation rate")
 
-  # draw line graph
-  data %>%
+  # rename the data series for Aus and Vic for consistency on graph
+  data <- data %>%
+    dplyr::mutate(
+      series = dplyr::if_else(.data$series == "Australia ;  Participation rate ;",
+                              "15-24; Australia",
+                              .data$series
+      )
+    )
+
+  data <- data %>%
+    dplyr::mutate(
+      series = dplyr::if_else(.data$series == "> Victoria ;  Participation rate ;",
+                              "15-64, Victoria",
+                              .data$series
+      )
+    )
+
+  # dataframe for first graph: Vic youth vs Aus youth participation rate
+  df1 <- data %>%
+    dplyr::filter(grepl("15-24", series)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::filter(.data$date >= as.Date("1992-06-01")) %>%
+    dplyr::select(date, value, series)
+
+  # dataframe for second graph: various age groups, Victoria, participation rate
+  df2 <- data %>%
+    dplyr::filter(grepl("Victoria", series)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::select(date, value, series)
+
+  # draw first line graph
+  df1 %>%
+    ggplot(aes(x = date, y = value, col = series)) +
+    geom_line()
+
+  # draw second line graph
+  df2 %>%
+    ggplot(aes(x = date, y = value, col = series)) +
+    geom_line()
+
+
+
+  # Drawing graphs with djpr_ts_linechart
+    df2 %>%
     dplyr::ungroup() %>%
-    djpr_ts_linechart() +
+    djpr_ts_linechart(data = df2,
+                      y_var = .data$value,
+                      ) #+
     scale_y_continuous(
       breaks = scales::breaks_pretty(5),
       labels = function(x) paste0(x, "%")
