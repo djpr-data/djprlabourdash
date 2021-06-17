@@ -357,22 +357,24 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     dplyr::filter(.data$state == "Vic") %>%
     dplyr::pull(.data$rank)
 
-  title <- dplyr::case_when(
-    vic_rank == 8 ~ "was the lowest in Australia",
-    vic_rank == 7 ~ "was the second lowest in Australia",
-    vic_rank == 6 ~ "was the third lowest in Australia",
-    vic_rank == 5 ~ "was the fourth lowest in Australia",
-    vic_rank == 4 ~ "was the fourth highest in Australia",
-    vic_rank == 3 ~ "was the third highest in Australia",
-    vic_rank == 2 ~ "was the second highest in Australia",
-    vic_rank == 1 ~ "was the highest in Australia",
-    TRUE ~ "compared to to other states and territories"
-  )
+  # title <- dplyr::case_when(
+  #   vic_rank == 8 ~ "was the lowest in Australia",
+  #   vic_rank == 7 ~ "was the second lowest in Australia",
+  #   vic_rank == 6 ~ "was the third lowest in Australia",
+  #   vic_rank == 5 ~ "was the fourth lowest in Australia",
+  #   vic_rank == 4 ~ "was the fourth highest in Australia",
+  #   vic_rank == 3 ~ "was the third highest in Australia",
+  #   vic_rank == 2 ~ "was the second highest in Australia",
+  #   vic_rank == 1 ~ "was the highest in Australia",
+  #   TRUE ~ "compared to to other states and territories"
+  # )
+  #
+  # title <- paste0(
+  #   "Victoria's participation rate ", title,
+  #   " in ", format(max(data$date), "%B %Y")
+  # )
 
-  title <- paste0(
-    "Victoria's participation rate ", title,
-    " in ", format(max(data$date), "%B %Y")
-  )
+  title <- "Victoria's participation rate compared to other states and territories"
 
   data <- data %>%
     mutate(fill_col = dplyr::if_else(

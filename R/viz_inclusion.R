@@ -231,12 +231,12 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   title <- dplyr::case_when(
     current_ur$Females < current_ur$Males ~
     paste0(
-      "The unemployment rate for women was a little lower than the rate for men in ",
+      "The unemployment rate for women was lower than the rate for men in ",
       max_date
     ),
     current_ur$Females > current_ur$Males ~
     paste0(
-      "The unemployment rate for women was a little higher than the rate for men in ",
+      "The unemployment rate for women was higher than the rate for men in ",
       max_date
     ),
     TRUE ~ paste0(
@@ -246,7 +246,9 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = .data$sex) +
+    djpr_ts_linechart(col_var = .data$sex,
+                      label_num = paste0(round(.data$value, 1), "%"),
+                      y_labels = function(x) paste0(x, "%")) +
     labs(
       title = title,
       subtitle = "Unemployment by sex, Victoria",
@@ -450,7 +452,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
     )) +
     labs(title = title,
          subtitle = "Unemployment rate for people aged 15-24",
-         caption = paste0(caption_lfs(), " Smoothed using a 12 month rolling average."))
+         caption = paste0(caption_lfs_det_m(), " Smoothed using a 12 month rolling average."))
 }
 
 # Line chart --- unemployment rate by age, Victoria ------
@@ -561,7 +563,7 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
                       labels = function(x) paste0(x * 100, "%")) +
     labs(title = title,
          subtitle = "Unemployment rate by age, Victoria",
-         caption = paste0(caption_lfs(), " Smoothed using 12 month moving average."))
+         caption = paste0(caption_lfs_det_m(), " Smoothed using 12 month moving average."))
 }
 
 # Dot plot -- youth unemployment rate by state -------
@@ -719,7 +721,7 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     theme_djpr(flipped = T) +
     labs(title = title,
          subtitle = "Unemployment rate for people aged 15-24, by state and territory",
-         caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
+         caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average."),
          y = "Youth unemployment rate")
 }
 
