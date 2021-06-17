@@ -1127,6 +1127,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
                                   dplyr::group_by(series_id) %>%
                                   dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                   dplyr::filter(!is.na(value))) {
+
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1135,7 +1136,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::select(.data$value, .data$gcc_restofstate) %>%
     dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
-    tidyr::spread(key = gcc_restofstate, value = value)
+    tidyr::spread(key = .data$gcc_restofstate, value = value)
 
 
   title <- paste0(

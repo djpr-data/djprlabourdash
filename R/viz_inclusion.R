@@ -475,7 +475,7 @@ viz_gr_youth_states_dot <- function(data = dash_data,
 
 
 viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
-                                    #     "A84423691A",
+                                         "A84423691A",
                                          "15-24_greater melbourne_employed",
                                          "25-54_greater melbourne_employed",
                                          "55+_greater melbourne_employed",
@@ -518,7 +518,10 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
       indicator = "Participation rate",
       age = "15-24"
       ) %>%
-    dplyr::bind_rows(data)
+    dplyr::bind_rows(data) %>%
+    dplyr::ungroup()   # how do I get rid of the warning message:
+                       # `summarise()` has grouped output by 'date'. You can override using the `.groups` argument.?
+
 
   data <- data %>%
     dplyr::group_by(.data$date) %>%
@@ -561,7 +564,9 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
     dplyr::bind_rows(data)
 
   # drop rows we don't need
-  data <- dplyr::filter(data, .data$indicator == "Participation rate")
+  data <- dplyr::filter(data, .data$indicator == "Participation rate") %>%
+    dplyr::filter(!is.na(.data$value))
+
 
   # rename the data series for Aus and Vic for consistency on graph
   data <- data %>%
@@ -574,80 +579,126 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
 
   data <- data %>%
     dplyr::mutate(
-      series = dplyr::if_else(.data$series == "> Victoria ;  Participation rate ;",
-                              "15-64, Victoria",
+      series = dplyr::if_else(.data$series == "Participation rate ;  Persons ;  > Victoria ;",
+                              "15+, Victoria",
                               .data$series
       )
     )
 
-  # dataframe for first graph: Vic youth vs Aus youth participation rate
-  df1 <- data %>%
-    dplyr::filter(grepl("15-24", series)) %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::filter(.data$date >= as.Date("1992-06-01")) %>%
-    dplyr::select(date, value, series)
+  # # dataframe for first graph: Vic youth vs Aus youth participation rate
+  # df1 <- data %>%
+  #   dplyr::filter(grepl("15-24", series)) %>%
+  #   dplyr::filter(!is.na(.data$value)) %>%
+  #   dplyr::filter(.data$date >= as.Date("1992-06-01")) %>%
+  #   dplyr::select(date, value, series)
+  #
+  # # dataframe for second graph: various age groups, Victoria, participation rate
+  # df2 <- data %>%
+  #   dplyr::filter(grepl("Victoria", series)) %>%
+  #   dplyr::filter(!is.na(.data$value)) %>%
+  #   dplyr::filter(.data$date >= as.Date("1992-06-01")) %>%
+  #   dplyr::select(date, value, series)
+  #
+  # # draw first line graph
+  # df1 %>%
+  #   ggplot(aes(x = date, y = value, col = series)) +
+  #   geom_line()
+  #
+  # # draw second line graph
+  # df2 %>%
+  #   ggplot(aes(x = date, y = value, col = series)) +
+  #   geom_line()
 
-  # dataframe for second graph: various age groups, Victoria, participation rate
-  df2 <- data %>%
-    dplyr::filter(grepl("Victoria", series)) %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::select(date, value, series)
+  # Title - only gives me two of the series - why??
+  latest <- data %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      .data$indicator == "Participation rate"
+    ) %>%
+    dplyr::select(.data$value, .data$series, ) %>%
+    dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
+    tidyr::spread(key = .data$series, value = value)
 
-  # draw first line graph
-  df1 %>%
-    ggplot(aes(x = date, y = value, col = series)) +
-    geom_line()
-
-  # draw second line graph
-  df2 %>%
-    ggplot(aes(x = date, y = value, col = series)) +
-    geom_line()
-
-  # Title
-  current_ur <- data %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::select(.data$date, .data$value, .data$series, ) %>%
-    tidyr::pivot_wider(names_from = .data$series) %>%
-    dplyr::rename(`55+; Victoria` = .current_ur$older_victorians,
-                  `25-54; Victoria` = .current_ur$mature_victorians,
-                  `15-24; Victoria` = .current_ur$young_victorians,
-                  `15-24; Australia` = .current_ur$young_australians)
-
-  max_date <- format(max(data$date), "%B %Y")
-
-  title <- dplyr::case_when(
-    current_ur$young_victorians < current_ur$young_australians ~
-      paste0(
-        "The participation rate for Victorian youth was lower than that for Australian youth in ",
-        max_date
-      ),
-    current_ur$young_victorians > current_ur$young_australians ~
-      paste0(
-        "The particpition rate for Victorian youth was higher than that for Australian youth in ",
-        max_date
-      ),
-    TRUE ~ paste0(
-      "The participation rate for Victorian and Australian youth in was around the same level in ",
-      max_date
-    )
+  title <- paste0(
+    "The participation rate for Victorian youth was ",
+    latest$`15-24; Victoria`,
+    " while the rate for youth in Australia was ",
+    latest$`15-24; Australia`,
+    " in ",
+    format(max(data$date), "%B %Y")
   )
 
+  max_date <- data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    mutate(label = paste0(
+      stringr::str_wrap(.data$series, 9),
+      "\n",
+      round2(.data$value, 1)
+    ))
 
-  # Drawing graphs with djpr_ts_linechart
-    df2 %>%
-    dplyr::ungroup() %>%
-    djpr_ts_linechart(data = df2,
-                      y_var = .data$value,
-                      ) #+
+  days_in_data <- as.numeric(max(data$date) - min(data$date))
+
+  data %>%
+    dplyr::mutate(tooltip = paste0(
+      .data$series, "\n",
+      format(.data$date, "%B %Y"),
+      "\n",
+      round2(.data$value, 1)
+    )) %>%
+    ggplot(aes(x = date, y = value, col = series)) +
+    geom_line() +
+    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
+                                    size = 3,
+                                    colour = "white",
+                                    alpha = 0.01
+    ) +
+    geom_point(
+      data = max_date,
+      fill = "white",
+      stroke = 1.5,
+      size = 2.5,
+      shape = 21
+    ) +
+    ggrepel::geom_label_repel(
+      data = max_date,
+      aes(label = label),
+      hjust = 0,
+      nudge_x = days_in_data * 0.05,
+      label.padding = 0.01,
+      label.size = NA,
+      lineheight = 0.9,
+      point.padding = unit(0, "lines"),
+      direction = "y",
+      seed = 123,
+      show.legend = FALSE,
+      min.segment.length = unit(5, "lines"),
+      size = 14 / .pt
+    ) +
+    facet_wrap(~indicator, scales = "free_y") +
+    djprtheme::theme_djpr() +
+    djpr_colour_manual(5) +
     scale_y_continuous(
-      breaks = scales::breaks_pretty(5),
+      breaks = scales::breaks_pretty(4),
       labels = function(x) paste0(x, "%")
     ) +
+    scale_x_date(
+      expand = expansion(
+        add = c(0, days_in_data * 0.25)
+      ),
+      date_labels = "%b\n%Y"
+    ) +
+    coord_cartesian(clip = "off") +
+    theme(
+      axis.title = element_blank(),
+      panel.spacing = unit(1.5, "lines")
+    ) +
     labs(
-      title = "TITLE GOES HERE",
-      subtitle = "Labour force participation rate by age",
-      caption = "Source: ABS Labour Force. Note: 12 month average."
+      title = title,
+      subtitle = "Participation rate comparison between Victorian and Australian youth, as well as different age groups in Victoria",
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
+
 }
 
 
@@ -838,3 +889,4 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
       caption = caption_lfs()
     )
 }
+
