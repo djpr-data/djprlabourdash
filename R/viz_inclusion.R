@@ -603,6 +603,34 @@ viz_gr_yth_lfpartrate_line <- function(data = filter_dash_data(c(
     ggplot(aes(x = date, y = value, col = series)) +
     geom_line()
 
+  # Title
+  current_ur <- data %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::select(.data$date, .data$value, .data$series, ) %>%
+    tidyr::pivot_wider(names_from = .data$series) %>%
+    dplyr::rename(`55+; Victoria` = .current_ur$older_victorians,
+                  `25-54; Victoria` = .current_ur$mature_victorians,
+                  `15-24; Victoria` = .current_ur$young_victorians,
+                  `15-24; Australia` = .current_ur$young_australians)
+
+  max_date <- format(max(data$date), "%B %Y")
+
+  title <- dplyr::case_when(
+    current_ur$young_victorians < current_ur$young_australians ~
+      paste0(
+        "The participation rate for Victorian youth was lower than that for Australian youth in ",
+        max_date
+      ),
+    current_ur$young_victorians > current_ur$young_australians ~
+      paste0(
+        "The particpition rate for Victorian youth was higher than that for Australian youth in ",
+        max_date
+      ),
+    TRUE ~ paste0(
+      "The participation rate for Victorian and Australian youth in was around the same level in ",
+      max_date
+    )
+  )
 
 
   # Drawing graphs with djpr_ts_linechart
