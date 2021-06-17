@@ -920,3 +920,69 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
       expand = expansion(mult = c(0, 0.05))
     )
 }
+
+
+viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)")),
+
+  df = dash_data) {
+
+  data<- data %>%
+    dplyr::select(duration, value, date)
+
+  #3 month moving average
+  data <- data %>%
+    dplyr::group_by(.data$duration) %>%
+    dplyr::mutate(value = slider::slide_mean(value,
+                                             before = 2,
+                                             complete = TRUE)) %>%
+    dplyr::ungroup()
+
+    #prepare for naming
+  data <- data %>%
+      tidyr::pivot_wider(
+      names_from = duration,
+      values_from = value) %>%
+
+    dplyr::select(date,"104 weeks and over (2 years and over)" ,
+                  "52 weeks and under 104 weeks (1-2 years)" ,
+                  "26 weeks and under 52 weeks (6-12 months)",
+                   "13 weeks and under 26 weeks (3-6 months)" ,
+                   "4 weeks and under 13 weeks (1-3 months)" ,
+                  "Under 4 weeks (under 1 month)"
+    ) %>%
+    dplyr::rename (un_2years_over = "104 weeks and over (2 years and over)" ,
+                 un_1_2years = "52 weeks and under 104 weeks (1-2 years)" ,
+                 un_6_12months =  "26 weeks and under 52 weeks (6-12 months)",
+                 un_3_6months = "13 weeks and under 26 weeks (3-6 months)" ,
+                 un_1_3months =  "4 weeks and under 13 weeks (1-3 months)" ,
+                un_under_1_month = "Under 4 weeks (under 1 month)")
+
+
+    data <-data %>%
+    dplyr::filter(!is.na(un_2years_over)) %>%
+    dplyr::mutate(lt_unemp=un_2years_over + un_1_2years) %>%
+    dplyr::select(!c(un_2years_over, un_1_2years))
+
+
+    #arrange the latest and the previous period data
+    data_un  <- data %>%
+    tidyr::pivot_longer(!date,
+                        names_to = "duration",
+                         values_to = "value") %>%
+    dplyr::group_by(duration) %>%
+    dplyr::arrange(date) %>%
+    dplyr::slice_tail(n=2)
+
+    data_un <-data_un %>%
+      ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
+      geom_bar(colour = NA)
+
+
+
+
+}
