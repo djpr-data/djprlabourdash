@@ -57,22 +57,14 @@ StateHandler <- function(input,
   ignore_chk_data <- FALSE
 
   observeEvent(plot_data(), {
-    if (!ignore_plot_data) {
-      ignore_chk_data  <<- TRUE
+      # ignore_chk_data  <<- TRUE
       updateCheckboxGroupInput(session,
                                'chk',
                                selected = plot_data())
-    }
-    ignore_plot_data <<- FALSE
-
   })
 
   observeEvent(chk_data(), {
-    if (!ignore_plot_data) {
-      ignore_chk_data  <<- TRUE
       session$sendCustomMessage(type = messageId, message = chk_data())
-    }
-    ignore_chk_data <<- FALSE
   })
 
   return(list(plot_data, chk_data))
