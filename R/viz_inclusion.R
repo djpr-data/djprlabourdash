@@ -978,14 +978,15 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
                          values_to = "value") %>%
     dplyr::group_by(duration) %>%
     dplyr::arrange(date) %>%
-    dplyr::slice_tail(n=2)
-    # dplyr::ungroup()
+    dplyr::slice_tail(n=2)%>%
+    dplyr::ungroup()
+
 
 
 
   df_data %>%
-      ggplot(aes(x = .data$duration, y = .data$value, fill=.data$duration)) +
-      geom_col() +
+      ggplot(aes(x =.data$duration, y = .data$value, fill =.data$duration)) +
+      geom_bar(stat = "identity" )+
       coord_flip() +
       theme_djpr() +
       djpr_fill_manual(5) +
