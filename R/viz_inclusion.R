@@ -559,7 +559,7 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
                       y_labels = function(x) paste0(x, '%')) +
       labs(
       title = title,
-      subtitle = "Labour force participation rate, per cent of civilians aged 15-25",
+      subtitle = "Labour force participation rate, per cent of civilians aged 15-24",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 
