@@ -520,7 +520,7 @@ viz_gr_yth_lfpartrate_vic_line <- function(data = filter_dash_data(c(
                       y_labels = function(x) paste0(x, '%')) +
     labs(
       title = "TITLE GOES HERE",
-      subtitle = "Participation rate comparison between differen age groups in Victoria",
+      subtitle = "Participation rate comparison between different age groups in Victoria",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 
@@ -534,54 +534,34 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
                                                     dplyr::mutate(value = slider::slide_mean(.data$value,
                                                      before = 11, complete = TRUE))) {
 
-  aus_vic_yth <- data %>%
-    dplyr::filter(series_id %in% c("A84424622R", "A84424692W")) %>%
-    ungroup()
-
-  max_date <- data %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    mutate(label = paste0(
-      stringr::str_wrap(.data$series, 9),
-      "\n",
-      round2(.data$value, 1)
-    ))
-
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
-      .data$date == max(.data$date),
-      .data$indicator == "Participation rate"
-    ) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::select(.data$value, .data$series, ) %>%
     dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
     tidyr::spread(key = .data$series, value = value)
 
   title <- paste0(
     "The participation rate for Victorian youth was ",
-    latest$`15-24; Victoria`,
+    latest$`> Victoria ;  Participation rate ;`,
     " while the rate for youth in Australia was ",
-    latest$`15-24; Australia`,
+    latest$`Australia ;  Participation rate ;`,
     " in ",
     format(max(data$date), "%B %Y")
   )
 
-  chart_2 <- aus_vic_yth %>%
+  data %>%
+    dplyr::filter(!is.na(.data$value)) %>%
     dplyr::mutate(geog = dplyr::if_else(state == "", "Australia", .data$state)) %>%
     djpr_ts_linechart(col_var = .data$geog,
                       label_num = paste0(round(.data$value, 1), "%"),
                       y_labels = function(x) paste0(x, '%')) +
       labs(
       title = title,
-      subtitle = "Participation rate comparison between differen age groups in Victoria",
+      subtitle = "Labour force participation rate, per cent of civilians aged 15-25",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
-
-
-
-
-
-
-
 
 }
 
