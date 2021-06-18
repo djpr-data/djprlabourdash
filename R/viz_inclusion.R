@@ -513,14 +513,37 @@ viz_gr_yth_lfpartrate_vic_line <- function(data = filter_dash_data(c(
                     (Employed + Unemployed + NILF))) %>%
     dplyr::select(age, date, value)
 
+  latest <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(
+      .data$date == max(.data$date)) %>%
+    dplyr::select(.data$value, .data$age) %>%
+    dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
+    tidyr::spread(key = .data$age, value = value)
+
+  diff <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(
+      .data$date == max(.data$date)) %>%
+    dplyr::select(.data$value, .data$age) %>%
+    tidyr::spread(key = .data$age, value = value) %>%
+    dplyr::mutate(diff = round2(.data$`25-54` - .data$`15-24`,1))
+
+  title <- paste0(
+    "The participation rate for Victorian youth in ",
+    format(max(data$date), "%B %Y"), " is ",
+    diff$diff,
+    " pts below the rate of Victorians aged 25-54"
+    )
+
   # draw chart
   df %>%
     djpr_ts_linechart(col_var = age,
                       label_num = paste0(round(.data$value, 1), "%"),
                       y_labels = function(x) paste0(x, '%')) +
     labs(
-      title = "TITLE GOES HERE",
-      subtitle = "Participation rate comparison between different age groups in Victoria",
+      title = title,
+      subtitle = "Labour force participation rate, per cent of civilians",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 
@@ -560,7 +583,7 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
       labs(
       title = title,
       subtitle = "Labour force participation rate, per cent of civilians aged 15-24",
-      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
+      caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 
 }
