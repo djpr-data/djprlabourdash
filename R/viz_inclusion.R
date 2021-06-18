@@ -930,7 +930,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
   "unemployed total ('000)_victoria_under 4 weeks (under 1 month)")),
 
   df = dash_data) {
-
+#select the series you need for the bar chart
   data<- data %>%
     dplyr::select(duration, value, date)
 
@@ -946,8 +946,9 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
   data <- data %>%
       tidyr::pivot_wider(
       names_from = duration,
-      values_from = value) %>%
+      values_from = value)
 
+    data <- data %>%
     dplyr::select(date,"104 weeks and over (2 years and over)" ,
                   "52 weeks and under 104 weeks (1-2 years)" ,
                   "26 weeks and under 52 weeks (6-12 months)",
@@ -970,18 +971,40 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
 
 
     #arrange the latest and the previous period data
-    data_un  <- data %>%
+
+  df_data <- data %>%
     tidyr::pivot_longer(!date,
                         names_to = "duration",
                          values_to = "value") %>%
     dplyr::group_by(duration) %>%
     dplyr::arrange(date) %>%
     dplyr::slice_tail(n=2)
+    # dplyr::ungroup()
 
-    data_un <-data_un %>%
-      ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
-      geom_bar(colour = NA)
 
+
+  df_data %>%
+      ggplot(aes(x = .data$duration, y = .data$value, fill=.data$duration)) +
+      geom_col() +
+      coord_flip() +
+      theme_djpr() +
+      djpr_fill_manual(5) +
+      djpr_colour_manual(5) +
+     scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
+      theme(
+      axis.text.x = element_blank(),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+       axis.line = element_blank()
+      ) +
+      labs(
+      subtitle = paste0(
+      "Unemployed Victorians by duration of unemployment",
+      format(max(data$date), "%B %Y"), "."
+       ),
+      caption = caption_lfs(),
+       title = "duration"
+      )
 
 
 
