@@ -1002,26 +1002,21 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
 
 
   title <- dplyr::case_when(
-    latest_values$Victoria < latest_values$Australia ~
-      paste0("Victorian adults worked more hours on average in ", latest_values$date, " than Australian adults"),
-    latest_values$Victoria < latest_values$Australia ~
-      paste0("Victorian adults worked fewer hours on average in ", latest_values$date, " than Australian adults"),
-    latest_values$Victoria == latest_values$Australia ~
-      paste0("In ", latest_values$date, ", Victorian and Australian adults worked the same number of hours on average"),
+    data_change$lt_unemp < data_change$un_6_12months|data_change$un_3_6months| data_change$un_1_3months|data_change$un_1_3months ~
+      paste0("The decline in Victorian duration of long_term unemployment in ", data_change$date, " was higher than other group of duration "),
+    data_change$un_6_12months < data_change$lt_unemp | data_change$lt_unemp | data_change$ un_3_6months | data_change$un_1_3months | data_change$un_1_3months ~
+      paste0("The decline in Victorian duration of six to 12 months in ", data_change$date, " was higher than other group of duration"),
+    data_change$un_3_6months < data_change$un_6_12months | data_change$lt_unemp | data_change$ un_3_6months | data_change$un_1_3months | data_change$un_1_3months ~
+      paste0("The decline in Victorian duration of three to six months in ", data_change$date, " was higher than other group of duration"),
     TRUE ~ "Unemployed Victorian by duration of unemployment"
   )
 
 
 
 
-
-
-
-
-
   df_data %>%
       ggplot(aes(as.character.Date(.data$date), y = .data$value, fill = .data$duration )) +
-      geom_bar(stat = "identity",position="dodge") +
+      geom_bar(stat = "identity",position ="dodge") +
       coord_flip() +
       theme_djpr() +
     # scale_x_date(
@@ -1043,15 +1038,14 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
       panel.grid = element_blank(),
        axis.line = element_blank()
       ) +
-
       labs(
       subtitle = paste0(
       "Unemployed Victorians by duration of unemployment " ,
       format(max(data$date),  "%B %Y"), "."
        ),
-      caption =paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.",
-       title = "duration")
-      )
+      caption =paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
+       title = title)
+
 
 
 
