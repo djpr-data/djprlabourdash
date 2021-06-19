@@ -981,16 +981,61 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
     dplyr::slice_tail(n=2)%>%
     dplyr::ungroup()
 
+  data_change <- df_data %>%
+    dplyr::group_by(.data$duration) %>%
+    dplyr::mutate(d_month= 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(date,duration,d_month) %>%
+    dplyr::mutate(
+      value = round2(.data$d_month, 1),
+      date = format(.data$date, "%B %Y")
+    ) %>%
+    dplyr::select(
+      .data$duration,
+      .data$value,
+      .data$date
+    ) %>%
+    tidyr::pivot_wider(
+      names_from = "duration",
+      values_from = "value")
+
+
+  title <- dplyr::case_when(
+    latest_values$Victoria < latest_values$Australia ~
+      paste0("Victorian adults worked more hours on average in ", latest_values$date, " than Australian adults"),
+    latest_values$Victoria < latest_values$Australia ~
+      paste0("Victorian adults worked fewer hours on average in ", latest_values$date, " than Australian adults"),
+    latest_values$Victoria == latest_values$Australia ~
+      paste0("In ", latest_values$date, ", Victorian and Australian adults worked the same number of hours on average"),
+    TRUE ~ "Unemployed Victorian by duration of unemployment"
+  )
+
+
+
+
+
+
 
 
 
   df_data %>%
-      ggplot(aes(x =.data$duration, y = .data$value, fill =.data$duration)) +
-      geom_bar(stat = "identity" )+
+      ggplot(aes(as.character.Date(.data$date), y = .data$value, fill = .data$duration )) +
+      geom_bar(stat = "identity",position="dodge") +
       coord_flip() +
       theme_djpr() +
+    # scale_x_date(
+    #   date_labels = "%b\n%Y")+
       djpr_fill_manual(5) +
       djpr_colour_manual(5) +
+        # geom_text(
+        #   nudge_y = 0.1,
+        #   stat = "identity",
+        #   aes(label = paste0(round(.data$value, 1), "")),
+        #   colour = "black",
+        #   vjust = 0,
+        #   size = 12 / .pt
+       # )
      scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
       theme(
       axis.text.x = element_blank(),
@@ -998,15 +1043,68 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
       panel.grid = element_blank(),
        axis.line = element_blank()
       ) +
+
       labs(
       subtitle = paste0(
-      "Unemployed Victorians by duration of unemployment",
-      format(max(data$date), "%B %Y"), "."
+      "Unemployed Victorians by duration of unemployment " ,
+      format(max(data$date),  "%B %Y"), "."
        ),
-      caption = caption_lfs(),
-       title = "duration"
+      caption =paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.",
+       title = "duration")
       )
 
 
+
+}
+
+viz_gr_ltunvic_area <- function(data = filter_dash_data(c("unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                                         "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                                                         "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                                                         "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                                                         "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                                         "unemployed total ('000)_victoria_under 4 weeks (under 1 month)")),
+
+                               df = dash_data)
+
+  {
+  #select the series you need for the bar chart
+  data<- data %>%
+    dplyr::select(duration, value, date)
+
+  #3 month moving average
+  data <- data %>%
+    dplyr::group_by(.data$duration) %>%
+    dplyr::mutate(value = slider::slide_mean(value,
+                                             before = 2,
+                                             complete = TRUE)) %>%
+    dplyr::ungroup()
+
+  #prepare for naming
+  data <- data %>%
+    tidyr::pivot_wider(
+      names_from = duration,
+      values_from = value)
+
+  data <- data %>%
+    dplyr::select(date,"104 weeks and over (2 years and over)" ,
+                  "52 weeks and under 104 weeks (1-2 years)" ,
+                  "26 weeks and under 52 weeks (6-12 months)",
+                  "13 weeks and under 26 weeks (3-6 months)" ,
+                  "4 weeks and under 13 weeks (1-3 months)" ,
+                  "Under 4 weeks (under 1 month)"
+    ) %>%
+    dplyr::rename (un_2years_over = "104 weeks and over (2 years and over)" ,
+                   un_1_2years = "52 weeks and under 104 weeks (1-2 years)" ,
+                   un_6_12months =  "26 weeks and under 52 weeks (6-12 months)",
+                   un_3_6months = "13 weeks and under 26 weeks (3-6 months)" ,
+                   un_1_3months =  "4 weeks and under 13 weeks (1-3 months)" ,
+                   un_under_1_month = "Under 4 weeks (under 1 month)") %>%
+
+    dplyr::mutate(Un_total = un_2years_over+un_1_2years + un_6_12months +un_3_6months + un_1_3months + un_under_1_month )
+
+  data <-data %>%
+    dplyr::filter(!is.na(un_2years_over)) %>%
+    dplyr::mutate(lt_unemp=un_2years_over + un_1_2years) %>%
+    dplyr::select(!c(un_2years_over, un_1_2years))
 
 }
