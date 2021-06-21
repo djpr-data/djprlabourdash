@@ -1046,7 +1046,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
       ) +
       labs(
       subtitle = paste0(
-      "Unemployed Victoriansby duration of unemployment " ,
+      "Unemployed Victorians by duration of unemployment " ,
       format(max(data$date),  "%B %Y"), "."
        ),
       caption =paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
