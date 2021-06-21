@@ -1155,24 +1155,6 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c("unemployed total ('00
   )
 
 
-   # )) %>%
-    #
-    # dplyr::arrange(.data$series_order) %>%
-    # dplyr::select(.data$date, .data$value, .data$duation) %>%
-    # dplyr::mutate(
-    #   label = paste0(
-    #     if_else(.data$under == "Underemployment rate",
-    #             "Underemp. rate",
-    #             .data$under
-    #     ),
-    #     " ", round2(.data$value, 1), "%"
-    #   ),
-    #   label_y = if_else(.data$under == "Underutilisation rate",
-    #                     .data$value,
-    #                     (cumsum(.data$value) - .data$value) + (.data$value / 2)
-    #   )
-    # )
-
   df_data %>%
     ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
     geom_area(colour = NA) +
