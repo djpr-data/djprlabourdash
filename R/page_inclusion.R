@@ -42,7 +42,6 @@ page_inclusion <- function(...) {
         djpr_plot_ui("gr_ages_line",
           height = "300px"
         ),
-        br(),
         djpr_plot_ui("gr_yth_melbvrest_line",
           height = "300px"
         )

@@ -2,7 +2,8 @@
 #' @param data A dataframe containing tidied ABS Labour Force Survey
 #' @param years_in_sparklines Numeric; indicating the number of years of data
 #' to include in the sparkline charts in the returned reactable.
-#' @param row_var Unquoted variable name in data to use for row names
+#' @param row_var String - variable name in data to use for row names,
+#' as in "indicator"
 #' @return A reactable (htmlwidget) including sparklines
 #' @author Darren Wong, Duy Nguyen
 #' @examples
@@ -35,7 +36,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
                              "pt_emp_vic" # Emp PT
                            )),
                            years_in_sparklines = 2,
-                           row_var = indicator) {
+                           row_var = "indicator") {
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
@@ -46,10 +47,10 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
     )) %>%
     dplyr::ungroup()
 
-  make_reactable(
+  make_reactable_mem(
     data = data,
     years_in_sparklines = years_in_sparklines,
-    row_var = {{ row_var }}
+    row_var = row_var
   )
 }
 
@@ -62,14 +63,16 @@ table_ind_employment <- function(data = filter_dash_data(c(
                                    "pt_emp_vic"
                                  )),
                                  years_in_sparklines = 2,
-                                 row_var = indicator) {
+                                 row_var = "indicator") {
   table_data <- data %>%
     mutate(indicator = if_else(.data$sex != "",
       paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  make_reactable(table_data)
+  make_reactable_mem(table_data,
+                 years_in_sparklines = years_in_sparklines,
+                 row_var = row_var)
 }
 
 table_ind_unemp_summary <- function(data = filter_dash_data(c(
@@ -81,28 +84,32 @@ table_ind_unemp_summary <- function(data = filter_dash_data(c(
                                       "A84423466F" # Female unemp
                                     )),
                                     years_in_sparklines = 2,
-                                    row_var = indicator) {
+                                    row_var = "indicator") {
   table_data <- data %>%
     mutate(indicator = if_else(.data$sex != "",
       paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  make_reactable(table_data)
+  make_reactable_mem(table_data,
+                 years_in_sparklines = years_in_sparklines,
+                 row_var = row_var)
 }
 
 table_ind_hours_summary <- function(data = filter_dash_data(c(
                                       "A84426256L" # , # Total hours
                                     )),
                                     years_in_sparklines = 2,
-                                    row_var = indicator) {
+                                    row_var = "indicator") {
   table_data <- data %>%
     mutate(indicator = if_else(.data$sex != "",
       paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  make_reactable(table_data)
+  make_reactable_mem(table_data,
+                 years_in_sparklines = years_in_sparklines,
+                 row_var = row_var)
 }
 
 #' Make a reactable with standard formatting
@@ -113,22 +120,22 @@ table_ind_hours_summary <- function(data = filter_dash_data(c(
 #' @param data a data frame
 #' @param years_in_sparklines number of years prior to latest obs to include
 #' in sparkline
-#' @param row_var unquoted name of column in `data` to use as the row names in
-#' the table
+#' @param row_var "Quoted" name of column in `data` to use as the row names in
+#' the table - as in "indicator"
 #' @param row_order If `NULL`, table will be sorted in alphabetical order.
 #' Otherwise, `row_order` should be a vector of row names in the order in which
 #' you want them to appear in the table.
 
 make_reactable <- function(data,
                            years_in_sparklines = 2,
-                           row_var = indicator,
+                           row_var = "indicator",
                            row_order = NULL) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   # Drop unneeded columns -----
   summary_df <- data %>%
     dplyr::select(.data$date, .data$series_id,
-      series = {{ row_var }}, .data$value, .data$unit
+      series = .env$row_var, .data$value, .data$unit
     )
 
   # Tweak series names ----
