@@ -934,7 +934,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
   data<- data %>%
     dplyr::select(duration, value, date)
 
-  #3 month moving average
+  # take 3 month moving average
   data <- data %>%
     dplyr::group_by(.data$duration) %>%
     dplyr::mutate(value = slider::slide_mean(value,
@@ -942,13 +942,13 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
                                              complete = TRUE)) %>%
     dplyr::ungroup()
 
-    #prepare for naming
+  #create short name
   data <- data %>%
       tidyr::pivot_wider(
       names_from = duration,
       values_from = value)
 
-    data <- data %>%
+  data <- data %>%
     dplyr::select(date,"104 weeks and over (2 years and over)" ,
                   "52 weeks and under 104 weeks (1-2 years)" ,
                   "26 weeks and under 52 weeks (6-12 months)",
@@ -964,13 +964,13 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
                 un_under_1_month = "Under 4 weeks (under 1 month)")
 
 
-    data <-data %>%
+  data <-data %>%
     dplyr::filter(!is.na(un_2years_over)) %>%
     dplyr::mutate(lt_unemp=un_2years_over + un_1_2years) %>%
     dplyr::select(!c(un_2years_over, un_1_2years))
 
 
-    #arrange the latest and the previous period data
+#arrange the latest and the previous period data
 
   df_data <- data %>%
     tidyr::pivot_longer(!date,
@@ -1000,14 +1000,15 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
       names_from = "duration",
       values_from = "value")
 
+  #create a title
 
   title <- dplyr::case_when(
-    data_change$lt_unemp < data_change$un_6_12months|data_change$un_3_6months| data_change$un_1_3months|data_change$un_1_3months ~
-      paste0("The decline in Victorian duration of long_term unemployment in ", data_change$date, " was higher than other group of duration "),
-    data_change$un_6_12months < data_change$lt_unemp | data_change$lt_unemp | data_change$ un_3_6months | data_change$un_1_3months | data_change$un_1_3months ~
-      paste0("The decline in Victorian duration of six to 12 months in ", data_change$date, " was higher than other group of duration"),
-    data_change$un_3_6months < data_change$un_6_12months | data_change$lt_unemp | data_change$ un_3_6months | data_change$un_1_3months | data_change$un_1_3months ~
-      paste0("The decline in Victorian duration of three to six months in ", data_change$date, " was higher than other group of duration"),
+    data_change$lt_unemp < data_change$un_6_12months & data_change$un_3_6months & data_change$un_1_3months& data_change$un_1_3months ~
+      paste0("The decline in Victorian duration of long_term unemployed in ", data_change$date, " was higher than other catagories of  duration "),
+    data_change$un_6_12months < data_change$lt_unemp & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_1_3months & data_change$un_1_3months ~
+      paste0("The decline in Victorian duration of six to 12 months unemployed in ", data_change$date, " was higher than other catagories of duration"),
+    data_change$un_3_6months < data_change$un_6_12months & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_1_3months& data_change$un_1_3months ~
+      paste0("The decline in Victorian duration of three to six months unemployed in ", data_change$date, " was higher than other catagories of duration"),
     TRUE ~ "Unemployed Victorian by duration of unemployment"
   )
 
@@ -1015,21 +1016,21 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
 
 
   df_data %>%
-      ggplot(aes(as.character.Date(.data$date), y = .data$value, fill = .data$duration )) +
-      geom_bar(stat = "identity",position ="dodge") +
+      ggplot(aes(x = as.character.Date(.data$date), y = .data$value, fill = .data$duration )) +
+      geom_bar(stat = "identity", position ="dodge") +
       coord_flip() +
       theme_djpr() +
     # scale_x_date(
     #   date_labels = "%b\n%Y")+
       djpr_fill_manual(5) +
       djpr_colour_manual(5) +
-        # geom_text(
-        #   nudge_y = 0.1,
-        #   stat = "identity",
-        #   aes(label = paste0(round(.data$value, 1), "")),
-        #   colour = "black",
-        #   vjust = 0,
-        #   size = 12 / .pt
+       #  geom_text(
+       #  nudge_y = 0.1,
+       #  #stat = "identity",
+       #  aes(label = paste0(round(.data$value, 1), "")),
+       #  colour = "black",
+       #  vjust = 0,
+       #  size = 12 / .pt
        # )
      scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
       theme(
@@ -1040,7 +1041,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
       ) +
       labs(
       subtitle = paste0(
-      "Unemployed Victorians by duration of unemployment " ,
+      "Unemployed Victoriansby duration of unemployment " ,
       format(max(data$date),  "%B %Y"), "."
        ),
       caption =paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
