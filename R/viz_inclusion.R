@@ -1008,11 +1008,11 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
 
   title <- dplyr::case_when(
     data_change$lt_unemp < data_change$un_6_12months & data_change$un_3_6months & data_change$un_1_3months& data_change$un_1_3months ~
-      paste0("The decline in Victorian duration of long_term unemployed in ", data_change$date, " was higher than other catagories of  duration "),
+      paste0("The rate of decline for long_term unemployed Victorians in ", data_change$date, " was higher than other \n duration of unemployed catagories."),
     data_change$un_6_12months < data_change$lt_unemp & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_1_3months & data_change$un_1_3months ~
-      paste0("The decline in Victorian duration of six to 12 months unemployed in ", data_change$date, " was higher than other catagories of duration"),
+      paste0("The rate of decline for six to 12 months unemployed Victorians in ", data_change$date, " was higher than other \n duration of unemployed catagories."),
     data_change$un_3_6months < data_change$un_6_12months & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_1_3months& data_change$un_1_3months ~
-      paste0("The decline in Victorian duration of three to six months unemployed in ", data_change$date, " was higher than other catagories of duration"),
+      paste0("The rate of decline for three to six months unemployed Victorians in ", data_change$date, " was higher than other \n duration of unemployed catagories."),
     TRUE ~ "Unemployed Victorian by duration of unemployment"
   )
 
