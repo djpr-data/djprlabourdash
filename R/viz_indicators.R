@@ -469,16 +469,16 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
 
 
 viz_ind_underut_area <- function(data = filter_dash_data(c(
-                                   "A85223450L",
-                                   "A85223451R",
-                                   "A84423354L"
-                                 ),
-                                 df = dash_data
-                                 )) {
+  "A85223450L",
+  "A85223451R",
+  "A84423354L"
+),
+df = dash_data
+)) {
   data <- data %>%
     dplyr::mutate(under = if_else(.data$indicator == "Underemployment rate (proportion of labour force)",
-      "Underemployment rate",
-      .data$indicator
+                                  "Underemployment rate",
+                                  .data$indicator
     ))
 
   label_df <- data %>%
@@ -494,14 +494,14 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
     dplyr::mutate(
       label = paste0(
         if_else(.data$under == "Underemployment rate",
-          "Underemp. rate",
-          .data$under
+                "Underemp. rate",
+                .data$under
         ),
         " ", round2(.data$value, 1), "%"
       ),
       label_y = if_else(.data$under == "Underutilisation rate",
-        .data$value,
-        (cumsum(.data$value) - .data$value) + (.data$value / 2)
+                        .data$value,
+                        (cumsum(.data$value) - .data$value) + (.data$value / 2)
       )
     )
 

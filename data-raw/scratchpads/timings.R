@@ -23,4 +23,5 @@ for (f in viz_funcs) {
 plots %>%
   arrange(median)
 
+
 View(plots)
