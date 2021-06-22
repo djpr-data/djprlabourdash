@@ -970,6 +970,16 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
     dplyr::select(!c(un_2years_over, un_1_2years))
 
 
+  label_df <- df_data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(series_order = dplyr::case_when(
+      .data$duration == "un_under_1_month" ~ 1,
+      .data$duration == "un_1_3months" ~ 2,
+      .data$duration == "un_3_6months" ~ 3,
+      .data$duration == "un_6_12months" ~ 4,
+      .data$duration == "lt_unemp" ~ 5,
+      TRUE ~ NA_real_))
+
 #arrange the latest and the previous period data
 
   df_data <- data %>%
@@ -1001,9 +1011,6 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
       values_from = "value")
 
 
-
-
-
   #create a title
 
   title <- dplyr::case_when(
@@ -1020,7 +1027,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
 
 
   df_data %>%
-      ggplot(aes(x = as.character.Date(.data$date), y = .data$value, fill = .data$duration )) +
+      ggplot(aes(x = interaction(duration,date), y = .data$value, fill = .data$duration )) +
       geom_bar(stat = "identity", position ="dodge") +
       coord_flip() +
       theme_djpr() +
@@ -1029,14 +1036,14 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c("unemployed total ('000
     #   date_labels = "%b\n%Y")+
       djpr_fill_manual(5) +
       djpr_colour_manual(5) +
-       #  geom_text(
-       #  nudge_y = 0.1,
-       #  #stat = "identity",
-       #  aes(label = paste0(round(.data$value, 1), "")),
-       #  colour = "black",
-       #  vjust = 0,
-       #  size = 12 / .pt
-       # )
+        geom_text(
+        nudge_y = 1.5,
+        #stat = "identity",
+        aes(label = paste0(round(.data$value, 1), "")),
+        colour = "black",
+        vjust = 0,
+        size = 12 / .pt
+       ) +
      scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
       theme(
       axis.text.x = element_blank(),
@@ -1106,7 +1113,15 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c("unemployed total ('00
           un_total = un_2years_over+un_1_2years + un_6_12months +un_3_6months + un_1_3months + un_under_1_month ) %>%
     dplyr::ungroup()
 
-    # dplyr::mutate
+
+
+
+
+
+
+
+
+  # dplyr::mutate
 
   data <-data %>%
     dplyr::filter(!is.na(un_2years_over)) %>%
@@ -1123,6 +1138,10 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c("unemployed total ('00
     dplyr::select(date, lt_unemp_perc, un_6_12months_perc, un_3_6months_perc, un_1_3months_perc, un_under_1_month_perc)
 
   #arrange the latest and the previous period data
+
+
+
+
 
   df_data <- data %>%
     tidyr::pivot_longer(!date,
