@@ -353,8 +353,22 @@ labour_server <- function(input, output, session) {
       dplyr::group_by(.data$series_id) %>%
       dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
-    date_slider = FALSE
+    date_slider = FALSE,
+    width_percent = 45
   )
+
+  djpr_plot_server("gr_yth_lfpartrate_vicaus_line",
+                   viz_gr_yth_lfpartrate_vicaus_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84424622R",
+                     "A84424692W"
+                   ), df = dash_data) %>%
+                     dplyr::group_by(.data$series_id) %>%
+                     dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                              before = 11, complete = TRUE
+                     )),
+                   width_percent = 45)
 
   # Inclusion: youth focus box -----
 
