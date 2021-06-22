@@ -7,7 +7,7 @@
 make_reactable(
   data,
   years_in_sparklines = 2,
-  row_var = indicator,
+  row_var = "indicator",
   row_order = NULL
 )
 }
@@ -17,8 +17,8 @@ make_reactable(
 \item{years_in_sparklines}{number of years prior to latest obs to include
 in sparkline}
 
-\item{row_var}{unquoted name of column in \code{data} to use as the row names in
-the table}
+\item{row_var}{"Quoted" name of column in \code{data} to use as the row names in
+the table - as in "indicator"}
 
 \item{row_order}{If \code{NULL}, table will be sorted in alphabetical order.
 Otherwise, \code{row_order} should be a vector of row names in the order in which
