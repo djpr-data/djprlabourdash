@@ -1127,7 +1127,6 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
                                   dplyr::group_by(series_id) %>%
                                   dplyr::mutate(value = zoo::rollmeanr(value, 3, fill = NA)) %>%
                                   dplyr::filter(!is.na(value))) {
-
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(

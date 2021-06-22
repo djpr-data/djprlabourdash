@@ -55,8 +55,7 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
                                                       "A84601662A"
                                                     ),
                                                     df = dash_data
-                                                    ) ) {
-
+                                                    )) {
   data <- data %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-02-01")]) - 1))
@@ -78,8 +77,10 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
 
   lab_df <- data %>%
     dplyr::select(industry, value) %>%
-    dplyr::mutate(lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
-                  lab_hjust = dplyr::if_else(value >= 0, 0, 1))
+    dplyr::mutate(
+      lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
+      lab_hjust = dplyr::if_else(value >= 0, 0, 1)
+    )
 
   title <- paste0(
     "Employment in ",
@@ -103,15 +104,16 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
       x = reorder(industry, value),
       y = value
     )) +
-
     geom_col(
       aes(fill = -value)
     ) +
     geom_text(
       data = lab_df,
-      aes(y = lab_y,
-          hjust = lab_hjust,
-          label = paste0(round(value, 1), "%")),
+      aes(
+        y = lab_y,
+        hjust = lab_hjust,
+        label = paste0(round(value, 1), "%")
+      ),
       colour = "black",
       size = 11 / .pt
     ) +
@@ -128,77 +130,81 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
       axis.text.y = element_text(size = 12),
       axis.text.x = element_blank()
     ) +
-    labs(title = title,
-         subtitle = paste0("Growth in employment by industry between February 2020 and ",
-                           format(max(data$date), "%B %Y")),
-         caption = caption_lfs_det_q())
+    labs(
+      title = title,
+      subtitle = paste0(
+        "Growth in employment by industry between February 2020 and ",
+        format(max(data$date), "%B %Y")
+      ),
+      caption = caption_lfs_det_q()
+    )
 }
 
 table_industries_employment <- function(data = filter_dash_data(c(
-                                       "A84601680F",
-                                       "A84601683L",
-                                       "A84601686V",
-                                       "A84601665J",
-                                       "A84601704L",
-                                       "A84601707V",
-                                       "A84601710J",
-                                       "A84601638A",
-                                       "A84601653X",
-                                       "A84601689A",
-                                       "A84601656F",
-                                       "A84601713R",
-                                       "A84601668R",
-                                       "A84601695W",
-                                       "A84601698C",
-                                       "A84601650T",
-                                       "A84601671C",
-                                       "A84601641R",
-                                       "A84601716W",
-                                       "A84601662A",
-                                       "A84601681J",
-                                       "A84601684R",
-                                       "A84601687W",
-                                       "A84601666K",
-                                       "A84601705R",
-                                       "A84601708W",
-                                       "A84601711K",
-                                       "A84601639C",
-                                       "A84601654A",
-                                       "A84601690K",
-                                       "A84601657J",
-                                       "A84601714T",
-                                       "A84601669T",
-                                       "A84601696X",
-                                       "A84601699F",
-                                       "A84601651V",
-                                       "A84601672F",
-                                       "A84601642T",
-                                       "A84601717X",
-                                       "A84601663C",
-                                       "A84601682K",
-                                       "A84601685T",
-                                       "A84601688X",
-                                       "A84601667L",
-                                       "A84601706T",
-                                       "A84601709X",
-                                       "A84601712L",
-                                       "A84601640L",
-                                       "A84601655C",
-                                       "A84601691L",
-                                       "A84601658K",
-                                       "A84601715V",
-                                       "A84601670A",
-                                       "A84601697A",
-                                       "A84601700C",
-                                       "A84601652W",
-                                       "A84601673J",
-                                       "A84601643V",
-                                       "A84601718A",
-                                       "A84601664F"
-                                     ),
-                                     df = dash_data
-                                     ),
-                                     chosen_industry = "Agriculture, Forestry and Fishing") {
+                                          "A84601680F",
+                                          "A84601683L",
+                                          "A84601686V",
+                                          "A84601665J",
+                                          "A84601704L",
+                                          "A84601707V",
+                                          "A84601710J",
+                                          "A84601638A",
+                                          "A84601653X",
+                                          "A84601689A",
+                                          "A84601656F",
+                                          "A84601713R",
+                                          "A84601668R",
+                                          "A84601695W",
+                                          "A84601698C",
+                                          "A84601650T",
+                                          "A84601671C",
+                                          "A84601641R",
+                                          "A84601716W",
+                                          "A84601662A",
+                                          "A84601681J",
+                                          "A84601684R",
+                                          "A84601687W",
+                                          "A84601666K",
+                                          "A84601705R",
+                                          "A84601708W",
+                                          "A84601711K",
+                                          "A84601639C",
+                                          "A84601654A",
+                                          "A84601690K",
+                                          "A84601657J",
+                                          "A84601714T",
+                                          "A84601669T",
+                                          "A84601696X",
+                                          "A84601699F",
+                                          "A84601651V",
+                                          "A84601672F",
+                                          "A84601642T",
+                                          "A84601717X",
+                                          "A84601663C",
+                                          "A84601682K",
+                                          "A84601685T",
+                                          "A84601688X",
+                                          "A84601667L",
+                                          "A84601706T",
+                                          "A84601709X",
+                                          "A84601712L",
+                                          "A84601640L",
+                                          "A84601655C",
+                                          "A84601691L",
+                                          "A84601658K",
+                                          "A84601715V",
+                                          "A84601670A",
+                                          "A84601697A",
+                                          "A84601700C",
+                                          "A84601652W",
+                                          "A84601673J",
+                                          "A84601643V",
+                                          "A84601718A",
+                                          "A84601664F"
+                                        ),
+                                        df = dash_data
+                                        ),
+                                        chosen_industry = "Agriculture, Forestry and Fishing") {
   latest_date <- format(max(data$date), "%b %Y")
 
   # add entry for data$industry for "Victoria, all industries" where ""
@@ -392,9 +398,11 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     labs(
       subtitle = "Change in total employment",
       caption = caption_lfs_det_q(),
-      title = paste0("Annual employment growth in ",
-                     chosen_industry,
-                     " compared to Victorian average")
+      title = paste0(
+        "Annual employment growth in ",
+        chosen_industry,
+        " compared to Victorian average"
+      )
     )
 }
 
@@ -603,12 +611,14 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     " per cent of workers in the ",
     chosen_industry,
     " industry, which is ",
-    dplyr::case_when(chosen_industry_female_share > vic_female_share ~
-                       "higher than",
-                     chosen_industry_female_share < vic_female_share ~
-                       "lower than",
-                     chosen_industry_female_share == vic_female_share ~
-                       "the same as"),
+    dplyr::case_when(
+      chosen_industry_female_share > vic_female_share ~
+      "higher than",
+      chosen_industry_female_share < vic_female_share ~
+      "lower than",
+      chosen_industry_female_share == vic_female_share ~
+      "the same as"
+    ),
     " the Victorian average"
   )
 

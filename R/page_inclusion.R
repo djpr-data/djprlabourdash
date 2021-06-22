@@ -23,23 +23,29 @@ page_inclusion <- function(...) {
     br(),
     focus_box(
       shiny::selectInput("youth_focus",
-                         "Select an indicator",
-                         choices = c("unemp_rate",
-                                     "part_rate",
-                                     "emp_pop"),
-                         width = "100%"),
+        "Select an indicator",
+        choices = c(
+          "unemp_rate",
+          "part_rate",
+          "emp_pop"
+        ),
+        width = "100%"
+      ),
       column(
         6,
         djpr_plot_ui("gr_youth_states_dot",
-                     height = "600px")
+          height = "600px"
+        )
       ),
       column(
         6,
         djpr_plot_ui("gr_ages_line",
-                     height = "300px"),
+          height = "300px"
+        ),
         br(),
         djpr_plot_ui("gr_yth_melbvrest_line",
-                     height = "300px")
+          height = "300px"
+        )
       )
     ),
     h2("Long-term unemployed"),

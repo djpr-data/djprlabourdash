@@ -269,7 +269,6 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
                                          "A84423314V",
                                          "A84423342C"
                                        ))) {
-
   df <- data %>%
     dplyr::filter(date %in% c(
       max(.data$date),
@@ -370,10 +369,10 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
 }
 
 gr_yth_unemprate_map <- function(data = filter_dash_data(c("to be done")) %>%
-  group_by(series_id) %>%
-  mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
-  dplyr::filter(.data$date == max(.data$date)),
-title = "") {
+                                   group_by(series_id) %>%
+                                   mutate(value = zoo::rollmeanr(value, 12, fill = NA)) %>%
+                                   dplyr::filter(.data$date == max(.data$date)),
+                                 title = "") {
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- sa42016 %>%
@@ -384,8 +383,8 @@ title = "") {
   data <- data %>%
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
-                           "North West",
-                           .data$sa4
+        "North West",
+        .data$sa4
       )
     )
 
