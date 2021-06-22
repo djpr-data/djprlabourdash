@@ -82,24 +82,21 @@
 <text x='7.93' y='242.07' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='24.89px' lengthAdjust='spacingAndGlyphs'>-5%</text>
 <text x='12.58' y='96.61' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='20.23px' lengthAdjust='spacingAndGlyphs'>0%</text>
 <polyline points='39.09,518.74 711.36,518.74 ' style='stroke-width: 0.75; stroke-linecap: butt;' />
-<polyline points='39.09,522.22 39.09,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='161.08,522.22 161.08,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='283.07,522.22 283.07,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='406.39,522.22 406.39,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='529.72,522.22 529.72,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='650.37,522.22 650.37,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<text x='27.81' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='22.56px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='23.53' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
-<text x='150.19' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='21.78px' lengthAdjust='spacingAndGlyphs'>Apr</text>
-<text x='145.52' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
-<text x='274.12' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='17.89px' lengthAdjust='spacingAndGlyphs'>Jul</text>
-<text x='267.50' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
-<text x='395.50' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='21.78px' lengthAdjust='spacingAndGlyphs'>Oct</text>
-<text x='390.83' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
-<text x='518.44' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='22.56px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='514.16' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2021</text>
-<text x='639.48' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='21.78px' lengthAdjust='spacingAndGlyphs'>Apr</text>
-<text x='634.80' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2021</text>
+<polyline points='119.52,522.22 119.52,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='241.51,522.22 241.51,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='364.84,522.22 364.84,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='488.16,522.22 488.16,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='608.81,522.22 608.81,518.74 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<text x='107.48' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='24.09px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='103.96' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
+<text x='228.29' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='26.44px' lengthAdjust='spacingAndGlyphs'>May</text>
+<text x='225.95' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
+<text x='352.38' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='24.91px' lengthAdjust='spacingAndGlyphs'>Aug</text>
+<text x='349.27' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
+<text x='475.72' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='24.89px' lengthAdjust='spacingAndGlyphs'>Dec</text>
+<text x='472.60' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2020</text>
+<text x='596.76' y='534.64' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='24.09px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='593.25' y='549.76' style='font-size: 14.00px; font-family: Liberation Sans;' textLength='31.12px' lengthAdjust='spacingAndGlyphs'>2021</text>
 <text x='0.14' y='34.41' style='font-size: 11.20px; fill: #53565A; font-family: Liberation Sans;' textLength='428.09px' lengthAdjust='spacingAndGlyphs'>Cumulative change in employment for different age groups since March 2020, per cent</text>
 <text x='0.14' y='16.82' style='font-size: 14.00px; font-weight: bold; fill: #004676; font-family: Liberation Sans;' textLength='712.86px' lengthAdjust='spacingAndGlyphs'>Employment for young people fell much faster after the COVID shock than employment for other Victorians</text>
 <text x='0.14' y='572.95' style='font-size: 7.77px; font-style: italic; font-family: Liberation Sans;' textLength='476.36px' lengthAdjust='spacingAndGlyphs'>Source: ABS Labour Force, Detailed (monthly). Note: most recent data is for March 2021.Data smoothed using a 12 month rolling average.</text>

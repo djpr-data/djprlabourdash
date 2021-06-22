@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 720.00 576.00'>
+<defs>
+  <style type='text/css'><![CDATA[
+    line, polyline, polygon, path, rect, circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<rect x='0.00' y='0.00' width='720.00' height='576.00' style='stroke-width: 0.75; stroke: none; fill: #FFFFFF;' />
+<rect x='34.42' y='47.20' width='676.94' height='501.98' style='stroke-width: 0.75; stroke: none; fill: #FFFFFF;' />
+<rect x='34.42' y='328.20' width='538.05' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #62BB46; fill-opacity: 0.90;' />
+<rect x='34.42' y='382.76' width='534.02' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<rect x='34.42' y='273.63' width='539.78' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<rect x='34.42' y='491.88' width='501.19' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<rect x='34.42' y='109.94' width='575.45' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<rect x='34.42' y='164.51' width='558.20' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<rect x='34.42' y='55.38' width='587.83' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<rect x='34.42' y='219.07' width='542.99' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #2A6FA2; fill-opacity: 0.90;' />
+<rect x='34.42' y='437.32' width='504.56' height='49.11' style='stroke-width: 0.56; stroke: #FFFFFF; stroke-linecap: square; stroke-linejoin: miter; fill: #B3B3B3; fill-opacity: 0.90;' />
+<text x='573.28' y='356.87' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>66.3%</text>
+<text x='569.26' y='411.44' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>65.8%</text>
+<text x='575.01' y='302.31' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>66.5%</text>
+<text x='536.42' y='520.56' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>61.8%</text>
+<text x='610.69' y='138.62' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>70.9%</text>
+<text x='593.44' y='193.19' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>68.8%</text>
+<text x='623.06' y='84.06' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>72.4%</text>
+<text x='578.22' y='247.75' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>66.9%</text>
+<text x='539.79' y='466.00' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='34.02px' lengthAdjust='spacingAndGlyphs'>62.2%</text>
+<polyline points='34.42,549.18 34.42,47.20 ' style='stroke-width: 0.75; stroke-linecap: butt;' />
+<text x='9.47' y='520.56' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='18.67px' lengthAdjust='spacingAndGlyphs'>Tas</text>
+<text x='12.14' y='466.00' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='16.00px' lengthAdjust='spacingAndGlyphs'>SA</text>
+<text x='0.14' y='411.44' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='28.00px' lengthAdjust='spacingAndGlyphs'>NSW</text>
+<text x='7.47' y='356.87' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Aus</text>
+<text x='9.47' y='302.31' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='18.67px' lengthAdjust='spacingAndGlyphs'>Qld</text>
+<text x='11.69' y='247.75' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='16.45px' lengthAdjust='spacingAndGlyphs'>Vic</text>
+<text x='9.27' y='193.19' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='18.88px' lengthAdjust='spacingAndGlyphs'>WA</text>
+<text x='4.14' y='138.62' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='24.00px' lengthAdjust='spacingAndGlyphs'>ACT</text>
+<text x='12.14' y='84.06' style='font-size: 12.00px; font-family: Liberation Sans;' textLength='16.00px' lengthAdjust='spacingAndGlyphs'>NT</text>
+<polyline points='30.93,516.44 34.42,516.44 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,461.88 34.42,461.88 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,407.31 34.42,407.31 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,352.75 34.42,352.75 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,298.19 34.42,298.19 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,243.62 34.42,243.62 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,189.06 34.42,189.06 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,134.50 34.42,134.50 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='30.93,79.93 34.42,79.93 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<text x='0.14' y='34.41' style='font-size: 11.20px; fill: #53565A; font-family: Liberation Sans;' textLength='252.38px' lengthAdjust='spacingAndGlyphs'>Participation rate in Australian states and territories</text>
+<text x='0.14' y='16.82' style='font-size: 14.00px; font-weight: bold; fill: #004676; font-family: Liberation Sans;' textLength='508.83px' lengthAdjust='spacingAndGlyphs'>Victoria's participation rate was the fourth highest in Australia in March 2021</text>
+<text x='0.14' y='572.95' style='font-size: 7.77px; font-style: italic; font-family: Liberation Sans;' textLength='274.09px' lengthAdjust='spacingAndGlyphs'>Source: ABS Labour Force (monthly). Note: most recent data is for March 2021.</text>
+</svg>

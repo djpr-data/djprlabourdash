@@ -9,8 +9,8 @@ title_unemprate_vic(
     "A84600115W", "A84599851L", "A84599923L", "A84600025T", "A84600193C", "A84599665J",
     "A84600031L", "A84599671C", "A84599677T", "A84599683L", "A84599929A", "A84600121T",
     "A84600037A")) \%>\% group_by(.data$series_id) \%>\% mutate(value =
-    zoo::rollmeanr(.data$value, 3, fill = NA)) \%>\% dplyr::filter(.data$date ==
-    max(.data$date))
+    slider::slide_mean(.data$value, before = 2, complete = TRUE)) \%>\%
+    dplyr::filter(.data$date == max(.data$date))
 )
 }
 \arguments{

@@ -101,7 +101,7 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
   # draw bar chart for all 19 industries plus Vic total
   data %>%
     ggplot(aes(
-      x = reorder(industry, value),
+      x = stats::reorder(industry, value),
       y = value
     )) +
     geom_col(
@@ -218,14 +218,15 @@ table_industries_employment <- function(data = filter_dash_data(c(
 
   # filter out the chosen industry and vic_total
   data <- data %>%
-    group_by(indicator) %>%
-    dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
+    group_by(.data$indicator) %>%
+    dplyr::filter(.data$industry %in%
+      c("Victoria, all industries", .env$chosen_industry))
 
   table_df <- data %>%
-    dplyr::group_by(industry, indicator) %>%
+    dplyr::group_by(.data$industry, .data$indicator) %>%
     dplyr::mutate(
-      d_quarter = 100 * ((value / dplyr::lag(value, 1)) - 1),
-      d_year = 100 * ((value / dplyr::lag(value, 4)) - 1)
+      d_quarter = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
+      d_year = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1)
     ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
@@ -236,33 +237,33 @@ table_industries_employment <- function(data = filter_dash_data(c(
 
   table_df <- table_df %>%
     dplyr::mutate(across(
-      c(value, d_quarter, d_year),
+      c(.data$value, .data$d_quarter, .data$d_year),
       ~ round2(.x, 1)
     ))
 
   table_df <- table_df %>%
     dplyr::mutate(across(
-      c(value, d_quarter, d_year),
+      c(.data$value, .data$d_quarter, .data$d_year),
       ~ round2(.x, 1)
     )) %>%
     dplyr::mutate(
-      value = scales::comma(value * 1000),
-      d_quarter = paste0(d_quarter, "%"),
-      d_year = paste0(d_year, "%")
+      value = scales::comma(.data$value * 1000),
+      d_quarter = paste0(.data$d_quarter, "%"),
+      d_year = paste0(.data$d_year, "%")
     )
 
   table_df <- table_df %>%
-    dplyr::rename({{ latest_date }} := value,
-      `Change over quarter` = d_quarter,
-      `Change over year` = d_year
+    dplyr::rename({{ latest_date }} := .data$value,
+      `Change over quarter` = .data$d_quarter,
+      `Change over year` = .data$d_year
     )
 
   table_df <- table_df %>%
     tidyr::gather(
-      key = series, value = value,
-      -indicator, -industry
+      key = "series", value = "value",
+      -.data$indicator, -.data$industry
     ) %>%
-    tidyr::spread(key = industry, value = value)
+    tidyr::spread(key = .data$industry, value = .data$value)
 
 
 
@@ -277,7 +278,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
       series == "Change over year" ~ 3,
       TRUE ~ 1
     )) %>%
-    dplyr::arrange(indic_order, series_order) %>%
+    dplyr::arrange(.data$indic_order, .data$series_order) %>%
     dplyr::select(-ends_with("order"))
 
   col_names <- names(table_df)
@@ -624,7 +625,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
 
   df %>%
     ggplot(aes(
-      x = reorder(stringr::str_wrap(industry, 15), -order),
+      x = stats::reorder(stringr::str_wrap(industry, 15), -order),
       y = value, fill = sex
     )) +
     geom_col(

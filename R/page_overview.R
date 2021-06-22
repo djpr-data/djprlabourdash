@@ -19,12 +19,12 @@ page_overview <- function(...) {
       centred_row(
         HTML("Note: this dashboard is a prototype in active development. The content is not yet complete. <a href='mailto:matt.cowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard'>Feedback is welcome</a>."),
       ),
-      centred_row(h3("Overview")),
+      # centred_row(h3("Overview")),
       centred_row(
         tagList(
           reactable::reactableOutput("main_table") %>%
             djpr_with_spinner(hide.ui = TRUE),
-          reactable_caption("All data seasonally adjusted, other than the youth unemployment which is a 3 month rolling average of unadjusted data.")
+          caption_reactable("All data seasonally adjusted, other than the youth unemployment which is a 3 month rolling average of unadjusted data.")
         )
       ),
       br(),
