@@ -2,16 +2,16 @@ page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
     h1("Regions of Victoria"),
-    tagList(
-      "This page contains information about employment and unemployment across",
-      "the different regions of Victoria.",
-      htmltools::tags$b("More information will be included with future releases. "),
-      "For more information about overall labour force indicators ",
-      "see the ",
-      actionLink("link_indicators", "indicators page"),
-      ". For information about the labour force status of key groups of Victorians, see the ",
-      actionLink("link_inclusion", "inclusion page"), "."
-    ),
+    # tagList(
+    #   "This page contains information about employment and unemployment across",
+    #   "the different regions of Victoria.",
+    #   htmltools::tags$b("More information will be included with future releases. "),
+    #   "For more information about overall labour force indicators ",
+    #   "see the ",
+    #   actionLink("link_indicators", "indicators page"),
+    #   ". For information about the labour force status of key groups of Victorians, see the ",
+    #   actionLink("link_inclusion", "inclusion page"), "."
+    # ),
     # Unemployment by region -----
     h2("Unemployment by region"),
     djpr_plot_title(textOutput("title_unemprate_vic")),

@@ -2,15 +2,15 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Key indicators"),
-    tagList(
-      "This page contains key labour force indicators, focusing on Victoria as a whole. ",
-      htmltools::tags$b("More information will be included with future releases. "),
-      "For more information about particular sub-groups of Victorians - like young people, or women - ",
-      "see the ",
-      actionLink("link_inclusion", "inclusion page"),
-      ". For information about how employment and unemployment varies across Victoria, see the ",
-      actionLink("link_regions", "regions page"), "."
-    ),
+    # tagList(
+    #   "This page contains key labour force indicators, focusing on Victoria as a whole. ",
+    #   htmltools::tags$b("More information will be included with future releases. "),
+    #   "For more information about particular sub-groups of Victorians - like young people, or women - ",
+    #   "see the ",
+    #   actionLink("link_inclusion", "inclusion page"),
+    #   ". For information about how employment and unemployment varies across Victoria, see the ",
+    #   actionLink("link_regions", "regions page"), "."
+    # ),
     h2("Employment"),
     htmlOutput("ind_empgrowth_sincecovid_text"),
     reactable::reactableOutput("ind_emp_table") %>%

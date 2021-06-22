@@ -17,15 +17,11 @@ p <- df %>%
 
 ui <- fluidPage(
   ggiraph::girafeOutput("plot"),
-  textOutput("text"),
-  uiOutput("checkboxes")
+  textOutput("hover_ur"),
+  textOutput("text")
 )
 
 server <- function(input, output, session) {
-  # reactive(print(input$opts_hover))
-  observeEvent(input$plot_opts_hover, {
-    print(Sys.time())
-  })
 
   output$plot <- ggiraph::renderGirafe({
 
@@ -39,20 +35,27 @@ server <- function(input, output, session) {
   })
 
   output$text <- renderText({
-    (input$plot_hovered)
-    # "foobar"
+    input$plot_hovered
+  })
+
+  hovered <- reactiveValues(
+    last = max(df$date),
+    ever_hover = FALSE
+      )
+
+  observeEvent({isFALSE(hovered$ever_hover)}, {
+    print("foobar")
+    session$sendCustomMessage(type = "plot_hovered_set", message = hovered$last)
   })
 
   observeEvent(input$plot_hovered, {
-    print(input$plot_hovered)
+    hovered$last <<- input$plot_hovered
+    hovered$ever_hover <<- TRUE
   })
 
-  output$checkboxes <- renderUI({
-    checkboxGroupInput("hovered",
-                  "hovered",
-                  choices = unique(df$date))
+  output$hover_ur <- renderText({
+    df$value[df$date == hovered$last]
   })
-
 }
 
 shinyApp(ui, server)

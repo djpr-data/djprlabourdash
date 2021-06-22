@@ -48,8 +48,9 @@ StateHandler <- function(input,
   chk_data <- debounce(reactive({
     if (is.null(input$chk)) {
       character(0)
-    } else
+    } else {
       input$chk
+    }
   }), 200)
 
   ignore_plot_data <- FALSE
@@ -64,7 +65,7 @@ StateHandler <- function(input,
   })
 
   observeEvent(chk_data(), {
-      session$sendCustomMessage(type = messageId, message = chk_data())
+      session$sendCustomMessage(type = "plot_hovered_set", message = chk_data())
   })
 
   return(list(plot_data, chk_data))
@@ -87,29 +88,10 @@ p <- ggplot(dat,
             aes(
               x = name,
               y = height,
-              fill = gender,
               data_id = name,
               tooltip = name
             )) +
   geom_bar_interactive(stat = "identity") +
-  scale_fill_manual_interactive(
-    name = label_interactive("gender", tooltip = "Gender levels", data_id =
-                               "legend.title"),
-    values = c(Male = "#0072B2", Female = "#009E73"),
-    data_id = function(breaks) {
-      as.character(breaks)
-    },
-    tooltip = function(breaks) {
-      as.character(breaks)
-    },
-    labels = function(breaks) {
-      lapply(breaks, function(br) {
-        label_interactive(as.character(br),
-                          data_id = as.character(br),
-                          tooltip = as.character(br))
-      })
-    }
-  ) +
   theme_minimal()
 
 
@@ -118,6 +100,7 @@ server <- shinyServer(function(input, output, session) {
     x <- girafe(ggobj = p,
                 width_svg = 6,
                 height_svg = 8)
+
     x <- girafe_options(
       x,
       opts_hover(reactive = input$opt_hover_data),
