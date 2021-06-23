@@ -691,6 +691,58 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c("A84423355R",
 df = dash_data
 ) {
 
+ df_change<- data %>%
+    dplyr::select(date,value,indicator)%>%
+    dplyr::group_by(indicator) %>%
+    dplyr::arrange(date) %>%
+    dplyr::mutate(d_month = ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
+    dplyr::slice_tail(n = 2) %>%
+    dplyr::ungroup() %>%
+   tidyr::pivot_wider(
+     names_from = "indicator",
+     values_from = "value") %>%
+   dplyr::filter(.data$date == max(.data$date)) %>%
+   dplyr::select(date, duration, d_month) %>%
+   dplyr::mutate(
+     value = round2(.data$d_month, 1),
+     date = format(.data$date, "%B %Y")
+   ) %>%
+   dplyr::select(
+     .data$duration,
+     .data$value,
+     .data$date
+   ) %>%
+   tidyr::pivot_wider(
+     names_from = "duration",
+     values_from = "value"
+   )
+
+
+
+
+
+
+ title <- dplyr::case_when(
+   latest_values$Victoria > latest_values$Australia ~
+     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
+   latest_values$Victoria < latest_values$Australia ~
+     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
+   latest_values$Victoria == latest_values$Australia ~
+     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
+   TRUE ~ "Long-term unemployment rate in Victoria and Australia"
+ )
+
+   data %>%
+    djpr_ts_linechart(col_var = indicator,
+                      label_num=paste0(round(.data$value,1),"%"),
+                      y_labels = function(x) paste0(x,"%")) +
+  labs(subtitle = "Participation rate and Unemployment rate in Victoria ",
+       caption = caption_lfs())
+
+
+  ViC_un <-data %>%
+  dplyr::filter
+
   data %>%
     djpr_ts_linechart(
       col_var = .data$geog
