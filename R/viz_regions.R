@@ -1243,3 +1243,27 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
+
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R",
+                                                                               "A84599625R",
+                                                                               "A84599781T",
+                                                                               "A84599607K",
+                                                                               "A84600243R",
+                                                                               "A84599715V",
+                                                                               "A84599631K"),
+                                                  df = dash_data
+                                                  ) %>%
+                                                  dplyr::group_by(series_id) %>%
+                                                  dplyr::mutate(
+                                                    value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                                  dplyr::filter(!is.na(value))) {
+
+
+
+
+
+
+
+
+
+}
