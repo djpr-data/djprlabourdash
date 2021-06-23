@@ -902,7 +902,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
     latest_values$Victoria == latest_values$Australia ~
     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
-    TRUE ~ "LOng-term unemployment rate in Victoria and Australia"
+    TRUE ~ "Long-term unemployment rate in Victoria and Australia"
   )
 
   data_lr_un %>%
@@ -1038,7 +1038,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
 
   df_data %>%
-    ggplot(aes(x = interaction(duration, date), y = .data$value, fill = .data$duration)) +
+    ggplot(aes(x = interaction(date,duration), y = .data$value, fill = .data$duration)) +
     geom_bar(stat = "identity", position = "dodge") +
     coord_flip() +
     theme_djpr() +
@@ -1064,7 +1064,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     ) +
     labs(
       subtitle = paste0(
-        "Unemployed Victorians by duration of unemployment ",
+        " Unemployed Victorians in ('000) by duration of unemployment ",
         format(max(data$date), "%B %Y"), "."
       ),
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
@@ -1095,7 +1095,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::ungroup()
 
-  # prepare for naming
+  # prepare short  naming
   data <- data %>%
     tidyr::pivot_wider(
       names_from = duration,
@@ -1128,11 +1128,6 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
 
 
 
-
-
-
-
-
   # dplyr::mutate
 
   data <- data %>%
@@ -1151,11 +1146,8 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::select(date, lt_unemp_perc, un_6_12months_perc, un_3_6months_perc, un_1_3months_perc, un_under_1_month_perc)
 
-  # arrange the latest and the previous period data
 
-
-
-
+#arrang for ploting
 
   df_data <- data %>%
     tidyr::pivot_longer(!date,
@@ -1177,15 +1169,26 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       TRUE ~ NA_real_
     ))
 
+latest_df <- df_data %>%
+  dplyr::filter(.data$date == max(.data$date)) %>%
+  dplyr::select(.data$date,.data$duration,.data$value) %>%
+  tidyr::pivot_wider(date,
+                    names_from = "duration",
+                    values_from = "value") %>%
+  dplyr::mutate(date=format(.data$date,"%B %Y"))
 
 
-  title <- dplyr::case_when(
-    df_data$lt_unemp_perc > df_data$un_6_12months_perc & df_data$un_3_6months_perc & df_data$un_1_3months_perc & df_data$un_under_1_month_perc ~
-    paste0("The proportion of long_term unemployed in", .data$date, "was higher than other catagories of duration"),
-    df_data$un_6_12months_perc > df_data$lt_unemp_perc & df_data$un_3_6months_perc & df_data$un_1_3months_perc & df_data$un_under_1_month_perc ~
-    paste0("The proportion six to 12 months unemployed in", .data$date, "was higher than other catagories of duration"),
-    df_data$un_3_6months_perc > df_data$lt_unemp_perc & df_data$un_6_12months_perc & df_data$un_1_3months_perc & df_data$un_under_1_month_percs ~
-    paste0("The proportion three to six months unemployed in ", .data$date, " was higher than other catagories of duration"),
+
+
+title <- dplyr::case_when(
+  latest_df$lt_unemp_perc > latest_df$un_6_12months_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+    paste0("The proportion of long term unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  latest_df$un_6_12months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+    paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  latest_df$un_3_6months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+    paste0("The proportion three to six months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc &  latest_df$un_3_6months_perc& latest_df$un_under_1_month_perc ~
+    paste0("The proportion one to three months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
     TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
   )
 
@@ -1210,6 +1213,8 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
         )
       )
     ) +
+    # geom_text(df_data = ~ filter(.,date == max(date)),
+    #           aes(label= paste0(duration,"\n", value))) +
     scale_y_continuous(
       labels = function(x) paste0(x, "%"),
       expand = expansion(add = c(0, 0.5))
