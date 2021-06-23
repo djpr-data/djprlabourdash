@@ -1244,7 +1244,8 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R" #,
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R",
+                                                                               "A84599661X" # I have added Ballarat here, just for testing purposes,
                                                                                #"A84599625R",
                                                                                #"A84599781T",
                                                                                #"A84599607K",
@@ -1259,8 +1260,17 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
                                       value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
 
+  # this code just needs to be extended with the other states, once we have the series IDs loaded
   df <- data %>%
-    dplyr::mutate(state = 'Regional Victoria')
+    dplyr::mutate(
+      state = dplyr::case_when(
+        .data$gcc_restofstate == "Rest of Vic." ~
+          "Regional Victoria",
+        .data$gcc_restofstate == "" ~
+          "Regional NSW",
+        TRUE ~ .data$state
+                             )
+    )
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
