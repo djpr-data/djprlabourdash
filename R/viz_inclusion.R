@@ -1167,9 +1167,30 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       .data$duration == "un_6_12months_perc" ~ 4,
       .data$duration == "lt_unemp_perc" ~ 5,
       TRUE ~ NA_real_
-    ))
+    )) %>%
+  dplyr::arrange(.data$series_order) %>%
+  dplyr::select(.data$date, .data$value, .data$duration) %>%
+  dplyr::mutate(
+      label = paste0(
+       if_else(.data$duration == "un_under_1_month_perc",
+                "Under one month",
+                .data$duration,
+                .data$duration == "un_1_3months_perc",
+                "one month and under 3 month",
+                .data$duration,
+                .data$duration == "un_3_6months_perc",
+                "three months and under 6 months",
+                .data$duration,
+                .data$duration == "un_6_12months_perc",
+                "six months and 12 months",.data$duration,
+                .data$duration == "un_under_1_month_perc",
+                "over 12 months",.data$duration),
 
-latest_df <- df_data %>%
+        " ", round2(.data$value, 1), "%"))
+
+
+
+  latest_df <- df_data %>%
   dplyr::filter(.data$date == max(.data$date)) %>%
   dplyr::select(.data$date,.data$duration,.data$value) %>%
   tidyr::pivot_wider(date,
@@ -1197,14 +1218,27 @@ title <- dplyr::case_when(
     ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
     geom_area(colour = NA) +
     theme_djpr() +
+    geom_label(
+      data = label_df,
+      inherit.aes = FALSE,
+      aes(
+        y =.data$value,
+        x = .data$date,
+        label = stringr::str_wrap(.data$label, 10),
+        colour = .data$duration
+      ),
+      label.size = 0,
+      label.padding = unit(0.1, "lines"),
+      size = 12 / .pt,
+      hjust = 0
+    ) +
+
     djpr_fill_manual(5) +
     djpr_colour_manual(5) +
     theme(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12)
     ) +
-    # geom_text(latest_df= ~filter(., date == max(date)),
-    #           aes(label= paste0(duration, "\n", value)))+
     scale_x_date(
       expand = expansion(mult = c(.02, .25)),
       date_labels = "%b\n %Y",
