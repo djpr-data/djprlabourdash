@@ -1204,39 +1204,39 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
   dplyr::mutate(date=format(.data$date,"%B %Y"))
 
 
+#Create a title
+  title <- dplyr::case_when(
+    latest_df$lt_unemp_perc > latest_df$un_6_12months_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+      paste0("The proportion of long term unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+    latest_df$un_6_12months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+      paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+    latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_6_12months_perc & latest_df$un_under_1_month_perc ~
+      paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+    latest_df$un_3_6months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+      paste0("The proportion three to six months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
 
-
-title <- dplyr::case_when(
-  latest_df$lt_unemp_perc > latest_df$un_6_12months_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion of long term unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-  latest_df$un_6_12months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-  latest_df$un_3_6months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion three to six months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-  latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc &  latest_df$un_3_6months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion one to three months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-    TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
-  )
+      TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
+    )
 
 
   df_data %>%
     ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
     geom_area(colour = NA) +
     theme_djpr() +
-    geom_label(
-      data = label_df,
-      inherit.aes = FALSE,
-      aes(
-        y =.data$value,
-        x = .data$date,
-        label = stringr::str_wrap(.data$label, 10),
-        colour = .data$duration
-      ),
-      label.size = 0,
-      label.padding = unit(0.1, "lines"),
-      size = 12 / .pt,
-      hjust = 0
-    ) +
+    # geom_label(
+    #   data = label_df,
+    #   inherit.aes = FALSE,
+    #   aes(
+    #     y =.data$value,
+    #     x = .data$date,
+    #     label = stringr::str_wrap(.data$label, 10),
+    #     colour = .data$duration
+    #   ),
+    #   label.size = 0,
+    #   label.padding = unit(0.1, "lines"),
+    #   size = 12 / .pt,
+    #   hjust = 0
+    # ) +
 
     djpr_fill_manual(5) +
     djpr_colour_manual(5) +
