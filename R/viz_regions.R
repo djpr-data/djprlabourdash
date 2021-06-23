@@ -1244,13 +1244,13 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R",
-                                                                               "A84599625R",
-                                                                               "A84599781T",
-                                                                               "A84599607K",
-                                                                               "A84600243R",
-                                                                               "A84599715V",
-                                                                               "A84599631K"
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R" #,
+                                                                               #"A84599625R",
+                                                                               #"A84599781T",
+                                                                               #"A84599607K",
+                                                                               #"A84600243R",
+                                                                               #"A84599715V",
+                                                                               #"A84599631K"
                                                                                ),
                                       df = dash_data
                                       ) %>%
@@ -1259,23 +1259,26 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
                                       value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
 
-data <- data %>%
-  dplyr::group_by(.data$state) %>%
-  dplyr::mutate(value = 100 * ((.data$value /
+  df <- data %>%
+    dplyr::mutate(state = 'Regional Victoria')
+
+  df <- df %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
                                   .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
-latest <- data %>%
-  dplyr::filter(.data$date == max(.data$date)) %>%
-  dplyr::select(-.data$date) %>%
-  tidyr::spread(key = .data$state, value = .data$value)
+  latest <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(-.data$date) %>%
+    tidyr::spread(key = .data$state, value = .data$value)
 
-  data %>%
+  df %>%
     djpr_ts_linechart(
       col_var = .data$state,
       label_num = paste0(round(.data$value, 1), "%"),
       hline = 0
     ) +
-    sclate_y_continuous(
+    scale_y_continuous(
       breaks = scales::breaks_pretty(5),
       labels = function(x) paste0(x, "%")
     ) +
