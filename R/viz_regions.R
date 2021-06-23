@@ -1250,20 +1250,39 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
                                                                                "A84599607K",
                                                                                "A84600243R",
                                                                                "A84599715V",
-                                                                               "A84599631K"),
-                                                  df = dash_data
-                                                  ) %>%
-                                                  dplyr::group_by(series_id) %>%
-                                                  dplyr::mutate(
-                                                    value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                                                  dplyr::filter(!is.na(value))) {
+                                                                               "A84599631K"
+                                                                               ),
+                                      df = dash_data
+                                      ) %>%
+                                      dplyr::group_by(.data$series_id) %>%
+                                      dplyr::mutate(
+                                      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                      dplyr::filter(date >= as.Date("2020-01-01"))) {
 
+data <- data %>%
+  dplyr::group_by(.data$state) %>%
+  dplyr::mutate(value = 100 * ((.data$value /
+                                  .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
+latest <- data %>%
+  dplyr::filter(.data$date == max(.data$date)) %>%
+  dplyr::select(-.data$date) %>%
+  tidyr::spread(key = .data$state, value = .data$value)
 
-
-
-
-
-
+  data %>%
+    djpr_ts_linechart(
+      col_var = .data$state,
+      label_num = paste0(round(.data$value, 1), "%"),
+      hline = 0
+    ) +
+    sclate_y_continuous(
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = "TITLE GOES HERE",
+      subtitle = "Cumulative change in employment for regional areas in all states and the NT since March 2020, per cent",
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average.")
+    )
 
 }
