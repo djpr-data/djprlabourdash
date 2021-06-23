@@ -978,17 +978,6 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     dplyr::select(!c(un_2years_over, un_1_2years))
 
 
-  label_df <- df_data %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::mutate(series_order = dplyr::case_when(
-      .data$duration == "un_under_1_month" ~ 1,
-      .data$duration == "un_1_3months" ~ 2,
-      .data$duration == "un_3_6months" ~ 3,
-      .data$duration == "un_6_12months" ~ 4,
-      .data$duration == "lt_unemp" ~ 5,
-      TRUE ~ NA_real_
-    ))
-
   # arrange the latest and the previous period data
 
   df_data <- data %>%
@@ -1000,6 +989,21 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     dplyr::arrange(date) %>%
     dplyr::slice_tail(n = 2) %>%
     dplyr::ungroup()
+
+  #create label data frame
+
+  label_df <- df_data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(series_order = dplyr::case_when(
+      .data$duration == "un_under_1_month" ~ 1,
+      .data$duration == "un_1_3months" ~ 2,
+      .data$duration == "un_3_6months" ~ 3,
+      .data$duration == "un_6_12months" ~ 4,
+      .data$duration == "lt_unemp" ~ 5,
+      TRUE ~ NA_real_
+    ))
+
+# create chnage over the previous month
 
   data_change <- df_data %>%
     dplyr::group_by(.data$duration) %>%
@@ -1026,15 +1030,16 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     data_change$lt_unemp < data_change$un_6_12months & data_change$un_3_6months & data_change$un_1_3months & data_change$un_1_3months ~
-    paste0("The rate of decline for long_term unemployed Victorians in ", data_change$date, " was higher than other \n duration of unemployed catagories."),
+    paste0("Long-term unemployed Victorians had a high rate of percentage decline in", data_change$date,"."),
     data_change$un_6_12months < data_change$lt_unemp & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_1_3months & data_change$un_1_3months ~
-    paste0("The rate of decline for six to 12 months unemployed Victorians in ", data_change$date, " was higher than other \n duration of unemployed catagories."),
+    paste0("Victorian unemployed for six to 12 months had a high rate of decline in ", data_change$date,"."),
     data_change$un_3_6months < data_change$un_6_12months & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_1_3months & data_change$un_1_3months ~
-    paste0("The rate of decline for three to six months unemployed Victorians in ", data_change$date, " was higher than other \n duration of unemployed catagories."),
-    TRUE ~ "Unemployed Victorian by duration of unemployment"
-  )
+    paste0("Victorian unemployed for three to six months had a high rate of decline in ", data_change$date, "."),
+    data_change$un_1_3months < data_change$un_6_12months & data_change$lt_unemp & data_change$ un_3_6months & data_change$un_3_6months & data_change$un_1_3months ~
+      paste0("Victorian unemployed for one to three months had a high rate of decline in ", data_change$date, "."),
 
 
+    TRUE ~ "Unemployed Victorian by duration of unemployment")
 
 
   df_data %>%
