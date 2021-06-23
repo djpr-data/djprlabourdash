@@ -683,3 +683,21 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
       title = title
     )
 }
+
+viz_ind_partrate_un_line <- function(data = filter_dash_data(c("A84423355R",
+  "A84423354L")
+
+),
+df = dash_data
+) {
+
+  data %>%
+    djpr_ts_linechart(
+      col_var = .data$geog
+    ) +
+    labs(
+      subtitle = "Average monthly hours worked per civilian adult in Victoria and Australia",
+      caption = paste0(caption_lfs(), " Civilian adults are all residents aged 15 and above who are not in active military service."),
+      title = title
+    )
+}
