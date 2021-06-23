@@ -1187,7 +1187,7 @@ title <- dplyr::case_when(
     paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
   latest_df$un_3_6months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
     paste0("The proportion three to six months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-  latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc &  latest_df$un_3_6months_perc& latest_df$un_under_1_month_perc ~
+  latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc &  latest_df$un_3_6months_perc & latest_df$un_under_1_month_perc ~
     paste0("The proportion one to three months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
     TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
   )
@@ -1203,6 +1203,8 @@ title <- dplyr::case_when(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12)
     ) +
+    # geom_text(latest_df= ~filter(., date == max(date)),
+    #           aes(label= paste0(duration, "\n", value)))+
     scale_x_date(
       expand = expansion(mult = c(.02, .25)),
       date_labels = "%b\n %Y",
