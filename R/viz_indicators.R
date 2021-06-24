@@ -685,11 +685,9 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
 }
 
 viz_ind_partrate_un_line <- function(data = filter_dash_data(c("A84423355R",
-  "A84423354L")
-
-),
-df = dash_data
-) {
+                                                              "A84423354L")),
+                                                              df = dash_data)
+  {
 
 data <- data %>%
   select(date,series,value,indicator)
@@ -714,7 +712,7 @@ data %>%
     dplyr::ungroup()
 
 
-  latest_change <- df_change %>%
+latest_change <- df_change %>%
   dplyr::select(.data$date,.data$indicator, .data$value) %>%
    dplyr::ungroup() %>%
     tidyr::pivot_wider(
@@ -728,13 +726,13 @@ data %>%
 
  title <- dplyr::case_when(
    latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` >0 ~
-     paste0("Both Victorian participation rate, the unemployment rate increasing in ", latest_change$date),
+     paste0("Both the Victorian participation rate and the unemployment rate increased in ", latest_change$date),
 
   latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` < 0 ~
-     paste0("While Victorian participation rate increasing, the unemployment rate was declining in ", latest_change$date),
+     paste0("While the Victorian participation rate increased, the unemployment rate declined in ", latest_change$date),
 
   latest_change$`Participation rate` < 0 & latest_change$`Unemployment rate` > 0 ~
-    paste0("While Victorian participation rate declining, the unemployment rate was increasing in ", latest_change$date),
+    paste0("While the Victorian participation rate declined, the unemployment rate increased in ", latest_change$date),
    TRUE ~ "Victoria's unemployment and participation rate"
  )
 
