@@ -691,65 +691,50 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c("A84423355R",
 df = dash_data
 ) {
 
+data <-data %>%
+  select(date,series,value,indicator)
+
+
  df_change<- data %>%
     dplyr::select(date,value,indicator)%>%
     dplyr::group_by(indicator) %>%
     dplyr::arrange(date) %>%
-    dplyr::mutate(d_month = ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
+    dplyr::mutate(value= ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
     dplyr::slice_tail(n = 2) %>%
-    dplyr::ungroup() %>%
-   tidyr::pivot_wider(
-     names_from = "indicator",
-     values_from = "value") %>%
-   dplyr::filter(.data$date == max(.data$date)) %>%
-   dplyr::select(date, duration, d_month) %>%
-   dplyr::mutate(
-     value = round2(.data$d_month, 1),
-     date = format(.data$date, "%B %Y")
-   ) %>%
-   dplyr::select(
-     .data$duration,
-     .data$value,
-     .data$date
-   ) %>%
-   tidyr::pivot_wider(
-     names_from = "duration",
-     values_from = "value"
-   )
+    dplyr::ungroup()
 
 
-
+  latest_change <- df_change %>%
+  dplyr::select(.data$date,.data$indicator, .data$value) %>%
+   dplyr::ungroup() %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    )
 
 
 
  title <- dplyr::case_when(
-   latest_values$Victoria > latest_values$Australia ~
-     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
-   latest_values$Victoria < latest_values$Australia ~
-     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
-   latest_values$Victoria == latest_values$Australia ~
-     paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
-   TRUE ~ "Long-term unemployment rate in Victoria and Australia"
+   latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate`>0 ~
+     paste0("Both Victorian participation rate and unemployment rate increasing in", latest_change$date),
+
+  latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` < 0 ~
+     paste0("While Victorian participation rate increasing and unemployment rate was declining in", latest_change$date),
+
+  latest_change$`Participation rate` < 0 & latest_change$`Unemployment rate` > 0 ~
+    paste0("While Victorian participation rate declining and unemployment rate was increasing in ", latest_change$date),
+   TRUE ~ "Victoria's unemployment and participation rate"
  )
 
-   data %>%
+
+ vic_un_Par <- data %>%
     djpr_ts_linechart(col_var = indicator,
                       label_num=paste0(round(.data$value,1),"%"),
                       y_labels = function(x) paste0(x,"%")) +
-  labs(subtitle = "Participation rate and Unemployment rate in Victoria ",
-       caption = caption_lfs())
+  labs(
+    subtitle = "Participation rate and Unemployment rate for Victoria ",
+       caption = caption_lfs(),
+       title = title )
 
 
-  ViC_un <-data %>%
-  dplyr::filter
-
-  data %>%
-    djpr_ts_linechart(
-      col_var = .data$geog
-    ) +
-    labs(
-      subtitle = "Average monthly hours worked per civilian adult in Victoria and Australia",
-      caption = paste0(caption_lfs(), " Civilian adults are all residents aged 15 and above who are not in active military service."),
-      title = title
-    )
 }
