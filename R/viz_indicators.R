@@ -734,7 +734,7 @@ data <-data %>%
   labs(
     subtitle = "Participation rate and Unemployment rate for Victoria ",
        caption = caption_lfs(),
-       title = title )
+       title = "title" )
 
 
 }
