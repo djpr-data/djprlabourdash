@@ -1254,9 +1254,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
         )
       )
     ) +
-    # geom_text(df_data = ~ filter(.,date == max(date)),
-    #           aes(label= paste0(duration,"\n", value))) +
-    scale_y_continuous(
+      scale_y_continuous(
       labels = function(x) paste0(x, "%"),
       expand = expansion(add = c(0, 0.5))
     ) +
@@ -1280,16 +1278,22 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c("A84423349V",
   df <- data %>%
     dplyr::select( .data$date, .data$sex, .data$indicator, .data$value) %>%
     tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$value) %>%
-    dplyr::mutate(
+    group_by(.data$sex) %>%
+      dplyr::mutate(
       `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`) %>%
+     dplyr::select( !.data$`Employed total`) %>%
+    ungroup() %>%
+    tidyr::pivot_longer(!c(1:2), names_to = "indicator", values_to = "value")
 
-  df_g <- df %>%
-  tidyr::pivot_longer(!.data$sex,!.data$date, names_to ="indicator", values_to = "value")
 
   df %>%
-    djpr_ts_linechart(col_var =.data$sex) +
+    djpr_ts_linechart(
+      col_var = .data$sex,
+      label_num = paste0(round(.data$value, 1)),
+      hline = 0
+    )  +
     labs(
-      title = title,
+      title = "title",
       subtitle = "Full-time and part-time employment by sex, Victoria",
       caption = caption_lfs())
 
