@@ -1266,3 +1266,33 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       title = title
     )
 }
+
+
+viz_gr_full_part_line <- function(data = filter_dash_data(c("A84423349V",
+                                  "A84423237A",
+                                  "A84423461V",
+                                  "A84423357V",
+                                  "A84423245A",
+                                  "A84423469L"),
+                                df = dash_data))
+
+{
+  df <- data %>%
+    dplyr::select( .data$date, .data$sex, .data$indicator, .data$value) %>%
+    tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$value) %>%
+    dplyr::mutate(
+      `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`) %>%
+
+  df_g <- df %>%
+  tidyr::pivot_longer(!.data$sex,!.data$date, names_to ="indicator", values_to = "value")
+
+  df %>%
+    djpr_ts_linechart(col_var =.data$sex) +
+    labs(
+      title = title,
+      subtitle = "Full-time and part-time employment by sex, Victoria",
+      caption = caption_lfs())
+
+
+}
+
