@@ -1171,27 +1171,27 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       .data$duration == "un_3_6months_perc" ~ 3,
       .data$duration == "un_6_12months_perc" ~ 4,
       .data$duration == "lt_unemp_perc" ~ 5,
-      TRUE ~ NA_real_
-    )) %>%
-  dplyr::arrange(.data$series_order) %>%
-  dplyr::select(.data$date, .data$value, .data$duration) %>%
-  dplyr::mutate(
-      label = paste0(
-       if_else(.data$duration == "un_under_1_month_perc",
-                "Under one month",
-                .data$duration,
-                .data$duration == "un_1_3months_perc",
-                "one month and under 3 month",
-                .data$duration,
-                .data$duration == "un_3_6months_perc",
-                "three months and under 6 months",
-                .data$duration,
-                .data$duration == "un_6_12months_perc",
-                "six months and 12 months",.data$duration,
-                .data$duration == "un_under_1_month_perc",
-                "over 12 months",.data$duration),
-
-        " ", round2(.data$value, 1), "%"))
+      TRUE ~ NA_real_ ))
+  #   )) %>%
+  # dplyr::arrange(.data$series_order) %>%
+  # dplyr::select(.data$date, .data$value, .data$duration) %>%
+  # dplyr::mutate(
+  #     label = paste0(
+  #      if_else(.data$duration == "un_under_1_month_perc",
+  #               "Under one month",
+  #               .data$duration,
+  #               .data$duration == "un_1_3months_perc",
+  #               "one month and under 3 month",
+  #               .data$duration,
+  #               .data$duration == "un_3_6months_perc",
+  #               "three months and under 6 months",
+  #               .data$duration,
+  #               .data$duration == "un_6_12months_perc",
+  #               "six months and 12 months",.data$duration,
+  #               .data$duration == "un_under_1_month_perc",
+  #               "over 12 months",.data$duration),
+  #
+  #       " ", round2(.data$value, 1), "%"))
 
 
 
@@ -1223,8 +1223,10 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
     geom_area(colour = NA) +
     theme_djpr() +
+    #geom_text(label_df ~ filter(., date == max(date)),
+                # aes(label= paste0(duration, "\n",value))) +
     # geom_label(
-    #   data = label_df,
+    #   data = label_df~ filter(., date == max(date)),
     #   inherit.aes = FALSE,
     #   aes(
     #     y =.data$value,
