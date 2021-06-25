@@ -684,67 +684,70 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_partrate_un_line <- function(data = filter_dash_data(c("A84423355R",
-                                                              "A84423354L")),
-                                                              df = dash_data)
-  {
+viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
+                                       "A84423355R",
+                                       "A84423354L"
+                                     )),
+                                     df = dash_data) {
+  data <- data %>%
+    select(date, series, value, indicator)
 
-data <- data %>%
-  select(date,series,value,indicator)
 
 
+  data %>%
+    djpr_ts_linechart(
+      col_var = indicator,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Participation rate and Unemployment rate for Victoria ",
+      caption = caption_lfs(),
+      title = "title"
+    )
 
-data %>%
-  djpr_ts_linechart(col_var = indicator,
-                    label_num=paste0(round(.data$value,1),"%"),
-                    y_labels = function(x) paste0(x,"%")) +
-  labs(
-    subtitle = "Participation rate and Unemployment rate for Victoria ",
-    caption = caption_lfs(),
-    title = "title" )
-
- df_change <- data %>%
-    dplyr::select(date,value,indicator)%>%
+  df_change <- data %>%
+    dplyr::select(date, value, indicator) %>%
     dplyr::group_by(indicator) %>%
     dplyr::arrange(date) %>%
-    dplyr::mutate(value= 100*((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
+    dplyr::mutate(value = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
     dplyr::slice_tail(n = 2) %>%
     dplyr::ungroup()
 
 
-latest_change <- df_change %>%
-  dplyr::select(.data$date,.data$indicator, .data$value) %>%
-   dplyr::ungroup() %>%
+  latest_change <- df_change %>%
+    dplyr::select(.data$date, .data$indicator, .data$value) %>%
+    dplyr::ungroup() %>%
     tidyr::pivot_wider(
       names_from = .data$indicator,
-      values_from = .data$value) %>%
-  dplyr::filter(date == max(.data$date)) %>%
-  dplyr::mutate(
-    date = format(.data$date, "%B %Y")
+      values_from = .data$value
+    ) %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::mutate(
+      date = format(.data$date, "%B %Y")
+    )
+
+
+  title <- dplyr::case_when(
+    latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` > 0 ~
+    paste0("Both the Victorian participation rate and the unemployment rate increased in ", latest_change$date),
+    latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` < 0 ~
+    paste0("While the Victorian participation rate increased, the unemployment rate declined in ", latest_change$date),
+    latest_change$`Participation rate` < 0 & latest_change$`Unemployment rate` > 0 ~
+    paste0("While the Victorian participation rate declined, the unemployment rate increased in ", latest_change$date),
+    TRUE ~ "Victoria's unemployment and participation rate"
   )
 
 
- title <- dplyr::case_when(
-   latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` >0 ~
-     paste0("Both the Victorian participation rate and the unemployment rate increased in ", latest_change$date),
-
-  latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` < 0 ~
-     paste0("While the Victorian participation rate increased, the unemployment rate declined in ", latest_change$date),
-
-  latest_change$`Participation rate` < 0 & latest_change$`Unemployment rate` > 0 ~
-    paste0("While the Victorian participation rate declined, the unemployment rate increased in ", latest_change$date),
-   TRUE ~ "Victoria's unemployment and participation rate"
- )
-
-
-data %>%
-    djpr_ts_linechart(col_var = indicator,
-                      label_num=paste0(round(.data$value,1),"%"),
-                      y_labels = function(x) paste0(x,"%")) +
-  labs(
-    subtitle = "Participation rate and Unemployment rate for Victoria ",
-       caption = caption_lfs(),
-       title = title )
-
-
+  data %>%
+    djpr_ts_linechart(
+      col_var = indicator,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Participation rate and Unemployment rate for Victoria ",
+      caption = caption_lfs(),
+      title = title
+    )
 }
