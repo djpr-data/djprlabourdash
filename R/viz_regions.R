@@ -1266,11 +1266,11 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
                                       value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
 
-  # this code just needs to be extended with the other states, once we have the series IDs loaded
+  # this code just needs to be amended, once we have the series IDs loaded (use state instead of series etc)
   df <- data %>%
     dplyr::mutate(
       state = dplyr::case_when(
-        .data$gcc_restofstate == "Rest of Vic." ~
+        .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
           "Regional Victoria",
         .data$series == ">>> Ballarat ;  Employed total ;  Persons ;" ~
           "Regional NSW",
@@ -1284,9 +1284,17 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
           "Regional SA",
         .data$series == ">> Greater Melbourne ;  Employed total ;  Persons ;" ~
           "Regional Tasmania",
-        TRUE ~ .data$state
-                             )
-    )
+        TRUE ~ .data$state)
+    ) #%>%
+
+    # dplyr::mutate(
+    #   state_group = dplyr::if_else(
+    #     .data$state %in% c(
+    #     "Regional Victoria", "Regional NSW"
+    #   ),
+    #   .data$state,
+    #   "Other")
+    #)
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
@@ -1333,7 +1341,6 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
       format(max(data$date), "%B %Y")),
     )
 
-  # I don't know how to make it that only Vic and NSW are in colour and all ales is grey
   df %>%
     djpr_ts_linechart(
       col_var = .data$state,
@@ -1344,9 +1351,14 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
       breaks = scales::breaks_pretty(5),
       labels = function(x) paste0(x, "%")
     ) +
+    scale_colour_manual(values = c(
+      "Regional Victoria" = djprtheme::djpr_royal_blue,
+      "Regional NSW" = djprtheme::djpr_green,
+      "Other" = "grey70"
+    )) +
     labs(
       title = title,
-      subtitle = "Cumulative change in employment for regional areas in all states and the NT since March 2020, per cent",
+      subtitle = "Cumulative change in employment for regional states and territories of Australia since March 2020",
       caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average.")
     )
 
