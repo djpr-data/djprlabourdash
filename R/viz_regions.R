@@ -1363,3 +1363,138 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     )
 
 }
+
+viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
+                                                                   "A84599629X",
+                                                                   "A84599630J",
+                                                                   "A84600078W",
+                                                                   "A84600079X",
+                                                                   "A84600080J",
+                                                                   "A84599784X",
+                                                                   "A84599785A",
+                                                                   "A84599786C",
+                                                                   "A84599718A",
+                                                                   "A84599719C",
+                                                                   "A84599720L",
+                                                                   "A84600246W",
+                                                                   "A84600247X",
+                                                                   "A84600248A",
+                                                                   "A84599634T",
+                                                                   "A84599635V",
+                                                                   "A84599636W",
+                                                                   "A84599610X",
+                                                                   "A84599611A",
+                                                                   "A84599612C"
+                                                               ), df = dash_data),
+                                     selected_indicator = "unemp_rate") {
+
+  df <- data %>%
+    dply::mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  df <- df %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::mutate(
+      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+    ) %>%
+    dplyr::ungroup()
+
+  df <- df %>%
+    dplyr::filter(.data$date %in% c(
+      max(.data$date),
+      subtract_years(max(.data$date), 1)
+    ))
+
+  df <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(rank = dplyr::min_rank(-data$value)) %>%
+    dplyr::select(.data$rank, .data$state) %>%
+    dplyr::right_join(df, by = "state")
+
+  df_wide <- df %>%
+    dplyr::mutate(date_type = dplyr::if_else(.data$date == min(.data$date),
+                                             "min_date",
+                                             "max_date"
+                                             )) %>%
+    dplyr::select(.data$date_type, .data$value, .data$state, .data$rank) %>%
+    tidyr::spread(key = .data$data_type, value = .data$value) %>%
+    dplyr::mutate(arrow_end = dplyr::if_else(.data$max_date > .data$min_date,
+                                             .data$max_date - 0.08,
+                                             .data$max_date + 0.08
+    ))
+
+  latest_values <- df %>%
+    dplyr::filter(.data$date == max(.data$date),
+                  .data$state == "Vic") %>%
+    dplyr::select(.data$state, .data$value, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$state, values_from = .data$value)
+
+  indic_long <- paste0(
+    "The ", indic_long,
+    " in regional Victoria was ",
+    round2(latest_values$Vic, 1),
+    " per cent in ",
+    format(latest_value$date, "%B %Y")
+  )
+
+  df %>%
+    ggplot(aes(
+      x = stats::reorder(.data$state, .data$rank),
+      y = .data$value,
+      col = factor(.data$date)
+    )) +
+    geom_segment(
+      data = df_wide,
+      aes(
+        x = stats::reorder(.data$state, .data$rank),
+        xend = stats::reorder(.data$state, .data$rank),
+        y = .data$min_date,
+        yend = .data$arrow_end
+      ),
+      arrow = arrow(
+        angle = 25,
+        length = unit(0.5, "line"),
+        type = "closed"
+      ),
+      inherit.aes = FALSE
+    ) +
+    ggiraph::geom_point_interactive(
+      size = 4,
+      aes(tooltip = paste0(
+        .data$state,
+        "\n",
+        .data$date,
+        "\n",
+        round2(.data$value, 1)
+      ))
+    ) +
+    ggrepel::geom_text_repel(
+      data = df %>%
+        dplyr::filter(.data$state == "Vic"),
+      aes(label = format(.data$date, "%b %Y")),
+      size = 14 / .pt,
+      direction = "y",
+      min.segment.length = unti(10, "lines"),
+      nudge_x = 0.33
+    ) +
+    coord_flip() +
+    scale_y_continuous(
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(4),
+      expand = expansion(add = 0.5)
+    ) +
+    scale_colour_manual(
+      values = suppressWarnings(djpr_pal(10)[c(1, 8)])
+    ) +
+    theme_djpr(flipped = T) +
+    labs(title = title,
+         subtitle = "SUBTITLE GOES HERE",
+         caption = paste0(caption_lfs(), "Data smoothed using a 3 month rolling average."),
+         y = "WHAT GOES HERE?")
+  }
