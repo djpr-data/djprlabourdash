@@ -1313,31 +1313,31 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the highest of any Australian regional area in ",
+      " since March 2020 and is the highest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     vic_rank == 2 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the second highest of any Australian regional area in ",
+      " since March 2020 and is the second highest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     vic_rank == 3 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the third highest of any Australian regional area in ",
+      " since March 2020 and is the third highest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     vic_rank == 4 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the fourth highest of any Australian regional area in ",
+      " since March 2020 and is the fourth highest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     vic_rank == 5 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the fifth highest of any Australian regional area in ",
+      " since March 2020 and is the fifth highest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     vic_rank == 6 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the second lowest of any Australian regional area in ",
+      " since March 2020 and is the second lowest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     vic_rank == 7 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      " since COVID and is the lowest of any Australian regional area in ",
+      " since March 2020 and is the lowest of any Australian regional area in ",
       format(max(data$date), "%B %Y")),
     )
 
@@ -1363,4 +1363,3 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     )
 
 }
-
