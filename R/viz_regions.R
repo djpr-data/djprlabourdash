@@ -1245,7 +1245,13 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
 }
 
 viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R",
-                                                                               "A84599661X" # I have added Ballarat here, just for testing purposes,
+                                                                               "A84599661X", # place filler
+                                                                               "A84600141A", # place filler
+                                                                               "A84599667L", # place filler
+                                                                               "A84599679W", # place filler
+                                                                               "A84600117A",
+                                                                               "A84600033T"
+                                                                               # bunch of random Vic SA4 above for testing
                                                                                #"A84599625R",
                                                                                #"A84599781T",
                                                                                #"A84599607K",
@@ -1266,8 +1272,18 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
       state = dplyr::case_when(
         .data$gcc_restofstate == "Rest of Vic." ~
           "Regional Victoria",
-        .data$gcc_restofstate == "" ~
+        .data$series == ">>> Ballarat ;  Employed total ;  Persons ;" ~
           "Regional NSW",
+        .data$series == ">>> Geelong ;  Employed total ;  Persons ;" ~
+          "Regional QLD",
+        .data$series == ">>> Latrobe - Gippsland ;  Employed total ;  Persons ;" ~
+          "Regional NT",
+        .data$series == ">>> Warrnambool and South West ;  Employed total ;  Persons ;" ~
+          "Regional WA",
+        .data$series == ">>> Shepparton ;  Employed total ;  Persons ;" ~
+          "Regional SA",
+        .data$series == ">> Greater Melbourne ;  Employed total ;  Persons ;" ~
+          "Regional Tasmania",
         TRUE ~ .data$state
                              )
     )
@@ -1277,48 +1293,47 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     dplyr::mutate(value = 100 * ((.data$value /
                                   .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
-  # latest <- df %>%
-  #   dplyr::filter(.data$date == max(.data$date)) %>%
-  #   dplyr::select(-.data$date) %>%
-  #   tidyr::spread(key = .data$state, value = .data$value)
-
   latest <- df %>%
-    dplyr::select(.data$state, .data$value) %>%
+    dplyr::select(.data$date, .data$state, .data$value) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    ungroup() %>%
     dplyr::mutate(rank = dplyr::min_rank(-.data$value))
 
   vic_rank <- latest$rank[latest$state == "Regional Victoria"]
-  nsw_rank <- latest$rank[latest$state == "Regional NSW"]
   vic_level <- paste0(round2(latest$value[latest$state == "Regional Victoria"], 1), "%")
-  vic_change <- df %>%
-    dplyr::filter(.data$state == "Regional Victoria") %>%
-    dplyr::summarise(change = .data$value[.data$date ==max(.data$date)] -
-                       .data$value[.data$date == subtract_years(max(.data$date), 1)]) %>%
-    dplyr::pull(.data$change)
 
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the greatest change of any Australian regional area"),
+      " since COVID and is the highest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     vic_rank == 2 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the second greatest change of any Australian regional area"),
+      " since COVID and is the second highest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     vic_rank == 3 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the third greatest change of any Australian regional area"),
+      " since COVID and is the third highest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     vic_rank == 4 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the fourth greatest change of any Australian regional area"),
+      " since COVID and is the fourth highest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     vic_rank == 5 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the fifth greatest change of any Australian regional area"),
+      " since COVID and is the fifth highest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     vic_rank == 6 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the second smallest change of any Australian regional area"),
+      " since COVID and is the second lowest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     vic_rank == 7 ~ paste0(
       "Employment in regional Victoria changed by ", vic_level,
-      ", the smallest change of any Australian regional area"),
+      " since COVID and is the lowest of any Australian regional area in ",
+      format(max(data$date), "%B %Y")),
     )
 
+  # I don't know how to make it that only Vic and NSW are in colour and all ales is grey
   df %>%
     djpr_ts_linechart(
       col_var = .data$state,
@@ -1330,7 +1345,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
       labels = function(x) paste0(x, "%")
     ) +
     labs(
-      title = "TITLE GOES HERE",
+      title = title,
       subtitle = "Cumulative change in employment for regional areas in all states and the NT since March 2020, per cent",
       caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average.")
     )
