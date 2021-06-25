@@ -1277,10 +1277,47 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     dplyr::mutate(value = 100 * ((.data$value /
                                   .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
+  # latest <- df %>%
+  #   dplyr::filter(.data$date == max(.data$date)) %>%
+  #   dplyr::select(-.data$date) %>%
+  #   tidyr::spread(key = .data$state, value = .data$value)
+
   latest <- df %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(-.data$date) %>%
-    tidyr::spread(key = .data$state, value = .data$value)
+    dplyr::select(.data$state, .data$value) %>%
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value))
+
+  vic_rank <- latest$rank[latest$state == "Regional Victoria"]
+  nsw_rank <- latest$rank[latest$state == "Regional NSW"]
+  vic_level <- paste0(round2(latest$value[latest$state == "Regional Victoria"], 1), "%")
+  vic_change <- df %>%
+    dplyr::filter(.data$state == "Regional Victoria") %>%
+    dplyr::summarise(change = .data$value[.data$date ==max(.data$date)] -
+                       .data$value[.data$date == subtract_years(max(.data$date), 1)]) %>%
+    dplyr::pull(.data$change)
+
+  title <- dplyr::case_when(
+    vic_rank == 1 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the greatest change of any Australian regional area"),
+    vic_rank == 2 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the second greatest change of any Australian regional area"),
+    vic_rank == 3 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the third greatest change of any Australian regional area"),
+    vic_rank == 4 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the fourth greatest change of any Australian regional area"),
+    vic_rank == 5 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the fifth greatest change of any Australian regional area"),
+    vic_rank == 6 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the second smallest change of any Australian regional area"),
+    vic_rank == 7 ~ paste0(
+      "Employment in regional Victoria changed by ", vic_level,
+      ", the smallest change of any Australian regional area"),
+    )
 
   df %>%
     djpr_ts_linechart(
@@ -1299,3 +1336,4 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     )
 
 }
+
