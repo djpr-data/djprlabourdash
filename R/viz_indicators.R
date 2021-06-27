@@ -692,46 +692,40 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
   data <- data %>%
     select(date, series, value, indicator)
 
-df_pa <- data %>%
-  dplyr::filter(!grepl("Unemployment", .data$indicator))
+  df_pa <- data %>%
+    dplyr::filter(!grepl("Unemployment", .data$indicator))
 
-chart_par<- df_pa %>%
-  djpr_ts_linechart(
-    col_var = indicator,
-    label_num = paste0(round(.data$value, 1), "%"),
-    y_labels = function(x) paste0(x, "%")
-  ) +
-labs(
-  subtitle = "Participation rate for Victoria ",
-)
+  chart_par <- df_pa %>%
+    djpr_ts_linechart(
+      col_var = indicator,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Participation rate for Victoria ",
+    )
 
-df_un <- data %>%
-  dplyr::filter(!grepl("Participation", .data$indicator))
+  df_un <- data %>%
+    dplyr::filter(!grepl("Participation", .data$indicator))
 
-chart_un <- df_un %>%
-  djpr_ts_linechart(
-    col_var = indicator,
-    label_num = paste0(round(.data$value, 1), "%"),
-    y_labels = function(x) paste0(x, "%")
-  ) +
-  labs(
-    subtitle = "Unemployment rate for Victoria ",
-  )
+  chart_un <- df_un %>%
+    djpr_ts_linechart(
+      col_var = indicator,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      subtitle = "Unemployment rate for Victoria ",
+    )
 
-patchwork::wrap_plots(chart_par,chart_un)
-
-
-#   (label_num = paste0(round(.data$value, 1), "%"),
-  #   y_labels = function(x) paste0(x, "%")
-  # ) +
-  # labs(
-  #   subtitle = "Participation rate in Victoria ",
-  #   caption = caption_lfs(),
-  #   title = "title"
-  # )
+  patchwork::wrap_plots(chart_par, chart_un) +
+    labs(
+      title = "title"
+    )
 
 
-data %>%
+
+  data %>%
     djpr_ts_linechart(
       col_var = indicator,
       label_num = paste0(round(.data$value, 1), "%"),
