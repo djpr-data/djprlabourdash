@@ -684,6 +684,8 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
     )
 }
 
+#comparing participation and unemployment visualisation
+
 viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
                                        "A84423355R",
                                        "A84423354L"
@@ -691,6 +693,8 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
                                      df = dash_data) {
   data <- data %>%
     select(date, series, value, indicator)
+
+  #participation DF
 
   df_pa <- data %>%
     dplyr::filter(!grepl("Unemployment", .data$indicator))
@@ -705,6 +709,9 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
       subtitle = "Participation rate for Victoria ",
     )
 
+  chart_par <- df_pa
+
+  #unemployment df
   df_un <- data %>%
     dplyr::filter(!grepl("Participation", .data$indicator))
 
@@ -718,10 +725,10 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
       subtitle = "Unemployment rate for Victoria ",
     )
 
-  patchwork::wrap_plots(chart_par, chart_un) +
-    labs(
-      title = "title"
-    )
+  #Joining the two charts
+
+  patchwork::wrap_plots(chart_par, chart_un)
+
 
 
 
