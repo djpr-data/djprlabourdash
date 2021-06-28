@@ -1330,5 +1330,6 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
       title = title,
       subtitle = "Full-time and part-time employment by sex, Victoria",
       caption = caption_lfs()
-    )
+    )+
+  facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
