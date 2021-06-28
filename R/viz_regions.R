@@ -1245,19 +1245,12 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
 }
 
 viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R",
-                                                                               "A84599661X", # place filler
-                                                                               "A84600141A", # place filler
-                                                                               "A84599667L", # place filler
-                                                                               "A84599679W", # place filler
-                                                                               "A84600117A",
-                                                                               "A84600033T"
-                                                                               # bunch of random Vic SA4 above for testing
-                                                                               #"A84599625R",
-                                                                               #"A84599781T",
-                                                                               #"A84599607K",
-                                                                               #"A84600243R",
-                                                                               #"A84599715V",
-                                                                               #"A84599631K"
+                                                                               "A84599625R",
+                                                                               "A84599781T",
+                                                                               "A84599607K",
+                                                                               "A84600243R",
+                                                                               "A84599715V",
+                                                                               "A84599631K"
                                                                                ),
                                       df = dash_data
                                       ) %>%
@@ -1266,23 +1259,22 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
                                       value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
 
-  # this code just needs to be amended, once we have the series IDs loaded (use state instead of series etc)
   df <- data %>%
     dplyr::mutate(
       state = dplyr::case_when(
         .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
           "Regional Victoria",
-        .data$series == ">>> Ballarat ;  Employed total ;  Persons ;" ~
+        .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
           "Regional NSW",
-        .data$series == ">>> Geelong ;  Employed total ;  Persons ;" ~
+        .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
           "Regional QLD",
-        .data$series == ">>> Latrobe - Gippsland ;  Employed total ;  Persons ;" ~
+        .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
           "Regional NT",
-        .data$series == ">>> Warrnambool and South West ;  Employed total ;  Persons ;" ~
+        .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
           "Regional WA",
-        .data$series == ">>> Shepparton ;  Employed total ;  Persons ;" ~
+        .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
           "Regional SA",
-        .data$series == ">> Greater Melbourne ;  Employed total ;  Persons ;" ~
+        .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
           "Regional Tasmania",
         TRUE ~ .data$state)
     ) #%>%
@@ -1384,12 +1376,12 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
                                                                    "A84599636W",
                                                                    "A84599610X",
                                                                    "A84599611A",
-                                                                   "A84599612C"
-                                                               ), df = dash_data),
+                                                                   "A84599612C"),
+                                                             df = dash_data),
                                      selected_indicator = "unemp_rate") {
 
   df <- data %>%
-    dply::mutate(indicator_short = dplyr::case_when(
+    dplyr::mutate(indicator_short = dplyr::case_when(
       .data$indicator == "Unemployment rate" ~ "unemp_rate",
       .data$indicator == "Participation rate" ~ "part_rate",
       .data$indicator == "Employment to population ratio" ~ "emp_pop"
@@ -1401,8 +1393,15 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
   df <- df %>%
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(
-      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+      value = slider::slide_mean(.data$value, before = 2, complete = TRUE),
+      geog = dplyr::if_else(.data$state == "",
+                            "Australia",
+                            .data$state
+                            ),
+      geog_long = .data$geog,
+      geog = strayr::clean_state(.data$geog)
     ) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
   df <- df %>%
@@ -1413,16 +1412,16 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
 
   df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::mutate(rank = dplyr::min_rank(-data$value)) %>%
-    dplyr::select(.data$rank, .data$state) %>%
-    dplyr::right_join(df, by = "state")
+    dplyr::mutate(rank = dplyr::dense_rank(-data$value)) %>%
+    dplyr::select(.data$rank, .data$geog) %>%
+    dplyr::right_join(df, by = "geog")
 
   df_wide <- df %>%
     dplyr::mutate(date_type = dplyr::if_else(.data$date == min(.data$date),
                                              "min_date",
                                              "max_date"
                                              )) %>%
-    dplyr::select(.data$date_type, .data$value, .data$state, .data$rank) %>%
+    dplyr::select(.data$date_type, .data$value, .data$geog, .data$rank) %>%
     tidyr::spread(key = .data$data_type, value = .data$value) %>%
     dplyr::mutate(arrow_end = dplyr::if_else(.data$max_date > .data$min_date,
                                              .data$max_date - 0.08,
@@ -1431,11 +1430,17 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
 
   latest_values <- df %>%
     dplyr::filter(.data$date == max(.data$date),
-                  .data$state == "Vic") %>%
-    dplyr::select(.data$state, .data$value, .data$date) %>%
-    tidyr::pivot_wider(names_from = .data$state, values_from = .data$value)
+                  .data$geog == "Vic") %>%
+    dplyr::select(.data$geog, .data$value, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$geog, values_from = .data$value)
 
-  indic_long <- paste0(
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "unemployment rate",
+    selected_indicator == "part_rate" ~ "participation rate",
+    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    TRUE ~ NA_character_)
+
+  title <- paste0(
     "The ", indic_long,
     " in regional Victoria was ",
     round2(latest_values$Vic, 1),
@@ -1445,15 +1450,15 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
 
   df %>%
     ggplot(aes(
-      x = stats::reorder(.data$state, .data$rank),
+      x = stats::reorder(.data$geog, .data$rank),
       y = .data$value,
       col = factor(.data$date)
     )) +
     geom_segment(
       data = df_wide,
       aes(
-        x = stats::reorder(.data$state, .data$rank),
-        xend = stats::reorder(.data$state, .data$rank),
+        x = stats::reorder(.data$geog, .data$rank),
+        xend = stats::reorder(.data$geog, .data$rank),
         y = .data$min_date,
         yend = .data$arrow_end
       ),
@@ -1467,7 +1472,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     ggiraph::geom_point_interactive(
       size = 4,
       aes(tooltip = paste0(
-        .data$state,
+        .data$geog,
         "\n",
         .data$date,
         "\n",
@@ -1476,7 +1481,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     ) +
     ggrepel::geom_text_repel(
       data = df %>%
-        dplyr::filter(.data$state == "Vic"),
+        dplyr::filter(.data$geog == "Vic"),
       aes(label = format(.data$date, "%b %Y")),
       size = 14 / .pt,
       direction = "y",
@@ -1498,3 +1503,5 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
          caption = paste0(caption_lfs(), "Data smoothed using a 3 month rolling average."),
          y = "WHAT GOES HERE?")
   }
+
+
