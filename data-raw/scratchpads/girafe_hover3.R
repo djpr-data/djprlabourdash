@@ -11,7 +11,7 @@ df <- data %>%
     dplyr::slice_tail(n = 6)
 
 p <- df %>%
-  ggplot(aes(x = date, y = value, data_id = date)) +
+  ggplot(aes(x = as.character(date), y = value, data_id = as.character(date))) +
   ggiraph::geom_col_interactive(fill = "#BCD3EF") +
   theme_void()
 
@@ -39,13 +39,13 @@ server <- function(input, output, session) {
   })
 
   hovered <- reactiveValues(
-    last = max(df$date),
+    last = as.character(max(df$date)),
     ever_hover = FALSE
       )
 
   observeEvent({isFALSE(hovered$ever_hover)}, {
-    print("foobar")
-    session$sendCustomMessage(type = "plot_hovered_set", message = hovered$last)
+    print((hovered$last))
+    session$sendCustomMessage(type = "plot_hovered_set", message = "2021-05-01")#hovered$last)
   })
 
   observeEvent(input$plot_hovered, {

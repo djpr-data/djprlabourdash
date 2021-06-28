@@ -24,11 +24,12 @@ ui <- shinyUI(fluidPage(
 # Module -----
 library(shiny)
 
-StateHandlerUI <- function(id, label, choices) {
+StateHandlerUI <- function(id, label, choices, selected) {
   ns <- NS(id)
 
   checkboxGroupInput(inputId = ns("chk"),
                      label = label,
+                     selected = selected,
                      choices = choices)
 }
 
@@ -37,20 +38,24 @@ StateHandler <- function(input,
                          session,
                          plotInput,
                          messageId) {
-  plot_data <- reactive({
+    plot_data <- reactive({
     v <- do.call(plotInput, list())
     if (is.null(v)) {
-      character(0)
-    } else
-      v
+      out <- character(0)
+    } else {
+      out <- v
+    }
+    out
   })
 
   chk_data <- debounce(reactive({
     if (is.null(input$chk)) {
-      character(0)
+      out <- character(0)
     } else {
-      input$chk
+      out <- input$chk
     }
+    print(class(out))
+    out
   }), 200)
 
   ignore_plot_data <- FALSE
@@ -65,6 +70,7 @@ StateHandler <- function(input,
   })
 
   observeEvent(chk_data(), {
+    print(chk_data())
       session$sendCustomMessage(type = "plot_hovered_set", message = chk_data())
   })
 
@@ -110,18 +116,12 @@ server <- shinyServer(function(input, output, session) {
   })
 
   output$checkboxes <- renderUI({
-    result <- list()
-
-    if (input$opt_hover_data == TRUE) {
-      result[[length(result) + 1]] <-
         StateHandlerUI(
           "hovered_data",
           label = "Hovered data elements:",
-          choices = list("Christine", "Ginette", "David", "Cedric", "Frederic")
+          choices = list("Christine", "Ginette", "David", "Cedric", "Frederic"),
+          selected = "Ginette"
         )
-    }
-
-    result
   })
 
   # link_selection_default <- FALSE
