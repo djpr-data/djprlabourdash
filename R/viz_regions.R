@@ -1263,30 +1263,29 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     dplyr::mutate(
       state = dplyr::case_when(
         .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-          "Regional Victoria",
+          "Reg. Vic",
         .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-          "Regional NSW",
+          "Reg. NSW",
         .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-          "Regional QLD",
+          "Reg. QLD",
         .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-          "Regional NT",
+          "Reg. NT",
         .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-          "Regional WA",
+          "Reg. WA",
         .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-          "Regional SA",
+          "Reg. SA",
         .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-          "Regional Tasmania",
+          "Reg. Tas",
         TRUE ~ .data$state)
-    ) #%>%
-
-    # dplyr::mutate(
-    #   state_group = dplyr::if_else(
-    #     .data$state %in% c(
-    #     "Regional Victoria", "Regional NSW"
-    #   ),
-    #   .data$state,
-    #   "Other")
-    #)
+    ) %>%
+    dplyr::mutate(
+      state_group = dplyr::if_else(
+        .data$state %in% c(
+        "Reg. Vic", "Reg. NSW"
+      ),
+      .data$state,
+      "Other")
+    )
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
@@ -1299,8 +1298,8 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     ungroup() %>%
     dplyr::mutate(rank = dplyr::min_rank(-.data$value))
 
-  vic_rank <- latest$rank[latest$state == "Regional Victoria"]
-  vic_level <- paste0(round2(latest$value[latest$state == "Regional Victoria"], 1), "%")
+  vic_rank <- latest$rank[latest$state == "Reg. Vic"]
+  vic_level <- paste0(round2(latest$value[latest$state == "Reg. Vic"], 1), "%")
 
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(
@@ -1344,9 +1343,9 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
       labels = function(x) paste0(x, "%")
     ) +
     scale_colour_manual(values = c(
-      "Regional Victoria" = djprtheme::djpr_royal_blue,
-      "Regional NSW" = djprtheme::djpr_green,
-      "Other" = "grey70"
+      "Reg. Vic" = djprtheme::djpr_royal_blue,
+      "Reg. NSW" = djprtheme::djpr_green,
+      "Other" = "grey87"
     )) +
     labs(
       title = title,
