@@ -50,7 +50,7 @@ StateHandler <- function(input,
 
   chk_data <- debounce(reactive({
     if (is.null(input$chk)) {
-      out <- character(0)
+      out <- "Ginette"
     } else {
       out <- input$chk
     }
@@ -63,7 +63,6 @@ StateHandler <- function(input,
   ignore_chk_data <- FALSE
 
   observeEvent(plot_data(), {
-      # ignore_chk_data  <<- TRUE
       updateCheckboxGroupInput(session,
                                'chk',
                                selected = plot_data())

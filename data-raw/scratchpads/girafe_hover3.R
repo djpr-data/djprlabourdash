@@ -45,7 +45,7 @@ server <- function(input, output, session) {
 
   observeEvent({isFALSE(hovered$ever_hover)}, {
     print((hovered$last))
-    session$sendCustomMessage(type = "plot_hovered_set", message = "2021-05-01")#hovered$last)
+    session$sendCustomMessage(type = "plot_hovered_set", message = max(df$date))#hovered$last)
   })
 
   observeEvent(input$plot_hovered, {
