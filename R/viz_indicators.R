@@ -689,60 +689,10 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
 viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
                                        "A84423355R",
                                        "A84423354L"
-                                     )),
-                                     df = dash_data) {
+                                     ),
+                                     df = dash_data)) {
   data <- data %>%
     select(date, series, value, indicator)
-
-  #participation DF
-
-  df_pa <- data %>%
-    dplyr::filter(!grepl("Unemployment", .data$indicator))
-
-  chart_par <- df_pa %>%
-    djpr_ts_linechart(
-      col_var = indicator,
-      label_num = paste0(round(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      subtitle = "Participation rate for Victoria ",
-    )
-
-  chart_par <- df_pa
-
-  #unemployment df
-  df_un <- data %>%
-    dplyr::filter(!grepl("Participation", .data$indicator))
-
-  chart_un <- df_un %>%
-    djpr_ts_linechart(
-      col_var = indicator,
-      label_num = paste0(round(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      subtitle = "Unemployment rate for Victoria ",
-    )
-
-  #Joining the two charts
-
-  patchwork::wrap_plots(chart_par, chart_un)
-
-
-
-
-  data %>%
-    djpr_ts_linechart(
-      col_var = indicator,
-      label_num = paste0(round(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      subtitle = "Participation rate and Unemployment rate for Victoria ",
-      caption = caption_lfs(),
-      title = "title"
-    )
 
   df_change <- data %>%
     dplyr::select(date, value, indicator) %>%
@@ -784,8 +734,35 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
-      subtitle = "Participation rate and Unemployment rate for Victoria ",
+      subtitle = "Participation rate and unemployment rate for Victoria ",
       caption = caption_lfs(),
       title = title
-    )
+    ) +
+    facet_wrap(~indicator, ncol = 1, scales = "free_y")
+}
+
+viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
+  "A84423355R",
+  "A84423354L"
+),
+df = dash_data)) {
+
+  df <- data %>%
+    select(date, value, indicator)
+
+  df %>%
+    group_by(indicator) %>%
+    mutate(change = value - lag(value, 1)) %>%
+    select(date, indicator, change) %>%
+    tidyr::spread(key = indicator, value = change) %>%
+    mutate(focus_date = if_else(date == max(date), TRUE, FALSE)) %>%
+    dplyr::filter(!is.na(`Unemployment rate`)) %>%
+    ggplot(aes(x = `Unemployment rate`,
+               y = `Participation rate`,
+               col = focus_date)) +
+    geom_hline(yintercept = 0) +
+    geom_vline(xintercept = 0) +
+    ggiraph::geom_point_interactive() +
+    djpr_colour_manual(2) +
+    theme_djpr()
 }
