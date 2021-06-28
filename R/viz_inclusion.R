@@ -990,7 +990,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     dplyr::slice_tail(n = 2) %>%
     dplyr::ungroup()
 
-  # create label data frame
+  #  create a label data frame
 
   label_df <- df_data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -1003,7 +1003,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
       TRUE ~ NA_real_
     ))
 
-  # create chnage over the previous month
+  # create change over the previous month
 
   data_change <- df_data %>%
     dplyr::group_by(.data$duration) %>%
@@ -1040,7 +1040,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     TRUE ~ "Unemployed Victorian by duration of unemployment"
   )
 
-
+# create chart
   df_data %>%
     ggplot(aes(x = interaction(date, duration), y = .data$value, fill = .data$duration)) +
     geom_bar(stat = "identity", position = "dodge") +
@@ -1054,7 +1054,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     geom_text(
       nudge_y = 1.5,
       # stat = "identity",
-      aes(label = paste0(round(.data$value, 1), "")),
+      aes(label = paste0(round(.data$value, 1))),
       colour = "black",
       vjust = 0,
       size = 12 / .pt
@@ -1076,6 +1076,8 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     )
 }
 
+
+#area chart for the proportion of unemployed by duration
 viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
                                   "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
                                   "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
@@ -1106,7 +1108,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       values_from = value
     )
 
-  data <- data %>%
+data <- data %>%
     dplyr::select(
       date, "104 weeks and over (2 years and over)",
       "52 weeks and under 104 weeks (1-2 years)",
@@ -1132,13 +1134,14 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
 
 
 
-  # dplyr::mutate
+  # create a long term unemployed column
 
-  data <- data %>%
+data <- data %>%
     dplyr::filter(!is.na(un_2years_over)) %>%
     dplyr::mutate(lt_unemp = un_2years_over + un_1_2years) %>%
     dplyr::select(!c(un_2years_over, un_1_2years))
 
+#create a proportion of unemployed by duration
 
   data <- data %>%
     dplyr::mutate(
@@ -1151,7 +1154,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     dplyr::select(date, lt_unemp_perc, un_6_12months_perc, un_3_6months_perc, un_1_3months_perc, un_under_1_month_perc)
 
 
-  # arrang for ploting
+  # Arrange a data frame for plotting
 
   df_data <- data %>%
     tidyr::pivot_longer(!date,
@@ -1160,7 +1163,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     )
 
 
-
+  #Create a data frame for labelling
 
   label_df <- df_data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -1172,29 +1175,8 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       .data$duration == "lt_unemp_perc" ~ 5,
       TRUE ~ NA_real_
     ))
-  #   )) %>%
-  # dplyr::arrange(.data$series_order) %>%
-  # dplyr::select(.data$date, .data$value, .data$duration) %>%
-  # dplyr::mutate(
-  #     label = paste0(
-  #      if_else(.data$duration == "un_under_1_month_perc",
-  #               "Under one month",
-  #               .data$duration,
-  #               .data$duration == "un_1_3months_perc",
-  #               "one month and under 3 month",
-  #               .data$duration,
-  #               .data$duration == "un_3_6months_perc",
-  #               "three months and under 6 months",
-  #               .data$duration,
-  #               .data$duration == "un_6_12months_perc",
-  #               "six months and 12 months",.data$duration,
-  #               .data$duration == "un_under_1_month_perc",
-  #               "over 12 months",.data$duration),
-  #
-  #       " ", round2(.data$value, 1), "%"))
 
-
-
+#create latest data
   latest_df <- df_data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(.data$date, .data$duration, .data$value) %>%
@@ -1267,7 +1249,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     )
 }
 
-
+#Full-time and part-time  employment growth pattern by gender
 viz_gr_full_part_line <- function(data = filter_dash_data(c(
                                     "A84423349V",
                                     "A84423237A",
@@ -1286,8 +1268,10 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
       `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`
     ) %>%
     dplyr::select(!.data$`Employed total`) %>%
-    ungroup() %>%
-    annual_g() <- df %>%
+    ungroup()
+
+  #create annual growth Df
+    annual_g <- df %>%
     tidyr::pivot_longer(!c(1:2), names_to = "indicator", values_to = "value") %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$sex) %>%
@@ -1298,8 +1282,10 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
-  latest_month <- format(max(annual_g$date), "%B %Y")
 
+    latest_month <- format(max(annual_g$date), "%B %Y")
+
+    #create latest data by gender
   female_latest_f <- annual_g %>%
     dplyr::filter(.data$sex == "Females" & .data$indicator == "Employed full-time" &
       +.data$date == max(.data$date)) %>%
@@ -1320,6 +1306,7 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     dplyr::pull(.data$value)
 
 
+  #create title
 
   title <- dplyr::if_else(
     female_latest_f > male_latest_f,
@@ -1327,11 +1314,11 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     paste0(" Female full-time employment growth lagged behind male in the 12 months to ", latest_month)
   )
 
+  # female_latest_p > male_latest_p,
+  # paste0("Female part-time employment growth outpaced male in the 12 months to ", latest_month),
+  # paste0("Female part-time employment growth lagged behind male in the 12 months to ", latest_month))
 
-
-
-
-
+  #create chart
   annual_g %>%
     djpr_ts_linechart(
       col_var = sex,
@@ -1340,7 +1327,7 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
       hline = 0
     ) +
     labs(
-      title = "title",
+      title = title,
       subtitle = "Full-time and part-time employment by sex, Victoria",
       caption = caption_lfs()
     )
