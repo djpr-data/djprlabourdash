@@ -1140,10 +1140,49 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     dplyr::select(.data$perc, .data$date, .data$label_no_num) %>%
     tidyr::pivot_wider(names_from = label_no_num, values_from = perc)
 
-  # dplyr::case_when(
-  #   title_df$`2+ years` > title_df$`6-12 months` &
-  #     title_df$`2+ years` > title_df$`1-2 years` ~
-  #     "Something",
+  latest_month <- format(max(label_df$date), "%B %Y")
+
+
+
+  title <- dplyr::case_when(
+   title_df$`2+ years` > title_df$`<1 month` &
+   title_df$`2+ years` > title_df$`1-3 months`  &  title_df$`2+ years` > title_df$`3-6 months` &
+  title_df$`2+ years` > title_df$`6-12 months` & title_df$`2+ years` > title_df$`1-2 years` ~
+   paste0("The proportion of two years and over unemployed in ", latest_month , " was higher
+        than other catagories of duration"),
+
+  title_df$`1-2 years` > title_df$`<1 month` &
+    title_df$`1-2 years` > title_df$`1-3 months`  &  title_df$`1-2 years` > title_df$`3-6 months` &
+    title_df$`1-2 years` > title_df$`6-12 months` & title_df$`1-2 years` > title_df$`2+ years` ~
+    paste0("The proportion of one years and under two years unemployed in ", latest_month , " was higher
+          than other catagories of duration"),
+
+  title_df$`6-12 months` > title_df$`<1 month` &
+    title_df$`6-12 months` > title_df$`1-3 months`  &  title_df$`6-12 months` > title_df$`3-6 months` &
+    title_df$`6-12 months`> title_df$`1-2 years`  & title_df$`6-12 months` > title_df$`2+ years` ~
+    paste0("The proportion of six months and under 12 months unemployed in ", latest_month , " was higher
+           than other catagories of duration"),
+
+  title_df$`3-6 months` > title_df$`<1 month` &
+    title_df$`3-6 months` > title_df$`1-3 months`  &  title_df$`3-6 months` > title_df$`6-12 months` &
+    title_df$`3-6 months`> title_df$`1-2 years`  & title_df$`3-6 months` > title_df$`2+ years` ~
+    paste0("The proportion of three months and under six months unemployed in ", latest_month , " was higher than other catagories of duration"),
+
+  title_df$`1-3 months`  > title_df$`<1 month` &
+    title_df$`1-3 months`  > title_df$`3-6 months`  &  title_df$`1-3 months`  > title_df$`6-12 months` &
+    title_df$`1-3 months` > title_df$`1-2 years`  & title_df$`1-3 months`  > title_df$`2+ years` ~
+    paste0("The proportion of one month and under three months unemployed in ", latest_month , " was higher than other catagories of duration"),
+
+  title_df$`<1 month`  > title_df$`1-3 months` &
+    title_df$`<1 month`  > title_df$`3-6 months`  &  title_df$`<1 month`  > title_df$`6-12 months` &
+    title_df$`<1 month` > title_df$`1-2 years`  & title_df$`<1 month`  > title_df$`2+ years` ~
+    paste0("The proportion of one month and under three months unemployed in ", latest_month , " was higher
+           than other catagories of duration"),
+
+  TRUE ~ "The proportion Unemployed Victorian by duration of unemployment" )
+
+
+
   #
   # )
 
@@ -1202,7 +1241,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     labs(
       subtitle = "Proportion of unemployed Victorians by unemployment duration",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
-      title = "TITLE"
+      title = title
     )
 
 }
