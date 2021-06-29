@@ -1085,8 +1085,8 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
                                   "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
                                   "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
                                   "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-                                )),
-                                df = dash_data) {
+                                ),
+                                df = dash_data)) {
   # select the series you need for the bar chart
 
   data <- data %>%
@@ -1099,137 +1099,94 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       before = 2,
       complete = TRUE
     )) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(value))
 
-  # prepare short  naming
+
+  # Convert duration to factor to order area chart
   data <- data %>%
-    tidyr::pivot_wider(
-      names_from = duration,
-      values_from = value
-    )
+    dplyr::mutate(duration =
+                    factor(.data$duration,
+                           levels = c("Under 4 weeks (under 1 month)",
+                                      "4 weeks and under 13 weeks (1-3 months)",
+                                      "13 weeks and under 26 weeks (3-6 months)",
+                                      "26 weeks and under 52 weeks (6-12 months)",
+                                      "52 weeks and under 104 weeks (1-2 years)",
+                                      "104 weeks and over (2 years and over)"),
+                           ordered = TRUE))
 
-data <- data %>%
-    dplyr::select(
-      date, "104 weeks and over (2 years and over)",
-      "52 weeks and under 104 weeks (1-2 years)",
-      "26 weeks and under 52 weeks (6-12 months)",
-      "13 weeks and under 26 weeks (3-6 months)",
-      "4 weeks and under 13 weeks (1-3 months)",
-      "Under 4 weeks (under 1 month)"
-    ) %>%
-    dplyr::rename(
-      un_2years_over = "104 weeks and over (2 years and over)",
-      un_1_2years = "52 weeks and under 104 weeks (1-2 years)",
-      un_6_12months = "26 weeks and under 52 weeks (6-12 months)",
-      un_3_6months = "13 weeks and under 26 weeks (3-6 months)",
-      un_1_3months = "4 weeks and under 13 weeks (1-3 months)",
-      un_under_1_month = "Under 4 weeks (under 1 month)"
-    ) %>%
-    dplyr::group_by(.data$date) %>%
-    dplyr::mutate(
-      un_total = un_2years_over + un_1_2years + un_6_12months + un_3_6months + un_1_3months + un_under_1_month
-    ) %>%
-    dplyr::ungroup()
-
-
-
-
-  # create a long term unemployed column
-
-data <- data %>%
-    dplyr::filter(!is.na(un_2years_over)) %>%
-    dplyr::mutate(lt_unemp = un_2years_over + un_1_2years) %>%
-    dplyr::select(!c(un_2years_over, un_1_2years))
-
-#create a proportion of unemployed by duration
-
-  data <- data %>%
-    dplyr::mutate(
-      lt_unemp_perc = 100 * (lt_unemp / un_total),
-      un_6_12months_perc = 100 * (un_6_12months / un_total),
-      un_3_6months_perc = 100 * (un_3_6months / un_total),
-      un_1_3months_perc = 100 * (un_1_3months / un_total),
-      un_under_1_month_perc = 100 * (un_under_1_month / un_total)
-    ) %>%
-    dplyr::select(date, lt_unemp_perc, un_6_12months_perc, un_3_6months_perc, un_1_3months_perc, un_under_1_month_perc)
-
-
-  # Arrange a data frame for plotting
-
-  df_data <- data %>%
-    tidyr::pivot_longer(!date,
-      names_to = "duration",
-      values_to = "value"
-    )
-
-
-  #Create a data frame for labelling
-
-  label_df <- df_data %>%
+  label_df <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::mutate(series_order = dplyr::case_when(
-      .data$duration == "un_under_1_month_perc" ~ 1,
-      .data$duration == "un_1_3months_perc" ~ 2,
-      .data$duration == "un_3_6months_perc" ~ 3,
-      .data$duration == "un_6_12months_perc" ~ 4,
-      .data$duration == "lt_unemp_perc" ~ 5,
-      TRUE ~ NA_real_
-    ))
+    dplyr::arrange(duration) %>%
+    dplyr::mutate(perc = value / sum(value),
+                  cum_perc = cumsum(perc) - (perc / 2),
+                  label_no_num =
+                    case_when(duration == "Under 4 weeks (under 1 month)" ~
+                                "<1 month",
+                              duration == "4 weeks and under 13 weeks (1-3 months)" ~
+                                "1-3 months",
+                              duration == "13 weeks and under 26 weeks (3-6 months)" ~
+                                "3-6 months",
+                              duration == "26 weeks and under 52 weeks (6-12 months)" ~
+                                "6-12 months",
+                              duration == "52 weeks and under 104 weeks (1-2 years)"~
+                                "1-2 years",
+                              duration == "104 weeks and over (2 years and over)" ~
+                                "2+ years",
+                              TRUE ~ NA_character_),
+                  label = paste0(label_no_num, " ", round(100 * perc, 1), "%"))
 
-#create latest data
-  latest_df <- df_data %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$date, .data$duration, .data$value) %>%
-    tidyr::pivot_wider(date,
-      names_from = "duration",
-      values_from = "value"
-    ) %>%
-    dplyr::mutate(date = format(.data$date, "%B %Y"))
+  title_df <- label_df %>%
+    dplyr::select(.data$perc, .data$date, .data$label_no_num) %>%
+    tidyr::pivot_wider(names_from = label_no_num, values_from = perc)
 
+  # dplyr::case_when(
+  #   title_df$`2+ years` > title_df$`6-12 months` &
+  #     title_df$`2+ years` > title_df$`1-2 years` ~
+  #     "Something",
+  #
+  # )
 
-  # Create a title
-  title <- dplyr::case_when(
-    latest_df$lt_unemp_perc > latest_df$un_6_12months_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion of long term unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-    latest_df$un_6_12months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-    latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_6_12months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-    latest_df$un_3_6months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
-    paste0("The proportion three to six months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
-    TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
-  )
+  # # Create a title
+  # title <- dplyr::case_when(
+  #   latest_df$lt_unemp_perc > latest_df$un_6_12months_perc & latest_df$lt_unemp_perc > latest_df$un_3_6months_perc & latest_df$lt_unemp_perc > latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+  #   paste0("The proportion of long term unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  #   latest_df$un_6_12months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+  #   paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  #   latest_df$un_1_3months_perc > latest_df$lt_unemp_perc & latest_df$un_3_6months_perc & latest_df$un_6_12months_perc & latest_df$un_under_1_month_perc ~
+  #   paste0("The proportion six to 12 months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  #   latest_df$un_3_6months_perc > latest_df$lt_unemp_perc & latest_df$un_6_12months_perc & latest_df$un_1_3months_perc & latest_df$un_under_1_month_perc ~
+  #   paste0("The proportion three to six months unemployed in ", latest_df$date, " was higher than other catagories of duration"),
+  #   TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
+  # )
 
-
-  df_data %>%
-    ggplot(aes(x = .data$date, y = .data$value, fill = .data$duration)) +
-    geom_area(colour = NA) +
+  data %>%
+    ggplot(aes(x = .data$date,
+               y = .data$value,
+               fill = rev(.data$duration))) +
+    geom_area(colour = NA,
+              position = "fill") +
     theme_djpr() +
-    # geom_text(label_df ~ filter(., date == max(date)),
-    # aes(label= paste0(duration, "\n",value))) +
-    # geom_label(
-    #   data = label_df~ filter(., date == max(date)),
-    #   inherit.aes = FALSE,
-    #   aes(
-    #     y =.data$value,
-    #     x = .data$date,
-    #     label = stringr::str_wrap(.data$label, 10),
-    #     colour = .data$duration
-    #   ),
-    #   label.size = 0,
-    #   label.padding = unit(0.1, "lines"),
-    #   size = 12 / .pt,
-    #   hjust = 0
-    # ) +
-
-    djpr_fill_manual(5) +
-    djpr_colour_manual(5) +
+    geom_label(data = label_df,
+              aes(x = date,
+                  y = cum_perc,
+                  colour = rev(.data$duration),
+                  label = stringr::str_wrap(label, 11)),
+              inherit.aes = FALSE,
+              hjust = 0,
+              label.padding = unit(0.05, "lines"),
+              label.size = 0,
+              lineheight = 0.9,
+              size = 12 / .pt,
+              fill = "white") +
+    djpr_fill_manual(6) +
+    djpr_colour_manual(6) +
     theme(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12)
     ) +
     scale_x_date(
-      expand = expansion(mult = c(.02, .25)),
+      expand = expansion(mult = c(.02, .2)),
       date_labels = "%b\n %Y",
       breaks = djprtheme::breaks_right(
         limits = c(
@@ -1239,14 +1196,15 @@ data <- data %>%
       )
     ) +
     scale_y_continuous(
-      labels = function(x) paste0(x, "%"),
-      expand = expansion(add = c(0, 0.5))
+      labels = function(x) paste0(x * 100, "%"),
+      expand = expansion(add = c(0, 0.01))
     ) +
     labs(
-      subtitle = "The proportion of unemployed Victorians by duartion of time ",
+      subtitle = "Proportion of unemployed Victorians by unemployment duration",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
-      title = title
+      title = "TITLE"
     )
+
 }
 
 #Full-time and part-time  employment growth pattern by gender
