@@ -40,7 +40,7 @@ Imports:
     pkgload,
     reactable,
     rlang,
-    sf,
+    sf (>= 1.0),
     shiny (>= 1.6.0),
     shinyjs,
     tidyr,
