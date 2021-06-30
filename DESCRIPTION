@@ -31,7 +31,7 @@ RoxygenNote: 7.1.1
 Imports: 
     dataui (>= 0.0.1),
     djprdashdata (>= 0.0.2.9002),
-    djprshiny (>= 0.0.3.902),
+    djprshiny (>= 0.0.3.906),
     djprtheme (>= 0.0.0.9000),
     dplyr (>= 1.0.5),
     ggplot2,
