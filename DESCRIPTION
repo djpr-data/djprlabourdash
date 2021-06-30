@@ -32,7 +32,7 @@ Imports:
     dataui (>= 0.0.1),
     djprdashdata (>= 0.0.2.9002),
     djprshiny (>= 0.0.3.906),
-    djprtheme (>= 0.0.0.9000),
+    djprtheme (>= 0.0.2.902),
     dplyr (>= 1.0.5),
     ggplot2,
     htmltools (>= 0.5.1.1),
