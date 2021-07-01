@@ -684,13 +684,14 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
     )
 }
 
-#comparing participation and unemployment visualisation
+# comparing participation and unemployment visualisation
 
 viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
                                        "A84423355R",
                                        "A84423354L"
                                      ),
-                                     df = dash_data)) {
+                                     df = dash_data
+                                     )) {
   data <- data %>%
     select(date, series, value, indicator)
 
@@ -742,11 +743,11 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
 }
 
 viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
-  "A84423355R",
-  "A84423354L"
-),
-df = dash_data)) {
-
+                                          "A84423355R",
+                                          "A84423354L"
+                                        ),
+                                        df = dash_data
+                                        )) {
   df <- data %>%
     select(date, value, indicator)
 
@@ -757,9 +758,11 @@ df = dash_data)) {
     tidyr::spread(key = indicator, value = change) %>%
     mutate(focus_date = if_else(date == max(date), TRUE, FALSE)) %>%
     dplyr::filter(!is.na(`Unemployment rate`)) %>%
-    ggplot(aes(x = `Unemployment rate`,
-               y = `Participation rate`,
-               col = focus_date)) +
+    ggplot(aes(
+      x = `Unemployment rate`,
+      y = `Participation rate`,
+      col = focus_date
+    )) +
     geom_hline(yintercept = 0) +
     geom_vline(xintercept = 0) +
     ggiraph::geom_point_interactive() +
