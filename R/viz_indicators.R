@@ -749,23 +749,75 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
                                         df = dash_data
                                         )) {
   df <- data %>%
-    select(date, value, indicator)
+    dplyr::select(.data$date, .data$value, .data$indicator)
+
+  df <- df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(change = .data$value - lag(.data$value, 1)) %>%
+    dplyr::select(.data$date, .data$indicator, .data$change) %>%
+    tidyr::spread(key = .data$indicator, value = .data$change) %>%
+    dplyr::mutate(focus_date = if_else(.data$date == max(.data$date), TRUE, FALSE)) %>%
+    dplyr::filter(!is.na(.data$`Unemployment rate`))
+
+
+  quadrants <- tibble(
+    x = c(-0.5, 0.75, -0.5, 0.75),
+    y = c(1.75, 1.75, -1.75, -1.75),
+    label = c("Unemployment ↓\nParticipation ↑",
+              "Unemployment ↑\nParticipation ↑",
+              "Unemployment ↓\nParticipation ↓",
+              "Unemployment ↑\nParticipation ↓")
+  )
+
+  latest_month <- df %>%
+    filter(.data$date == max(.data$date))
+
+  title <- case_when(
+    latest_month$`Participation rate` > 0 &
+      latest_month$`Unemployment rate` > 0 ~
+      "Unemployment and participation both rose in ",
+    latest_month$`Participation rate` < 0 &
+      latest_month$`Unemployment rate` < 0 ~
+      "Unemployment and participation both fell in ",
+    latest_month$`Participation rate` > 0 &
+      latest_month$`Unemployment rate` < 0 ~
+      "Unemployment fell even as participation rose in ",
+    latest_month$`Participation rate` < 0 &
+      latest_month$`Unemployment rate` > 0 ~
+      "Unemployment rose despite a fall in participation in "
+  )
+
+  title <- paste0(title, format(latest_month$date, "%B %Y"))
 
   df %>%
-    group_by(indicator) %>%
-    mutate(change = value - lag(value, 1)) %>%
-    select(date, indicator, change) %>%
-    tidyr::spread(key = indicator, value = change) %>%
-    mutate(focus_date = if_else(date == max(date), TRUE, FALSE)) %>%
-    dplyr::filter(!is.na(`Unemployment rate`)) %>%
     ggplot(aes(
-      x = `Unemployment rate`,
-      y = `Participation rate`,
-      col = focus_date
+      x = .data$`Unemployment rate`,
+      y = .data$`Participation rate`,
+      col = .data$focus_date,
+      alpha = .data$focus_date
     )) +
     geom_hline(yintercept = 0) +
     geom_vline(xintercept = 0) +
-    ggiraph::geom_point_interactive() +
+    geom_text(data = quadrants,
+              inherit.aes = FALSE,
+              size = 14 / .pt,
+              colour = djprtheme::djpr_cool_grey_11,
+              aes(x = x, y = y, label = label)) +
+    ggiraph::geom_point_interactive(size = 2.5,
+                                    aes(tooltip = format(.data$date, "%b %Y"))) +
+    geom_text(data = ~filter(., .data$date == max(.data$date)),
+              aes(label = format(.data$date, "%b %Y")),
+              size = 14 / .pt,
+              nudge_y = 0.1) +
     djpr_colour_manual(2) +
-    theme_djpr()
+    scale_x_continuous(labels = function(x) paste0(x, " ppts")) +
+    scale_y_continuous(labels = function(x) paste0(x, " ppts")) +
+    scale_alpha_discrete(range = c(0.25, 1)) +
+    theme_djpr() +
+    labs(y = "Change in participation rate\n",
+         x = "Change in unemployment rate",
+         caption = caption_lfs(),
+         title = title,
+         subtitle = paste0("Monthly change in participation rate by monthly change in unemployment rate, March 1978 to ", max(df$date) %>% format("%B %Y"))) +
+    theme(axis.title.y = element_text(angle = 90))
 }
