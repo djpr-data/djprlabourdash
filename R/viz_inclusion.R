@@ -1316,8 +1316,8 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::if_else(
     female_latest_f > male_latest_f,
-    paste0("Female full-time employment growth outpaced male in the 12 months to ", latest_month),
-    paste0(" Female full-time employment growth lagged behind male in the 12 months to ", latest_month)
+    paste0("Female full-time employment growth outpaced males in the 12 months to ", latest_month),
+    paste0(" Female full-time employment growth lagged behind males in the 12 months to ", latest_month)
   )
 
   # female_latest_p > male_latest_p,
