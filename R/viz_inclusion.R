@@ -1015,29 +1015,29 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
   # create a title
 
   title <- dplyr::case_when(
-    title_df$`2+ years` > title_df$`<1 month` &
-      title_df$`2+ years` > title_df$`1-3 months` & title_df$`2+ years` > title_df$`3-6 months` &
-      title_df$`2+ years` > title_df$`6-12 months` & title_df$`2+ years` > title_df$`1-2 years` ~
+    title_df$`2+ years` < title_df$`<1 month` &
+      title_df$`2+ years` < title_df$`1-3 months` & title_df$`2+ years` < title_df$`3-6 months` &
+      title_df$`2+ years` < title_df$`6-12 months` & title_df$`2+ years` < title_df$`1-2 years` ~
     paste0("Two years and over unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`1-2 years` > title_df$`<1 month` &
-      title_df$`1-2 years` > title_df$`1-3 months` & title_df$`1-2 years` > title_df$`3-6 months` &
-      title_df$`1-2 years` > title_df$`6-12 months` & title_df$`1-2 years` > title_df$`2+ years` ~
+    title_df$`1-2 years` < title_df$`<1 month` &
+      title_df$`1-2 years` < title_df$`1-3 months` & title_df$`1-2 years` < title_df$`3-6 months` &
+      title_df$`1-2 years` < title_df$`6-12 months` & title_df$`1-2 years` < title_df$`2+ years` ~
     paste0("One years and under two years Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`6-12 months` > title_df$`<1 month` &
-      title_df$`6-12 months` > title_df$`1-3 months` & title_df$`6-12 months` > title_df$`3-6 months` &
-      title_df$`6-12 months` > title_df$`1-2 years` & title_df$`6-12 months` > title_df$`2+ years` ~
+    title_df$`6-12 months` < title_df$`<1 month` &
+      title_df$`6-12 months` < title_df$`1-3 months` & title_df$`6-12 months` < title_df$`3-6 months` &
+      title_df$`6-12 months` < title_df$`1-2 years` & title_df$`6-12 months` < title_df$`2+ years` ~
     paste0("Six months and under 12 months unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`3-6 months` > title_df$`<1 month` &
-      title_df$`3-6 months` > title_df$`1-3 months` & title_df$`3-6 months` > title_df$`6-12 months` &
-      title_df$`3-6 months` > title_df$`1-2 years` & title_df$`3-6 months` > title_df$`2+ years` ~
+    title_df$`3-6 months` < title_df$`<1 month` &
+      title_df$`3-6 months` < title_df$`1-3 months` & title_df$`3-6 months` < title_df$`6-12 months` &
+      title_df$`3-6 months` < title_df$`1-2 years` & title_df$`3-6 months` < title_df$`2+ years` ~
     paste0("Three months and under six months unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`1-3 months` > title_df$`<1 month` &
-      title_df$`1-3 months` > title_df$`3-6 months` & title_df$`1-3 months` > title_df$`6-12 months` &
-      title_df$`1-3 months` > title_df$`1-2 years` & title_df$`1-3 months` > title_df$`2+ years` ~
+    title_df$`1-3 months` < title_df$`<1 month` &
+      title_df$`1-3 months` < title_df$`3-6 months` & title_df$`1-3 months` < title_df$`6-12 months` &
+      title_df$`1-3 months` < title_df$`1-2 years` & title_df$`1-3 months` < title_df$`2+ years` ~
     paste0("One month and under three months unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`<1 month` > title_df$`1-3 months` &
-      title_df$`<1 month` > title_df$`3-6 months` & title_df$`<1 month` > title_df$`6-12 months` &
-      title_df$`<1 month` > title_df$`1-2 years` & title_df$`<1 month` > title_df$`2+ years` ~
+    title_df$`<1 month` < title_df$`1-3 months` &
+      title_df$`<1 month` < title_df$`3-6 months` & title_df$`<1 month` < title_df$`6-12 months` &
+      title_df$`<1 month` < title_df$`1-2 years` & title_df$`<1 month` < title_df$`2+ years` ~
     paste0("Under one month unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
     TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
   )
