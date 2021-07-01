@@ -947,7 +947,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(value))
-  #
+
   data <- data %>%
     tidyr::pivot_wider(
       names_from = duration,
@@ -956,14 +956,6 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
   # create short name
   data <- data %>%
-    dplyr::select(
-      date, "104 weeks and over (2 years and over)",
-      "52 weeks and under 104 weeks (1-2 years)",
-      "26 weeks and under 52 weeks (6-12 months)",
-      "13 weeks and under 26 weeks (3-6 months)",
-      "4 weeks and under 13 weeks (1-3 months)",
-      "Under 4 weeks (under 1 month)"
-    ) %>%
     dplyr::rename(
       "2+ years" = "104 weeks and over (2 years and over)",
       "1-2 years" = "52 weeks and under 104 weeks (1-2 years)",
@@ -973,19 +965,29 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
       "<1 month" = "Under 4 weeks (under 1 month)"
     )
 
-
   # arrange the latest and the previous period data
-
   df_data <- data %>%
     tidyr::pivot_longer(!date,
       names_to = "duration",
       values_to = "value"
-    ) %>%
-    dplyr::group_by(duration) %>%
-    dplyr::arrange(date) %>%
-    dplyr::slice_tail(n = 2) %>%
-    dplyr::ungroup()
+    )
 
+  df_data <- df_data %>%
+    dplyr::filter(date %in% c(max(date),
+                              subtract_years(max(date), 1)))
+
+  df_data <- df_data %>%
+    dplyr::mutate(duration = factor(duration,
+                                    levels = c(
+                                      "<1 month",
+                                      "1-3 months",
+                                      "3-6 months",
+                                      "6-12 months",
+                                      "1-2 years",
+                                      "2+ years"
+                                    ),
+                                    ordered = TRUE
+                                    ))
 
   title_df <- df_data %>%
     dplyr::group_by(.data$duration) %>%
@@ -1043,21 +1045,26 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
   # create chart
   df_data %>%
-    ggplot(aes(x = interaction(date, duration), y = .data$value, fill = .data$duration)) +
+    dplyr::mutate(date = format(.data$date, "%B %Y"),
+                  date = factor(.data$date,
+                                levels = rev(sort(unique(.data$date))),
+                                ordered = TRUE)) %>%
+    ggplot(aes(x = .data$duration, y = .data$value,
+               fill = .data$date
+               )
+           ) +
     geom_bar(stat = "identity", position = "dodge") +
     coord_flip() +
-    theme_djpr() +
-    # (x = stats::reorder(.data$date, .data$duration)
-    # scale_x_date(
-    #   date_labels = "%b\n%Y")+
-    djpr_fill_manual(6) +
-    djpr_colour_manual(6) +
+    theme_djpr(flipped = TRUE) +
+    djpr_fill_manual(2) +
     geom_text(
-      nudge_y = 1.5,
+      # nudge_y = 1.5,
       # stat = "identity",
+      position = position_dodge(width = 1),
       aes(label = paste0(round(.data$value, 1))),
       colour = "black",
-      vjust = 0,
+      vjust = 0.5,
+      hjust = 0,
       size = 12 / .pt
     ) +
     scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
@@ -1065,7 +1072,12 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
       axis.text.x = element_blank(),
       axis.title = element_blank(),
       panel.grid = element_blank(),
-      axis.line = element_blank()
+      axis.line = element_blank(),
+      legend.position = c(0.9, 0.9),
+      legend.key.height  = unit(1.5, "lines"),
+      legend.key.width = unit(1.5, "lines"),
+      legend.direction = "vertical",
+      axis.ticks = element_blank()
     ) +
     labs(
       subtitle = paste0(
