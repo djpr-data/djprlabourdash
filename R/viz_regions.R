@@ -1570,6 +1570,92 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_rest of vi
                                      selected_indicator = "unemp_rate")
 {
 
-  # bar chart ro compare different age classes in regional vic with regional australia
+  # to be part of second region focus box: unemp rate, part rate and emp to pop ratio
+  # 3 bar charts to compare different age classes in regional vic with regional areas and regional australia
+
+  # add up all regions to create regional Australia data
+  df <- data %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(.data$series, .data$indicator, .data$value) %>%
+    tidyr::spread(key = .data$indicator, value = .data$value) %>%
+    dplyr::mutate(
+      `Regional Australia` = .data$`Rest of Vic.` +
+        .data$`Rest of NSW` +
+        .data$`Rest of Qld` +
+        .data$`Rest of WA` +
+        .data$`Rest of Tas.` +
+        .data$`Rest of NT`
+      )
+
+  df <- df %>%
+    dplyr::mutate(
+      state = dplyr::if_else(.data$state == "",
+                             "Australia",
+                             .data$state
+      ),
+      state = strayr::clean_state(.data$state)
+    )
+
+  df <- df %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
+  title <- paste0(
+    "The ", selected_indicator,
+    " in regional areas for different age classes in ", format(max(data$date), "%B %Y")
+  )
+
+  df <- df %>%
+    dplyr::mutate(fill_col = dplyr::if_else(
+      .data$state %in% c("Vic", "Aus"), .data$state, "Other"
+    ))
+
+  df_15 <- df %>%
+    dplyr::select(.data$age == `15-24`)
+
+  df_25 <- df %>%
+    dplyr::select(.data$age ==`25-54`)
+
+  df_55 <- df %>%
+    dplyr::select(.data$age ==`55+`)
+
+  df_15 %>%
+    ggplot(aes(
+      x = stats::reorder(.data$state, .data$value),
+      y = .data$value
+    )) +
+    geom_col(
+      aes(fill = .data$fill_col),
+      alpha = 0.9
+    ) +
+    geom_text(
+      nudge_y = 0.1,
+      aes(label = paste0(round(.data$value, 1), "%")),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+    coord_flip(clip = "off") +
+    scale_fill_manual(
+      values = c(
+        "Vic" = djprtheme::djpr_royal_blue,
+        "Aus" = djprtheme::djpr_green,
+        "Other" = "grey70"
+      )
+    ) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(
+      title = title,
+      subtitle = "subtitle goes here",
+      caption = caption_lfs_det_m()
+    )
 
 }
