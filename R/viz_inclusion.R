@@ -1196,8 +1196,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       title_df$`<1 month` > title_df$`1-2 years` & title_df$`<1 month` > title_df$`2+ years` ~
     paste0("The proportion of under one months unemployed in ", latest_month, " was higher
            than other catagories of duration"),
-    TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
-  )
+    TRUE ~ "The proportion Unemployed Victorian by duration of unemployment")
 
 
 
