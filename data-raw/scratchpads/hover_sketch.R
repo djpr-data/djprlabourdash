@@ -36,7 +36,7 @@ server <- function(input, output, session) {
       options = list(
         opts_hover(reactive = TRUE,
                    css = girafe_css(
-                     css = "fill:#2A6FA2"
+                     css = "fill: #2A6FA2; transition: 0.2s;"
                    )),
         opts_toolbar(saveaspng = FALSE),
         opts_selection(type = "none")
