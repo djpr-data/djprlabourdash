@@ -5,7 +5,7 @@ library(tidyverse)
 
 # dash_data <- load_dash_data()
 
-data <- filter_dash_data("A84423354L")
+ur_bar_data <- filter_dash_data("A84423354L")
 
 df <- data %>%
     dplyr::slice_tail(n = 12)
