@@ -1390,7 +1390,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     dplyr::filter(.data$indicator_short == selected_indicator)
 
   df <- df %>%
-    dplyr::group_by(.data$state) %>%
+    dplyr::group_by(.data$series) %>%
     dplyr::mutate(
       value = slider::slide_mean(.data$value, before = 2, complete = TRUE),
       geog = dplyr::if_else(.data$state == "",
@@ -1620,6 +1620,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_rest of vi
   df_55 <- df %>%
     dplyr::select(.data$age ==`55+`)
 
+  # replicate that for the other age classes, once the code works
   df_15 %>%
     ggplot(aes(
       x = stats::reorder(.data$state, .data$value),
