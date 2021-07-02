@@ -666,7 +666,3 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
       title = title
     )
 }
-
-viz_industry_by_age <- function() {
-  # FAKE FUNCTION
-}
