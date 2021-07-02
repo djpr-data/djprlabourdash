@@ -459,7 +459,21 @@ labour_server <- function(input, output, session) {
   #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
   # })
 
+  # Inclusion: long term unemployment ------
 
+  djpr_plot_server("gr_ltunemp_line",
+                   viz_gr_ltunemp_line,
+                   data = filter_dash_data(c(
+                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                     "A84423687K",
+                     "A84423089K",
+                     "A84597681W"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = as.Date("2000-01-01"))
 
   # Regions ------
 

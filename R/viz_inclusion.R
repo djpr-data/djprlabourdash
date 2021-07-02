@@ -662,7 +662,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
   data %>%
     djpr_ts_linechart(
       col_var = .data$age,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       hline = 0
     ) +
     scale_y_continuous(
@@ -743,24 +743,6 @@ viz_gr_yth_unemprate_line <- function(data = filter_dash_data(c(
       caption = "Source: ABS Labour Force. Note: 12 month average."
     )
 }
-
-# viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-#                                   "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-#                                   "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-#                                   "A84423687K"
-#                                 )) %>%
-#                                   dplyr::group_by(.data$series_id) %>%
-#                                   dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
-#                                   dplyr::ungroup()
-#                                 ) {
-#   df <- data %>%
-#     dplyr::mutate(series = dplyr::if_else(grepl("Unemployed", .data$series),
-#       "long-term unemployed",
-#       "labour force"
-#     )) %>%
-#     dplyr::group_by(.data$date, .data$series) %>%
-#     dplyr::summarise(value = sum(.data$value))
-# }
 
 viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
                                       "A84423356T",
@@ -889,7 +871,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
   latest_values <- data_lr_un %>%
     filter(date == max(date)) %>%
     mutate(
-      value = round(value, 1),
+      value = round2(value, 1),
       date = format(date, "%B %Y")
     ) %>%
     select(state, value, date) %>%
@@ -908,11 +890,11 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
   data_lr_un %>%
     djpr_ts_linechart(
       col_var = state,
-      label_num = paste0(round(.data$value, 1), "%")
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
-      subtitle = "Long-term unemployment rate in Victoria and Australia",
-      caption = caption_lfs(),
+      subtitle = "Long-term unemployment rate in Victoria and Australia, per cent of labour force",
+      caption = caption_lfs_det_m(),
       title = title
     ) +
     scale_y_continuous(
@@ -1061,7 +1043,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
       # nudge_y = 1.5,
       # stat = "identity",
       position = position_dodge(width = 1),
-      aes(label = paste0(round(.data$value, 1))),
+      aes(label = paste0(round2(.data$value, 1))),
       colour = "black",
       vjust = 0.5,
       hjust = 0,
@@ -1156,7 +1138,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
           "2+ years",
           TRUE ~ NA_character_
         ),
-      label = paste0(label_no_num, " ", round(100 * perc, 1), "%")
+      label = paste0(label_no_num, " ", round2(100 * perc, 1), "%")
     )
 
   title_df <- label_df %>%
@@ -1327,7 +1309,7 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
   annual_g %>%
     djpr_ts_linechart(
       col_var = sex,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       hline = 0
     ) +
