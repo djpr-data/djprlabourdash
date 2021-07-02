@@ -763,10 +763,10 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
   quadrants <- tibble(
     x = c(-0.5, 0.75, -0.5, 0.75),
     y = c(1.75, 1.75, -1.75, -1.75),
-    label = c("Unemployment ↓\nParticipation ↑",
-              "Unemployment ↑\nParticipation ↑",
-              "Unemployment ↓\nParticipation ↓",
-              "Unemployment ↑\nParticipation ↓")
+    label = c("Unemployment \U2193\nParticipation \U2191",
+              "Unemployment \U2191\nParticipation \U2191",
+              "Unemployment \U2193\nParticipation \U2193",
+              "Unemployment \U2191\nParticipation \U2193")
   )
 
   latest_month <- df %>%
