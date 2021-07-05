@@ -918,22 +918,22 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
                                )) {
   # select the series you need for the bar chart
   data <- data %>%
-    dplyr::select(duration, value, date)
+    dplyr::select(.data$duration, .data$value, .data$date)
 
   # take 3 month moving average
   data <- data %>%
     dplyr::group_by(.data$duration) %>%
-    dplyr::mutate(value = slider::slide_mean(value,
+    dplyr::mutate(value = slider::slide_mean(.data$value,
       before = 2,
       complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
-    dplyr::filter(!is.na(value))
+    dplyr::filter(!is.na(.data$value))
 
   data <- data %>%
     tidyr::pivot_wider(
-      names_from = duration,
-      values_from = value
+      names_from = .data$duration,
+      values_from = .data$value
     )
 
   # create short name
@@ -955,11 +955,11 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     )
 
   df_data <- df_data %>%
-    dplyr::filter(date %in% c(max(date),
-                              subtract_years(max(date), 1)))
+    dplyr::filter(.data$date %in% c(max(.data$date),
+                              subtract_years(max(.data$date), 1)))
 
   df_data <- df_data %>%
-    dplyr::mutate(duration = factor(duration,
+    dplyr::mutate(duration = factor(.data$duration,
                                     levels = c(
                                       "<1 month",
                                       "1-3 months",
@@ -971,91 +971,85 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
                                     ordered = TRUE
                                     ))
 
-  title_df <- df_data %>%
-    dplyr::group_by(.data$duration) %>%
-    dplyr::mutate(d_month = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
-    dplyr::ungroup() %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(date, duration, d_month) %>%
-    dplyr::mutate(
-      value = round2(.data$d_month, 1),
-      date = format(.data$date, "%B %Y")
-    ) %>%
-    dplyr::select(
-      .data$duration,
-      .data$value,
-      .data$date
-    ) %>%
-    tidyr::pivot_wider(
-      names_from = "duration",
-      values_from = "value"
-    )
-
-
   latest_month <- format(max(data$date), "%B %Y")
 
-  # create a title
+  title_df <- df_data %>%
+    dplyr::mutate(duration_type =
+                    case_when(
+                      duration %in% c("2+ years",
+                                      "1-2 years") ~ "LT",
+                      duration %in% c("6-12 months") ~ "mid",
+                      duration %in% c("<1 month",
+                                      "1-3 months",
+                                      "3-6 months") ~ "ST",
+                      TRUE ~ NA_character_)) %>%
+    dplyr::filter(.data$duration_type %in% c("ST", "LT")) %>%
+    dplyr::group_by(.data$duration_type, .data$date) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(change = .data$value - lag(.data$value, 1)) %>%
+    dplyr::filter(!is.na(.data$change)) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(.data$duration_type, .data$change) %>%
+    tidyr::pivot_wider(names_from = .data$duration_type,
+                       values_from = .data$change)
 
-  title <- dplyr::case_when(
-    title_df$`2+ years` < title_df$`<1 month` &
-      title_df$`2+ years` < title_df$`1-3 months` & title_df$`2+ years` < title_df$`3-6 months` &
-      title_df$`2+ years` < title_df$`6-12 months` & title_df$`2+ years` < title_df$`1-2 years` ~
-    paste0("Two years and over unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`1-2 years` < title_df$`<1 month` &
-      title_df$`1-2 years` < title_df$`1-3 months` & title_df$`1-2 years` < title_df$`3-6 months` &
-      title_df$`1-2 years` < title_df$`6-12 months` & title_df$`1-2 years` < title_df$`2+ years` ~
-    paste0("One years and under two years Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`6-12 months` < title_df$`<1 month` &
-      title_df$`6-12 months` < title_df$`1-3 months` & title_df$`6-12 months` < title_df$`3-6 months` &
-      title_df$`6-12 months` < title_df$`1-2 years` & title_df$`6-12 months` < title_df$`2+ years` ~
-    paste0("Six months and under 12 months unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`3-6 months` < title_df$`<1 month` &
-      title_df$`3-6 months` < title_df$`1-3 months` & title_df$`3-6 months` < title_df$`6-12 months` &
-      title_df$`3-6 months` < title_df$`1-2 years` & title_df$`3-6 months` < title_df$`2+ years` ~
-    paste0("Three months and under six months unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`1-3 months` < title_df$`<1 month` &
-      title_df$`1-3 months` < title_df$`3-6 months` & title_df$`1-3 months` < title_df$`6-12 months` &
-      title_df$`1-3 months` < title_df$`1-2 years` & title_df$`1-3 months` < title_df$`2+ years` ~
-    paste0("One month and under three months unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    title_df$`<1 month` < title_df$`1-3 months` &
-      title_df$`<1 month` < title_df$`3-6 months` & title_df$`<1 month` < title_df$`6-12 months` &
-      title_df$`<1 month` < title_df$`1-2 years` & title_df$`<1 month` < title_df$`2+ years` ~
-    paste0("Under one month unemployed Victorians had a high rate of percentage decline in ", latest_month, "."),
-    TRUE ~ "The proportion Unemployed Victorian by duration of unemployment"
-  )
 
+  title <- dplyr::case_when(title_df$LT > 0 &
+                     title_df$ST > 0 ~
+                     "The number of long-term and short-term unemployed Victorians both rose over the year to ",
+                   title_df$LT < 0 &
+                     title_df$ST > 0 ~
+                     "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
+                   title_df$LT > 0 &
+                     title_df$ST < 0 ~
+                     "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
+                   title_df$LT < 0 &
+                     title_df$ST ~
+                     "The number of long-term and short-term unemployed Victorians both fell over the year to ",
+                   TRUE ~ "Long-term and short-term unemployment in Victoria over the year to "
+                   )
+
+  title <- paste0(title, latest_month)
 
   # create chart
-  df_data %>%
+  df_data <- df_data %>%
     dplyr::mutate(date = format(.data$date, "%B %Y"),
                   date = factor(.data$date,
                                 levels = rev(sort(unique(.data$date))),
-                                ordered = TRUE)) %>%
-    ggplot(aes(x = .data$duration, y = .data$value,
+                                ordered = TRUE))
+
+  df_data %>%
+    ggplot(aes(x = .data$duration,
+               y = .data$value,
                fill = .data$date
                )
            ) +
     geom_bar(stat = "identity", position = "dodge") +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
-    djpr_fill_manual(2) +
+    scale_fill_manual(
+      values = djpr_pal(2),
+      breaks = c(max(df_data$date),
+                                min(df_data$date)),
+      aesthetics = c("fill", "colour")) +
     geom_text(
-      # nudge_y = 1.5,
-      # stat = "identity",
-      position = position_dodge(width = 1),
-      aes(label = paste0(round2(.data$value, 1))),
-      colour = "black",
+      position = position_dodge(width = 0.9),
+      aes(label = paste0(round2(.data$value, 1)),
+          y = .data$value - 1),
       vjust = 0.5,
-      hjust = 0,
+      colour = "white",
+      hjust = 1,
       size = 12 / .pt
     ) +
     scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
+    djpr_y_continuous() +
     theme(
       axis.text.x = element_blank(),
       axis.title = element_blank(),
       panel.grid = element_blank(),
       axis.line = element_blank(),
-      legend.position = c(0.9, 0.9),
+      legend.position = c(0.85, 0.89),
       legend.key.height  = unit(1.5, "lines"),
       legend.key.width = unit(1.5, "lines"),
       legend.direction = "vertical",
