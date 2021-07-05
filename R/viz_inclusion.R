@@ -427,7 +427,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
     selected_indicator == "emp_pop" ~ "employment to population ratio",
     TRUE ~ NA_character_)
 
-  title <- paste0("The ",
+  title <- paste0("The",
     dplyr::case_when(
       latest_values$`Greater Melbourne` > latest_values$`Rest of Vic.` ~
         paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
@@ -435,7 +435,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
         paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
       latest_values$`Greater Melbourne` == latest_values$`Rest of Vic.` ~
         paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
-      TRUE ~ paste0("Youth ", indic_long, " in Greater Melbourne and the rest of Victoria in ")
+      TRUE ~ paste0(" youth ", indic_long, " in Greater Melbourne and the rest of Victoria in ")
   ))
 
   title <- paste0(title, format(latest_values$date, "%B %Y") )
@@ -451,8 +451,8 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
       djpr_pal(10)[c(5, 10)]
     )) +
     labs(title = title,
-         subtitle = "Unemployment rate for people aged 15-24",
-         caption = paste0(caption_lfs_det_m(), " Smoothed using a 12 month rolling average."))
+         subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24"),
+         caption = paste0(caption_lfs(), " Smoothed using a 12 month rolling average."))
 }
 
 # Line chart --- unemployment rate by age, Victoria ------
@@ -562,8 +562,8 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
     djpr_y_continuous(limits = function(x) c(0, x[2]),
                       labels = function(x) paste0(x * 100, "%")) +
     labs(title = title,
-         subtitle = "Unemployment rate by age, Victoria",
-         caption = paste0(caption_lfs_det_m(), " Smoothed using 12 month moving average."))
+         subtitle = paste0(tools::toTitleCase(indic_long), " by age, Victoria"),
+         caption = paste0(caption_lfs(), " Smoothed using 12 month moving average."))
 }
 
 # Dot plot -- youth unemployment rate by state -------
@@ -720,9 +720,9 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     ) +
     theme_djpr(flipped = T) +
     labs(title = title,
-         subtitle = "Unemployment rate for people aged 15-24, by state and territory",
-         caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average."),
-         y = "Youth unemployment rate")
+         subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24, by state and territory"),
+         caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
+         y = paste0("Youth ", indic_long))
 }
 
 viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
