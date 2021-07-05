@@ -231,12 +231,12 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   title <- dplyr::case_when(
     current_ur$Females < current_ur$Males ~
     paste0(
-      "The unemployment rate for women was a little lower than the rate for men in ",
+      "The unemployment rate for women was lower than the rate for men in ",
       max_date
     ),
     current_ur$Females > current_ur$Males ~
     paste0(
-      "The unemployment rate for women was a little higher than the rate for men in ",
+      "The unemployment rate for women was higher than the rate for men in ",
       max_date
     ),
     TRUE ~ paste0(
@@ -246,7 +246,9 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = .data$sex) +
+    djpr_ts_linechart(col_var = .data$sex,
+                      label_num = paste0(round(.data$value, 1), "%"),
+                      y_labels = function(x) paste0(x, "%")) +
     labs(
       title = title,
       subtitle = "Unemployment by sex, Victoria",
