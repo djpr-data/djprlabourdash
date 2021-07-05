@@ -475,6 +475,35 @@ labour_server <- function(input, output, session) {
                    plt_change = plt_change,
                    date_slider_value_min = as.Date("2000-01-01"))
 
+  djpr_plot_server("gr_ltunvic_bar",
+                   viz_gr_ltunvic_bar,
+                   data = filter_dash_data(c(
+                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                     "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                     "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                     "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                     "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
+  djpr_plot_server("gr_ltunvic_area",
+                   viz_gr_ltunvic_area,
+                   data = filter_dash_data(c(
+                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                     "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                     "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                     "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                     "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change)
+
   # Regions ------
 
   djpr_plot_server("reg_melvic_line",

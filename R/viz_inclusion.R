@@ -949,7 +949,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
   # arrange the latest and the previous period data
   df_data <- data %>%
-    tidyr::pivot_longer(!date,
+    tidyr::pivot_longer(cols = !.data$date,
       names_to = "duration",
       values_to = "value"
     )
@@ -1080,17 +1080,17 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
   # select the series you need for the bar chart
 
   data <- data %>%
-    dplyr::select(duration, value, date)
+    dplyr::select(.data$duration, .data$value, .data$date)
 
   # 3 month moving average
   data <- data %>%
     dplyr::group_by(.data$duration) %>%
-    dplyr::mutate(value = slider::slide_mean(value,
+    dplyr::mutate(value = slider::slide_mean(.data$value,
       before = 2,
       complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
-    dplyr::filter(!is.na(value))
+    dplyr::filter(!is.na(.data$value))
 
 
   # Convert duration to factor to order area chart
@@ -1139,42 +1139,11 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     dplyr::select(.data$perc, .data$date, .data$label_no_num) %>%
     tidyr::pivot_wider(names_from = label_no_num, values_from = perc)
 
-  latest_month <- format(max(label_df$date), "%B %Y")
+  # latest_month <- format(max(label_df$date), "%B %Y")
 
-
-
-  title <- dplyr::case_when(
-    title_df$`2+ years` > title_df$`<1 month` &
-      title_df$`2+ years` > title_df$`1-3 months` & title_df$`2+ years` > title_df$`3-6 months` &
-      title_df$`2+ years` > title_df$`6-12 months` & title_df$`2+ years` > title_df$`1-2 years` ~
-    paste0("The proportion of two years and over unemployed in ", latest_month, " was higher
-        than other catagories of duration"),
-    title_df$`1-2 years` > title_df$`<1 month` &
-      title_df$`1-2 years` > title_df$`1-3 months` & title_df$`1-2 years` > title_df$`3-6 months` &
-      title_df$`1-2 years` > title_df$`6-12 months` & title_df$`1-2 years` > title_df$`2+ years` ~
-    paste0("The proportion of one years and under two years unemployed in ", latest_month, " was higher
-          than other catagories of duration"),
-    title_df$`6-12 months` > title_df$`<1 month` &
-      title_df$`6-12 months` > title_df$`1-3 months` & title_df$`6-12 months` > title_df$`3-6 months` &
-      title_df$`6-12 months` > title_df$`1-2 years` & title_df$`6-12 months` > title_df$`2+ years` ~
-    paste0("The proportion of six months and under 12 months unemployed in ", latest_month, " was higher
-           than other catagories of duration"),
-    title_df$`3-6 months` > title_df$`<1 month` &
-      title_df$`3-6 months` > title_df$`1-3 months` & title_df$`3-6 months` > title_df$`6-12 months` &
-      title_df$`3-6 months` > title_df$`1-2 years` & title_df$`3-6 months` > title_df$`2+ years` ~
-    paste0("The proportion of three months and under six months unemployed in ", latest_month, " was higher than other catagories of duration"),
-    title_df$`1-3 months` > title_df$`<1 month` &
-      title_df$`1-3 months` > title_df$`3-6 months` & title_df$`1-3 months` > title_df$`6-12 months` &
-      title_df$`1-3 months` > title_df$`1-2 years` & title_df$`1-3 months` > title_df$`2+ years` ~
-    paste0("The proportion of one month and under three months unemployed in ", latest_month, " was higher than other catagories of duration"),
-    title_df$`<1 month` > title_df$`1-3 months` &
-      title_df$`<1 month` > title_df$`3-6 months` & title_df$`<1 month` > title_df$`6-12 months` &
-      title_df$`<1 month` > title_df$`1-2 years` & title_df$`<1 month` > title_df$`2+ years` ~
-    paste0("The proportion of under one months unemployed in ", latest_month, " was higher
-           than other catagories of duration"),
-    TRUE ~ "The proportion Unemployed Victorian by duration of unemployment")
-
-
+  title <- paste0(round2(title_df$`2+ years` * 100, 1),
+         " per cent of unemployed Victorians had been unemployed for 2 years or more as at ",
+         title_df$date)
 
   data %>%
     ggplot(aes(

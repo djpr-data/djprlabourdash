@@ -44,6 +44,9 @@ page_inclusion <- function(...) {
     # ),
     h2("Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),
+    djpr_plot_ui("gr_ltunvic_bar"),
+    djpr_plot_ui("gr_ltunvic_area"),
+    br(),
     htmlOutput("inclusion_footnote"),
     br()
   )
