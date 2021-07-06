@@ -9,11 +9,19 @@
 labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
-  dash_data <<- load_and_hide()
+  myenv <- as.environment(1)
 
-  ts_summ <<- dash_data %>%
-    tidyr::unnest(cols = .data$data) %>%
-    djprshiny::ts_summarise()
+  assign("dash_data",
+         load_and_hide(),
+         envir = myenv
+         )
+
+  assign("ts_summ",
+         dash_data %>%
+           tidyr::unnest(cols = .data$data) %>%
+           djprshiny::ts_summarise(),
+         envir = myenv
+         )
 
   plt_change <- reactive(input$plt_change) %>%
     debounce(10)

@@ -765,8 +765,8 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
       .data$date == max(.data$date)
     ) %>%
     dplyr::select(.data$value, .data$series, ) %>%
-    dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
-    tidyr::spread(key = .data$series, value = value)
+    dplyr::mutate(value = paste0(round2(.data$value, 1), " per cent")) %>%
+    tidyr::spread(key = .data$series, value = .data$value)
 
   title <- paste0(
     "The participation rate for Victorian youth was ",
@@ -779,7 +779,7 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
 
   data %>%
     dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::mutate(geog = dplyr::if_else(state == "", "Australia", .data$state)) %>%
+    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
     djpr_ts_linechart(
       col_var = .data$geog,
       label_num = paste0(round(.data$value, 1), "%"),
@@ -977,12 +977,12 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   # selecting data for Victoria and rename data
   data_vic <- data %>%
-    dplyr::filter(grepl("Victoria", series)) %>%
-    dplyr::select(series, value, date, state)
+    dplyr::filter(grepl("Victoria", .data$series)) %>%
+    dplyr::select(.data$series, .data$value, .data$date, .data$state)
 
   data_vic <- data_vic %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = slider::slide_mean(value,
+    dplyr::mutate(value = slider::slide_mean(.data$value,
       before = 2,
       complete = TRUE
     )) %>%
@@ -990,8 +990,8 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   data_vic <- data_vic %>%
     tidyr::pivot_wider(
-      names_from = series,
-      values_from = value
+      names_from = .data$series,
+      values_from = .data$value
     ) %>%
     dplyr::rename(
       Un_2years_over = "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)",
@@ -999,47 +999,50 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
       labour_force = "Labour force total ;  Persons ;  > Victoria ;"
     ) %>%
     dplyr::filter(!is.na(.data$Un_2years_over)) %>%
-    dplyr::mutate(lt_unemp = Un_2years_over + Un_1_2years) %>%
-    dplyr::select(date, state, labour_force, lt_unemp)
+    dplyr::mutate(lt_unemp = .data$Un_2years_over + .data$Un_1_2years) %>%
+    dplyr::select(.data$date, .data$state, .data$labour_force, .data$lt_unemp)
 
   # create data frame for Australia
   data_Aus <- data %>%
-    dplyr::filter(!grepl("Victoria", series)) %>%
+    dplyr::filter(!grepl("Victoria", .data$series)) %>%
     dplyr::mutate(state = "Australia") %>%
-    dplyr::select(series, value, date, state) %>%
-    dplyr::group_by(series) %>%
-    dplyr::mutate(value = slider::slide_mean(value,
+    dplyr::select(.data$series, .data$value, .data$date, .data$state) %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
       before = 2,
       complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     tidyr::pivot_wider(
-      names_from = series,
-      values_from = value
+      names_from = .data$series,
+      values_from = .data$value
     ) %>%
-    dplyr::select(date, state, "Labour force total ;  Persons ;  Australia ;", "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;") %>%
+    dplyr::select(.data$date,
+                  .data$state,
+                  .data$`Labour force total ;  Persons ;  Australia ;`,
+                  .data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;`) %>%
     dplyr::rename(
       lt_unemp = "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;",
       labour_force = "Labour force total ;  Persons ;  Australia ;"
     ) %>%
-    dplyr::filter(!is.na(lt_unemp))
+    dplyr::filter(!is.na(.data$lt_unemp))
 
   data_lr_un <- dplyr::bind_rows(
     data_vic, data_Aus
   )
 
   data_lr_un <- data_lr_un %>%
-    dplyr::mutate(value = 100 * (lt_unemp) / labour_force) %>%
-    dplyr::select(date, state, value)
+    dplyr::mutate(value = 100 * (.data$lt_unemp) / .data$labour_force) %>%
+    dplyr::select(.data$date, .data$state, .data$value)
 
   latest_values <- data_lr_un %>%
-    filter(date == max(date)) %>%
-    mutate(
-      value = round2(value, 1),
-      date = format(date, "%B %Y")
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
     ) %>%
-    select(state, value, date) %>%
-    tidyr::pivot_wider(names_from = state, values_from = value)
+    dplyr::select(.data$state, .data$value, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$state, values_from = .data$value)
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
@@ -1053,7 +1056,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   data_lr_un %>%
     djpr_ts_linechart(
-      col_var = state,
+      col_var = .data$state,
       label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
@@ -1297,10 +1300,10 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
 
   label_df <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::arrange(duration) %>%
+    dplyr::arrange(.data$duration) %>%
     dplyr::mutate(
-      perc = value / sum(value),
-      cum_perc = cumsum(perc) - (perc / 2),
+      perc = .data$value / sum(.data$value),
+      cum_perc = cumsum(.data$perc) - (.data$perc / 2),
       label_no_num =
         case_when(
           duration == "Under 4 weeks (under 1 month)" ~
@@ -1317,12 +1320,13 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
           "2+ years",
           TRUE ~ NA_character_
         ),
-      label = paste0(label_no_num, " ", round2(100 * perc, 1), "%")
+      label = paste0(.data$label_no_num, " ",
+                     round2(100 * .data$perc, 1), "%")
     )
 
   title_df <- label_df %>%
     dplyr::select(.data$perc, .data$date, .data$label_no_num) %>%
-    tidyr::pivot_wider(names_from = label_no_num, values_from = perc)
+    tidyr::pivot_wider(names_from = .data$label_no_num, values_from = .data$perc)
 
   # latest_month <- format(max(label_df$date), "%B %Y")
 
@@ -1346,10 +1350,10 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     geom_label(
       data = label_df,
       aes(
-        x = date,
-        y = cum_perc,
+        x = .data$date,
+        y = .data$cum_perc,
         colour = rev(.data$duration),
-        label = stringr::str_wrap(label, 11)
+        label = stringr::str_wrap(.data$label, 11)
       ),
       inherit.aes = FALSE,
       hjust = 0,

@@ -430,16 +430,16 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
                                    df = dash_data
                                    )) {
   data <- data %>%
-    mutate(geog = if_else(state == "", "Australia", state))
+    mutate(geog = if_else(.data$state == "", "Australia", .data$state))
 
   latest_values <- data %>%
-    filter(date == max(date)) %>%
-    mutate(
-      value = round(value, 1),
-      date = format(date, "%B %Y")
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round(.data$value, 1),
+      date = format(.data$date, "%B %Y")
     ) %>%
-    select(geog, value, date) %>%
-    tidyr::spread(key = geog, value = value)
+    dplyr::select(.data$geog, .data$value, .data$date) %>%
+    tidyr::spread(key = .data$geog, value = .data$value)
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
@@ -453,7 +453,7 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
 
   data %>%
     djpr_ts_linechart(
-      col_var = geog,
+      col_var = .data$geog,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
     labs(
@@ -666,9 +666,9 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
   # Create title
   latest_change <- df %>%
     dplyr::filter(!grepl("Average", .data$indicator)) %>%
-    dplyr::select(date, value, indicator) %>%
-    dplyr::group_by(indicator) %>%
-    dplyr::arrange(date) %>%
+    dplyr::select(.data$date, .data$value, .data$indicator) %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
     dplyr::filter(date == max(.data$date)) %>%
     dplyr::ungroup() %>%
@@ -694,7 +694,7 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
 
   df %>%
     djpr_ts_linechart(
-      col_var = indicator,
+      col_var = .data$indicator,
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       x_expand_mult = c(0, 0.22)
@@ -753,8 +753,8 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
   if (selected_period == "year") {
     quadrants <- quadrants %>%
       dplyr::mutate(
-        x = x * 4,
-        y = y * 2.3
+        x = .data$x * 4,
+        y = .data$y * 2.3
       )
   }
 
@@ -825,7 +825,7 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
       size = 14 / .pt,
       lineheight = 0.9,
       colour = djprtheme::djpr_cool_grey_11,
-      aes(x = x, y = y, label = label)
+      aes(x = .data$x, y = .data$y, label = .data$label)
     ) +
     ggiraph::geom_point_interactive(
       size = 2.5,
@@ -865,16 +865,16 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
                                   df = dash_data
                                   )) {
   data <- data %>%
-    mutate(geog = if_else(state == "", "Australia", state))
+    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state))
 
   latest_values <- data %>%
-    filter(date == max(date)) %>%
-    mutate(
-      value = round(value, 1),
-      date = format(date, "%B %Y")
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
     ) %>%
-    select(geog, value, date) %>%
-    tidyr::spread(key = geog, value = value)
+    dplyr::select(.data$geog, .data$value, .data$date) %>%
+    tidyr::spread(key = .data$geog, value = .data$value)
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
@@ -888,7 +888,7 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
 
   data %>%
     djpr_ts_linechart(
-      col_var = geog,
+      col_var = .data$geog,
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +

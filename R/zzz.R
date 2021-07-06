@@ -10,4 +10,5 @@
   } else {
     make_reactable_mem <<- make_reactable
   }
+
 }
