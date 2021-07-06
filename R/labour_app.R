@@ -263,6 +263,29 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE
   )
 
+  djpr_plot_server("ind_partrate_un_line",
+                   viz_ind_partrate_un_line,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423354L"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = Sys.Date() - (10 * 365))
+
+  djpr_plot_server("ind_partrate_un_scatter",
+                   viz_ind_partrate_un_scatter,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423354L"
+                   ),
+                   df = dash_data
+                   ),
+                   selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
+                   date_slider = FALSE)
+
   # Inclusion ------
 
 
