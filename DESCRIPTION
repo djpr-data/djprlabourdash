@@ -31,8 +31,8 @@ RoxygenNote: 7.1.1
 Imports: 
     dataui (>= 0.0.1),
     djprdashdata (>= 0.0.2.9002),
-    djprshiny (>= 0.0.3.905),
-    djprtheme (>= 0.0.0.9000),
+    djprshiny (>= 0.0.3.907),
+    djprtheme (>= 0.0.2.902),
     dplyr (>= 1.0.5),
     ggplot2,
     htmltools (>= 0.5.1.1),
@@ -40,14 +40,13 @@ Imports:
     pkgload,
     reactable,
     rlang,
-    sf,
+    sf (>= 1.0),
     shiny (>= 1.6.0),
     shinyjs,
     tidyr,
     ggiraph,
     ggrepel,
     stringr,
-    zoo,
     scales,
     patchwork,
     strayr (>= 0.0.1),
@@ -62,5 +61,6 @@ Depends:
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr
+    vdiffr,
+    memoise
 Config/testthat/edition: 3

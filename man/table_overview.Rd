@@ -8,7 +8,7 @@ table_overview(
   data = filter_dash_data(series_ids = c("A84423349V", "A84423355R", "A84423354L",
     "A84423350C", "A85223451R", "A84426256L", "A85223450L", "A84423357V", "pt_emp_vic")),
   years_in_sparklines = 2,
-  row_var = indicator
+  row_var = "indicator"
 )
 }
 \arguments{
@@ -17,7 +17,8 @@ table_overview(
 \item{years_in_sparklines}{Numeric; indicating the number of years of data
 to include in the sparkline charts in the returned reactable.}
 
-\item{row_var}{Unquoted variable name in data to use for row names}
+\item{row_var}{String - variable name in data to use for row names,
+as in "indicator"}
 }
 \value{
 A reactable (htmlwidget) including sparklines

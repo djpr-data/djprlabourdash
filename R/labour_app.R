@@ -50,7 +50,7 @@ labour_server <- function(input, output, session) {
     req(dash_data)
     table_overview()
   }) %>%
-    bindCache(dash_data)
+    bindCache(ts_summ)
 
   # Indicators -----
 
@@ -97,7 +97,6 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
-    date_slider_value_min = as.Date("2020-01-01"),
     plt_change = plt_change
   )
 
@@ -179,7 +178,7 @@ labour_server <- function(input, output, session) {
   output$ind_unemp_summary <- reactable::renderReactable({
     table_ind_unemp_summary()
   }) %>%
-    bindCache(dash_data)
+    bindCache(ts_summ)
 
   # Indicators: line chart of Aus v Vic
   djpr_plot_server("ind_unemprate_line",
@@ -286,6 +285,16 @@ labour_server <- function(input, output, session) {
                    selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
                    date_slider = FALSE)
 
+  djpr_plot_server("ind_partrate_line",
+                   plot_function = viz_ind_partrate_line,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423051C"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change)
+
   # Inclusion ------
 
 
@@ -382,10 +391,24 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
-    date_slider = FALSE
+    date_slider = FALSE,
+    width_percent = 45
   )
+
+  djpr_plot_server("gr_yth_lfpartrate_vicaus_line",
+                   viz_gr_yth_lfpartrate_vicaus_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84424622R",
+                     "A84424692W"
+                   ), df = dash_data) %>%
+                     dplyr::group_by(.data$series_id) %>%
+                     dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                              before = 11, complete = TRUE
+                     )),
+                   width_percent = 45)
 
   # Inclusion: youth focus box -----
 
@@ -423,9 +446,9 @@ labour_server <- function(input, output, session) {
     ), df = dash_data),
     plt_change = plt_change,
     width_percent = 45,
-    height_percent = 150,
+    height_percent = 160,
     date_slider = FALSE,
-    download_button = FALSE,
+    download_button = T,
     selected_indicator = reactive({
       input$youth_focus
     })
@@ -433,35 +456,13 @@ labour_server <- function(input, output, session) {
 
   djpr_plot_server("gr_ages_line",
     viz_gr_ages_line,
-    data = filter_dash_data(
-      c(
-        "15-24_greater melbourne_employed",
-        "25-54_greater melbourne_employed",
-        "55+_greater melbourne_employed",
-        "15-24_rest of vic._employed",
-        "25-54_rest of vic._employed",
-        "55+_rest of vic._employed",
-        "15-24_greater melbourne_nilf",
-        "25-54_greater melbourne_nilf",
-        "55+_greater melbourne_nilf",
-        "15-24_rest of vic._nilf",
-        "25-54_rest of vic._nilf",
-        "55+_rest of vic._nilf",
-        "15-24_greater melbourne_unemployed",
-        "25-54_greater melbourne_unemployed",
-        "55+_greater melbourne_unemployed",
-        "15-24_rest of vic._unemployed",
-        "25-54_rest of vic._unemployed",
-        "55+_rest of vic._unemployed"
-      ),
-      df = dash_data
-    ),
+    data = youth_focus_box_data(),
     plt_change = plt_change,
-    width_percent = 45,
+    width_percent = 47,
     height_percent = 70,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
-    download_button = FALSE,
+    download_button = T,
     selected_indicator = reactive({
       input$youth_focus
     })
@@ -481,11 +482,11 @@ labour_server <- function(input, output, session) {
       df = dash_data
     ),
     plt_change = plt_change,
-    width_percent = 45,
+    width_percent = 47,
     height_percent = 70,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
-    download_button = FALSE,
+    download_button = T,
     selected_indicator = reactive({
       input$youth_focus
     })
@@ -559,7 +560,7 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(!is.na(.data$value))
   )
 
@@ -576,7 +577,7 @@ labour_server <- function(input, output, session) {
     leaflet::renderLeaflet({
       map_unemprate_vic()
     }) %>%
-    bindCache(dash_data)
+    bindCache(ts_summ)
 
   output$reg_unemprate_bar <- renderPlot({
     df <- filter_dash_data(c(
@@ -600,7 +601,7 @@ labour_server <- function(input, output, session) {
       "A84600037A"
     )) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(.data$date == max(.data$date))
 
     df %>%
@@ -610,6 +611,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("reg_unemprate_multiline",
     viz_reg_unemprate_multiline,
     date_slider = TRUE,
+    height_percent = 125,
     data = filter_dash_data(c(
       "A84600253V",
       "A84599659L",
@@ -631,7 +633,7 @@ labour_server <- function(input, output, session) {
       "A84600037A"
     )) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(!is.na(.data$value)),
     date_slider_value_min = as.Date("2018-01-01"),
     plt_change = plt_change
@@ -649,7 +651,7 @@ labour_server <- function(input, output, session) {
       "A84600075R"
     )) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
     plt_change = plt_change
   )
@@ -679,7 +681,7 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = zoo::rollmeanr(.data$value, 3, fill = NA)),
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)),
     date_slider_value_min = as.Date("2014-11-01"),
     plt_change = plt_change
   )
@@ -693,7 +695,7 @@ labour_server <- function(input, output, session) {
   ) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   output$table_region_focus <- reactable::renderReactable({
@@ -701,7 +703,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
@@ -709,7 +711,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
@@ -717,7 +719,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
@@ -727,7 +729,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      dash_data
+      ts_summ
     )
 
   # Industries ------
