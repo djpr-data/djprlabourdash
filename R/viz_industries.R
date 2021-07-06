@@ -32,6 +32,141 @@
 #' }
 #' @import djprtheme
 
+industries_employment_treemap <- function(data = filter_dash_data(c(
+  "A84601680F",
+  "A84601683L",
+  "A84601686V",
+  "A84601665J",
+  "A84601704L",
+  "A84601707V",
+  "A84601710J",
+  "A84601638A",
+  "A84601653X",
+  "A84601689A",
+  "A84601656F",
+  "A84601713R",
+  "A84601668R",
+  "A84601695W",
+  "A84601698C",
+  "A84601650T",
+  "A84601671C",
+  "A84601641R",
+  "A84601716W",
+  "A84601662A",
+  "A84601681J",
+  "A84601684R",
+  "A84601687W",
+  "A84601666K",
+  "A84601705R",
+  "A84601708W",
+  "A84601711K",
+  "A84601639C",
+  "A84601654A",
+  "A84601690K",
+  "A84601657J",
+  "A84601714T",
+  "A84601669T",
+  "A84601696X",
+  "A84601699F",
+  "A84601651V",
+  "A84601672F",
+  "A84601642T",
+  "A84601717X",
+  "A84601663C",
+  "A84601682K",
+  "A84601685T",
+  "A84601688X",
+  "A84601667L",
+  "A84601706T",
+  "A84601709X",
+  "A84601712L",
+  "A84601640L",
+  "A84601655C",
+  "A84601691L",
+  "A84601658K",
+  "A84601715V",
+  "A84601670A",
+  "A84601697A",
+  "A84601700C",
+  "A84601652W",
+  "A84601673J",
+  "A84601643V",
+  "A84601718A",
+  "A84601664F"
+),
+df = dash_data)){
+  df <- data %>%
+    dplyr::mutate(
+      industry = dplyr::if_else(.data$industry == "",
+                                "Victoria, all industries",
+                                .data$industry
+      )) %>%
+    dplyr::filter(.data$industry != "Victoria, all industries") %>%
+    dplyr::filter(.data$indicator == "Employed total") %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::filter(!is.na(.data$industry)) %>%
+    dplyr::group_by(.data$industry) %>%
+    dplyr::summarise(
+      value = sum(value),
+      date = max(date)
+    ) %>%
+    dplyr::mutate(perc = value / sum(value)) %>%
+    dplyr::ungroup()
+
+
+  max_ind <- df %>%
+    filter(perc == max(perc)) %>%
+    select(industry)
+
+
+  max_ind_share <- df %>%
+    filter(perc == max(perc)) %>%
+    select(perc)
+
+
+  title <- paste0(
+    "As at ",
+    format(max(df$date), "%B %Y"),
+    ", ",
+    max_ind,
+    " employes the most people, accounts for ",
+    round2(max_ind_share*100,1),
+    " percent of the total employment in Victoria"
+  )
+
+  ind_cols <- grDevices::colorRampPalette(suppressWarnings(djpr_pal(4)))(19)
+
+  # ind_cols <- grDevices::colorRampPalette(c(djprtheme::djpr_green,
+  #                                          "white",
+  #                                          djprtheme::djpr_royal_blue))(19)
+
+
+
+  df %>% ggplot(aes(fill = industry, area = value, label = industry)) +
+    treemapify:: geom_treemap() +
+    treemapify:: geom_treemap_text(data = df, colour = "white", place = "centre", aes(label = paste0(industry))) +
+    treemapify:: geom_treemap_text(data = df, colour = "white", place = "bottom", aes(label = paste0(round2(perc*100, 1), "%"))) +
+    scale_fill_manual(values = ind_cols) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title = element_blank(),
+      panel.grid = element_blank(),
+      axis.line = element_blank()
+    ) +
+    theme_djpr() +
+    labs(
+      title = title,
+      subtitle = paste0(
+        "Victoria's employment composition ",
+        format(max(df$date), "%B %Y")
+      ),
+      caption = caption_lfs_det_q()
+    )
+
+}
+
+
 viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
                                                       "A84601680F",
                                                       "A84601683L",
