@@ -35,7 +35,6 @@ Imports:
     djprtheme (>= 0.0.2.902),
     dplyr (>= 1.0.5),
     ggplot2,
-    htmltools (>= 0.5.1.1),
     leaflet,
     pkgload,
     reactable,

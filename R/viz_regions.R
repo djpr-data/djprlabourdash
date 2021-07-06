@@ -177,7 +177,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
         mapdata$sa4_name_2016, # region name displayed in label
         mapdata$value
       ) %>% # eco data displayed in label
-        lapply(htmltools::HTML),
+        lapply(shiny::HTML),
       labelOptions = leaflet::labelOptions( # label options
         style = list(
           "font-weight" = "normal", # "bold" makes it so
@@ -234,20 +234,21 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
                                                   "A84600141A",
                                                   "A84600075R"
                                                 )) %>%
-                                                  dplyr::group_by(series_id) %>%
-                                                  dplyr::mutate(value = slider::slide_mean(value,
+                                                  dplyr::group_by(.data$series_id) %>%
+                                                  dplyr::mutate(value = slider::slide_mean(.data$value,
                                                     before = 2,
                                                     complete = T
                                                   )) %>%
-                                                  dplyr::filter(date >= as.Date("2020-01-01")),
+                                                  dplyr::filter(.data$date >= as.Date("2020-01-01")),
                                                 title = title_reg_emp_regions_sincecovid_line(data = data)) {
   df <- data %>%
-    dplyr::group_by(series) %>%
-    dplyr::mutate(value = 100 * ((value / value[date == as.Date("2020-03-01")]) - 1))
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   df %>%
     djpr_ts_linechart(
-      col_var = gcc_restofstate,
+      col_var = .data$gcc_restofstate,
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       hline = 0
@@ -348,7 +349,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
 
   data %>%
     djpr_ts_linechart(
-      col_var = line_col,
+      col_var = .data$line_col,
       label = F,
       dot = F
     ) +
@@ -419,7 +420,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
                                   ),
                                   df = dash_data
                                   ) %>%
-                                    dplyr::group_by(series_id) %>%
+                                    dplyr::group_by(.data$series_id) %>%
                                     dplyr::mutate(value = slider::slide_mean(.data$value,
                                       before = 2,
                                       complete = TRUE
@@ -574,35 +575,35 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                          ),
                                          df = dash_data
                                          ) %>%
-                                           dplyr::group_by(series_id) %>%
+                                           dplyr::group_by(.data$series_id) %>%
                                            dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE))) {
   df_summ <- data %>%
-    dplyr::filter(!is.na(value)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(
-      vic = value[sa4 == "Victoria"],
-      max_ur = max(value),
-      min_ur = min(value)
+      vic = .data$value[.data$sa4 == "Victoria"],
+      max_ur = max(.data$value),
+      min_ur = min(.data$value)
     ) %>%
-    dplyr::mutate(range = max_ur - min_ur)
+    dplyr::mutate(range = .data$max_ur - .data$min_ur)
 
   df_tidy <- df_summ %>%
     dplyr::select(-.data$range) %>%
     tidyr::gather(
-      key = series, value = value,
+      key = .data$series, value = .data$value,
       -.data$date
     )
 
   df_tidy <- df_tidy %>%
     mutate(
       tooltip = case_when(
-        series == "vic" ~ "Victoria ",
-        series == "max_ur" ~ "Highest ",
-        series == "min_ur" ~ "Lowest ",
+        .data$series == "vic" ~ "Victoria ",
+        .data$series == "max_ur" ~ "Highest ",
+        .data$series == "min_ur" ~ "Lowest ",
         TRUE ~ NA_character_
       ),
-      tooltip = paste0(tooltip, round2(.data$value, 1), "%")
+      tooltip = paste0(.data$tooltip, round2(.data$value, 1), "%")
     )
 
   days_in_data <- as.numeric(max(data$date) - min(data$date))
@@ -826,7 +827,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
                                                 "A84595471L"
                                               )
                                             ) %>%
-                                              dplyr::group_by(series_id) %>%
+                                              dplyr::group_by(.data$series_id) %>%
                                               dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
                                               dplyr::filter(.data$date >= max(.data$date) - (365.25 * 5)),
                                             sa4 = "Geelong") {
@@ -845,11 +846,11 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
 
   sa4_df <- data %>%
     dplyr::filter(.data$sa4 == .env$sa4) %>%
-    mutate(col_var = sa4)
+    mutate(col_var = .data$sa4)
 
   current_sa4_ur <- sa4_df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(value) %>%
+    dplyr::pull(.data$value) %>%
     round2(1)
 
   comparator_id <- dplyr::if_else(in_melb,
@@ -866,7 +867,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
 
   current_comp_ur <- comparator_df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(value) %>%
+    dplyr::pull(.data$value) %>%
     round2(1)
 
   sa4_cf_comp <- dplyr::case_when(
@@ -883,7 +884,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
 
   comb %>%
     djpr_ts_linechart(
-      col_var = col_var,
+      col_var = .data$col_var,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
     scale_x_date(
@@ -1145,9 +1146,9 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
                                 ),
                                 df = dash_data
                                 ) %>%
-                                  dplyr::group_by(series_id) %>%
+                                  dplyr::group_by(.data$series_id) %>%
                                   dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                                  dplyr::filter(!is.na(value))) {
+                                  dplyr::filter(!is.na(.data$value))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1155,8 +1156,8 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       .data$indicator == "Unemployment rate"
     ) %>%
     dplyr::select(.data$value, .data$gcc_restofstate) %>%
-    dplyr::mutate(value = paste0(round2(value, 1), " per cent")) %>%
-    tidyr::spread(key = .data$gcc_restofstate, value = value)
+    dplyr::mutate(value = paste0(round2(.data$value, 1), " per cent")) %>%
+    tidyr::spread(key = .data$gcc_restofstate, value = .data$value)
 
 
   title <- paste0(
@@ -1190,7 +1191,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       "\n",
       round2(.data$value, 1)
     )) %>%
-    ggplot(aes(x = date, y = value, col = gcc_restofstate)) +
+    ggplot(aes(x = .data$date, y = .data$value, col = .data$gcc_restofstate)) +
     geom_line() +
     ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
       size = 3,
@@ -1206,7 +1207,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     ) +
     ggrepel::geom_label_repel(
       data = max_date,
-      aes(label = label),
+      aes(label = .data$label),
       hjust = 0,
       nudge_x = days_in_data * 0.05,
       label.padding = 0.01,

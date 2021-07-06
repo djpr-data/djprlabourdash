@@ -79,7 +79,7 @@ map_unemprate_vic <- function(data) {
         mapdata$value
       ) %>% # eco data displayed in label
 
-        lapply(htmltools::HTML),
+        lapply(shiny::HTML),
       labelOptions = leaflet::labelOptions( # label options
         style = list(
           "font-weight" = "normal", # "bold" makes it so

@@ -32,7 +32,7 @@ labour_server <- function(input, output, session) {
     req(dash_data)
     latest <- max(ts_summ$latest_date)
     div(
-      htmltools::HTML(
+      shiny::HTML(
         paste0(
           "This dashboard is produced by the <b>Strategy and Priority ",
           "Projects - Data + Analytics</b> team at the Victorian Department ",
