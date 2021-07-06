@@ -5,7 +5,7 @@ page_inclusion <- function(...) {
     # tagList(
     #   "This page contains information about the labour force status of key groups of ",
     #   "Victorians, such as women, and young people. ",
-    #   htmltools::tags$b("More information will be included with future releases. "),
+    #   shiny::tags$b("More information will be included with future releases. "),
     #   "For more information about overall labour force indicators ",
     #   "see the ",
     #   actionLink("link_indicators", "indicators page"),
@@ -18,11 +18,18 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
+    djpr_plot_ui("gr_full_part_line"),
     h2("Young people"),
-    fluidRow(column(6,
-                    djpr_plot_ui("gr_yth_emp_sincecovid_line")),
-             column(6,
-                    djpr_plot_ui("gr_yth_lfpartrate_vicaus_line"))),
+    fluidRow(
+      column(
+        6,
+        djpr_plot_ui("gr_yth_emp_sincecovid_line")
+      ),
+      column(
+        6,
+        djpr_plot_ui("gr_yth_lfpartrate_vicaus_line")
+      )
+    ),
     br(),
     focus_box(
       shiny::selectInput("youth_focus",
@@ -52,6 +59,10 @@ page_inclusion <- function(...) {
     ),
     br(),
     h2("Long-term unemployed"),
+    djpr_plot_ui("gr_ltunemp_line"),
+    djpr_plot_ui("gr_ltunvic_bar"),
+    djpr_plot_ui("gr_ltunvic_area"),
+    br(),
     htmlOutput("inclusion_footnote"),
     br()
   )
