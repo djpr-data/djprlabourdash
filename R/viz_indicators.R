@@ -817,7 +817,7 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
     djpr_colour_manual(2) +
     scale_x_continuous(labels = function(x) paste0(x, " ppts")) +
     scale_y_continuous(labels = function(x) paste0(x, " ppts")) +
-    scale_alpha_discrete(range = c(0.25, 1)) +
+    suppressWarnings(scale_alpha_discrete(range = c(0.25, 1))) +
     theme_djpr() +
     labs(y = paste0(change_desc, " in participation rate\n"),
          x = paste0(change_desc, " in unemployment rate"),
