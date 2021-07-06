@@ -20,10 +20,16 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_gen_partrate_line"),
     djpr_plot_ui("gr_full_part_line"),
     h2("Young people"),
-    fluidRow(column(6,
-                    djpr_plot_ui("gr_yth_emp_sincecovid_line")),
-             column(6,
-                    djpr_plot_ui("gr_yth_lfpartrate_vicaus_line"))),
+    fluidRow(
+      column(
+        6,
+        djpr_plot_ui("gr_yth_emp_sincecovid_line")
+      ),
+      column(
+        6,
+        djpr_plot_ui("gr_yth_lfpartrate_vicaus_line")
+      )
+    ),
     br(),
     focus_box(
       shiny::selectInput("youth_focus",

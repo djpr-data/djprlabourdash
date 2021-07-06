@@ -71,8 +71,9 @@ table_ind_employment <- function(data = filter_dash_data(c(
     ))
 
   make_reactable_mem(table_data,
-                 years_in_sparklines = years_in_sparklines,
-                 row_var = row_var)
+    years_in_sparklines = years_in_sparklines,
+    row_var = row_var
+  )
 }
 
 table_ind_unemp_summary <- function(data = filter_dash_data(c(
@@ -92,8 +93,9 @@ table_ind_unemp_summary <- function(data = filter_dash_data(c(
     ))
 
   make_reactable_mem(table_data,
-                 years_in_sparklines = years_in_sparklines,
-                 row_var = row_var)
+    years_in_sparklines = years_in_sparklines,
+    row_var = row_var
+  )
 }
 
 table_ind_hours_summary <- function(data = filter_dash_data(c(
@@ -108,8 +110,9 @@ table_ind_hours_summary <- function(data = filter_dash_data(c(
     ))
 
   make_reactable_mem(table_data,
-                 years_in_sparklines = years_in_sparklines,
-                 row_var = row_var)
+    years_in_sparklines = years_in_sparklines,
+    row_var = row_var
+  )
 }
 
 #' Make a reactable with standard formatting

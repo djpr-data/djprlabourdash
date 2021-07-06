@@ -41,16 +41,21 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_partrate_bar"),
     djpr_plot_ui("ind_partrate_un_line"),
     br(),
-    paste0("A fall in the unemployment rate can mean very different things depending on whether the participation rate is rising - more people have joined the labour force - or falling. ",
-           "The chart below shows how the unemployment and participation rates changed over the last month or year, and how that compares to past changes in the Victorian labour market. ",
-           "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."),
+    paste0(
+      "A fall in the unemployment rate can mean very different things depending on whether the participation rate is rising - more people have joined the labour force - or falling. ",
+      "The chart below shows how the unemployment and participation rates changed over the last month or year, and how that compares to past changes in the Victorian labour market. ",
+      "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."
+    ),
     br(),
     br(),
     shiny::selectInput("ind_partrate_un_scatter_selected_period",
-                       label = "Compare monthly or yearly change",
-                       selected = "year",
-                       choices = c("Monthly" = "month",
-                                   "Yearly" = "year")),
+      label = "Compare monthly or yearly change",
+      selected = "year",
+      choices = c(
+        "Monthly" = "month",
+        "Yearly" = "year"
+      )
+    ),
     djpr_plot_ui("ind_partrate_un_scatter"),
     br(),
     htmlOutput("indicators_footnote")

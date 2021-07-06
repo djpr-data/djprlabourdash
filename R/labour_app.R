@@ -263,37 +263,40 @@ labour_server <- function(input, output, session) {
   )
 
   djpr_plot_server("ind_partrate_un_line",
-                   viz_ind_partrate_un_line,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423354L"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider_value_min = Sys.Date() - (10 * 365))
+    viz_ind_partrate_un_line,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = Sys.Date() - (10 * 365)
+  )
 
   djpr_plot_server("ind_partrate_un_scatter",
-                   viz_ind_partrate_un_scatter,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423354L"
-                   ),
-                   df = dash_data
-                   ),
-                   selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
-                   date_slider = FALSE)
+    viz_ind_partrate_un_scatter,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
+    date_slider = FALSE
+  )
 
   djpr_plot_server("ind_partrate_line",
-                   plot_function = viz_ind_partrate_line,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423051C"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change)
+    plot_function = viz_ind_partrate_line,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423051C"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change
+  )
 
   # Inclusion ------
 
@@ -362,18 +365,18 @@ labour_server <- function(input, output, session) {
   )
 
   djpr_plot_server("gr_full_part_line",
-                   viz_gr_full_part_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423237A",
-                     "A84423461V",
-                     "A84423245A",
-                     "A84423469L"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = Sys.Date() - (365.25 * 5)
-                     )
+    viz_gr_full_part_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423237A",
+      "A84423461V",
+      "A84423245A",
+      "A84423469L"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (365.25 * 5)
+  )
 
   # Inclusion: age ----
   # Line chart indexed to COVID: employment by age
@@ -398,17 +401,18 @@ labour_server <- function(input, output, session) {
   )
 
   djpr_plot_server("gr_yth_lfpartrate_vicaus_line",
-                   viz_gr_yth_lfpartrate_vicaus_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84424622R",
-                     "A84424692W"
-                   ), df = dash_data) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                                              before = 11, complete = TRUE
-                     )),
-                   width_percent = 45)
+    viz_gr_yth_lfpartrate_vicaus_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84424622R",
+      "A84424692W"
+    ), df = dash_data) %>%
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value,
+        before = 11, complete = TRUE
+      )),
+    width_percent = 45
+  )
 
   # Inclusion: youth focus box -----
 
@@ -503,47 +507,50 @@ labour_server <- function(input, output, session) {
   # Inclusion: long term unemployment ------
 
   djpr_plot_server("gr_ltunemp_line",
-                   viz_gr_ltunemp_line,
-                   data = filter_dash_data(c(
-                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                     "A84423687K",
-                     "A84423089K",
-                     "A84597681W"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider_value_min = as.Date("2000-01-01"))
+    viz_gr_ltunemp_line,
+    data = filter_dash_data(c(
+      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+      "A84423687K",
+      "A84423089K",
+      "A84597681W"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = as.Date("2000-01-01")
+  )
 
   djpr_plot_server("gr_ltunvic_bar",
-                   viz_gr_ltunvic_bar,
-                   data = filter_dash_data(c(
-                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                     "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-                     "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-                     "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                     "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider = FALSE)
+    viz_gr_ltunvic_bar,
+    data = filter_dash_data(c(
+      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+      "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+      "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+      "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+      "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE
+  )
 
   djpr_plot_server("gr_ltunvic_area",
-                   viz_gr_ltunvic_area,
-                   data = filter_dash_data(c(
-                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                     "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-                     "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-                     "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                     "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change)
+    viz_gr_ltunvic_area,
+    data = filter_dash_data(c(
+      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+      "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+      "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+      "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+      "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change
+  )
 
   # Regions ------
 

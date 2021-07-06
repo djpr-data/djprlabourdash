@@ -246,9 +246,11 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = .data$sex,
-                      label_num = paste0(round(.data$value, 1), "%"),
-                      y_labels = function(x) paste0(x, "%")) +
+    djpr_ts_linechart(
+      col_var = .data$sex,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
     labs(
       title = title,
       subtitle = "Unemployment by sex, Victoria",
@@ -257,18 +259,18 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
 }
 
 viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
-  "15-24_greater melbourne_employed",
-  "25-54_greater melbourne_employed",
-  "55+_greater melbourne_employed",
-  "15-24_rest of vic._employed",
-  "25-54_rest of vic._employed",
-  "55+_rest of vic._employed"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-  dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
+                                             "15-24_greater melbourne_employed",
+                                             "25-54_greater melbourne_employed",
+                                             "55+_greater melbourne_employed",
+                                             "15-24_rest of vic._employed",
+                                             "25-54_rest of vic._employed",
+                                             "55+_rest of vic._employed"
+                                           ),
+                                           df = dash_data
+                                           ) %>%
+                                             dplyr::group_by(.data$series_id) %>%
+                                             dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
@@ -277,7 +279,7 @@ df = dash_data
   data <- data %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   latest <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -306,14 +308,14 @@ df = dash_data
 
 
 viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
-  "A84423356T",
-  "A84423244X",
-  "A84423468K"
-))) {
+                                      "A84423356T",
+                                      "A84423244X",
+                                      "A84423468K"
+                                    ))) {
   df <- data %>%
     dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
-                                       "Persons",
-                                       .data$sex
+      "Persons",
+      .data$sex
     ))
 
   latest_year <- df %>%
@@ -328,22 +330,22 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
   title <- dplyr::case_when(
     latest_year$Females > 0 &
       latest_year$Males > 0 ~
-      paste0(
-        "A larger proportion of Victorian men and women are in work in ",
-        nice_date, " than a year earlier"
-      ),
+    paste0(
+      "A larger proportion of Victorian men and women are in work in ",
+      nice_date, " than a year earlier"
+    ),
     latest_year$Females > 0 &
       latest_year$Males < 0 ~
-      paste0(
-        "The proportion of Victorian women in work rose over the year to ",
-        nice_date, " but the male employment to population ratio fell"
-      ),
+    paste0(
+      "The proportion of Victorian women in work rose over the year to ",
+      nice_date, " but the male employment to population ratio fell"
+    ),
     latest_year$Females < 0 &
       latest_year$Males > 0 ~
-      paste0(
-        "The proportion of Victorian men in work rose over the year to ",
-        nice_date, " but the female employment to population ratio fell"
-      ),
+    paste0(
+      "The proportion of Victorian men in work rose over the year to ",
+      nice_date, " but the female employment to population ratio fell"
+    ),
     TRUE ~ "Employment to population ratio for Victorian men and women"
   )
 
@@ -418,41 +420,50 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
   latest_values <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::mutate(value = round2(.data$value * 100, 1)) %>%
-    tidyr::pivot_wider(names_from = .data$gcc_restofstate,
-                       values_from = .data$value)
+    tidyr::pivot_wider(
+      names_from = .data$gcc_restofstate,
+      values_from = .data$value
+    )
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
     selected_indicator == "part_rate" ~ "participation rate",
     selected_indicator == "emp_pop" ~ "employment to population ratio",
-    TRUE ~ NA_character_)
+    TRUE ~ NA_character_
+  )
 
-  title <- paste0("The",
+  title <- paste0(
+    "The",
     dplyr::case_when(
       latest_values$`Greater Melbourne` > latest_values$`Rest of Vic.` ~
-        paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
+      paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
       latest_values$`Greater Melbourne` < latest_values$`Rest of Vic.` ~
-        paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
+      paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
       latest_values$`Greater Melbourne` == latest_values$`Rest of Vic.` ~
-        paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
+      paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
       TRUE ~ paste0(" youth ", indic_long, " in Greater Melbourne and the rest of Victoria in ")
-  ))
+    )
+  )
 
-  title <- paste0(title, format(latest_values$date, "%B %Y") )
+  title <- paste0(title, format(latest_values$date, "%B %Y"))
 
   df %>%
     dplyr::mutate(gcc_restofstate = gsub("Melbourne", "Melb.", .data$gcc_restofstate,
       fixed = TRUE
     )) %>%
-    djpr_ts_linechart(col_var = .data$gcc_restofstate,
-                      y_labels = function(x) paste0(x * 100, "%"),
-                      label_num = paste0(round2(.data$value * 100, 1), "%")) +
+    djpr_ts_linechart(
+      col_var = .data$gcc_restofstate,
+      y_labels = function(x) paste0(x * 100, "%"),
+      label_num = paste0(round2(.data$value * 100, 1), "%")
+    ) +
     scale_colour_manual(values = suppressWarnings(
       djpr_pal(10)[c(5, 10)]
     )) +
-    labs(title = title,
-         subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24"),
-         caption = paste0(caption_lfs(), " Smoothed using a 12 month rolling average."))
+    labs(
+      title = title,
+      subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24"),
+      caption = paste0(caption_lfs(), " Smoothed using a 12 month rolling average.")
+    )
 }
 
 # Line chart --- unemployment rate by age, Victoria ------
@@ -526,24 +537,29 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
   latest <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::mutate(value = round2(.data$value * 100, 1)) %>%
-    tidyr::pivot_wider(names_from = .data$age,
-                       values_from = .data$value)
+    tidyr::pivot_wider(
+      names_from = .data$age,
+      values_from = .data$value
+    )
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
     selected_indicator == "part_rate" ~ "participation rate",
     selected_indicator == "emp_pop" ~ "employment to population ratio",
-    TRUE ~ NA_character_)
+    TRUE ~ NA_character_
+  )
 
   higher_or_lower <- dplyr::case_when(
     latest$`15-24` > latest$`25-54` ~ "higher than",
     latest$`15-24` < latest$`25-54` ~ "lower than",
     latest$`15-24` == latest$`25-54` ~ "the same as",
-    TRUE ~ NA_character_)
+    TRUE ~ NA_character_
+  )
 
   diff <- dplyr::if_else(latest$`15-24` != latest$`25-54`,
-                         paste0(abs(latest$`15-24` - latest$`25-54`), " percentage points "),
-                         "")
+    paste0(abs(latest$`15-24` - latest$`25-54`), " percentage points "),
+    ""
+  )
 
   title <- paste0(
     "The youth ",
@@ -556,14 +572,19 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
 
 
   df %>%
-    djpr_ts_linechart(col_var = .data$age,
-                      label_num = paste0(round2(.data$value * 100, 1), "%")
-                      ) +
-    djpr_y_continuous(limits = function(x) c(0, x[2]),
-                      labels = function(x) paste0(x * 100, "%")) +
-    labs(title = title,
-         subtitle = paste0(tools::toTitleCase(indic_long), " by age, Victoria"),
-         caption = paste0(caption_lfs(), " Smoothed using 12 month moving average."))
+    djpr_ts_linechart(
+      col_var = .data$age,
+      label_num = paste0(round2(.data$value * 100, 1), "%")
+    ) +
+    djpr_y_continuous(
+      limits = function(x) c(0, x[2]),
+      labels = function(x) paste0(x * 100, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = paste0(tools::toTitleCase(indic_long), " by age, Victoria"),
+      caption = paste0(caption_lfs(), " Smoothed using 12 month moving average.")
+    )
 }
 
 # Dot plot -- youth unemployment rate by state -------
@@ -646,8 +667,10 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     ))
 
   latest_values <- df %>%
-    dplyr::filter(.data$date == max(.data$date),
-                  .data$geog %in% c("Vic", "Aus")) %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      .data$geog %in% c("Vic", "Aus")
+    ) %>%
     dplyr::select(.data$geog, .data$value, .data$date) %>%
     tidyr::pivot_wider(names_from = .data$geog, values_from = .data$value)
 
@@ -655,7 +678,8 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
     selected_indicator == "part_rate" ~ "participation rate",
     selected_indicator == "emp_pop" ~ "employment to population ratio",
-    TRUE ~ NA_character_)
+    TRUE ~ NA_character_
+  )
 
   title <- paste0(
     "The youth ",
@@ -719,10 +743,12 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
       values = suppressWarnings(djpr_pal(10)[c(1, 8)])
     ) +
     theme_djpr(flipped = T) +
-    labs(title = title,
-         subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24, by state and territory"),
-         caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
-         y = paste0("Youth ", indic_long))
+    labs(
+      title = title,
+      subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24, by state and territory"),
+      caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
+      y = paste0("Youth ", indic_long)
+    )
 }
 
 viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
@@ -1087,40 +1113,50 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
   # arrange the latest and the previous period data
   df_data <- data %>%
-    tidyr::pivot_longer(cols = !.data$date,
+    tidyr::pivot_longer(
+      cols = !.data$date,
       names_to = "duration",
       values_to = "value"
     )
 
   df_data <- df_data %>%
-    dplyr::filter(.data$date %in% c(max(.data$date),
-                              subtract_years(max(.data$date), 1)))
+    dplyr::filter(.data$date %in% c(
+      max(.data$date),
+      subtract_years(max(.data$date), 1)
+    ))
 
   df_data <- df_data %>%
     dplyr::mutate(duration = factor(.data$duration,
-                                    levels = c(
-                                      "<1 month",
-                                      "1-3 months",
-                                      "3-6 months",
-                                      "6-12 months",
-                                      "1-2 years",
-                                      "2+ years"
-                                    ),
-                                    ordered = TRUE
-                                    ))
+      levels = c(
+        "<1 month",
+        "1-3 months",
+        "3-6 months",
+        "6-12 months",
+        "1-2 years",
+        "2+ years"
+      ),
+      ordered = TRUE
+    ))
 
   latest_month <- format(max(data$date), "%B %Y")
 
   title_df <- df_data %>%
-    dplyr::mutate(duration_type =
-                    case_when(
-                      duration %in% c("2+ years",
-                                      "1-2 years") ~ "LT",
-                      duration %in% c("6-12 months") ~ "mid",
-                      duration %in% c("<1 month",
-                                      "1-3 months",
-                                      "3-6 months") ~ "ST",
-                      TRUE ~ NA_character_)) %>%
+    dplyr::mutate(
+      duration_type =
+        case_when(
+          duration %in% c(
+            "2+ years",
+            "1-2 years"
+          ) ~ "LT",
+          duration %in% c("6-12 months") ~ "mid",
+          duration %in% c(
+            "<1 month",
+            "1-3 months",
+            "3-6 months"
+          ) ~ "ST",
+          TRUE ~ NA_character_
+        )
+    ) %>%
     dplyr::filter(.data$duration_type %in% c("ST", "LT")) %>%
     dplyr::group_by(.data$duration_type, .data$date) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
@@ -1129,52 +1165,63 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(.data$change)) %>%
     dplyr::ungroup() %>%
     dplyr::select(.data$duration_type, .data$change) %>%
-    tidyr::pivot_wider(names_from = .data$duration_type,
-                       values_from = .data$change)
+    tidyr::pivot_wider(
+      names_from = .data$duration_type,
+      values_from = .data$change
+    )
 
 
-  title <- dplyr::case_when(title_df$LT > 0 &
-                     title_df$ST > 0 ~
-                     "The number of long-term and short-term unemployed Victorians both rose over the year to ",
-                   title_df$LT < 0 &
-                     title_df$ST > 0 ~
-                     "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
-                   title_df$LT > 0 &
-                     title_df$ST < 0 ~
-                     "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
-                   title_df$LT < 0 &
-                     title_df$ST ~
-                     "The number of long-term and short-term unemployed Victorians both fell over the year to ",
-                   TRUE ~ "Long-term and short-term unemployment in Victoria over the year to "
-                   )
+  title <- dplyr::case_when(
+    title_df$LT > 0 &
+      title_df$ST > 0 ~
+    "The number of long-term and short-term unemployed Victorians both rose over the year to ",
+    title_df$LT < 0 &
+      title_df$ST > 0 ~
+    "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
+    title_df$LT > 0 &
+      title_df$ST < 0 ~
+    "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
+    title_df$LT < 0 &
+      title_df$ST ~
+    "The number of long-term and short-term unemployed Victorians both fell over the year to ",
+    TRUE ~ "Long-term and short-term unemployment in Victoria over the year to "
+  )
 
   title <- paste0(title, latest_month)
 
   # create chart
   df_data <- df_data %>%
-    dplyr::mutate(date = format(.data$date, "%B %Y"),
-                  date = factor(.data$date,
-                                levels = rev(sort(unique(.data$date))),
-                                ordered = TRUE))
+    dplyr::mutate(
+      date = format(.data$date, "%B %Y"),
+      date = factor(.data$date,
+        levels = rev(sort(unique(.data$date))),
+        ordered = TRUE
+      )
+    )
 
   df_data %>%
-    ggplot(aes(x = .data$duration,
-               y = .data$value,
-               fill = .data$date
-               )
-           ) +
+    ggplot(aes(
+      x = .data$duration,
+      y = .data$value,
+      fill = .data$date
+    )) +
     geom_bar(stat = "identity", position = "dodge") +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
     scale_fill_manual(
       values = djpr_pal(2),
-      breaks = c(max(df_data$date),
-                                min(df_data$date)),
-      aesthetics = c("fill", "colour")) +
+      breaks = c(
+        max(df_data$date),
+        min(df_data$date)
+      ),
+      aesthetics = c("fill", "colour")
+    ) +
     geom_text(
       position = position_dodge(width = 0.9),
-      aes(label = paste0(round2(.data$value, 1)),
-          y = .data$value - 1),
+      aes(
+        label = paste0(round2(.data$value, 1)),
+        y = .data$value - 1
+      ),
       vjust = 0.5,
       colour = "white",
       hjust = 1,
@@ -1188,7 +1235,7 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
       panel.grid = element_blank(),
       axis.line = element_blank(),
       legend.position = c(0.85, 0.89),
-      legend.key.height  = unit(1.5, "lines"),
+      legend.key.height = unit(1.5, "lines"),
       legend.key.width = unit(1.5, "lines"),
       legend.direction = "vertical",
       axis.ticks = element_blank()
@@ -1279,9 +1326,11 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
 
   # latest_month <- format(max(label_df$date), "%B %Y")
 
-  title <- paste0(round2(title_df$`2+ years` * 100, 1),
-         " per cent of unemployed Victorians had been unemployed for 2 years or more as at ",
-         title_df$date)
+  title <- paste0(
+    round2(title_df$`2+ years` * 100, 1),
+    " per cent of unemployed Victorians had been unemployed for 2 years or more as at ",
+    title_df$date
+  )
 
   data %>%
     ggplot(aes(
@@ -1363,7 +1412,8 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     tidyr::pivot_longer(
       cols = !c(.data$date, .data$sex),
       names_to = "indicator",
-      values_to = "value") %>%
+      values_to = "value"
+    ) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$sex) %>%
     dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12) - 1))) %>%
@@ -1375,15 +1425,15 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
   # create latest data by gender
   female_latest_f <- df %>%
     dplyr::filter(.data$sex == "Females" &
-                    .data$indicator == "Employed full-time" &
-                    .data$date == max(.data$date)) %>%
+      .data$indicator == "Employed full-time" &
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
   male_latest_f <- df %>%
     dplyr::filter(.data$sex == "Males" &
-                    .data$indicator == "Employed full-time" &
-                    .data$date == max(.data$date)) %>%
+      .data$indicator == "Employed full-time" &
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
@@ -1392,11 +1442,11 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     female_latest_f > male_latest_f ~
-      paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
+    paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
     female_latest_f < male_latest_f ~
-      paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
+    paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
     female_latest_f == male_latest_f ~
-      paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
+    paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
     TRUE ~ paste0("Full-time and part-time annual employment growth for men and women")
   )
 
@@ -1415,4 +1465,3 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     ) +
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
-
