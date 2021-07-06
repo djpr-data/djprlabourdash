@@ -1333,7 +1333,7 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
   title <- paste0(
     round2(title_df$`2+ years` * 100, 1),
     " per cent of unemployed Victorians had been unemployed for 2 years or more as at ",
-    title_df$date
+    format(title_df$date, "%B %Y")
   )
 
   data %>%
