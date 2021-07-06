@@ -18,6 +18,7 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
+    djpr_plot_ui("gr_full_part_line"),
     h2("Young people"),
     fluidRow(column(6,
                     djpr_plot_ui("gr_yth_emp_sincecovid_line")),
@@ -52,6 +53,10 @@ page_inclusion <- function(...) {
     ),
     br(),
     h2("Long-term unemployed"),
+    djpr_plot_ui("gr_ltunemp_line"),
+    djpr_plot_ui("gr_ltunvic_bar"),
+    djpr_plot_ui("gr_ltunvic_area"),
+    br(),
     htmlOutput("inclusion_footnote"),
     br()
   )

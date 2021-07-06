@@ -262,6 +262,29 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE
   )
 
+  djpr_plot_server("ind_partrate_un_line",
+                   viz_ind_partrate_un_line,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423354L"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = Sys.Date() - (10 * 365))
+
+  djpr_plot_server("ind_partrate_un_scatter",
+                   viz_ind_partrate_un_scatter,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423355R",
+                     "A84423354L"
+                   ),
+                   df = dash_data
+                   ),
+                   selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
+                   date_slider = FALSE)
+
   djpr_plot_server("ind_partrate_line",
                    plot_function = viz_ind_partrate_line,
                    data = filter_dash_data(c(
@@ -274,6 +297,8 @@ labour_server <- function(input, output, session) {
 
   # Inclusion ------
 
+
+  # Inclusion: women and men -----
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_emppopratio_line",
     viz_gr_emppopratio_line,
@@ -336,6 +361,21 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 10)
   )
 
+  djpr_plot_server("gr_full_part_line",
+                   viz_gr_full_part_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423237A",
+                     "A84423461V",
+                     "A84423245A",
+                     "A84423469L"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 5)
+                     )
+
+  # Inclusion: age ----
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
     viz_gr_yth_emp_sincecovid_line,
@@ -460,7 +500,50 @@ labour_server <- function(input, output, session) {
   #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
   # })
 
+  # Inclusion: long term unemployment ------
 
+  djpr_plot_server("gr_ltunemp_line",
+                   viz_gr_ltunemp_line,
+                   data = filter_dash_data(c(
+                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                     "A84423687K",
+                     "A84423089K",
+                     "A84597681W"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = as.Date("2000-01-01"))
+
+  djpr_plot_server("gr_ltunvic_bar",
+                   viz_gr_ltunvic_bar,
+                   data = filter_dash_data(c(
+                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                     "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                     "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                     "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                     "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
+  djpr_plot_server("gr_ltunvic_area",
+                   viz_gr_ltunvic_area,
+                   data = filter_dash_data(c(
+                     "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                     "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                     "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                     "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                     "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                     "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change)
 
   # Regions ------
 
