@@ -50,7 +50,8 @@ Imports:
     scales,
     patchwork,
     strayr (>= 0.0.1),
-    slider
+    slider,
+    treemapify
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
