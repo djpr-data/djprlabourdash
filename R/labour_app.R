@@ -265,6 +265,8 @@ labour_server <- function(input, output, session) {
 
   # Inclusion ------
 
+
+  # Inclusion: women and men -----
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_emppopratio_line",
     viz_gr_emppopratio_line,
@@ -327,6 +329,21 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 10)
   )
 
+  djpr_plot_server("gr_full_part_line",
+                   viz_gr_full_part_line,
+                   plt_change = plt_change,
+                   data = filter_dash_data(c(
+                     "A84423237A",
+                     "A84423461V",
+                     "A84423245A",
+                     "A84423469L"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 5)
+                     )
+
+  # Inclusion: age ----
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
     viz_gr_yth_emp_sincecovid_line,

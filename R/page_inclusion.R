@@ -18,6 +18,7 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
+    djpr_plot_ui("gr_full_part_line"),
     h2("Young people"),
     djpr_plot_ui("gr_yth_emp_sincecovid_line"),
     br(),

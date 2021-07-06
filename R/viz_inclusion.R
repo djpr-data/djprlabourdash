@@ -1201,77 +1201,71 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
 
 # Full-time and part-time  employment growth pattern by gender
 viz_gr_full_part_line <- function(data = filter_dash_data(c(
-                                    "A84423349V",
                                     "A84423237A",
                                     "A84423461V",
-                                    "A84423357V",
                                     "A84423245A",
                                     "A84423469L"
                                   ),
                                   df = dash_data
                                   )) {
+
+  # We calculate part time employment using total + FT employment
   df <- data %>%
     dplyr::select(.data$date, .data$sex, .data$indicator, .data$value) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
-    group_by(.data$sex) %>%
+    dplyr::group_by(.data$sex) %>%
     dplyr::mutate(
       `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`
     ) %>%
     dplyr::select(!.data$`Employed total`) %>%
-    ungroup()
+    dplyr::ungroup()
 
-  # create annual growth Df
-  annual_g <- df %>%
-    tidyr::pivot_longer(!c(1:2), names_to = "indicator", values_to = "value") %>%
+  # Calculate annual employment growth within each emp type - sex combination
+  df <- df %>%
+    tidyr::pivot_longer(
+      cols = !c(.data$date, .data$sex),
+      names_to = "indicator",
+      values_to = "value") %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$sex) %>%
-    dplyr::mutate(annual_g = 100 * ((.data$value / lag(.data$value, 12) - 1))) %>%
-    dplyr::filter(.data$sex != "") %>%
-    dplyr::select(.data$date, .data$sex, .data$indicator, .data$annual_g) %>%
-    dplyr::rename(value = annual_g) %>%
+    dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12) - 1))) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
-
-  latest_month <- format(max(annual_g$date), "%B %Y")
+  latest_month <- format(max(df$date), "%B %Y")
 
   # create latest data by gender
-  female_latest_f <- annual_g %>%
-    dplyr::filter(.data$sex == "Females" & .data$indicator == "Employed full-time" &
-      +.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)
-  female_latest_p <- annual_g %>%
-    dplyr::filter(.data$sex == "Females" & .data$indicator == "Employed part-time" &
-      +.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)
+  female_latest_f <- df %>%
+    dplyr::filter(.data$sex == "Females" &
+                    .data$indicator == "Employed full-time" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
-  male_latest_f <- annual_g %>%
-    dplyr::filter(.data$sex == "Males" & .data$indicator == "Employed full-time" &
-      +.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)
-
-  male_latest_p <- annual_g %>%
-    dplyr::filter(.data$sex == "Males" & .data$indicator == "Employed part-time" &
-      +.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)
+  male_latest_f <- df %>%
+    dplyr::filter(.data$sex == "Males" &
+                    .data$indicator == "Employed full-time" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
 
   # create title
 
-  title <- dplyr::if_else(
-    female_latest_f > male_latest_f,
-    paste0("Female full-time employment growth outpaced males in the 12 months to ", latest_month),
-    paste0(" Female full-time employment growth lagged behind males in the 12 months to ", latest_month)
+  title <- dplyr::case_when(
+    female_latest_f > male_latest_f ~
+      paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
+    female_latest_f < male_latest_f ~
+      paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
+    female_latest_f == male_latest_f ~
+      paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
+    TRUE ~ paste0("Full-time and part-time annual employment growth for men and women")
   )
 
-  # female_latest_p > male_latest_p,
-  # paste0("Female part-time employment growth outpaced male in the 12 months to ", latest_month),
-  # paste0("Female part-time employment growth lagged behind male in the 12 months to ", latest_month))
-
   # create chart
-  annual_g %>%
+  df %>%
     djpr_ts_linechart(
-      col_var = sex,
+      col_var = .data$sex,
       label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       hline = 0
