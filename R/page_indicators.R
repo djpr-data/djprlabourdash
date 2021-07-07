@@ -11,7 +11,7 @@ page_indicators <- function(...) {
     #   ". For information about how employment and unemployment varies across Victoria, see the ",
     #   actionLink("link_regions", "regions page"), "."
     # ),
-    h2("Employment"),
+    h2(br(), "Employment"),
     htmlOutput("ind_empgrowth_sincecovid_text"),
     reactable::reactableOutput("ind_emp_table") %>%
       djpr_with_spinner(hide.ui = TRUE),
@@ -21,7 +21,7 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_empgro_line"),
     # htmlOutput("ind_emp_dotpoints"),
     # djpr_plot_ui("ind_empgro_line"),
-    h2("Unemployment & underemployment"),
+    h2(br(), "Unemployment & underemployment"),
     reactable::reactableOutput(
       "ind_unemp_summary"
     ) %>%
@@ -32,10 +32,10 @@ page_indicators <- function(...) {
     br(),
     djpr_plot_ui("ind_underut_area"),
     br(),
-    h2("Hours worked"),
+    h2(br(), "Hours worked"),
     djpr_plot_ui("ind_hoursworked_line"),
     br(),
-    h2("Participation"),
+    h2(br(), "Participation"),
     br(),
     djpr_plot_ui("ind_partrate_line"),
     djpr_plot_ui("ind_partrate_bar"),

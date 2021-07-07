@@ -13,7 +13,7 @@ page_regions <- function(...) {
     #   actionLink("link_inclusion", "inclusion page"), "."
     # ),
     # Unemployment by region -----
-    h2("Unemployment by region"),
+    h2(br(), "Unemployment by region"),
     djpr_plot_title(textOutput("title_unemprate_vic")),
     djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
     fluidRow(
@@ -37,13 +37,13 @@ page_regions <- function(...) {
     br(),
 
     # Regional Vic vs Greater Melb -----
-    h2("Regional Victoria and Greater Melbourne"),
+    h2(br(), "Regional Victoria and Greater Melbourne"),
     djpr_plot_ui("reg_melvic_line"),
     htmlOutput("text_emp_regions"),
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
     # Regional focus box ------
-    h2("Regional focus"),
+    h2(br(), "Regional focus"),
     # Box for regional focus
     focus_box(
       selectInput("focus_region",
