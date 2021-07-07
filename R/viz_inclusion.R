@@ -393,9 +393,17 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
   title <- paste0(title, format(latest_values$date, "%B %Y"))
 
   df %>%
-    dplyr::mutate(gcc_restofstate = gsub("Melbourne", "Melb.", .data$gcc_restofstate,
-      fixed = TRUE
-    )) %>%
+    dplyr::mutate(
+      gcc_restofstate = gsub("Melbourne",
+                             "Melb.",
+                             .data$gcc_restofstate,
+                             fixed = TRUE),
+      tooltip = paste0(
+        .data$gcc_restofstate, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value * 100, 1), "%"
+      )
+    ) %>%
     djpr_ts_linechart(
       col_var = .data$gcc_restofstate,
       y_labels = function(x) paste0(x * 100, "%"),
@@ -517,6 +525,11 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
 
 
   df %>%
+    dplyr::mutate(
+      tooltip = paste0(.data$age, "\n",
+                       format(.data$date, "%b %Y"), "\n",
+                       round2(.data$value * 100, 1), "%")
+    ) %>%
     djpr_ts_linechart(
       col_var = .data$age,
       label_num = paste0(round2(.data$value * 100, 1), "%")
@@ -664,9 +677,9 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
       aes(tooltip = paste0(
         .data$geog,
         "\n",
-        .data$date,
+        format(.data$date, "%B %Y"),
         "\n",
-        round2(.data$value, 1)
+        round2(.data$value, 1), "%"
       ))
     ) +
     ggrepel::geom_text_repel(
