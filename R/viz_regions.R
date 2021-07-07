@@ -1179,7 +1179,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     mutate(label = paste0(
       stringr::str_wrap(.data$gcc_restofstate, 9),
       "\n",
-      round2(.data$value, 1)
+      round2(.data$value, 1), "%"
     ))
 
   days_in_data <- as.numeric(max(data$date) - min(data$date))
