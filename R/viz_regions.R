@@ -1388,41 +1388,34 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
       .data$indicator == "Employment to population ratio" ~ "emp_pop"
     ))
 
-  df2 <- df %>%
-    dplyr::mutate(region = grepl(
-      "Northern Territory" ~
-        "Regional NT",
-      "NSW" ~
-        "Regional NSW",
-      "Rest of Tas" ~
-        "Regional Tas",
-      "Rest of SA" ~
-        "Regional SA",
-      "Rest of Qld" ~
-        "Regional QLD",
-      "Rest of Vic." ~
-        "Regional Vic",
-      "Rest of WA" ~
-        "Regional WA"))
-
-
-
   df <- df %>%
     dplyr::filter(.data$indicator_short == selected_indicator)
 
+  #doesn't work
+  #create short state title depending on series
   df <- df %>%
-    dplyr::group_by(.data$series) %>%
     dplyr::mutate(
-      value = slider::slide_mean(.data$value, before = 2, complete = TRUE),
-      geog = dplyr::if_else(.data$state == "",
-                            "Australia",
-                            .data$state
-                            ),
-      geog_long = .data$geog,
-      geog = strayr::clean_state(.data$geog)
-    ) %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::ungroup()
+      state = dplyr::case_when(
+        .data$series[startsWith(">> Rest of Vic.")] ~
+          "Reg. Vic",
+        .data$series[startsWith(">> Rest of NSW")] ~
+          "Reg. NSW",
+        .data$series[startsWith(">> Rest of Qld")] ~
+          "Reg. QLD",
+        .data$series[startsWith(">>> Northern Territory")] ~
+          "Reg. NT",
+        .data$series[startsWith(">> Rest of WA")] ~
+          "Reg. WA",
+        .data$series[startsWith(">> Rest of SA")] ~
+          "Reg. SA",
+        .data$series[startsWith(">> Rest of Tas")] ~
+          "Reg. Tas",
+       TRUE ~ NA_character_)
+    )
+
+  # half works
+  df <- df %>%
+    dplyr::mutate(geog = strayr::clean_state(.data$series))
 
   df <- df %>%
     dplyr::filter(.data$date %in% c(
