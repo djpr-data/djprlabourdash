@@ -202,7 +202,8 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = .data$sex) +
+    djpr_ts_linechart(col_var = .data$sex,
+                      label_num = paste0(round(.data$value, 1), "%")) +
     labs(
       title = title,
       subtitle = "Participation rate by sex, Victoria",
@@ -301,66 +302,10 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = "Employment for young people fell much faster after the COVID shock than employment for other Victorians",
-      subtitle = "Cumulative change in employment for different age groups since March 2020, per cent",
+      subtitle = "Cumulative change in employment for different age groups since March 2020",
       caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
     )
 }
-
-
-viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
-                                      "A84423356T",
-                                      "A84423244X",
-                                      "A84423468K"
-                                    ))) {
-  df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
-      "Persons",
-      .data$sex
-    ))
-
-  latest_year <- df %>%
-    dplyr::group_by(.data$sex) %>%
-    dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
-    tidyr::spread(key = .data$sex, value = .data$d_year)
-
-  nice_date <- format(latest_year$date, "%B %Y")
-
-  title <- dplyr::case_when(
-    latest_year$Females > 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "A larger proportion of Victorian men and women are in work in ",
-      nice_date, " than a year earlier"
-    ),
-    latest_year$Females > 0 &
-      latest_year$Males < 0 ~
-    paste0(
-      "The proportion of Victorian women in work rose over the year to ",
-      nice_date, " but the male employment to population ratio fell"
-    ),
-    latest_year$Females < 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "The proportion of Victorian men in work rose over the year to ",
-      nice_date, " but the female employment to population ratio fell"
-    ),
-    TRUE ~ "Employment to population ratio for Victorian men and women"
-  )
-
-  df %>%
-    djpr_ts_linechart(
-      col_var = .data$sex,
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      title = title,
-      subtitle = "Employment to population ratio by sex, Victoria",
-      caption = caption_lfs()
-    )
-}
-
 
 # Line chart -- youth unemp in Greater Melb v Rest of State -----
 viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
@@ -953,6 +898,7 @@ viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$sex,
+      label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(

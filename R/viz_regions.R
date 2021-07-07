@@ -255,7 +255,7 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Cumulative change in employment (%) in Greater Melbourne and the rest of Victoria since March 2020",
+      subtitle = "Cumulative change in employment in Greater Melbourne and the rest of Victoria since March 2020",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
@@ -591,7 +591,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
   df_tidy <- df_summ %>%
     dplyr::select(-.data$range) %>%
     tidyr::gather(
-      key = .data$series, value = .data$value,
+      key = "series", value = "value",
       -.data$date
     )
 

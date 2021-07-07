@@ -53,7 +53,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Cumulative change in employment since March 2020, per cent",
+      subtitle = "Cumulative change in employment since March 2020",
       caption = caption_lfs()
     )
 }
@@ -95,7 +95,7 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
       label_num = paste0(round(.data$value, 1), "%")
     ) +
     labs(
-      subtitle = "Annual employment growth in Victoria and Australia, per cent",
+      subtitle = "Annual employment growth in Victoria and Australia",
       caption = caption_lfs(),
       title = title
     )
