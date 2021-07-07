@@ -393,7 +393,7 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Unemployment rate by region (SA4), per cent",
+      subtitle = "Unemployment rate by region (SA4)",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
