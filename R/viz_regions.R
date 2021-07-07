@@ -1396,26 +1396,26 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
   df <- df %>%
     dplyr::mutate(
       state = dplyr::case_when(
-        .data$series[startsWith(">> Rest of Vic.")] ~
+        .data$series[startsWith(.data$series, ">> Rest of Vic.")] ~
           "Reg. Vic",
-        .data$series[startsWith(">> Rest of NSW")] ~
+        .data$series[startsWith(.data$series, ">> Rest of NSW")] ~
           "Reg. NSW",
-        .data$series[startsWith(">> Rest of Qld")] ~
+        .data$series[startsWith(.data$series, ">> Rest of Qld")] ~
           "Reg. QLD",
-        .data$series[startsWith(">>> Northern Territory")] ~
+        .data$series[startsWith(.data$series, ">>> Northern Territory")] ~
           "Reg. NT",
-        .data$series[startsWith(">> Rest of WA")] ~
+        .data$series[startsWith(.data$series, ">> Rest of WA")] ~
           "Reg. WA",
-        .data$series[startsWith(">> Rest of SA")] ~
+        .data$series[startsWith(.data$series, ">> Rest of SA")] ~
           "Reg. SA",
-        .data$series[startsWith(">> Rest of Tas")] ~
+        .data$series[startsWith(.data$series, ">> Rest of Tas")] ~
           "Reg. Tas",
        TRUE ~ NA_character_)
     )
 
   # half works
   df <- df %>%
-    dplyr::mutate(geog = strayr::clean_state(.data$series))
+    dplyr::mutate(state = strayr::clean_state(.data$series))
 
   df <- df %>%
     dplyr::filter(.data$date %in% c(
