@@ -1391,6 +1391,15 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
   df <- df %>%
     dplyr::filter(.data$indicator_short == selected_indicator)
 
+  df <- df %>%
+    dplyr::mutate(series = gsub(";.*", "", series),
+                  series = gsub(">> Rest of ", "Reg. ", series),
+                  series = dplyr::if_else(grepl("Northern Territory", series),
+                                          "Reg. NT",
+                                          series),
+                  series = stringr::str_trim(series)
+    )
+
   #doesn't work
   #create short state title depending on series
   df <- df %>%
