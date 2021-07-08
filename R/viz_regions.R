@@ -1400,50 +1400,35 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
                   series = stringr::str_trim(series)
     )
 
-  #doesn't work
-  #create short state title depending on series
+  # 3 month average
   df <- df %>%
+    dplyr::group_by(.data$series) %>%
     dplyr::mutate(
-      state = dplyr::case_when(
-        .data$series[startsWith(.data$series, ">> Rest of Vic.")] ~
-          "Reg. Vic",
-        .data$series[startsWith(.data$series, ">> Rest of NSW")] ~
-          "Reg. NSW",
-        .data$series[startsWith(.data$series, ">> Rest of Qld")] ~
-          "Reg. QLD",
-        .data$series[startsWith(.data$series, ">>> Northern Territory")] ~
-          "Reg. NT",
-        .data$series[startsWith(.data$series, ">> Rest of WA")] ~
-          "Reg. WA",
-        .data$series[startsWith(.data$series, ">> Rest of SA")] ~
-          "Reg. SA",
-        .data$series[startsWith(.data$series, ">> Rest of Tas")] ~
-          "Reg. Tas",
-       TRUE ~ NA_character_)
-    )
+      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup()
 
-  # half works
-  df <- df %>%
-    dplyr::mutate(state = strayr::clean_state(.data$series))
-
+  # select most current and one year prior
   df <- df %>%
     dplyr::filter(.data$date %in% c(
       max(.data$date),
       subtract_years(max(.data$date), 1)
     ))
 
+  # create ranking
   df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::mutate(rank = dplyr::dense_rank(-data$value)) %>%
-    dplyr::select(.data$rank, .data$geog) %>%
-    dplyr::right_join(df, by = "geog")
+    dplyr::mutate(rank = dplyr::dense_rank(-.data$value)) %>%
+    dplyr::select(.data$rank, .data$series) %>%
+    dplyr::right_join(df, by = "series")
 
+  # create min_date and max_date
   df_wide <- df %>%
-    dplyr::mutate(date_type = dplyr::if_else(.data$date == min(.data$date),
+    dplyr::mutate(data_type = dplyr::if_else(.data$date == min(.data$date),
                                              "min_date",
                                              "max_date"
                                              )) %>%
-    dplyr::select(.data$date_type, .data$value, .data$geog, .data$rank) %>%
+    dplyr::select(.data$data_type, .data$value, .data$series, .data$rank) %>%
     tidyr::spread(key = .data$data_type, value = .data$value) %>%
     dplyr::mutate(arrow_end = dplyr::if_else(.data$max_date > .data$min_date,
                                              .data$max_date - 0.08,
@@ -1452,9 +1437,9 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
 
   latest_values <- df %>%
     dplyr::filter(.data$date == max(.data$date),
-                  .data$geog == "Vic") %>%
-    dplyr::select(.data$geog, .data$value, .data$date) %>%
-    tidyr::pivot_wider(names_from = .data$geog, values_from = .data$value)
+                  .data$series == "Reg. Vic.") %>%
+    dplyr::select(.data$series, .data$value, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$series, values_from = .data$value)
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
@@ -1465,22 +1450,22 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
   title <- paste0(
     "The ", indic_long,
     " in regional Victoria was ",
-    round2(latest_values$Vic, 1),
+    round2(latest_values$`Reg. Vic.`, 1),
     " per cent in ",
-    format(latest_value$date, "%B %Y")
+    format(latest_values$date, "%B %Y")
   )
 
   df %>%
     ggplot(aes(
-      x = stats::reorder(.data$geog, .data$rank),
+      x = stats::reorder(.data$series, .data$rank),
       y = .data$value,
       col = factor(.data$date)
     )) +
     geom_segment(
       data = df_wide,
       aes(
-        x = stats::reorder(.data$geog, .data$rank),
-        xend = stats::reorder(.data$geog, .data$rank),
+        x = stats::reorder(.data$series, .data$rank),
+        xend = stats::reorder(.data$series, .data$rank),
         y = .data$min_date,
         yend = .data$arrow_end
       ),
@@ -1494,7 +1479,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     ggiraph::geom_point_interactive(
       size = 4,
       aes(tooltip = paste0(
-        .data$geog,
+        .data$series,
         "\n",
         .data$date,
         "\n",
@@ -1503,11 +1488,11 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     ) +
     ggrepel::geom_text_repel(
       data = df %>%
-        dplyr::filter(.data$geog == "Vic"),
+        dplyr::filter(.data$series == "Reg. Vic."),
       aes(label = format(.data$date, "%b %Y")),
       size = 14 / .pt,
       direction = "y",
-      min.segment.length = unti(10, "lines"),
+      min.segment.length = unit(10, "lines"),
       nudge_x = 0.33
     ) +
     coord_flip() +
@@ -1521,9 +1506,9 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     ) +
     theme_djpr(flipped = T) +
     labs(title = title,
-         subtitle = "SUBTITLE GOES HERE",
+         subtitle = paste0(tools::toTitleCase(indic_long), " in regional areas of Australia"),
          caption = paste0(caption_lfs(), "Data smoothed using a 3 month rolling average."),
-         y = "WHAT GOES HERE?")
+         y = paste0("", indic_long))
 }
 
 viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_rest of vic._emplpopratio",
