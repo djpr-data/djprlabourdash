@@ -141,16 +141,15 @@ labour_server <- function(input, output, session) {
     ever = FALSE
   )
 
+
   session$onFlushed(function() {
-
-    if (isFALSE(hovered$ever)) {
-    session$sendCustomMessage(type = "overview_ur_bar_hovered_set",
-                              message = hovered$last
-                              )
-    }
-    },
+  if (isFALSE(isolate(hovered$ever))) {
+  session$sendCustomMessage(type = "overview_ur_bar_hovered_set",
+                            message = isolate(hovered$last)
+                            )
+  }
+  },
   once = F)
-
 
   observeEvent(input$overview_ur_bar_hovered,
                {
