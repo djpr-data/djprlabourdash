@@ -1659,13 +1659,12 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
     dplyr::filter(.data$date == max(.data$date)) %>%
     ungroup()
 
-  # calculate rates for each regional area
+  # calculate rates for each regional area - unfinished
   df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(part_rate = (emp + unemp) / (emp + unemp + nilf)) %>%
     dplyr::mutate(unemp_rate = (unemp) / (emp + unemp)) %>%
-    dplyr::mutate(part_rate = (emp + unemp) / (emp + unemp + nilf)) %>%
-
+    dplyr::mutate(emp_pop = emp / working_age_pop) %>%
 
   # calculate rates for regional Australia
   df <- data %>%
