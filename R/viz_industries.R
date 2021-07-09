@@ -166,6 +166,273 @@ df = dash_data)){
 
 }
 
+viz_industries_hourchange_sincecovid_bar <- function(data = filter_dash_data(c("females_greater melbourne_accommodation and food services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_administrative and support services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_agriculture, forestry and fishing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_arts and recreation services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_construction_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_education and training_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_electricity, gas, water and waste services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_financial and insurance services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_health care and social assistance_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_information media and telecommunications_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_manufacturing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_mining_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_other services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_professional, scientific and technical services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_public administration and safety_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_rental, hiring and real estate services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_retail trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_transport, postal and warehousing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_wholesale trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_accommodation and food services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_administrative and support services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_agriculture, forestry and fishing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_arts and recreation services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_construction_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_education and training_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_electricity, gas, water and waste services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_financial and insurance services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_health care and social assistance_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_information media and telecommunications_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_manufacturing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_mining_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_other services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_professional, scientific and technical services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_public administration and safety_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_rental, hiring and real estate services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_retail trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_transport, postal and warehousing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_greater melbourne_wholesale trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._accommodation and food services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._administrative and support services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._agriculture, forestry and fishing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._arts and recreation services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._construction_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._education and training_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._electricity, gas, water and waste services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._financial and insurance services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._health care and social assistance_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._information media and telecommunications_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._manufacturing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._mining_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._other services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._professional, scientific and technical services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._public administration and safety_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._rental, hiring and real estate services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._retail trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._transport, postal and warehousing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_rest of vic._wholesale trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._accommodation and food services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._administrative and support services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._agriculture, forestry and fishing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._arts and recreation services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._construction_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._education and training_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._electricity, gas, water and waste services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._financial and insurance services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._health care and social assistance_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._information media and telecommunications_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._manufacturing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._mining_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._other services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._professional, scientific and technical services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._public administration and safety_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._rental, hiring and real estate services_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._retail trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._transport, postal and warehousing_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "males_rest of vic._wholesale trade_number of hours actually worked in all jobs (employed full-time)",
+                                                                               "females_greater melbourne_accommodation and food services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_administrative and support services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_agriculture, forestry and fishing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_arts and recreation services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_construction_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_education and training_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_electricity, gas, water and waste services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_financial and insurance services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_health care and social assistance_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_information media and telecommunications_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_manufacturing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_mining_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_other services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_professional, scientific and technical services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_public administration and safety_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_rental, hiring and real estate services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_retail trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_transport, postal and warehousing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_greater melbourne_wholesale trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_accommodation and food services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_administrative and support services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_agriculture, forestry and fishing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_arts and recreation services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_construction_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_education and training_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_electricity, gas, water and waste services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_financial and insurance services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_health care and social assistance_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_information media and telecommunications_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_manufacturing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_mining_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_other services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_professional, scientific and technical services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_public administration and safety_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_rental, hiring and real estate services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_retail trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_transport, postal and warehousing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_greater melbourne_wholesale trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._accommodation and food services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._administrative and support services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._agriculture, forestry and fishing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._arts and recreation services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._construction_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._education and training_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._electricity, gas, water and waste services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._financial and insurance services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._health care and social assistance_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._information media and telecommunications_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._manufacturing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._mining_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._other services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._professional, scientific and technical services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._public administration and safety_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._rental, hiring and real estate services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._retail trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._transport, postal and warehousing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "females_rest of vic._wholesale trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._accommodation and food services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._administrative and support services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._agriculture, forestry and fishing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._arts and recreation services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._construction_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._education and training_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._electricity, gas, water and waste services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._financial and insurance services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._health care and social assistance_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._information media and telecommunications_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._manufacturing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._mining_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._other services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._professional, scientific and technical services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._public administration and safety_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._rental, hiring and real estate services_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._retail trade_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._transport, postal and warehousing_number of hours actually worked in all jobs (employed part-time)",
+                                                                               "males_rest of vic._wholesale trade_number of hours actually worked in all jobs (employed part-time)"
+                                                                               ),
+df = dash_data
+)) {
+
+  date_list <- unique(data$date)
+
+  df_total <- data %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::summarise(total_hour = sum(value)) %>%
+    dplyr::mutate(total_change = total_hour - lag(total_hour),
+                  total_growth = 100 * ((total_hour / lag(total_hour) - 1)),
+                  total_lag = lag(total_hour)) %>%
+    dplyr::filter(date == max(.data$date))
+
+    dplyr::filter(date == date_list[length(date_list)-1])
+
+
+  df <- data %>%
+  dplyr::group_by(.data$industry,.data$date) %>%
+  dplyr::summarise(hour = sum(value)) %>%
+  dplyr::mutate(change = hour - lag(hour),
+                growth = 100 * ((hour / lag(hour) - 1))) %>%
+  dplyr::filter(date == max(.data$date))
+
+
+  df_all <- df %>%
+    merge(df_total, by = "date") %>%
+  dplyr::mutate(ind_contri = change/total_lag*100) %>%
+    select(industry, ind_contri)%>%
+    arrange(ind_contri)
+
+#  lab_df <- df_all %>%
+#    dplyr::mutate(
+#      lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
+#      lab_hjust = dplyr::if_else(value >= 0, 0, 1)
+#    )
+
+  title <- paste0(
+    "Employment in ",
+    data$industry[data$value == max(data$value)],
+    dplyr::if_else(max(data$value) > 0, " grew", " shrank"),
+    " by ",
+    round2(max(data$value), 1),
+    " per cent between February 2020 and ",
+    format(max(data$date), "%B %Y"),
+    ", while employment in ",
+    data$industry[data$value == min(data$value)],
+    dplyr::if_else(min(data$value) > 0, " grew", " shrank"),
+    " by ",
+    round2(abs(min(data$value)), 1),
+    " per cent"
+  )
+
+  lab_df <- df_all %>%
+    dplyr::mutate(
+      lab_y = dplyr::if_else(ind_contri >= 0, ind_contri + 0.1, ind_contri - 0.2),
+      lab_hjust = dplyr::if_else(ind_contri >= 0, 0, 1)
+    )
+
+  # draw bar chart for all 19 industries plus Vic total
+  df_all %>%
+    ggplot(aes(
+      x = stats::reorder(industry, ind_contri),
+      y = ind_contri
+    )) +
+    geom_col(fill = df_all$ind_contri) +
+    geom_text(
+      data = lab_df,
+      aes(y = lab_y,
+        label = paste0(round(ind_contri, 1), "%")
+      ),
+      hjust = lab_df$lab_hjust,
+      colour = "black",
+      size = 11 / .pt
+    ) +
+    coord_flip(clip = "off") +
+ #   scale_y_continuous(expand = expansion(mult = c(0.2, 0.15))) +
+    scale_fill_distiller(palette = "Blues") +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(
+      title = title,
+      subtitle = paste0(
+        "Growth in employment by industry between February 2020 and ",
+        format(max(data$date), "%B %Y")
+      ),
+      caption = caption_lfs_det_q()
+    )
+
+
+
+
+  total_colour = djprtheme::djpr_golden_yellow
+
+  df_all %>% waterfall(
+                       calc_total = TRUE,
+                       rect_text_labels = round(df_all$ind_contri,1),
+                       total_axis_text = "total hours change (%)",
+                       total_rect_text_color="black",
+                       total_rect_text = sum(round(df_all$ind_contri,1)),
+                       total_rect_color=total_colour,
+                       fill_by_sign = TRUE,
+                       rect_border = "grey"
+                       ) +
+    djprtheme::theme_djpr(flipped = TRUE)
+    theme_djpr()
+}
+
+
+
 
 viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
                                                       "A84601680F",
