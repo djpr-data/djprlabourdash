@@ -1511,29 +1511,13 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
          y = paste0("", indic_long))
 }
 
-viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_australian capital territory",
-                                                                "15-24_employed_greater adelaide",
-                                                                "15-24_employed_greater brisbane",
-                                                                "15-24_employed_greater darwin",
-                                                                "15-24_employed_greater hobart",
-                                                                "15-24_employed_greater melbourne",
-                                                                "15-24_employed_greater perth",
-                                                                "15-24_employed_greater sydney",
-                                                                "15-24_employed_rest of nsw",
+viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_rest of nsw",
                                                                 "15-24_employed_rest of nt",
                                                                 "15-24_employed_rest of qld",
                                                                 "15-24_employed_rest of sa",
                                                                 "15-24_employed_rest of tas.",
                                                                 "15-24_employed_rest of vic.",
                                                                 "15-24_employed_rest of wa",
-                                                                "15-24_nilf_australian capital territory",
-                                                                "15-24_nilf_greater adelaide",
-                                                                "15-24_nilf_greater brisbane",
-                                                                "15-24_nilf_greater darwin",
-                                                                "15-24_nilf_greater hobart",
-                                                                "15-24_nilf_greater melbourne",
-                                                                "15-24_nilf_greater perth",
-                                                                "15-24_nilf_greater sydney",
                                                                 "15-24_nilf_rest of nsw",
                                                                 "15-24_nilf_rest of nt",
                                                                 "15-24_nilf_rest of qld",
@@ -1541,14 +1525,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "15-24_nilf_rest of tas.",
                                                                 "15-24_nilf_rest of vic.",
                                                                 "15-24_nilf_rest of wa",
-                                                                "15-24_unemployed_australian capital territory",
-                                                                "15-24_unemployed_greater adelaide",
-                                                                "15-24_unemployed_greater brisbane",
-                                                                "15-24_unemployed_greater darwin",
-                                                                "15-24_unemployed_greater hobart",
-                                                                "15-24_unemployed_greater melbourne",
-                                                                "15-24_unemployed_greater perth",
-                                                                "15-24_unemployed_greater sydney",
                                                                 "15-24_unemployed_rest of nsw",
                                                                 "15-24_unemployed_rest of nt",
                                                                 "15-24_unemployed_rest of qld",
@@ -1556,14 +1532,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "15-24_unemployed_rest of tas.",
                                                                 "15-24_unemployed_rest of vic.",
                                                                 "15-24_unemployed_rest of wa",
-                                                                "25-54_employed_australian capital territory",
-                                                                "25-54_employed_greater adelaide",
-                                                                "25-54_employed_greater brisbane",
-                                                                "25-54_employed_greater darwin",
-                                                                "25-54_employed_greater hobart",
-                                                                "25-54_employed_greater melbourne",
-                                                                "25-54_employed_greater perth",
-                                                                "25-54_employed_greater sydney",
                                                                 "25-54_employed_rest of nsw",
                                                                 "25-54_employed_rest of nt",
                                                                 "25-54_employed_rest of qld",
@@ -1571,14 +1539,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "25-54_employed_rest of tas.",
                                                                 "25-54_employed_rest of vic.",
                                                                 "25-54_employed_rest of wa",
-                                                                "25-54_nilf_australian capital territory",
-                                                                "25-54_nilf_greater adelaide",
-                                                                "25-54_nilf_greater brisbane",
-                                                                "25-54_nilf_greater darwin",
-                                                                "25-54_nilf_greater hobart",
-                                                                "25-54_nilf_greater melbourne",
-                                                                "25-54_nilf_greater perth",
-                                                                "25-54_nilf_greater sydney",
                                                                 "25-54_nilf_rest of nsw",
                                                                 "25-54_nilf_rest of nt",
                                                                 "25-54_nilf_rest of qld",
@@ -1586,14 +1546,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "25-54_nilf_rest of tas.",
                                                                 "25-54_nilf_rest of vic.",
                                                                 "25-54_nilf_rest of wa",
-                                                                "25-54_unemployed_australian capital territory",
-                                                                "25-54_unemployed_greater adelaide",
-                                                                "25-54_unemployed_greater brisbane",
-                                                                "25-54_unemployed_greater darwin",
-                                                                "25-54_unemployed_greater hobart",
-                                                                "25-54_unemployed_greater melbourne",
-                                                                "25-54_unemployed_greater perth",
-                                                                "25-54_unemployed_greater sydney",
                                                                 "25-54_unemployed_rest of nsw",
                                                                 "25-54_unemployed_rest of nt",
                                                                 "25-54_unemployed_rest of qld",
@@ -1601,14 +1553,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "25-54_unemployed_rest of tas.",
                                                                 "25-54_unemployed_rest of vic.",
                                                                 "25-54_unemployed_rest of wa",
-                                                                "55+_employed_australian capital territory",
-                                                                "55+_employed_greater adelaide",
-                                                                "55+_employed_greater brisbane",
-                                                                "55+_employed_greater darwin",
-                                                                "55+_employed_greater hobart",
-                                                                "55+_employed_greater melbourne",
-                                                                "55+_employed_greater perth",
-                                                                "55+_employed_greater sydney",
                                                                 "55+_employed_rest of nsw",
                                                                 "55+_employed_rest of nt",
                                                                 "55+_employed_rest of qld",
@@ -1616,14 +1560,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "55+_employed_rest of tas.",
                                                                 "55+_employed_rest of vic.",
                                                                 "55+_employed_rest of wa",
-                                                                "55+_nilf_australian capital territory",
-                                                                "55+_nilf_greater adelaide",
-                                                                "55+_nilf_greater brisbane",
-                                                                "55+_nilf_greater darwin",
-                                                                "55+_nilf_greater hobart",
-                                                                "55+_nilf_greater melbourne",
-                                                                "55+_nilf_greater perth",
-                                                                "55+_nilf_greater sydney",
                                                                 "55+_nilf_rest of nsw",
                                                                 "55+_nilf_rest of nt",
                                                                 "55+_nilf_rest of qld",
@@ -1631,14 +1567,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
                                                                 "55+_nilf_rest of tas.",
                                                                 "55+_nilf_rest of vic.",
                                                                 "55+_nilf_rest of wa",
-                                                                "55+_unemployed_australian capital territory",
-                                                                "55+_unemployed_greater adelaide",
-                                                                "55+_unemployed_greater brisbane",
-                                                                "55+_unemployed_greater darwin",
-                                                                "55+_unemployed_greater hobart",
-                                                                "55+_unemployed_greater melbourne",
-                                                                "55+_unemployed_greater perth",
-                                                                "55+_unemployed_greater sydney",
                                                                 "55+_unemployed_rest of nsw",
                                                                 "55+_unemployed_rest of nt",
                                                                 "55+_unemployed_rest of qld",
@@ -1651,7 +1579,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
 {
 
   # to be part of second region focus box: unemp rate, part rate and emp to pop ratio
-  # 3 bar charts to compare different age classes in regional vic with regional areas and regional australia
+  # 3 bar charts to compare regional vic with other regional areas in Australia
+  # one bar chart for each age class
 
   # reduce data to only most recent date
   df <- data %>%
@@ -1666,18 +1595,18 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
     dplyr::mutate(unemp_rate = (unemp) / (emp + unemp)) %>%
     dplyr::mutate(emp_pop = emp / working_age_pop) %>%
 
-  # calculate rates for regional Australia
+  # calculate rates for regional Australia - unfinished
   df <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(.data$series, .data$indicator, .data$value) %>%
     tidyr::spread(key = .data$indicator, value = .data$value) %>%
     dplyr::mutate(
-      `Regional Australia` = .data$`Rest of Vic.` +
-        .data$`Rest of NSW` +
-        .data$`Rest of Qld` +
-        .data$`Rest of WA` +
-        .data$`Rest of Tas.` +
-        .data$`Rest of NT`
+      `Reg Aus.` = .data$`Reg Vic.` +
+        .data$`Reg NSW` +
+        .data$`Reg Qld` +
+        .data$`Reg WA` +
+        .data$`Reg Tas.` +
+        .data$`Reg NT`
       )
 
   df <- df %>%
