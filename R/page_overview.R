@@ -19,7 +19,11 @@ page_overview <- function(...) {
         ),
     column(2)
     ),
-      centred_row(h1("DJPR Jobs Dashboard")),
+    br(),
+      centred_row(
+        span("DJPR Jobs Dashboard",
+             style = "font-size: 44px; color: #1F1547; font-family: 'Roboto'")
+        ),
       br(),
       centred_row(
         tagList(

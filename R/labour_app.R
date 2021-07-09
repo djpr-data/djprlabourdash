@@ -71,7 +71,7 @@ labour_server <- function(input, output, session) {
         ggiraph::opts_hover(
           reactive = TRUE,
           css = ggiraph::girafe_css(
-            css = "fill: #1F1547; transition: 0.2s;"
+            css = "fill: #1F1547; transition: 0.5s;"
           )
         ),
         ggiraph::opts_toolbar(saveaspng = FALSE),
