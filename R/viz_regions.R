@@ -1653,7 +1653,18 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_a
   # to be part of second region focus box: unemp rate, part rate and emp to pop ratio
   # 3 bar charts to compare different age classes in regional vic with regional areas and regional australia
 
+  # reduce data to only most recent date
+  df <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    ungroup()
+
   # calculate rates for each regional area
+  df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(part_rate = (emp + unemp) / (emp + unemp + nilf)) %>%
+    dplyr::mutate(unemp_rate = (unemp) / (emp + unemp)) %>%
+    dplyr::mutate(part_rate = (emp + unemp) / (emp + unemp + nilf)) %>%
 
 
   # calculate rates for regional Australia
