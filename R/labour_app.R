@@ -34,7 +34,9 @@ labour_server <- function(input, output, session) {
 
   ur_bar_static <- ur_bar_data %>%
     dplyr::slice_tail(n = 12) %>%
-    ggplot(aes(x = as.character(date), y = value, data_id = as.character(date))) +
+    ggplot(aes(x = as.character(.data$date),
+               y = .data$value,
+               data_id = as.character(.data$date))) +
     ggiraph::geom_col_interactive(fill = "#A1BBD2") +
     theme_void() +
     scale_x_discrete(labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
@@ -87,7 +89,7 @@ labour_server <- function(input, output, session) {
     selected_date <- as.Date(hovered$last)
     prev_date <- seq.Date(
       from = selected_date,
-      length = 2,
+      length.out = 2,
       by = "-1 month"
     )[2]
 
