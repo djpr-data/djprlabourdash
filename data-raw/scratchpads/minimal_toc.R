@@ -30,7 +30,7 @@ ui <- fluidPage(
       9,
       h1("The title"),
       paste0(rep("Text goes here", 100), collapse = ""),
-      h2("Some sub-title"),
+      h2(br(), "Some sub-title"),
       paste0(rep("Text goes here", 100), collapse = ""),
       h3("Section 1"),
       paste0(rep("Text goes here", 100), collapse = ""),

@@ -13,13 +13,13 @@ page_inclusion <- function(...) {
     #   actionLink("link_regions", "regions page"), "."
     # ),
     br(),
-    h2("Women and men"),
+    h2(br(), "Women and men"),
     djpr_plot_ui("gr_gen_emp_bar"),
     djpr_plot_ui("gr_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
     djpr_plot_ui("gr_full_part_line"),
-    h2("Young people"),
+    h2(br(), "Young people"),
     fluidRow(
       column(
         6,
@@ -58,7 +58,7 @@ page_inclusion <- function(...) {
       )
     ),
     br(),
-    h2("Long-term unemployed"),
+    h2(br(), "Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),
     djpr_plot_ui("gr_ltunvic_bar"),
     djpr_plot_ui("gr_ltunvic_area"),

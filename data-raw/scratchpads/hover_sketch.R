@@ -15,14 +15,14 @@ ur_bar_static <- ur_bar_data %>%
 
 ui <- fluidPage(
   fluidRow(
-    column(
-      8,
-      ggiraph::girafeOutput("overview_ur_bar")
-    ),
-    column(
-      4,
+    # column(
+    #   8,
+      ggiraph::girafeOutput("overview_ur_bar"),
+    # ),
+    # column(
+    #   4,
       htmlOutput("overview_ur_text")
-    )
+    # )
   )
 )
 
@@ -72,20 +72,27 @@ server <- function(input, output, session) {
       HTML(
         paste0(
           span(
-            style = "color: #2a6fa2",
+            style = "color: #2a6fa2; font-size: 2rem; line-height: 200%",
             format(selected_date, "%B %Y"),
             br(),
             span(
-              style = "font-size: 5rem; font-weight: 700",
+              style = "font-size: 6rem; font-weight: 700",
               paste0(format(
                 selected_val,
                 # Show first decimal even for integers
                 nsmall = 1
               ), "%")
-            )
+            ),
+
           )
         )
       ),
+      br(),
+      span(
+        style = "color: #2a6fa2; font-size: 2rem; font-weight: 400",
+        "Unemployment rate"
+      ),
+      br(),
       shiny::icon(change_arrow, style = "font-size: 2.5rem; color: #2a6fa2"),
       span(
         style = "color: #2a6fa2; font-size: 3rem; font-weight: 400",
@@ -93,7 +100,7 @@ server <- function(input, output, session) {
       ),
       # HTML(
       br(),
-      "Unemployment rate",
+
       br()
       # )
     )
