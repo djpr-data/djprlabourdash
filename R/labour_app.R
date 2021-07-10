@@ -42,36 +42,36 @@ labour_server <- function(input, output, session) {
     djprtheme::djpr_y_continuous(expand_bottom = 0.04) +
     theme(axis.text.x = element_text(size = 12,
                                      vjust = 1,
-                                     colour = "grey70"),
-          plot.margin = margin(1, 5, 1, 5, "pt"))
+                                     family = "Roboto",
+                                     colour = "#BBBBBB"),
+          plot.margin = margin(0, 7, 0, 7, "pt"))
 
   # ggiraph interactive bar chart of unemp rate
   ur_bar_width <- reactive({
     width_percent <- (3.8 / 8) * 100
 
-    if (input$plt_change$width == input$plt_change$browser_width) {
+    if (plt_change()$width == plt_change()$browser_width) {
       width_percent <- 90
     }
 
     calc_girafe_width(width_percent = width_percent,
-                      window_width = input$plt_change$width,
-                      dpi = input$plt_change$dpi)
+                      window_width = plt_change()$width,
+                      dpi = plt_change()$dpi)
   })
 
   output$overview_ur_bar <- ggiraph::renderGirafe({
 
-    req(input$plt_change, ur_bar_static, ur_bar_width())
+    req(plt_change(), ur_bar_static, ur_bar_width())
 
     ggiraph::girafe(
       ggobj = ur_bar_static,
-      # width_svg = 3,
       width_svg = ur_bar_width(),
       height_svg = 1.62,
       options = list(
         ggiraph::opts_hover(
           reactive = TRUE,
           css = ggiraph::girafe_css(
-            css = "fill: #1F1547; transition: 0.5s;"
+            css = "fill: #1F1547; transition: 0.6s;"
           )
         ),
         ggiraph::opts_toolbar(saveaspng = FALSE),
@@ -107,12 +107,13 @@ labour_server <- function(input, output, session) {
 
     tagList(
           span(
-            style = "color: #BBBBBB; font-size: 1rem; line-height: 1;",
-            br(),
+            style = "color: #BBBBBB; font-size: 0.75rem; line-height: 1;",
+            span(br(),
+                 style = "line-height: 1"),
             toupper(format(selected_date, "%B %Y")),
             br(),
             span(
-              style = "font-size: 3rem; color: #1F1547",
+              style = "font-size: 2.5rem; color: #1F1547; line-height: 1.1",
               paste0(format(
                 selected_val,
                 # Show first decimal even for integers
@@ -124,12 +125,12 @@ labour_server <- function(input, output, session) {
           shiny::icon(change_arrow, style = "font-size: 1.25rem; color: #1F1547"),
           span(
             style = "color: #1F1547; font-size: 1.25rem; font-weight: 400",
-            " ", abs(change), " pts"
+            " ", abs(change), "pts"
           ),
 
       br(),
       span(
-        style = "color: #BBBBBB; font-size: 1rem; font-weight: 400",
+        style = "color: #BBBBBB; font-size: 0.75rem; font-weight: 400",
         toupper("Unemployment rate")
       ),
       br()

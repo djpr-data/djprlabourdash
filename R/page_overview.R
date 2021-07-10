@@ -15,14 +15,15 @@ page_overview <- function(...) {
         ),
         column(
           4,
-          htmlOutput("overview_ur_text")
+          htmlOutput("overview_ur_text",
+                     class = "float-none")
         ),
     column(2)
     ),
     br(),
       centred_row(
         span("DJPR Jobs Dashboard",
-             style = "font-size: 44px; color: #1F1547; font-family: 'Roboto'")
+             style = "font-size: 40px; color: #1F1547; font-family: 'Roboto Slab'")
         ),
       br(),
       centred_row(
