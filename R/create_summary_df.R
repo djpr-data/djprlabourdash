@@ -5,30 +5,29 @@ create_summary_df <- function(data,
                               years_in_sparklines = 2,
                               row_var = "indicator",
                               row_order = NULL) {
-
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   # Drop unneeded columns -----
   summary_df <- data %>%
     dplyr::select(.data$date, .data$series_id,
-                  series = .env$row_var, .data$value, .data$unit
+      series = .env$row_var, .data$value, .data$unit
     )
 
   # Tweak series names ----
   summary_df <- summary_df %>%
     dplyr::mutate(series = dplyr::case_when(
       .data$series_id == "A84423349V" ~
-        "Employed (persons)",
+      "Employed (persons)",
       .data$series_id == "A84423237A" ~
-        "Employed (males)",
+      "Employed (males)",
       .data$series_id == "A84423461V" ~
-        "Employed (females)",
+      "Employed (females)",
       .data$series_id == "A85223450L" ~
-        "Underemployment rate",
+      "Underemployment rate",
       .data$series_id == "A84423354L" ~
-        "Unemployment rate",
+      "Unemployment rate",
       .data$series_id == "A84433601W" ~
-        "Youth unemployment rate",
+      "Youth unemployment rate",
       TRUE ~ .data$series
     ))
 
@@ -57,15 +56,15 @@ create_summary_df <- function(data,
     dplyr::mutate(across(
       c(dplyr::ends_with("pc")),
       ~ dplyr::if_else(.data$is_level,
-                       paste0(round2(.x, 1), "%"),
-                       "-"
+        paste0(round2(.x, 1), "%"),
+        "-"
       )
     ),
     across(
       c(.data$changeinmonth, .data$changeinyear, .data$changesince14),
       ~ dplyr::if_else(.data$is_level,
-                       pretty_round(.x),
-                       sprintf("%.1f ppts", .x)
+        pretty_round(.x),
+        sprintf("%.1f ppts", .x)
       )
     ),
     latest_value = dplyr::if_else(
@@ -115,15 +114,15 @@ create_summary_df <- function(data,
 
     out <- changedf %>%
       dplyr::select(-series_id, -date,
-                    Indicator = series,
-                    {{nice_date}} := latest_value,
-                    `Change in month` = changeinmonth,
-                    `Change in month (%)` = changeinmonthpc,
-                    `Change in year` = changeinyear,
-                    `Change in year (%)` = changeinyearpc,
-                    `Change since Nov 2014` = changesince14)
+        Indicator = series,
+        {{ nice_date }} := latest_value,
+        `Change in month` = changeinmonth,
+        `Change in month (%)` = changeinmonthpc,
+        `Change in year` = changeinyear,
+        `Change in year (%)` = changeinyearpc,
+        `Change since Nov 2014` = changesince14
+      )
   }
 
   out
-
 }

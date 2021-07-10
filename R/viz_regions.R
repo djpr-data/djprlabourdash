@@ -244,7 +244,7 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
   df <- data %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   df %>%
     djpr_ts_linechart(

@@ -114,5 +114,3 @@ table_ind_hours_summary <- function(data = filter_dash_data(c(
     row_var = row_var
   )
 }
-
-

@@ -17,11 +17,11 @@ ui <- fluidPage(
   fluidRow(
     # column(
     #   8,
-      ggiraph::girafeOutput("overview_ur_bar"),
+    ggiraph::girafeOutput("overview_ur_bar"),
     # ),
     # column(
     #   4,
-      htmlOutput("overview_ur_text")
+    htmlOutput("overview_ur_text")
     # )
   )
 )
@@ -83,7 +83,6 @@ server <- function(input, output, session) {
                 nsmall = 1
               ), "%")
             ),
-
           )
         )
       ),
@@ -100,7 +99,6 @@ server <- function(input, output, session) {
       ),
       # HTML(
       br(),
-
       br()
       # )
     )

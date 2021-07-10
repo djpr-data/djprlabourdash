@@ -16,11 +16,12 @@ make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = "indicator",
                            row_order = NULL) {
-
-  sparklinelist <- create_summary_df(data = data,
-                                     years_in_sparklines = years_in_sparklines,
-                                     row_var = row_var,
-                                     row_order = row_order)
+  sparklinelist <- create_summary_df(
+    data = data,
+    years_in_sparklines = years_in_sparklines,
+    row_var = row_var,
+    row_order = row_order
+  )
 
   ## Define colour palette
   n_series <- nrow(sparklinelist)
@@ -33,12 +34,12 @@ make_reactable <- function(data,
 
   calc_cols <- function(series_ids, item, summ_df = ts_summ) {
     ptiles <- get_summ(series_ids, {{ item }},
-                       df = summ_df
+      df = summ_df
     )
 
     # For some indicators, 20 pctile is "bad", for some it is "good"
     up_is_good <- get_summ(series_ids, up_is_good,
-                           df = summ_df
+      df = summ_df
     )
     ptiles <- ifelse(up_is_good, ptiles, 1 - ptiles)
 
