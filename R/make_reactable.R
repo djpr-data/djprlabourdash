@@ -16,6 +16,17 @@ make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = "indicator",
                            row_order = NULL) {
+
+  # Youth unemployment = 12m rolling average
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
+      slider::slide_mean(.data$value, before = 11, complete = TRUE),
+      .data$value
+    )) %>%
+    dplyr::ungroup()
+
   sparklinelist <- create_summary_df(
     data = data,
     years_in_sparklines = years_in_sparklines,
@@ -103,6 +114,9 @@ make_reactable <- function(data,
     `font-weight` = "400"
   )
 
+  data_col_min_width <- 65
+  data_col_max_width <- 80
+
   ## Create Reactable -----
   react_out <- sparklinelist %>%
     dplyr::select(-.data$series_id) %>%
@@ -143,65 +157,35 @@ make_reactable <- function(data,
                   showArea = F,
                   fill = colpal[index]
                 )
-                #                dataui::dui_tooltip(
-                #                  components = list(
-                #                    # Create moving tooltip
-                #                  dataui::dui_sparkverticalrefline(
-                #                    strokeDasharray = "0, 0",
-                #                    strokeWidth = 1,
-                #                    stroke = "#838383"
-                #                  ) ,
-                #                  # display tooltip value
-                #                  dataui::dui_sparkpointseries(
-                #                   stroke = colpal[index],
-                #                   fill = "#fff",
-                #                   renderLabel = htmlwidgets::JS("(d) => d.toFixed(1)")
               )
             )
           }
         ),
         changeinmonth = reactable::colDef(
-          name = "NO.",
+          name = toupper("Change in month"),
           style = recol_changeinmonth,
           headerStyle = col_header_style,
           align = "center",
-          minWidth = 65,
-          maxWidth = 90,
-        ),
-        changeinmonthpc = reactable::colDef(
-          name = "PER CENT",
-          style = recol_changeinmonthpc,
-          headerStyle = col_header_style,
-          align = "center",
-          minWidth = 65,
-          maxWidth = 90
+          minWidth = data_col_min_width,
+          maxWidth = data_col_max_width,
         ),
         changeinyear = reactable::colDef(
-          name = "NO.",
+          name = toupper("Change over year"),
           style = recol_changeinyear,
           headerStyle = col_header_style,
           align = "center",
-          minWidth = 65,
-          maxWidth = 90
-        ),
-        changeinyearpc = reactable::colDef(
-          name = "PER CENT",
-          style = recol_changeinyearpc,
-          headerStyle = col_header_style,
-          align = "center",
-          minWidth = 65,
-          maxWidth = 90
+          minWidth = data_col_min_width,
+          maxWidth = data_col_max_width
         ),
         changesince14 = reactable::colDef(
-          name = "NO.",
-          #          style = recol_changeinyear,
+          name = toupper("Change since Nov 2014"),
           headerStyle = col_header_style,
           style = c(
             cell_padding
           ),
           align = "center",
-          minWidth = 65,
-          maxWidth = 90
+          minWidth = data_col_min_width,
+          maxWidth = data_col_max_width
         ),
         latest_value = reactable::colDef(
           name = toupper(strftime(max(data$date), "%B %Y")),
@@ -211,22 +195,8 @@ make_reactable <- function(data,
             cell_padding,
             list(`border-right` = "1px solid #000")
           ),
-          maxWidth = 90,
-          minWidth = 65
-        )
-      ),
-      columnGroups = list(
-        reactable::colGroup(
-          name = "Change in month", columns = c("changeinmonth", "changeinmonthpc"),
-          headerStyle = list(`font-weight` = "600")
-        ),
-        reactable::colGroup(
-          name = "Change over year", columns = c("changeinyear", "changeinyearpc"),
-          headerStyle = list(`font-weight` = "600")
-        ),
-        reactable::colGroup(
-          name = "Change since Nov 2014", columns = c("changesince14"),
-          headerStyle = list(`font-weight` = "600")
+          minWidth = data_col_min_width,
+          maxWidth = data_col_max_width
         )
       ),
       highlight = TRUE,

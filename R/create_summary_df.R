@@ -1,4 +1,25 @@
-
+#' Create a summary dataframe for use in a table to be displayed
+#' Either in a reactable or a static briefing table
+#' @param data Dataframe of input data
+#' @param for_reactable logical; if TRUE, series_id column is retained,
+#' data for sparkline is included, column names are not nicely formatted
+#' @param years_in_sparkline Number of years worth of data to include in
+#' sparkline
+#' @param row_var "Quoted" name of column that contains series names to be
+#' used as the row names in the output table
+#' @param row_order If `NULL`, table will be sorted in alphabetical order.
+#' Otherwise, `row_order` should be a vector of row names in the order in which
+#' you want them to appear in the table.
+#' @examples
+#'
+#' create_summary_df(data = filter_dash_data(c(
+#'   "A84423349V",
+#'   "A84423357V",
+#'   "A84423356T",
+#'   "A84423244X",
+#'   "A84423468K",
+#'   "pt_emp_vic"
+#' )))
 create_summary_df <- function(data,
                               for_reactable = TRUE,
                               pretty_names = FALSE,
@@ -101,6 +122,22 @@ create_summary_df <- function(data,
     ) %>%
     dplyr::ungroup()
 
+  changedf <- changedf %>%
+    mutate(
+     changeinmonth = ifelse(
+       changeinmonthpc != "-",
+       paste0(changeinmonth, "\n(", changeinmonthpc, ")"),
+       changeinmonth),
+     changeinyear = ifelse(
+       changeinyearpc != "-",
+       paste0(changeinyear, "\n(", changeinyearpc, ")"),
+       changeinyear
+       )
+    )
+
+  changedf <- changedf %>%
+    dplyr::select(!dplyr::ends_with("pc"))
+
   ## Created df in format required for sparkline ----
 
   if (isTRUE(for_reactable)) {
@@ -117,9 +154,7 @@ create_summary_df <- function(data,
         Indicator = series,
         {{ nice_date }} := latest_value,
         `Change in month` = changeinmonth,
-        `Change in month (%)` = changeinmonthpc,
         `Change in year` = changeinyear,
-        `Change in year (%)` = changeinyearpc,
         `Change since Nov 2014` = changesince14
       )
   }

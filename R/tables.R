@@ -37,17 +37,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
                            )),
                            years_in_sparklines = 2,
                            row_var = "indicator") {
-  data <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
-    # Youth unemployment = 3m rolling average
-    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
-      slider::slide_mean(.data$value, before = 11, complete = TRUE),
-      .data$value
-    )) %>%
-    dplyr::ungroup()
-
-  make_reactable_mem(
+  make_reactable(
     data = data,
     years_in_sparklines = years_in_sparklines,
     row_var = row_var
