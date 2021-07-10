@@ -1012,7 +1012,7 @@ table_region_focus <- function(data = filter_dash_data(
   table_df <- data %>%
     dplyr::group_by(.data$geog, .data$indicator) %>%
     dplyr::mutate(
-      d_month = dplyr::if_else(indicator == "Employed total",
+      d_month = dplyr::if_else(.data$indicator == "Employed total",
         100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
         .data$value - dplyr::lag(.data$value, 1)
       ),
