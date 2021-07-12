@@ -1584,16 +1584,106 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   # reduce data to only most recent date
   df <- data %>%
-    dplyr::group_by(.data$series) %>%
+    dplyr::group_by(.data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(date, series_id, value, age, gcc_restofstate, indicator) %>%
     ungroup()
 
   # calculate rates for each regional area - unfinished
-  df %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(part_rate = (emp + unemp) / (emp + unemp + nilf)) %>%
-    dplyr::mutate(unemp_rate = (unemp) / (emp + unemp)) %>%
-    dplyr::mutate(emp_pop = emp / working_age_pop) %>%
+  df1 <- df %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of nsw"] +
+                                value[series_id == "15-24_unemployed_rest of nsw"]) /
+                                (value[series_id == "15-24_employed_rest of nsw"] +
+                                value[series_id == "15-24_unemployed_rest of nsw"] +
+                                  value[series_id == "15-24_nilf_rest of nsw"]))) %>%
+    dplyr::mutate(
+      series_id = "15-24_partrate_rest of nsw",
+      indicator = "Partrate",
+      age = "15-24"
+    ) %>%
+    # dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of vic."] +
+    #                              value[series_id == "15-24_unemployed_rest of vic."]) /
+    #                             (value[series_id == "15-24_employed_rest of vic."] +
+    #                                value[series_id == "15-24_unemployed_rest of vic."] +
+    #                                value[series_id == "15-24_nilf_rest of vic."]))) %>%
+    # dplyr::mutate(
+    #   series_id = "15-24_partrate_rest of vic.",
+    #   indicator = "Partrate",
+    #   age = "15-24"
+    # ) %>%
+    # dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of qld"] +
+    #                                       value[series_id == "15-24_unemployed_rest of qld"]) /
+    #                                      (value[series_id == "15-24_employed_rest of qld"] +
+    #                                         value[series_id == "15-24_unemployed_rest of qld"] +
+    #                                         value[series_id == "15-24_nilf_rest of qld"]))) %>%
+    # dplyr::mutate(
+    #   series_id = "15-24_partrate_rest of qld",
+    #   indicator = "Partrate",
+    #   age = "15-24"
+    # ) %>%
+    # dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of wa"] +
+    #                                       value[series_id == "15-24_unemployed_rest of wa"]) /
+    #                                      (value[series_id == "15-24_employed_rest of wa"] +
+    #                                         value[series_id == "15-24_unemployed_rest of wa"] +
+    #                                         value[series_id == "15-24_nilf_rest of wa"]))) %>%
+    # dplyr::mutate(
+    #   series_id = "15-24_partrate_rest of wa",
+    #   indicator = "Partrate",
+    #   age = "15-24"
+    # ) %>%
+    # dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of nt"] +
+    #                                       value[series_id == "15-24_unemployed_rest of nt"]) /
+    #                                      (value[series_id == "15-24_employed_rest of nt"] +
+    #                                         value[series_id == "15-24_unemployed_rest of nt"] +
+    #                                         value[series_id == "15-24_nilf_rest of nt"]))) %>%
+    # dplyr::mutate(
+    #   series_id = "15-24_partrate_rest of nt",
+    #   indicator = "Partrate",
+    #   age = "15-24"
+    # ) %>%
+    # dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of sa"] +
+    #                                       value[series_id == "15-24_unemployed_rest of sa"]) /
+    #                                      (value[series_id == "15-24_employed_rest of sa"] +
+    #                                         value[series_id == "15-24_unemployed_rest of sa"] +
+    #                                         value[series_id == "15-24_nilf_rest of sa"]))) %>%
+    # dplyr::mutate(
+    #   series_id = "15-24_partrate_rest of sa",
+    #   indicator = "Partrate",
+    #   age = "15-24"
+    # ) %>%
+    # dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of tas."] +
+    #                                       value[series_id == "15-24_unemployed_rest of tas."]) /
+    #                                      (value[series_id == "15-24_employed_rest of tas."] +
+    #                                         value[series_id == "15-24_unemployed_rest of tas."] +
+    #                                         value[series_id == "15-24_nilf_rest of tas."]))) %>%
+    # dplyr::mutate(
+    #   series_id = "15-24_partrate_rest of tas.",
+    #   indicator = "Partrate",
+    #   age = "15-24"
+    # ) %>%
+    dplyr::bind_rows(data) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  df2 <- df1 %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::summarise(value = ((value[series_id == "15-24_employed_rest of vic."] +
+                                 value[series_id == "15-24_unemployed_rest of vic."]) /
+                                (value[series_id == "15-24_employed_rest of vic."] +
+                                   value[series_id == "15-24_unemployed_rest of vic."] +
+                                   value[series_id == "15-24_nilf_rest of vic."]))) %>%
+    dplyr::mutate(
+      series_id = "15-24_partrate_rest of vic.",
+      indicator = "Partrate",
+      age = "15-24"
+    ) %>%
+    dplyr::bind_rows(data) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+
+  # %>%
+  #   dplyr::mutate(unemp_rate = (unemp) / (emp + unemp)) %>%
+  #   dplyr::mutate(emp_pop = emp / working_age_pop) %>%
 
   # calculate rates for regional Australia - unfinished
   df <- data %>%
