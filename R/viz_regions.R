@@ -1597,23 +1597,73 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     dplyr::mutate(unemprate = (Unemployed / (Employed + Unemployed))) %>%
     dplyr::mutate(emppop = (Employed / (Employed + Unemployed + NILF)))
 
-  # depending on selected_indicator, chose measure to be calculated
-  # df_unemprate <- df %>%
-  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$unemprate) %>%
-  #   dplyr::rename(value = .data$unemprate)
-  df1 <- df %>%
+  # depending on selected_indicator, chose measure to be calculated - workaround for now
+  df <- df %>%
     dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$unemprate) %>%
-    dplyr::mutate(
-      value = dplyr::case_when(
-        selected_indicator == "unemprate" ~
-          .data$unemprate,
-        selected_indicator == "partrate" ~
-          .data$partrate,
-        selected_indicator == "emppop" ~
-          .data$emppop,
-        TRUE ~ NA_character_
-      )
+    dplyr::rename(value = .data$unemprate)
+
+  # df_partrate <- df %>%
+  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$partrate) %>%
+  #   dplyr::rename(value = .data$partrate)
+  #
+  # df_emppop <- df %>%
+  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$emppop) %>%
+  #   dplyr::rename(value = .data$emppop)
+
+  # this would be smoother but can't get it to work
+  # df <- df %>%
+  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$unemprate, .data$partrate, .data$emppop) %>%
+  #   dplyr::mutate(
+  #     indic_long = dplyr::case_when(
+  #       selected_indicator == "unemp_rate" ~ "unemployment rate",
+  #       selected_indicator == "part_rate" ~ "participation rate",
+  #       selected_indicator == "emp_pop" ~ "employment to population ratio",
+  #       TRUE ~ NA_character_
+  #     )
+  #   )
+  #
+  # df <- df %>%
+  #   dplyr::mutate(
+  #     value = dplyr::case_when(
+  #       df$indic_long == "unemployment rate" ~ unemprate,
+  #       df$indic_long == "participation rate" ~ partrate,
+  #       df$indic_long == "employment to population ratio" ~ emppop,
+  #       TRUE ~ NA_character_
+  #     )
+  #   )
+
+  # remove spaces for gcc_restofstate IDs
+  df <- df %>%
+    dplyr::mutate(gcc_restofstate = gsub("Rest of ", "Reg", gcc_restofstate),
+                  gcc_restofstate = stringr::str_trim(gcc_restofstate)
     )
+
+  # calculate rates for regional Australia - unfinished
+  df_wide <- df %>%
+    tidyr::spread(key = .data$gcc_restofstate, value = .data$value) %>%
+    dplyr::mutate(
+      RegAus = .data$RegNSW +
+        .data$RegNT +
+        .data$RegQld +
+        .data$RegSA +
+        .data$RegTas. +
+        .data$RegVic. +
+        .data$RegWA
+      )
+
+  # getting it into a long df again, with 'gcc_restofstate' and value for each date and age - unfinished
+  df_long <- df_wide %>%
+    tidyr::gather(
+      key = "date", value = "value", -.data$age
+    ) %>%
+    dplyr::mutate(indicator = factor(.data$indicator,
+                                     levels = c(
+                                       "Regional Australia"
+                                     )))
+
+
+
+
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
@@ -1621,37 +1671,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     selected_indicator == "emp_pop" ~ "employment to population ratio",
     TRUE ~ NA_character_)
 
-
-  # calculate rates for regional Australia - unfinished
-  df <- data %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$series, .data$indicator, .data$value) %>%
-    tidyr::spread(key = .data$indicator, value = .data$value) %>%
-    dplyr::mutate(
-      `Reg Aus.` = .data$`Reg Vic.` +
-        .data$`Reg NSW` +
-        .data$`Reg Qld` +
-        .data$`Reg WA` +
-        .data$`Reg Tas.` +
-        .data$`Reg NT`
-      )
-
-  df <- df %>%
-    dplyr::mutate(
-      state = dplyr::if_else(.data$state == "",
-                             "Australia",
-                             .data$state
-      ),
-      state = strayr::clean_state(.data$state)
-    )
-
-  df <- df %>%
-    dplyr::group_by(.data$state) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
-
   title <- paste0(
-    "The ", selected_indicator,
+    "The ", indic_long,
     " in regional areas for different age classes in ", format(max(data$date), "%B %Y")
   )
 
