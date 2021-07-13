@@ -1652,6 +1652,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     dplyr::filter(.data$age == "55+")
 
   # replicate that for the other age classes, once the code works
+  # currently, the colours are not right
   df_15 %>%
     ggplot(aes(
       x = stats::reorder(.data$state, .data$value),
