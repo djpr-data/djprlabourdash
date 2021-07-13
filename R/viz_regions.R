@@ -1608,17 +1608,17 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
                   gcc_restofstate = stringr::str_trim(gcc_restofstate)
     )
 
-  # calculate rates for regional Australia
+  # calculate rates for regional Australia as average of all regional areas
   df_wide <- df %>%
     tidyr::spread(key = .data$gcc_restofstate, value = .data$value) %>%
     dplyr::mutate(
-      RegAus = .data$RegNSW +
+      RegAus = (.data$RegNSW +
         .data$RegNT +
         .data$RegQld +
         .data$RegSA +
         .data$RegTas. +
         .data$RegVic. +
-        .data$RegWA
+        .data$RegWA) / 7
       )
 
   # getting it into a long df again, with 'gcc_restofstate' and value for each date and age - unfinished
@@ -1642,17 +1642,17 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
       .data$state %in% c("RegVic.", "RegAus"), .data$state, "Other"
     ))
 
-  # df_15 <- df %>%
-  #   dplyr::select(.data$age == `15-24`)
-  #
-  # df_25 <- df %>%
-  #   dplyr::select(.data$age ==`25-54`)
-  #
-  # df_55 <- df %>%
-  #   dplyr::select(.data$age ==`55+`)
+  df_15 <- df %>%
+    dplyr::filter(.data$age == "15-24")
+
+  df_25 <- df %>%
+    dplyr::filter(.data$age == "25-54")
+
+  df_55 <- df %>%
+    dplyr::filter(.data$age == "55+")
 
   # replicate that for the other age classes, once the code works
-  df %>%
+  df_15 %>%
     ggplot(aes(
       x = stats::reorder(.data$state, .data$value),
       y = .data$value
