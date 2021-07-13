@@ -1687,7 +1687,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     ) +
     labs(
       title = title,
-      subtitle = "subtitle goes here",
+      subtitle = "Regional areas in Australia, age 15 - 24",
       caption = caption_lfs_det_m()
     )
 
