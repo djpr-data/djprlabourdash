@@ -32,7 +32,7 @@
 #' }
 #' @import djprtheme
 
-industries_employment_treemap <- function(data = filter_dash_data(c(
+vic_industries_employment_treemap <- function(data = filter_dash_data(c(
   "A84601680F",
   "A84601683L",
   "A84601686V",
