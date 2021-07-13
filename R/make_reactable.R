@@ -11,21 +11,15 @@
 #' @param row_order If `NULL`, table will be sorted in alphabetical order.
 #' Otherwise, `row_order` should be a vector of row names in the order in which
 #' you want them to appear in the table.
+#' @param highlight_rows numeric vector of rows in the table body (ie.
+#' excluding column names / header row) to highlight. Non-highlighted rows
+#' will be indented. When `NULL`, no row is highlighted.
 
 make_reactable <- function(data,
                            years_in_sparklines = 2,
                            row_var = "indicator",
-                           row_order = NULL) {
-
-  # Youth unemployment = 12m rolling average
-  data <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
-    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
-      slider::slide_mean(.data$value, before = 11, complete = TRUE),
-      .data$value
-    )) %>%
-    dplyr::ungroup()
+                           row_order = NULL,
+                           highlight_rows = NULL) {
 
   sparklinelist <- create_summary_df(
     data = data,
@@ -91,22 +85,9 @@ make_reactable <- function(data,
     recol(value, index, .data$ptile_d_period_abs)
   }
 
-  recol_changeinmonthpc <- function(value, index) {
-    c(
-      recol(value, index, .data$ptile_d_period_perc),
-      list(`border-right` = "1px solid #000")
-    )
-  }
 
   recol_changeinyear <- function(value, index) {
     recol(value, index, .data$ptile_d_year_abs)
-  }
-
-  recol_changeinyearpc <- function(value, index) {
-    c(
-      recol(value, index, .data$ptile_d_year_perc),
-      list(`border-right` = "1px solid #000")
-    )
   }
 
   col_header_style <- list(
@@ -125,16 +106,33 @@ make_reactable <- function(data,
       columns = list(
         series = reactable::colDef(
           name = "",
+          # Highlight rows are bolded; other rows are not
           style = function(value, index) {
-            c(
-              list(
-                fontWeight = "bold" # ,
-                # color = colpal[index]
-              ),
+            if (index %in% highlight_rows) {
+              c(
+                list(
+                  fontWeight = "bold"
+                ),
+                cell_padding
+              )
+            } else {
               cell_padding
-            )
+            }
+
           },
           minWidth = 100,
+          # Highlight rows are not indented; non-highlight rows are
+          cell = function(value, index) {
+            if (is.null(highlight_rows)) {
+              value
+            } else {
+              if (!index %in% highlight_rows) {
+                shiny::div(style = "padding-left: 25px", value)
+              } else {
+                value
+              }
+            }
+          }
         ),
         n = reactable::colDef(
           name = paste0("LAST ", years_in_sparklines, " YEARS"),

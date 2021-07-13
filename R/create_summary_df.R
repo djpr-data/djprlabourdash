@@ -7,11 +7,12 @@
 #' sparkline
 #' @param row_var "Quoted" name of column that contains series names to be
 #' used as the row names in the output table
+#' @param period Period covered by most recent change, such as "month" or
+#' "quarter". Used for column heading in the returned DF.
 #' @param row_order If `NULL`, table will be sorted in alphabetical order.
 #' Otherwise, `row_order` should be a vector of row names in the order in which
 #' you want them to appear in the table.
 #' @examples
-#'
 #' create_summary_df(data = filter_dash_data(c(
 #'   "A84423349V",
 #'   "A84423357V",
@@ -20,11 +21,13 @@
 #'   "A84423468K",
 #'   "pt_emp_vic"
 #' )))
+#' @export
 create_summary_df <- function(data,
                               for_reactable = TRUE,
                               pretty_names = FALSE,
                               years_in_sparklines = 2,
                               row_var = "indicator",
+                              period = "month",
                               row_order = NULL) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
@@ -124,15 +127,16 @@ create_summary_df <- function(data,
 
   changedf <- changedf %>%
     mutate(
-     changeinmonth = ifelse(
-       changeinmonthpc != "-",
-       paste0(changeinmonth, "\n(", changeinmonthpc, ")"),
-       changeinmonth),
-     changeinyear = ifelse(
-       changeinyearpc != "-",
-       paste0(changeinyear, "\n(", changeinyearpc, ")"),
-       changeinyear
-       )
+      changeinmonth = ifelse(
+        changeinmonthpc != "-",
+        paste0(changeinmonth, "\n(", changeinmonthpc, ")"),
+        changeinmonth
+      ),
+      changeinyear = ifelse(
+        changeinyearpc != "-",
+        paste0(changeinyear, "\n(", changeinyearpc, ")"),
+        changeinyear
+      )
     )
 
   changedf <- changedf %>%
@@ -140,22 +144,39 @@ create_summary_df <- function(data,
 
   ## Created df in format required for sparkline ----
 
+  # for_reactable is TRUE if the table is to be used on the
+  # dashboard
   if (isTRUE(for_reactable)) {
     out <- summary_df %>%
       dplyr::group_by(.data$series) %>%
       dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
       dplyr::left_join(changedf, by = "series") %>%
       dplyr::select(-.data$date)
+
+    # for_reactable is FALSE if the table is intended for a use
+    # other than the dashboard, eg. Word-based briefing tables
   } else {
-    nice_date <- format(unique(changedf$date), "%b %Y")
+    dates <- unique(summary_df$date) %>%
+      sort()
+
+    latest_date <- max(summary_df$date)
+    prev_date <- dates[length(dates) - 1]
+    prev_year <- dates[length(dates) - 12]
+
+    nice_latest_date <- format(latest_date, "%b %Y")
+    nice_prev_date <- format(prev_date, "%b %Y")
+    nice_prev_year <- format(prev_year, "%b %Y")
+
+    since_prev_date <- paste0("Since ", nice_prev_date)
+    since_prev_year <- paste0("Since ", nice_prev_year)
 
     out <- changedf %>%
       dplyr::select(-series_id, -date,
-        Indicator = series,
-        {{ nice_date }} := latest_value,
-        `Change in month` = changeinmonth,
-        `Change in year` = changeinyear,
-        `Change since Nov 2014` = changesince14
+        ` ` = series,
+        {{ nice_latest_date }} := latest_value,
+        {{ since_prev_date }} := changeinmonth,
+        {{ since_prev_year }} := changeinyear,
+        `Since Nov 2014` = changesince14
       )
   }
 

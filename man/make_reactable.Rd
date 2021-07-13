@@ -4,7 +4,12 @@
 \alias{make_reactable}
 \title{Make a reactable with standard formatting}
 \usage{
-make_reactable(data, years_in_sparklines = 2, row_var = "indicator")
+make_reactable(
+  data,
+  years_in_sparklines = 2,
+  row_var = "indicator",
+  row_order = NULL
+)
 }
 \arguments{
 \item{data}{a data frame}
