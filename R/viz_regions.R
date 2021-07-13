@@ -1597,18 +1597,11 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     dplyr::mutate(unemprate = (Unemployed / (Employed + Unemployed))) %>%
     dplyr::mutate(emppop = (Employed / (Employed + Unemployed + NILF)))
 
-  # depending on selected_indicator, chose measure to be calculated - workaround for now
+  # depending on selected_indicator, chose measure to be calculated
+  # workaround for now, selecting "unemp rate"
   df <- df %>%
     dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$unemprate) %>%
     dplyr::rename(value = .data$unemprate)
-
-  # df_partrate <- df %>%
-  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$partrate) %>%
-  #   dplyr::rename(value = .data$partrate)
-  #
-  # df_emppop <- df %>%
-  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$emppop) %>%
-  #   dplyr::rename(value = .data$emppop)
 
   # this would be smoother but can't get it to work
   # df <- df %>%
@@ -1625,9 +1618,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
   # df <- df %>%
   #   dplyr::mutate(
   #     value = dplyr::case_when(
-  #       df$indic_long == "unemployment rate" ~ unemprate,
-  #       df$indic_long == "participation rate" ~ partrate,
-  #       df$indic_long == "employment to population ratio" ~ emppop,
+  #       indic_long == "unemployment rate" ~ unemprate,
+  #       indic_long == "participation rate" ~ partrate,
+  #       indic_long == "employment to population ratio" ~ emppop,
   #       TRUE ~ NA_character_
   #     )
   #   )
@@ -1678,7 +1671,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   df <- df %>%
     dplyr::mutate(fill_col = dplyr::if_else(
-      .data$state %in% c("Vic", "Aus"), .data$state, "Other"
+      .data$state %in% c("RegVic.", "RegAus"), .data$state, "Other"
     ))
 
   df_15 <- df %>%
