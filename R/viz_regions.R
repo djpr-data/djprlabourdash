@@ -1593,45 +1593,22 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
   # calculate participation, unemployment rate and employment to pop ratio for each regional area
   df <- df %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
-    dplyr::mutate(partrate = ((Employed + Unemployed) / (Employed + Unemployed + NILF))) %>%
-    dplyr::mutate(unemprate = (Unemployed / (Employed + Unemployed))) %>%
-    dplyr::mutate(emppop = (Employed / (Employed + Unemployed + NILF)))
+    dplyr::mutate(part_rate = ((Employed + Unemployed) / (Employed + Unemployed + NILF))) %>%
+    dplyr::mutate(unemp_rate = (Unemployed / (Employed + Unemployed))) %>%
+    dplyr::mutate(emp_pop = (Employed / (Employed + Unemployed + NILF)))
 
   # depending on selected_indicator, chose measure to be calculated
-  # workaround for now, selecting "unemp rate"
   df <- df %>%
-    dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$unemprate) %>%
-    dplyr::rename(value = .data$unemprate)
+    dplyr::rename(value = .env$selected_indicator) %>%
+    dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$value)
 
-  # this would be smoother but can't get it to work
-  # df <- df %>%
-  #   dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$unemprate, .data$partrate, .data$emppop) %>%
-  #   dplyr::mutate(
-  #     indic_long = dplyr::case_when(
-  #       selected_indicator == "unemp_rate" ~ "unemployment rate",
-  #       selected_indicator == "part_rate" ~ "participation rate",
-  #       selected_indicator == "emp_pop" ~ "employment to population ratio",
-  #       TRUE ~ NA_character_
-  #     )
-  #   )
-  #
-  # df <- df %>%
-  #   dplyr::mutate(
-  #     value = dplyr::case_when(
-  #       indic_long == "unemployment rate" ~ unemprate,
-  #       indic_long == "participation rate" ~ partrate,
-  #       indic_long == "employment to population ratio" ~ emppop,
-  #       TRUE ~ NA_character_
-  #     )
-  #   )
-
-  # remove spaces for gcc_restofstate IDs
+  # remove spaces for gcc_restofstate IDs for easier conversion to long df
   df <- df %>%
     dplyr::mutate(gcc_restofstate = gsub("Rest of ", "Reg", gcc_restofstate),
                   gcc_restofstate = stringr::str_trim(gcc_restofstate)
     )
 
-  # calculate rates for regional Australia - unfinished
+  # calculate rates for regional Australia
   df_wide <- df %>%
     tidyr::spread(key = .data$gcc_restofstate, value = .data$value) %>%
     dplyr::mutate(
@@ -1646,17 +1623,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   # getting it into a long df again, with 'gcc_restofstate' and value for each date and age - unfinished
   df_long <- df_wide %>%
-    tidyr::gather(
-      key = "date", value = "value", -.data$age
-    ) %>%
-    dplyr::mutate(indicator = factor(.data$indicator,
-                                     levels = c(
-                                       "Regional Australia"
-                                     )))
-
-
-
-
+    tidyr::pivot_longer(cols = starts_with("Reg"), names_to = "state", values_to = "value"
+    )
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
@@ -1669,22 +1637,22 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     " in regional areas for different age classes in ", format(max(data$date), "%B %Y")
   )
 
-  df <- df %>%
+  df <- df_long %>%
     dplyr::mutate(fill_col = dplyr::if_else(
       .data$state %in% c("RegVic.", "RegAus"), .data$state, "Other"
     ))
 
-  df_15 <- df %>%
-    dplyr::select(.data$age == `15-24`)
-
-  df_25 <- df %>%
-    dplyr::select(.data$age ==`25-54`)
-
-  df_55 <- df %>%
-    dplyr::select(.data$age ==`55+`)
+  # df_15 <- df %>%
+  #   dplyr::select(.data$age == `15-24`)
+  #
+  # df_25 <- df %>%
+  #   dplyr::select(.data$age ==`25-54`)
+  #
+  # df_55 <- df %>%
+  #   dplyr::select(.data$age ==`55+`)
 
   # replicate that for the other age classes, once the code works
-  df_15 %>%
+  df %>%
     ggplot(aes(
       x = stats::reorder(.data$state, .data$value),
       y = .data$value
