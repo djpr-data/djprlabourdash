@@ -1578,53 +1578,49 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
                                                              df = dash_data),
                                      selected_indicator = "unemp_rate")
 {
-
-  # to be part of second region focus box: unemp rate, part rate and emp to pop ratio
-  # 3 bar charts to compare regional vic with other regional areas in Australia
-  # one bar chart for each age class
-
-  # apply 3 month smoothing & reduce data to only most recent date
   df <- data %>%
     dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(value, before = 2, complete = TRUE)) %>%
-    dplyr::ungroup() %>%
-    dplyr::select(date, age, gcc_restofstate, indicator, value) %>%
+    dplyr::mutate(value = slider::slide_mean(value, before = 11, complete = TRUE)) %>%
+    dplyr::ungroup()
+
+  df <- df %>%
+    dplyr::select(.data$date, .data$series, .data$value) %>%
+    tidyr::separate(col = .data$series,
+                    into = c("age", "indic", "geog"),
+                    sep = " ; ")
+
+  df <- df %>%
     dplyr::filter(.data$date == max(.data$date))
 
   # calculate participation, unemployment rate and employment to pop ratio for each regional area
   df <- df %>%
-    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
-    dplyr::mutate(part_rate = ((Employed + Unemployed) / (Employed + Unemployed + NILF))) %>%
-    dplyr::mutate(unemp_rate = (Unemployed / (Employed + Unemployed))) %>%
-    dplyr::mutate(emp_pop = (Employed / (Employed + Unemployed + NILF)))
+    tidyr::pivot_wider(names_from = .data$indic,
+                       values_from = .data$value) %>%
+    dplyr::mutate(part_rate = 100 * ((Employed + Unemployed) / (Employed + Unemployed + NILF))) %>%
+    dplyr::mutate(unemp_rate = 100 * (Unemployed / (Employed + Unemployed))) %>%
+    dplyr::mutate(emp_pop = 100 * (Employed / (Employed + Unemployed + NILF)))
 
   # depending on selected_indicator, chose measure to be calculated
   df <- df %>%
     dplyr::rename(value = .env$selected_indicator) %>%
-    dplyr::select(.data$date, .data$age, .data$gcc_restofstate, .data$value)
-
-  # remove spaces for gcc_restofstate IDs for easier conversion to long df
-  df <- df %>%
-    dplyr::mutate(gcc_restofstate = gsub("Rest of ", "Reg", gcc_restofstate),
-                  gcc_restofstate = stringr::str_trim(gcc_restofstate)
-    )
+    dplyr::select(.data$date, .data$age, .data$geog, .data$value)
 
   # calculate rates for regional Australia as average of all regional areas
   df_wide <- df %>%
-    tidyr::spread(key = .data$gcc_restofstate, value = .data$value) %>%
+    tidyr::spread(key = .data$geog, value = .data$value) %>%
     dplyr::mutate(
-      RegAus = (.data$RegNSW +
-        .data$RegNT +
-        .data$RegQld +
-        .data$RegSA +
-        .data$RegTas. +
-        .data$RegVic. +
-        .data$RegWA) / 7
+      `Rest of Aus` = (.data$`Rest of NSW` +
+        .data$`Rest of NT` +
+        .data$`Rest of Qld` +
+        .data$`Rest of SA` +
+        .data$`Rest of Tas.` +
+        .data$`Rest of Vic.` +
+        .data$`Rest of WA`) / 7
       )
 
-  # getting it into a long df again, with 'gcc_restofstate' and value for each date and age - unfinished
+  # getting it into a long df again, with geog and value for each date and age
   df_long <- df_wide %>%
-    tidyr::pivot_longer(cols = starts_with("Reg"), names_to = "state", values_to = "value"
+    tidyr::pivot_longer(cols = starts_with("Rest"), names_to = "geog", values_to = "value"
     )
 
   indic_long <- dplyr::case_when(
@@ -1639,209 +1635,84 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
   )
 
   df <- df_long %>%
-    dplyr::mutate(fill_col = dplyr::if_else(
-      .data$state %in% c("RegVic.", "RegAus"), .data$state, "Other"
-    ))
-
-  df_15 <- df %>%
-    dplyr::filter(.data$age == "15-24")
-
-  df_25 <- df %>%
-    dplyr::filter(.data$age == "25-54")
-
-  df_55 <- df %>%
-    dplyr::filter(.data$age == "55+")
-
-  # replicate that for the other age classes, once the code works
-  # currently, the colours are not right
-  df_15 %>%
-    ggplot(aes(
-      x = stats::reorder(.data$state, .data$value),
-      y = .data$value
-    )) +
-    geom_col(
-      aes(fill = .data$fill_col),
-      alpha = 0.9
-    ) +
-    geom_text(
-      nudge_y = 0.1,
-      aes(label = paste0(round(.data$value, 1), "%")),
-      colour = "black",
-      hjust = 0,
-      size = 12 / .pt
-    ) +
-    coord_flip(clip = "off") +
-    scale_fill_manual(
-      values = c(
-        "Vic" = djprtheme::djpr_royal_blue,
-        "Aus" = djprtheme::djpr_green,
-        "Other" = "grey70"
-      )
-    ) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
-    djprtheme::theme_djpr(flipped = TRUE) +
-    theme(
-      axis.title.x = element_blank(),
-      panel.grid = element_blank(),
-      axis.text.y = element_text(size = 12),
-      axis.text.x = element_blank()
-    ) +
-    labs(
-      title = title,
-      subtitle = "Regional areas in Australia, age 15 - 24",
-      caption = caption_lfs_det_m()
-    )
-
-}
-
-temp_function <- function(data = filter_dash_data(c("15-24_employed_rest of nsw",
-                                                    "15-24_employed_rest of nt",
-                                                    "15-24_employed_rest of qld",
-                                                    "15-24_employed_rest of sa",
-                                                    "15-24_employed_rest of tas.",
-                                                    "15-24_employed_rest of vic.",
-                                                    "15-24_employed_rest of wa",
-                                                    "15-24_nilf_rest of nsw",
-                                                    "15-24_nilf_rest of nt",
-                                                    "15-24_nilf_rest of qld",
-                                                    "15-24_nilf_rest of sa",
-                                                    "15-24_nilf_rest of tas.",
-                                                    "15-24_nilf_rest of vic.",
-                                                    "15-24_nilf_rest of wa",
-                                                    "15-24_unemployed_rest of nsw",
-                                                    "15-24_unemployed_rest of nt",
-                                                    "15-24_unemployed_rest of qld",
-                                                    "15-24_unemployed_rest of sa",
-                                                    "15-24_unemployed_rest of tas.",
-                                                    "15-24_unemployed_rest of vic.",
-                                                    "15-24_unemployed_rest of wa",
-                                                    "25-54_employed_rest of nsw",
-                                                    "25-54_employed_rest of nt",
-                                                    "25-54_employed_rest of qld",
-                                                    "25-54_employed_rest of sa",
-                                                    "25-54_employed_rest of tas.",
-                                                    "25-54_employed_rest of vic.",
-                                                    "25-54_employed_rest of wa",
-                                                    "25-54_nilf_rest of nsw",
-                                                    "25-54_nilf_rest of nt",
-                                                    "25-54_nilf_rest of qld",
-                                                    "25-54_nilf_rest of sa",
-                                                    "25-54_nilf_rest of tas.",
-                                                    "25-54_nilf_rest of vic.",
-                                                    "25-54_nilf_rest of wa",
-                                                    "25-54_unemployed_rest of nsw",
-                                                    "25-54_unemployed_rest of nt",
-                                                    "25-54_unemployed_rest of qld",
-                                                    "25-54_unemployed_rest of sa",
-                                                    "25-54_unemployed_rest of tas.",
-                                                    "25-54_unemployed_rest of vic.",
-                                                    "25-54_unemployed_rest of wa",
-                                                    "55+_employed_rest of nsw",
-                                                    "55+_employed_rest of nt",
-                                                    "55+_employed_rest of qld",
-                                                    "55+_employed_rest of sa",
-                                                    "55+_employed_rest of tas.",
-                                                    "55+_employed_rest of vic.",
-                                                    "55+_employed_rest of wa",
-                                                    "55+_nilf_rest of nsw",
-                                                    "55+_nilf_rest of nt",
-                                                    "55+_nilf_rest of qld",
-                                                    "55+_nilf_rest of sa",
-                                                    "55+_nilf_rest of tas.",
-                                                    "55+_nilf_rest of vic.",
-                                                    "55+_nilf_rest of wa",
-                                                    "55+_unemployed_rest of nsw",
-                                                    "55+_unemployed_rest of nt",
-                                                    "55+_unemployed_rest of qld",
-                                                    "55+_unemployed_rest of sa",
-                                                    "55+_unemployed_rest of tas.",
-                                                    "55+_unemployed_rest of vic.",
-                                                    "55+_unemployed_rest of wa"),
-                                                  df = dash_data),
-                          selected_indicator = "unemp_rate") {
-  df <- data %>%
-    dplyr::select(.data$date, .data$series, .data$value) %>%
-    tidyr::separate(col = .data$series,
-                    into = c("age", "indic", "geog"),
-                    sep = " ; ")
-
-  # I assume selected_indicator == "unemp_rate" - CHANGE FOR REAL FUNCTION
-  df <- df %>%
-    tidyr::pivot_wider(names_from = .data$indic,
-                       values_from = .data$value) %>%
-    dplyr::mutate(unemp_rate = 100 * (Unemployed / (Employed + Unemployed)))
-
-  df <- df %>%
-    dplyr::filter(.data$date == max(.data$date))
-
-  df <- df %>%
     dplyr::mutate(state_group = dplyr::if_else(
-      .data$geog %in% c("Rest of NSW", "Rest of Vic."),
-      .data$geog,
-      "Other"
+      .data$geog %in% c("Rest of Vic.", "Rest of Aus"), .data$geog, "Other"
     ))
 
-  # Option 1: faceted plot - hard to reorder bars
-  option_1 <- df %>%
-    ggplot(aes(x = geog, y = unemp_rate, fill = state_group)) +
-    geom_col() +
-    facet_wrap(~age, ncol = 1) +
-    coord_flip() +
-    theme_djpr(flipped = TRUE) +
-    djpr_y_continuous() +
-    scale_fill_manual(
-      values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of NSW" = djprtheme::djpr_green,
-                 "Other" = "grey70")
-    )
+  max_value <- max(df$value)
 
-  # Option 2: use {patchwork}
-  max_unemp <- max(df$unemp_rate)
-
+  # use patchwork to make three plots and tie them together
   patch_1 <- df %>%
     dplyr::filter(.data$age == "15-24") %>%
-    ggplot(aes(x = reorder(geog, unemp_rate),
-               y = unemp_rate,
+    ggplot(aes(x = reorder(.data$geog, .data$value),
+               y = value,
                fill = state_group)) +
     geom_col() +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(limits = c(0, max_unemp),
-                      breaks = scales::breaks_pretty(5)) +
+    djpr_y_continuous(limits = c(0, max_value),
+                     breaks = scales::breaks_pretty(5)) +
     scale_fill_manual(
       values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of NSW" = djprtheme::djpr_green,
-                 "Other" = "grey70")) +
-    labs(subtitle = "Age 15-24")
+                 "Rest of Aus" = djprtheme::djpr_green,
+                 "Other" = "grey70")
+    ) +
+    labs(subtitle = "Age 15-24") +
+    theme(plot.subtitle = element_text(hjust = 0.5,
+                                       colour = "black",
+                                       size = 14),
+          axis.title.x = element_blank())
 
   patch_2 <- df %>%
     dplyr::filter(.data$age == "25-54") %>%
-    ggplot(aes(x = reorder(geog, unemp_rate),
-               y = unemp_rate,
+    ggplot(aes(x = reorder(.data$geog, .data$value),
+               y = value,
                fill = state_group)) +
     geom_col() +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(limits = c(0, max_unemp),
+    djpr_y_continuous(limits = c(0, max_value),
                       breaks = scales::breaks_pretty(5)) +
     scale_fill_manual(
       values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of NSW" = djprtheme::djpr_green,
-                 "Other" = "grey70")) +
+                 "Rest of Aus" = djprtheme::djpr_green,
+                 "Other" = "grey70")
+    ) +
     labs(subtitle = "Age 25-54") +
     theme(plot.subtitle = element_text(hjust = 0.5,
                                        colour = "black",
-                                       size = 14))
+                                       size = 14),
+          axis.title.x = element_blank())
+
+  patch_3 <- df %>%
+    dplyr::filter(.data$age == "55+") %>%
+    ggplot(aes(x = reorder(.data$geog, .data$value),
+               y = value,
+               fill = state_group)) +
+    geom_col() +
+    coord_flip() +
+    theme_djpr(flipped = TRUE) +
+    djpr_y_continuous(limits = c(0, max_value),
+                      breaks = scales::breaks_pretty(5)) +
+    scale_fill_manual(
+      values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
+                 "Rest of Aus" = djprtheme::djpr_green,
+                 "Other" = "grey70")
+    ) +
+    labs(subtitle = "Age 55+") +
+    theme(plot.subtitle = element_text(hjust = 0.5,
+                                       colour = "black",
+                                       size = 14
+                                       ),
+          axis.title.x = element_blank())
 
   patchwork::wrap_plots(
-    patch_1, patch_2,
+    patch_1, patch_2, patch_3,
     ncol = 1
   ) +
     patchwork::plot_annotation(
-      title = "PLOT TITLE HERE",
-      subtitle = "Regional unemployment rates by age",
+      title = title,
       caption = caption_lfs_det_m(),
       theme = theme_djpr()
     )
 }
-
