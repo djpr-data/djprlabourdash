@@ -4,6 +4,15 @@ author: "DJPR SPP Data + Analytics"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   officedown::rdocx_document:
+    page_size:
+      width: 8.3
+      height: 11.7
+      orient: "portrait"
+    page_margins:
+      bottom: 0.5
+      top: 0.5
+      left: 0.5
+      right: 0.5
     tables:
       layout: autofit
       caption:
@@ -17,6 +26,8 @@ editor_options:
 ```{r setup, include=FALSE}
 library(officedown)
 library(flextable)
+pkgload::load_all()
+
 knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
@@ -24,8 +35,8 @@ knitr::opts_chunk$set(
   warning = FALSE
   )
 ```
-```{r load-data-and-packages}
-pkgload::load_all()
+```{r load-data}
+
 dash_data <- load_dash_data()
 ```
 
