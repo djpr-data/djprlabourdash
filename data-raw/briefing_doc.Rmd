@@ -4,6 +4,7 @@ author: "DJPR SPP Data + Analytics"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   officedown::rdocx_document:
+    reference_docx: !expr system.file('djpr_word_template.docx', package = 'djprshiny')
     page_size:
       width: 8.3
       height: 11.7
