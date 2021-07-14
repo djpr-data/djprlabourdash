@@ -45,7 +45,7 @@ dash_data <- load_dash_data()
 
 ## Heading
 
-Some text goes here
+Some text goes here. Regular text. 
 
 ```{r}
 
