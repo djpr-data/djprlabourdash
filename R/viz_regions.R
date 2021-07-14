@@ -1639,6 +1639,11 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
       .data$geog %in% c("Rest of Vic.", "Rest of Aus"), .data$geog, "Other"
     ))
 
+  df <- df %>%
+    dplyr::mutate(geog = gsub(";.*", "", geog),
+                  geog = gsub("Rest of ", "Regional ", geog)
+    )
+
   max_value <- max(df$value)
 
   # use patchwork to make three plots and tie them together
@@ -1661,7 +1666,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     theme(plot.subtitle = element_text(hjust = 0.5,
                                        colour = "black",
                                        size = 14),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank(),
+          axis.text.x=element_blank())
 
   patch_2 <- df %>%
     dplyr::filter(.data$age == "25-54") %>%
@@ -1682,7 +1688,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     theme(plot.subtitle = element_text(hjust = 0.5,
                                        colour = "black",
                                        size = 14),
-          axis.title.x = element_blank())
+          axis.title.x = element_blank(),
+          axis.text.x=element_blank())
 
   patch_3 <- df %>%
     dplyr::filter(.data$age == "55+") %>%
