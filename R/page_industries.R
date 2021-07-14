@@ -3,6 +3,8 @@ page_industries <- function(...) {
     title = "Industries",
     h1("Victoria's industries"),
     br(),
+    djpr_plot_ui("industries_employment_treemap"),
+    br(),
     djpr_plot_ui("industries_empchange_sincecovid_bar"),
     br(),
     focus_box(
