@@ -1437,3 +1437,76 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     ) +
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
+
+viz_gr_waterfall_chart <- function(data = filter_dash_data(c("A84424777J",
+                                                               "A84424785J",
+                                                               "A84424786K",
+                                                               "A84424778K",
+                                                               "A84424780W",
+                                                               "A84424598A",
+                                                               "A84424600A",
+                                                               "A84424688F",
+                                                               "A84424689J",
+                                                               "A84424694A"),
+
+df = dash_data
+)){
+  #select the necessary column
+  data <- data %>%
+    dplyr::select( .data$date,.data$series, .data$value)
+
+  # 12 month moving average
+  data <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+    )) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
+
+  #create short name
+  df <- data %>%
+    dplyr::mutate(series_short = dplyr:: case_when(
+      .data$series=="> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~"NAFTE_UN",
+      .data$series =="> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~"NAFTE_NILF",
+      .data$series =="> Victoria ;  Unemployed total ;"  ~"Un_Total",
+      .data$series =="> Victoria ;  Labour force total ;"   ~"LF",
+      .data$series =="> Victoria ;  Civilian population aged 15-24 years ;"  ~ "CiV_Pop",
+      .data$series =="> Victoria ;  Attending full-time education ;  Employed total ;"   ~ "AFE_Emplo_total",
+      .data$series =="> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "AFE_un_total",
+      .data$series =="> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "AFE_NILF",
+      .data$series =="> Victoria ;  Attending full-time education ;  > Employed full-time ;"  ~ "AFE_EF",
+      .data$series =="> Victoria ;  Attending full-time education ;  > Employed part-time ;" ~"AFE_EP" ,
+      )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  #create order
+
+  df <- df %>%
+    dplyr::mutate(
+      series_short =
+        factor(.data$series_short,
+               levels = c(
+                 "CiV_Pop",
+                 "AFE_NILF",
+                 "NAFTE_NILF",
+                 "LF",
+                 "AFE_Emplo_total",
+                 "AFE_EF",
+                 "AFE_EP",
+                 "Un_Total",
+                 "AFE_un_total",
+                 "NAFTE_UN"
+               ),
+               ordered = TRUE
+        )
+    )
+
+
+
+
+
+
+
+}
