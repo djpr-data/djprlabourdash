@@ -1507,7 +1507,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     ) +
     theme_djpr(flipped = T) +
     labs(title = title,
-         subtitle = paste0(tools::toTitleCase(indic_long), " in regional areas of Australia"),
+         subtitle = paste0(indic_long, " in regional areas of Australia"),
          caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average."),
          y = paste0("", indic_long))
 }
@@ -1595,7 +1595,17 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
   # calculate participation, unemployment rate and employment to pop ratio for each regional area
   df <- df %>%
     tidyr::pivot_wider(names_from = .data$indic,
-                       values_from = .data$value) %>%
+                       values_from = .data$value)
+
+  df <- df %>%
+    dplyr::group_by(.data$date, .data$age) %>%
+    dplyr::summarise(Employed = sum(.data$Employed),
+              NILF = sum(.data$NILF),
+              Unemployed = sum(.data$Unemployed)) %>%
+    dplyr::mutate(geog = "Rest of Aus.") %>%
+    dplyr::bind_rows(df)
+
+  df <- df %>%
     dplyr::mutate(part_rate = 100 * ((Employed + Unemployed) / (Employed + Unemployed + NILF))) %>%
     dplyr::mutate(unemp_rate = 100 * (Unemployed / (Employed + Unemployed))) %>%
     dplyr::mutate(emp_pop = 100 * (Employed / (Employed + Unemployed + NILF)))
@@ -1605,38 +1615,20 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     dplyr::rename(value = .env$selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$geog, .data$value)
 
-  # calculate rates for regional Australia as average of all regional areas
-  df_wide <- df %>%
-    tidyr::spread(key = .data$geog, value = .data$value) %>%
-    dplyr::mutate(
-      `Rest of Aus` = (.data$`Rest of NSW` +
-        .data$`Rest of NT` +
-        .data$`Rest of Qld` +
-        .data$`Rest of SA` +
-        .data$`Rest of Tas.` +
-        .data$`Rest of Vic.` +
-        .data$`Rest of WA`) / 7
-      )
-
-  # getting it into a long df again, with geog and value for each date and age
-  df_long <- df_wide %>%
-    tidyr::pivot_longer(cols = starts_with("Rest"), names_to = "geog", values_to = "value"
-    )
-
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
     selected_indicator == "part_rate" ~ "participation rate",
     selected_indicator == "emp_pop" ~ "employment to population ratio",
     TRUE ~ NA_character_)
 
-  title <- paste0(
+  subtitle <- paste0(
     "The ", indic_long,
-    " in regional areas for different age classes in ", format(max(data$date), "%B %Y")
+    " in regional areas by age in ", format(max(data$date), "%B %Y")
   )
 
-  df <- df_long %>%
+  df <- df %>%
     dplyr::mutate(state_group = dplyr::if_else(
-      .data$geog %in% c("Rest of Vic.", "Rest of Aus"), .data$geog, "Other"
+      .data$geog %in% c("Rest of Vic.", "Rest of Aus."), .data$geog, "Other"
     ))
 
   df <- df %>%
@@ -1644,7 +1636,39 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
                   geog = gsub("Rest of ", "Regional ", geog)
     )
 
+  title_df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(geog %in% c("Regional Aus.", "Regional Vic.")) %>%
+    dplyr::select(.data$age, .data$geog, .data$value) %>%
+    dplyr::group_by(.data$age) %>%
+    dplyr::mutate(rank = rank(value))
+
+  title <- dplyr::case_when(
+    all(title_df$rank[title_df$geog == "Regional Vic."] == 1) ~
+      paste0("Regional Victoria had a lower ",
+             indic_long,
+             " than regional Australia across all age groups in ",
+             format(max(df$date), "%B %Y")),
+    title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 1 ~
+      paste0("Regional Victoria had a lower ",
+             indic_long,
+             " for young people than regional Australia in ",
+             format(max(df$date), "%B %Y")),
+    title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 2 ~
+      paste0("Regional Victoria had a higher ",
+             indic_long,
+             " for young people than regional Australia in ",
+             format(max(df$date), "%B %Y")),
+    TRUE ~
+      paste0("Regional ", indic_long, " by age by State and Territory, ",
+             format(max(df$date), "%B %Y"))
+  )
+
   max_value <- max(df$value)
+
+  df <- df %>%
+    dplyr::mutate(tooltip = paste0(.data$geog, "\n",
+                            round2(.data$value, 1), "%"))
 
   # use patchwork to make three plots and tie them together
   patch_1 <- df %>%
@@ -1652,15 +1676,15 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     ggplot(aes(x = reorder(.data$geog, .data$value),
                y = value,
                fill = state_group)) +
-    geom_col() +
+    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
     djpr_y_continuous(limits = c(0, max_value),
                      breaks = scales::breaks_pretty(5)) +
     scale_fill_manual(
       values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of Aus" = djprtheme::djpr_green,
-                 "Other" = "grey70")
+                 "Rest of Aus." = djprtheme::djpr_green,
+                 "Other" = "grey75")
     ) +
     labs(subtitle = "Age 15-24") +
     theme(plot.subtitle = element_text(hjust = 0.5,
@@ -1674,14 +1698,14 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     ggplot(aes(x = reorder(.data$geog, .data$value),
                y = value,
                fill = state_group)) +
-    geom_col() +
+    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
     djpr_y_continuous(limits = c(0, max_value),
                       breaks = scales::breaks_pretty(5)) +
     scale_fill_manual(
       values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of Aus" = djprtheme::djpr_green,
+                 "Rest of Aus." = djprtheme::djpr_green,
                  "Other" = "grey70")
     ) +
     labs(subtitle = "Age 25-54") +
@@ -1696,14 +1720,15 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     ggplot(aes(x = reorder(.data$geog, .data$value),
                y = value,
                fill = state_group)) +
-    geom_col() +
+    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
     djpr_y_continuous(limits = c(0, max_value),
-                      breaks = scales::breaks_pretty(5)) +
+                      breaks = scales::breaks_pretty(5),
+                      labels = function(x) paste0(x, "%")) +
     scale_fill_manual(
       values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of Aus" = djprtheme::djpr_green,
+                 "Rest of Aus." = djprtheme::djpr_green,
                  "Other" = "grey70")
     ) +
     labs(subtitle = "Age 55+") +
@@ -1719,7 +1744,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
   ) +
     patchwork::plot_annotation(
       title = title,
-      caption = caption_lfs_det_m(),
+      subtitle = subtitle,
+      caption = paste0(caption_lfs_det_m(), " Data is smoothed using a 12 month rolling average."),
       theme = theme_djpr()
     )
 }

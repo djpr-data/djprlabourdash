@@ -42,7 +42,7 @@ page_regions <- function(...) {
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
     # Regional focus box ------
-    h2("Regional focus"),
+    h2("Victorian regions"),
     # Box for regional focus
     focus_box(
       selectInput("focus_region",
@@ -86,6 +86,24 @@ page_regions <- function(...) {
           djpr_with_spinner(),
         djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average.")
       )
+    ),
+    br(),
+    h2(br(), "Australian regions"),
+    focus_box(
+      selectInput(inputId = "aus_regions_indicator",
+                  label = "Select indicator",
+                  choices = c(
+                    "Unemployment rate" = "unemp_rate",
+                    "Participation rate" = "part_rate",
+                    "Employment-to-population ratio" = "emp_pop"
+                  ),
+                  width = "100%",
+                  selected = "unemp_rate"),
+      column(6,
+             djpr_plot_ui("reg_regionstates_dot"), height = "600px"),
+      column(6,
+             djpr_plot_ui("reg_regionstates_bar", height = "600px")
+             )
     ),
     br(),
     htmlOutput("regions_footnote"),
