@@ -4,25 +4,8 @@
 #' @param highlight_rows numeric vector of rows in the table body (ie.
 #' excluding column names / header row) to highlight. Non-highlighted rows
 #' will be indented. When `NULL`, no row is highlighted.
-#' @examples
-#' dash_data <- load_dash_data()
-#'
-#' overview_data <- filter_dash_data(series_ids = c(
-#'   "A84423349V", # Employed total
-#'   "A84423355R", # Part rate
-#'   "A84423354L", # Unemp rate
-#'   "A84423350C", # Unemp total
-#'   "A85223451R", # Underut rate
-#'   "A84426256L", # Hours worked
-#'   "A85223450L", # Underemp rate
-#'   "A84423357V", # Emp FT
-#'   "pt_emp_vic" # Emp PT
-#' ))
-#'
-#' x <- create_summary_df(overview_data, for_reactable = FALSE)
-#'
-#' make_briefing_table(x)
-#' @export
+#' @param header_row Character vector of names of additional header row to be
+#' added above existing column names
 #' @return A `flextable::flextable` object
 
 make_briefing_table <- function(df,
@@ -34,6 +17,10 @@ make_briefing_table <- function(df,
                                   "Change in past year",
                                   "Change during govt"
                                 )) {
+
+  df <- df %>%
+    dplyr::select(-.data$series_id)
+
   names(df) <- toupper(names(df))
 
   # Create a basic flextable using the supplied dataframe
@@ -56,7 +43,7 @@ make_briefing_table <- function(df,
       border.top = flextable::fp_border_default()
     ) %>%
     flextable::border(i = 1, part = "header", border.top = flextable::fp_border_default()) %>%
-    flextable::border(i = 9, border.bottom = flextable::fp_border_default())
+    flextable::border(i = nrow(df), border.bottom = flextable::fp_border_default())
 
   # Ensure font, font size, and bolding is correct
   flex <- flex %>%
@@ -82,6 +69,10 @@ make_briefing_table <- function(df,
 
     flex <- flex %>%
       flextable::padding(i = non_highlight_rows, j = 1, padding.left = 20)
+
+    flex <- flex %>%
+      flextable::border(i = highlight_rows,
+                        border.top = flextable::fp_border_default())
   } else {
     # Bold all row labels if no highlight row chosen
     flex <- flex %>%

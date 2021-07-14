@@ -3,37 +3,26 @@
 #' Each row is an indicator; columns are levels / change over particular periods
 #' Conditional formatting is applied, sparklines are included.
 #'
-#' @param data a data frame
+#' @param summary_df a data frame, ideally created by `create_summary_df()`
+#' @param raw_data data frame from which `summary_df` was created
 #' @param years_in_sparklines number of years prior to latest obs to include
 #' in sparkline
-#' @param row_var "Quoted" name of column in `data` to use as the row names in
-#' the table - as in "indicator"
-#' @param row_order If `NULL`, table will be sorted in alphabetical order.
-#' Otherwise, `row_order` should be a vector of row names in the order in which
-#' you want them to appear in the table.
 #' @param highlight_rows numeric vector of rows in the table body (ie.
 #' excluding column names / header row) to highlight. Non-highlighted rows
 #' will be indented. When `NULL`, no row is highlighted.
 
-make_reactable <- function(data,
+make_reactable <- function(summary_df,
+                           raw_data,
                            years_in_sparklines = 2,
-                           row_var = "indicator",
-                           row_order = NULL,
                            highlight_rows = NULL) {
-
-  sparklinelist <- create_summary_df(
-    data = data,
-    years_in_sparklines = years_in_sparklines,
-    row_var = row_var,
-    row_order = row_order
-  )
+  sparklinelist <- summary_df
 
   ## Define colour palette
   n_series <- nrow(sparklinelist)
   colpal <- grDevices::colorRampPalette(suppressWarnings(djpr_pal(10)))(n_series)
 
   ## Calculate colours for each row
-  ts_summ <- djprshiny::ts_summarise(data)
+  ts_summ <- djprshiny::ts_summarise(raw_data)
 
   full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
 
@@ -53,9 +42,11 @@ make_reactable <- function(data,
   }
 
   cell_padding <- list(
-    `padding-top` = "15px",
+    # `padding-top` = "15px",
+    `padding-top` = "10px",
     `padding-right` = "0px",
-    `padding-bottom` = "6px",
+    # `padding-bottom` = "6px",
+    `padding-bottom` = "2px",
     `padding-left` = "0px"
   )
 
@@ -95,14 +86,14 @@ make_reactable <- function(data,
     `font-weight` = "400"
   )
 
-  data_col_min_width <- 65
-  data_col_max_width <- 80
+  data_col_min_width <- 60
+  data_col_max_width <- 75
 
   ## Create Reactable -----
   react_out <- sparklinelist %>%
     dplyr::select(-.data$series_id) %>%
+    dplyr::rename(series = .data$indicator) %>%
     reactable::reactable(
-      defaultPageSize = 50,
       columns = list(
         series = reactable::colDef(
           name = "",
@@ -118,7 +109,6 @@ make_reactable <- function(data,
             } else {
               cell_padding
             }
-
           },
           minWidth = 100,
           # Highlight rows are not indented; non-highlight rows are
@@ -186,7 +176,7 @@ make_reactable <- function(data,
           maxWidth = data_col_max_width
         ),
         latest_value = reactable::colDef(
-          name = toupper(strftime(max(data$date), "%B %Y")),
+          name = toupper(strftime(max(raw_data$date), "%B %Y")),
           align = "center",
           headerStyle = col_header_style,
           style = c(
@@ -200,6 +190,8 @@ make_reactable <- function(data,
       highlight = TRUE,
       resizable = FALSE,
       sortable = FALSE,
+      # height = 800,
+      # style = list(`fontSize` = 12),
       theme = reactable::reactableTheme(
         borderColor = "#dfe2e5",
         stripedColor = "#f6f8fa",
@@ -212,7 +204,13 @@ make_reactable <- function(data,
         ),
         groupHeaderStyle = list(fontWeight = "normal"),
         style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      )
+      ),
+      defaultPageSize = 50,
+      rowStyle = function(index) {
+        if (index %in% highlight_rows & index != 1) {
+          list(`border-top` = "thin solid")
+        }
+      }
     )
 
   react_out

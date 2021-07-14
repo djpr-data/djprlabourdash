@@ -7,31 +7,18 @@ Either in a reactable or a static briefing table}
 \usage{
 create_summary_df(
   data,
-  for_reactable = TRUE,
-  pretty_names = FALSE,
-  years_in_sparklines = 2,
-  row_var = "indicator",
-  period = "month",
-  row_order = NULL
+  dashboard_or_briefing = "dashboard",
+  years_in_sparklines = 2
 )
 }
 \arguments{
 \item{data}{Dataframe of input data}
 
-\item{for_reactable}{logical; if TRUE, series_id column is retained,
-data for sparkline is included, column names are not nicely formatted}
+\item{dashboard_or_briefing}{Character; either 'dashboard'
+(if the table is intended for the dashboard),
+or 'briefing' (if the table is intended for the briefing tables).}
 
-\item{row_var}{"Quoted" name of column that contains series names to be
-used as the row names in the output table}
-
-\item{period}{Period covered by most recent change, such as "month" or
-"quarter". Used for column heading in the returned DF.}
-
-\item{row_order}{If \code{NULL}, table will be sorted in alphabetical order.
-Otherwise, \code{row_order} should be a vector of row names in the order in which
-you want them to appear in the table.}
-
-\item{years_in_sparkline}{Number of years worth of data to include in
+\item{years_in_sparklines}{Number of years worth of data to include in
 sparkline}
 }
 \description{
@@ -39,6 +26,8 @@ Create a summary dataframe for use in a table to be displayed
 Either in a reactable or a static briefing table
 }
 \examples{
+\dontrun{
+dash_data <- load_dash_data()
 create_summary_df(data = filter_dash_data(c(
   "A84423349V",
   "A84423357V",
@@ -47,4 +36,5 @@ create_summary_df(data = filter_dash_data(c(
   "A84423468K",
   "pt_emp_vic"
 )))
+}
 }

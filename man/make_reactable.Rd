@@ -5,24 +5,23 @@
 \title{Make a reactable with standard formatting}
 \usage{
 make_reactable(
-  data,
+  summary_df,
+  raw_data,
   years_in_sparklines = 2,
-  row_var = "indicator",
-  row_order = NULL
+  highlight_rows = NULL
 )
 }
 \arguments{
-\item{data}{a data frame}
+\item{summary_df}{a data frame, ideally created by \code{create_summary_df()}}
+
+\item{raw_data}{data frame from which \code{summary_df} was created}
 
 \item{years_in_sparklines}{number of years prior to latest obs to include
 in sparkline}
 
-\item{row_var}{"Quoted" name of column in \code{data} to use as the row names in
-the table - as in "indicator"}
-
-\item{row_order}{If \code{NULL}, table will be sorted in alphabetical order.
-Otherwise, \code{row_order} should be a vector of row names in the order in which
-you want them to appear in the table.}
+\item{highlight_rows}{numeric vector of rows in the table body (ie.
+excluding column names / header row) to highlight. Non-highlighted rows
+will be indented. When \code{NULL}, no row is highlighted.}
 }
 \description{
 Each row is an indicator; columns are levels / change over particular periods

@@ -5,7 +5,12 @@
 \title{Take a data frame summarising data and create a flextable for
 a briefing table}
 \usage{
-make_briefing_table(df, highlight_rows = NULL)
+make_briefing_table(
+  df,
+  highlight_rows = NULL,
+  header_row = c("", "Current figures", "Change in past month", "Change in past year",
+    "Change during govt")
+)
 }
 \arguments{
 \item{df}{Dataframe created using \code{create_summary_df()}}
@@ -13,6 +18,9 @@ make_briefing_table(df, highlight_rows = NULL)
 \item{highlight_rows}{numeric vector of rows in the table body (ie.
 excluding column names / header row) to highlight. Non-highlighted rows
 will be indented. When \code{NULL}, no row is highlighted.}
+
+\item{header_row}{Character vector of names of additional header row to be
+added above existing column names}
 }
 \value{
 A \code{flextable::flextable} object
@@ -20,23 +28,4 @@ A \code{flextable::flextable} object
 \description{
 Take a data frame summarising data and create a flextable for
 a briefing table
-}
-\examples{
-dash_data <- load_dash_data()
-
-overview_data <- filter_dash_data(series_ids = c(
-  "A84423349V", # Employed total
-  "A84423355R", # Part rate
-  "A84423354L", # Unemp rate
-  "A84423350C", # Unemp total
-  "A85223451R", # Underut rate
-  "A84426256L", # Hours worked
-  "A85223450L", # Underemp rate
-  "A84423357V", # Emp FT
-  "pt_emp_vic" # Emp PT
-))
-
-x <- create_summary_df(overview_data, for_reactable = FALSE)
-
-make_briefing_table(x)
 }
