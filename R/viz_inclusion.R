@@ -1467,7 +1467,7 @@ df = dash_data
 
   #create short name
   df <- data %>%
-    dplyr::mutate(series_short = dplyr:: case_when(
+    dplyr::mutate(indicator = dplyr:: case_when(
       .data$series=="> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~"NAFTE_UN",
       .data$series =="> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~"NAFTE_NILF",
       .data$series =="> Victoria ;  Unemployed total ;"  ~"Un_Total",
@@ -1485,8 +1485,8 @@ df = dash_data
 
   df <- df %>%
     dplyr::mutate(
-      series_short =
-        factor(.data$series_short,
+      indicator =
+        factor(.data$indicator,
                levels = c(
                  "CiV_Pop",
                  "AFE_NILF",
@@ -1501,10 +1501,26 @@ df = dash_data
                ),
                ordered = TRUE
         )
-    )
+    ) %>%
 
+  dplyr::mutate(id = group_indices(., indicator)) #create group id
+  dplyr::mutate(end.bar = cumsum(value),          #not working
+                 start.bar = c(0, head(end.bar, -1)))
 
-
+ df %>%
+    ggplot(aes(
+      x = .data$id,
+      y = .data$value,
+      fill = indicator)
+    ) +
+    geom_rect(aes(x = id,
+              xmin = group.id - 0.25, # control bar gap width
+              xmax = group.id + 0.25,
+              ymin = end.bar,
+              ymax = start.bar),
+    color = NA,
+    alpha = 0.95)  +
+    theme_djpr()
 
 
 
