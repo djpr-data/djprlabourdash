@@ -1393,12 +1393,12 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     dplyr::filter(.data$indicator_short == selected_indicator)
 
   df <- df %>%
-    dplyr::mutate(series = gsub(";.*", "", series),
-                  series = gsub(">> Rest of ", "Regional ", series),
-                  series = dplyr::if_else(grepl("Northern Territory", series),
+    dplyr::mutate(series = gsub(";.*", "", .data$series),
+                  series = gsub(">> Rest of ", "Regional ", .data$series),
+                  series = dplyr::if_else(grepl("Northern Territory", .data$series),
                                           "Regional NT",
-                                          series),
-                  series = stringr::str_trim(series)
+                                          .data$series),
+                  series = stringr::str_trim(.data$series)
     )
 
   # 3 month average
@@ -1581,7 +1581,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 {
   df <- data %>%
     dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(value, before = 11, complete = TRUE)) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
     dplyr::ungroup()
 
   df <- df %>%
@@ -1607,9 +1607,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     dplyr::bind_rows(df)
 
   df <- df %>%
-    dplyr::mutate(part_rate = 100 * ((Employed + Unemployed) / (Employed + Unemployed + NILF))) %>%
-    dplyr::mutate(unemp_rate = 100 * (Unemployed / (Employed + Unemployed))) %>%
-    dplyr::mutate(emp_pop = 100 * (Employed / (Employed + Unemployed + NILF)))
+    dplyr::mutate(part_rate = 100 * ((.data$Employed + .data$Unemployed) / (.data$Employed + .data$Unemployed + .data$NILF)),
+                  unemp_rate = 100 * (.data$Unemployed / (.data$Employed + .data$Unemployed)),
+                  emp_pop = 100 * (.data$Employed / (.data$Employed + .data$Unemployed + .data$NILF)))
 
   # depending on selected_indicator, chose measure to be calculated
   df <- df %>%
@@ -1633,16 +1633,16 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     ))
 
   df <- df %>%
-    dplyr::mutate(geog = gsub(";.*", "", geog),
-                  geog = gsub("Rest of ", "Regional ", geog)
+    dplyr::mutate(geog = gsub(";.*", "", .data$geog),
+                  geog = gsub("Rest of ", "Regional ", .data$geog)
     )
 
   title_df <- df %>%
     dplyr::ungroup() %>%
-    dplyr::filter(geog %in% c("Regional Aus.", "Regional Vic.")) %>%
+    dplyr::filter(.data$geog %in% c("Regional Aus.", "Regional Vic.")) %>%
     dplyr::select(.data$age, .data$geog, .data$value) %>%
     dplyr::group_by(.data$age) %>%
-    dplyr::mutate(rank = rank(value))
+    dplyr::mutate(rank = rank(.data$value))
 
   title <- dplyr::case_when(
     all(title_df$rank[title_df$geog == "Regional Vic."] == 1) ~
@@ -1674,9 +1674,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
   # use patchwork to make three plots and tie them together
   patch_1 <- df %>%
     dplyr::filter(.data$age == "15-24") %>%
-    ggplot(aes(x = reorder(.data$geog, .data$value),
-               y = value,
-               fill = state_group)) +
+    ggplot(aes(x = stats::reorder(.data$geog, .data$value),
+               y = .data$value,
+               fill = .data$state_group)) +
     ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
@@ -1696,9 +1696,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   patch_2 <- df %>%
     dplyr::filter(.data$age == "25-54") %>%
-    ggplot(aes(x = reorder(.data$geog, .data$value),
-               y = value,
-               fill = state_group)) +
+    ggplot(aes(x = stats::reorder(.data$geog, .data$value),
+               y = .data$value,
+               fill = .data$state_group)) +
     ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
@@ -1718,9 +1718,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   patch_3 <- df %>%
     dplyr::filter(.data$age == "55+") %>%
-    ggplot(aes(x = reorder(.data$geog, .data$value),
-               y = value,
-               fill = state_group)) +
+    ggplot(aes(x = stats::reorder(.data$geog, .data$value),
+               y = .data$value,
+               fill = .data$state_group)) +
     ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
