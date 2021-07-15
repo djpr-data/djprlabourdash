@@ -37,9 +37,17 @@ labour_server <- function(input, output, session) {
     ggplot(aes(
       x = as.character(.data$date),
       y = .data$value,
-      data_id = as.character(.data$date)
+      data_id = as.character(.data$date),
+      fill = dplyr::if_else(.data$date == max(.data$date),
+                            "max",
+                            "other")
     )) +
-    ggiraph::geom_col_interactive(fill = "#A1BBD2") +
+    # ggiraph::geom_col_interactive(fill = "#A1BBD2") +
+    scale_fill_manual(
+      values = c("max" = "#1F1547",
+                 "other" = "#A1BBD2")
+    ) +
+    geom_col() +
     theme_void() +
     scale_x_discrete(
       labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
@@ -53,8 +61,13 @@ labour_server <- function(input, output, session) {
         family = "Roboto",
         colour = "#BBBBBB"
       ),
-      plot.margin = margin(0, 7, 0, 7, "pt")
+      plot.margin = margin(0, 7, 0, 7, "pt"),
+      legend.position = "none"
     )
+
+  output$ur_bar_static <- renderPlot({
+    ur_bar_static
+  })
 
   # ggiraph interactive bar chart of unemp rate
   ur_bar_width <- reactive({
