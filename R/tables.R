@@ -29,6 +29,28 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
                            )),
                            dashboard_or_briefing = "dashboard") {
 
+  # Youth data = 12m rolling average
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84433601W",
+                                                                "A84424687C",
+                                                                "A84433602X"),
+                                         slider::slide_mean(.data$value, before = 11, complete = TRUE),
+                                         .data$value
+    )) %>%
+    dplyr::ungroup()
+
+  # Regional data = 3m rolling average
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84600079X"),
+                                         slider::slide_mean(.data$value, before = 2, complete = TRUE),
+                                         .data$value
+    )) %>%
+    dplyr::ungroup()
+
   make_table(
     data = data,
     dashboard_or_briefing = dashboard_or_briefing,
