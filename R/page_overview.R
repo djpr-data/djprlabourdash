@@ -11,7 +11,8 @@ page_overview <- function(...) {
       column(2),
       column(
         4,
-        ggiraph::girafeOutput("overview_ur_bar", height = "125px", width = "100%")
+        plotOutput("ur_bar_static", height = "125px")
+        # ggiraph::girafeOutput("overview_ur_bar", height = "125px", width = "100%")
       ),
       column(
         4,

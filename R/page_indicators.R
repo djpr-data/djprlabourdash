@@ -12,7 +12,7 @@ page_indicators <- function(...) {
     #   actionLink("link_regions", "regions page"), "."
     # ),
     h2(br(), "Employment"),
-    htmlOutput("ind_empgrowth_sincecovid_text"),
+    # htmlOutput("ind_empgrowth_sincecovid_text"),
     reactable::reactableOutput("ind_emp_table") %>%
       djpr_with_spinner(hide.ui = TRUE),
     caption_reactable(),
