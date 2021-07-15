@@ -202,8 +202,10 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
   )
 
   df %>%
-    djpr_ts_linechart(col_var = .data$sex,
-                      label_num = paste0(round(.data$value, 1), "%")) +
+    djpr_ts_linechart(
+      col_var = .data$sex,
+      label_num = paste0(round(.data$value, 1), "%")
+    ) +
     labs(
       title = title,
       subtitle = "Participation rate by sex, Victoria",
@@ -395,9 +397,10 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
   df %>%
     dplyr::mutate(
       gcc_restofstate = gsub("Melbourne",
-                             "Melb.",
-                             .data$gcc_restofstate,
-                             fixed = TRUE),
+        "Melb.",
+        .data$gcc_restofstate,
+        fixed = TRUE
+      ),
       tooltip = paste0(
         .data$gcc_restofstate, "\n",
         format(.data$date, "%b %Y"), "\n",
@@ -526,9 +529,11 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
 
   df %>%
     dplyr::mutate(
-      tooltip = paste0(.data$age, "\n",
-                       format(.data$date, "%b %Y"), "\n",
-                       round2(.data$value * 100, 1), "%")
+      tooltip = paste0(
+        .data$age, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value * 100, 1), "%"
+      )
     ) %>%
     djpr_ts_linechart(
       col_var = .data$age,
@@ -976,10 +981,12 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
       names_from = .data$series,
       values_from = .data$value
     ) %>%
-    dplyr::select(.data$date,
-                  .data$state,
-                  .data$`Labour force total ;  Persons ;  Australia ;`,
-                  .data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;`) %>%
+    dplyr::select(
+      .data$date,
+      .data$state,
+      .data$`Labour force total ;  Persons ;  Australia ;`,
+      .data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;`
+    ) %>%
     dplyr::rename(
       lt_unemp = "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;",
       labour_force = "Labour force total ;  Persons ;  Australia ;"
@@ -1279,8 +1286,10 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
           "2+ years",
           TRUE ~ NA_character_
         ),
-      label = paste0(.data$label_no_num, " ",
-                     round2(100 * .data$perc, 1), "%")
+      label = paste0(
+        .data$label_no_num, " ",
+        round2(100 * .data$perc, 1), "%"
+      )
     )
 
   title_df <- label_df %>%

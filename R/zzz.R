@@ -5,10 +5,9 @@
   #     )
   # )
 
-  if (requireNamespace("memoise", quietly = TRUE)) {
-    make_reactable_mem <<- memoise::memoise(make_reactable)
-  } else {
-    make_reactable_mem <<- make_reactable
-  }
-
+  # if (requireNamespace("memoise", quietly = TRUE)) {
+  #   make_reactable_mem <<- memoise::memoise(make_reactable)
+  # } else {
+  #   make_reactable_mem <<- make_reactable
+  # }
 }

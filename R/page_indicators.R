@@ -26,7 +26,7 @@ page_indicators <- function(...) {
       "ind_unemp_summary"
     ) %>%
       djpr_with_spinner(hide.ui = TRUE),
-    caption_reactable("Youth unemployment rate is not seasonally adjusted. It is smoothed using a 3 month rolling average."),
+    caption_reactable("Youth unemployment rate is not seasonally adjusted. It is smoothed using a 12 month rolling average."),
     djpr_plot_ui("ind_unemprate_line"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),

@@ -1,0 +1,63 @@
+---
+title: "DJPR Labour Force Summary"
+author: "DJPR SPP Data + Analytics"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  officedown::rdocx_document:
+    reference_docx: !expr system.file('djpr_word_template.docx', package = 'djprshiny')
+    page_size:
+      width: 8.3
+      height: 11.7
+      orient: "portrait"
+    page_margins:
+      bottom: 0.5
+      top: 0.5
+      left: 0.5
+      right: 0.5
+    tables:
+      layout: autofit
+      caption:
+        style: Table Caption
+        pre: 'Table '
+        sep: ': '
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(officedown)
+library(flextable)
+pkgload::load_all()
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  error = FALSE,
+  warning = FALSE
+  )
+```
+```{r load-data}
+
+dash_data <- load_dash_data()
+```
+
+# Victorian labour force summary
+
+## Heading
+
+Some text goes here. Regular text. 
+
+```{r}
+
+table_overview(dashboard_or_briefing = "briefing")
+```
+
+## Another heading
+
+More text
+
+```{r}
+table_ind_employment(dashboard_or_briefing = "briefing")
+```
+
+More text

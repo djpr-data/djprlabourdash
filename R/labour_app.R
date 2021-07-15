@@ -12,16 +12,16 @@ labour_server <- function(input, output, session) {
   myenv <- as.environment(1)
 
   assign("dash_data",
-         load_and_hide(),
-         envir = myenv
-         )
+    load_and_hide(),
+    envir = myenv
+  )
 
   assign("ts_summ",
-         dash_data %>%
-           tidyr::unnest(cols = .data$data) %>%
-           djprshiny::ts_summarise(),
-         envir = myenv
-         )
+    dash_data %>%
+      tidyr::unnest(cols = .data$data) %>%
+      djprshiny::ts_summarise(),
+    envir = myenv
+  )
 
   plt_change <- reactive(input$plt_change) %>%
     debounce(10)
@@ -34,17 +34,27 @@ labour_server <- function(input, output, session) {
 
   ur_bar_static <- ur_bar_data %>%
     dplyr::slice_tail(n = 12) %>%
-    ggplot(aes(x = as.character(date), y = value, data_id = as.character(date))) +
+    ggplot(aes(
+      x = as.character(.data$date),
+      y = .data$value,
+      data_id = as.character(.data$date)
+    )) +
     ggiraph::geom_col_interactive(fill = "#A1BBD2") +
     theme_void() +
-    scale_x_discrete(labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
-                     breaks = function(limits) c(limits[1], limits[12])) +
+    scale_x_discrete(
+      labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
+      breaks = function(limits) c(limits[1], limits[12])
+    ) +
     djprtheme::djpr_y_continuous(expand_bottom = 0.04) +
-    theme(axis.text.x = element_text(size = 12,
-                                     vjust = 1,
-                                     family = "Roboto",
-                                     colour = "#BBBBBB"),
-          plot.margin = margin(0, 7, 0, 7, "pt"))
+    theme(
+      axis.text.x = element_text(
+        size = 12,
+        vjust = 1,
+        family = "Roboto",
+        colour = "#BBBBBB"
+      ),
+      plot.margin = margin(0, 7, 0, 7, "pt")
+    )
 
   # ggiraph interactive bar chart of unemp rate
   ur_bar_width <- reactive({
@@ -54,13 +64,14 @@ labour_server <- function(input, output, session) {
       width_percent <- 90
     }
 
-    calc_girafe_width(width_percent = width_percent,
-                      window_width = plt_change()$width,
-                      dpi = plt_change()$dpi)
+    calc_girafe_width(
+      width_percent = width_percent,
+      window_width = plt_change()$width,
+      dpi = plt_change()$dpi
+    )
   })
 
   output$overview_ur_bar <- ggiraph::renderGirafe({
-
     req(plt_change(), ur_bar_static, ur_bar_width())
 
     ggiraph::girafe(
@@ -87,7 +98,7 @@ labour_server <- function(input, output, session) {
     selected_date <- as.Date(hovered$last)
     prev_date <- seq.Date(
       from = selected_date,
-      length = 2,
+      length.out = 2,
       by = "-1 month"
     )[2]
 
@@ -98,36 +109,35 @@ labour_server <- function(input, output, session) {
 
     change_arrow <- dplyr::case_when(
       dir_change == 1 ~
-        "arrow-up",
+      "arrow-up",
       dir_change == -1 ~
-        "arrow-down",
+      "arrow-down",
       dir_change == 0 ~
-        "arrow-right"
+      "arrow-right"
     )
 
     tagList(
-          span(
-            style = "color: #BBBBBB; font-size: 0.75rem; line-height: 1;",
-            span(br(),
-                 style = "line-height: 1"),
-            toupper(format(selected_date, "%B %Y")),
-            br(),
-            span(
-              style = "font-size: 2.5rem; color: #1F1547; line-height: 1.1",
-              paste0(format(
-                selected_val,
-                # Show first decimal even for integers
-                nsmall = 1
-              ), "%")
-            ),
-
-          ),
-          shiny::icon(change_arrow, style = "font-size: 1.25rem; color: #1F1547"),
-          span(
-            style = "color: #1F1547; font-size: 1.25rem; font-weight: 400",
-            " ", abs(change), "pts"
-          ),
-
+      span(
+        style = "color: #BBBBBB; font-size: 0.75rem; line-height: 1;",
+        span(br(),
+          style = "line-height: 1"
+        ),
+        toupper(format(selected_date, "%B %Y")),
+        br(),
+        span(
+          style = "font-size: 2.5rem; color: #1F1547; line-height: 1.1",
+          paste0(format(
+            selected_val,
+            # Show first decimal even for integers
+            nsmall = 1
+          ), "%")
+        ),
+      ),
+      shiny::icon(change_arrow, style = "font-size: 1.25rem; color: #1F1547"),
+      span(
+        style = "color: #1F1547; font-size: 1.25rem; font-weight: 400",
+        " ", abs(change), "pts"
+      ),
       br(),
       span(
         style = "color: #BBBBBB; font-size: 0.75rem; font-weight: 400",
@@ -144,25 +154,29 @@ labour_server <- function(input, output, session) {
 
 
   session$onFlushed(function() {
-  if (isFALSE(isolate(hovered$ever))) {
-  session$sendCustomMessage(type = "overview_ur_bar_hovered_set",
-                            message = isolate(hovered$last)
-                            )
-  }
+    if (isFALSE(isolate(hovered$ever))) {
+      session$sendCustomMessage(
+        type = "overview_ur_bar_hovered_set",
+        message = isolate(hovered$last)
+      )
+    }
   },
-  once = F)
+  once = F
+  )
 
   observeEvent(input$overview_ur_bar_hovered,
-               {
-                 if (!is.null(input$overview_ur_bar_hovered)) {
-                   hovered$last <<- input$overview_ur_bar_hovered
-                   hovered$ever <<- TRUE
-                 } else {
-                   session$sendCustomMessage(type = "overview_ur_bar_hovered_set",
-                                             message = hovered$last)
-                 }
-               },
-               ignoreNULL = F
+    {
+      if (!is.null(input$overview_ur_bar_hovered)) {
+        hovered$last <<- input$overview_ur_bar_hovered
+        hovered$ever <<- TRUE
+      } else {
+        session$sendCustomMessage(
+          type = "overview_ur_bar_hovered_set",
+          message = hovered$last
+        )
+      }
+    },
+    ignoreNULL = F
   )
 
   output$hover_ur <- renderText({
@@ -890,6 +904,109 @@ labour_server <- function(input, output, session) {
       input$focus_region,
       ts_summ
     )
+
+  # Regions: National focus box -----
+  djpr_plot_server("reg_regionstates_dot",
+                   plot_function = viz_reg_regionstates_dot,
+                   data = filter_dash_data(c("A84599628W",
+                                             "A84599629X",
+                                             "A84599630J",
+                                             "A84600078W",
+                                             "A84600079X",
+                                             "A84600080J",
+                                             "A84599784X",
+                                             "A84599785A",
+                                             "A84599786C",
+                                             "A84599718A",
+                                             "A84599719C",
+                                             "A84599720L",
+                                             "A84600246W",
+                                             "A84600247X",
+                                             "A84600248A",
+                                             "A84599634T",
+                                             "A84599635V",
+                                             "A84599636W",
+                                             "A84599610X",
+                                             "A84599611A",
+                                             "A84599612C"),
+                                           df = dash_data),
+                   selected_indicator = reactive(input$aus_regions_indicator),
+                   plt_change = plt_change,
+                   width_percent = 46,
+                   height_percent = 150,
+                   date_slider = FALSE)
+
+  djpr_plot_server("reg_regionstates_bar",
+                   viz_reg_regionstates_bar,
+                   data = filter_dash_data(c("15-24_employed_rest of nsw",
+                                             "15-24_employed_rest of nt",
+                                             "15-24_employed_rest of qld",
+                                             "15-24_employed_rest of sa",
+                                             "15-24_employed_rest of tas.",
+                                             "15-24_employed_rest of vic.",
+                                             "15-24_employed_rest of wa",
+                                             "15-24_nilf_rest of nsw",
+                                             "15-24_nilf_rest of nt",
+                                             "15-24_nilf_rest of qld",
+                                             "15-24_nilf_rest of sa",
+                                             "15-24_nilf_rest of tas.",
+                                             "15-24_nilf_rest of vic.",
+                                             "15-24_nilf_rest of wa",
+                                             "15-24_unemployed_rest of nsw",
+                                             "15-24_unemployed_rest of nt",
+                                             "15-24_unemployed_rest of qld",
+                                             "15-24_unemployed_rest of sa",
+                                             "15-24_unemployed_rest of tas.",
+                                             "15-24_unemployed_rest of vic.",
+                                             "15-24_unemployed_rest of wa",
+                                             "25-54_employed_rest of nsw",
+                                             "25-54_employed_rest of nt",
+                                             "25-54_employed_rest of qld",
+                                             "25-54_employed_rest of sa",
+                                             "25-54_employed_rest of tas.",
+                                             "25-54_employed_rest of vic.",
+                                             "25-54_employed_rest of wa",
+                                             "25-54_nilf_rest of nsw",
+                                             "25-54_nilf_rest of nt",
+                                             "25-54_nilf_rest of qld",
+                                             "25-54_nilf_rest of sa",
+                                             "25-54_nilf_rest of tas.",
+                                             "25-54_nilf_rest of vic.",
+                                             "25-54_nilf_rest of wa",
+                                             "25-54_unemployed_rest of nsw",
+                                             "25-54_unemployed_rest of nt",
+                                             "25-54_unemployed_rest of qld",
+                                             "25-54_unemployed_rest of sa",
+                                             "25-54_unemployed_rest of tas.",
+                                             "25-54_unemployed_rest of vic.",
+                                             "25-54_unemployed_rest of wa",
+                                             "55+_employed_rest of nsw",
+                                             "55+_employed_rest of nt",
+                                             "55+_employed_rest of qld",
+                                             "55+_employed_rest of sa",
+                                             "55+_employed_rest of tas.",
+                                             "55+_employed_rest of vic.",
+                                             "55+_employed_rest of wa",
+                                             "55+_nilf_rest of nsw",
+                                             "55+_nilf_rest of nt",
+                                             "55+_nilf_rest of qld",
+                                             "55+_nilf_rest of sa",
+                                             "55+_nilf_rest of tas.",
+                                             "55+_nilf_rest of vic.",
+                                             "55+_nilf_rest of wa",
+                                             "55+_unemployed_rest of nsw",
+                                             "55+_unemployed_rest of nt",
+                                             "55+_unemployed_rest of qld",
+                                             "55+_unemployed_rest of sa",
+                                             "55+_unemployed_rest of tas.",
+                                             "55+_unemployed_rest of vic.",
+                                             "55+_unemployed_rest of wa"),
+                                           df = dash_data),
+                   selected_indicator = reactive(input$aus_regions_indicator),
+                   plt_change = plt_change,
+                   height_percent = 150,
+                   width_percent = 46,
+                   date_slider = FALSE)
 
   # Industries ------
 

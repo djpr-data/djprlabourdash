@@ -577,8 +577,10 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
-    dplyr::select(.data$date, .data$value, .data$series,
-                  .data$indicator, .data$sex, .data$industry, .data$gcc_restofstate)
+    dplyr::select(
+      .data$date, .data$value, .data$series,
+      .data$indicator, .data$sex, .data$industry, .data$gcc_restofstate
+    )
 
   df <- df %>%
     dplyr::group_by(.data$sex, .data$industry) %>%
