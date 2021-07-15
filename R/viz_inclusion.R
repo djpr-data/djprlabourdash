@@ -418,7 +418,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
     labs(
       title = title,
       subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24"),
-      caption = paste0(caption_lfs(), " Smoothed using a 12 month rolling average.")
+      caption = paste0(caption_lfs_det_m(), " Smoothed using a 12 month rolling average.")
     )
 }
 
