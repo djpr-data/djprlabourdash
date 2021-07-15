@@ -10,7 +10,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
                              "A84423242V",
                              "A84423466F",
                              "A84433601W",
-                             "A84600079X",
+                             # "A84600079X", Regional UR
                              "A84423350C",
                              "A84423349V",
                              "A84423357V",
@@ -59,7 +59,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
       "A84423242V",
       "A84423466F",
       "A84433601W",
-      "A84600079X",
+      # "A84600079X",
       "A84423350C",
       "A84423349V",
       "A84423357V",
