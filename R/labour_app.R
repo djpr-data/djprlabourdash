@@ -9,22 +9,188 @@
 labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
-  dash_data <<- load_and_hide()
+  myenv <- as.environment(1)
 
-  ts_summ <<- dash_data %>%
-    tidyr::unnest(cols = .data$data) %>%
-    djprshiny::ts_summarise()
+  assign("dash_data",
+    load_and_hide(),
+    envir = myenv
+  )
+
+  assign("ts_summ",
+    dash_data %>%
+      tidyr::unnest(cols = .data$data) %>%
+      djprshiny::ts_summarise(),
+    envir = myenv
+  )
 
   plt_change <- reactive(input$plt_change) %>%
     debounce(10)
 
   # Overview ------
+  # Overview: bar chart and active text ------
 
+  # Static bar chart of unemp rate over past 12 months
+  ur_bar_data <- filter_dash_data("A84423354L")
+
+  ur_bar_static <- ur_bar_data %>%
+    dplyr::slice_tail(n = 12) %>%
+    ggplot(aes(
+      x = as.character(.data$date),
+      y = .data$value,
+      data_id = as.character(.data$date)
+    )) +
+    ggiraph::geom_col_interactive(fill = "#A1BBD2") +
+    theme_void() +
+    scale_x_discrete(
+      labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
+      breaks = function(limits) c(limits[1], limits[12])
+    ) +
+    djprtheme::djpr_y_continuous(expand_bottom = 0.04) +
+    theme(
+      axis.text.x = element_text(
+        size = 12,
+        vjust = 1,
+        family = "Roboto",
+        colour = "#BBBBBB"
+      ),
+      plot.margin = margin(0, 7, 0, 7, "pt")
+    )
+
+  # ggiraph interactive bar chart of unemp rate
+  ur_bar_width <- reactive({
+    width_percent <- (3.8 / 8) * 100
+
+    if (plt_change()$width == plt_change()$browser_width) {
+      width_percent <- 90
+    }
+
+    calc_girafe_width(
+      width_percent = width_percent,
+      window_width = plt_change()$width,
+      dpi = plt_change()$dpi
+    )
+  })
+
+  output$overview_ur_bar <- ggiraph::renderGirafe({
+    req(plt_change(), ur_bar_static, ur_bar_width())
+
+    ggiraph::girafe(
+      ggobj = ur_bar_static,
+      width_svg = ur_bar_width(),
+      height_svg = 1.62,
+      options = list(
+        ggiraph::opts_hover(
+          reactive = TRUE,
+          css = ggiraph::girafe_css(
+            css = "fill: #1F1547; transition: 0.6s;"
+          )
+        ),
+        ggiraph::opts_toolbar(saveaspng = FALSE),
+        ggiraph::opts_selection(type = "none"),
+        ggiraph::opts_sizing(rescale = F)
+      )
+    )
+  })
+
+  output$overview_ur_text <- renderUI({
+    req(hovered$last)
+
+    selected_date <- as.Date(hovered$last)
+    prev_date <- seq.Date(
+      from = selected_date,
+      length.out = 2,
+      by = "-1 month"
+    )[2]
+
+    selected_val <- round2(ur_bar_data$value[ur_bar_data$date == hovered$last], 1)
+    prev_val <- round2(ur_bar_data$value[ur_bar_data$date == prev_date], 1)
+    change <- round2(selected_val - prev_val, 1)
+    dir_change <- sign(change)
+
+    change_arrow <- dplyr::case_when(
+      dir_change == 1 ~
+      "arrow-up",
+      dir_change == -1 ~
+      "arrow-down",
+      dir_change == 0 ~
+      "arrow-right"
+    )
+
+    tagList(
+      span(
+        style = "color: #BBBBBB; font-size: 0.75rem; line-height: 1;",
+        span(br(),
+          style = "line-height: 1"
+        ),
+        toupper(format(selected_date, "%B %Y")),
+        br(),
+        span(
+          style = "font-size: 2.5rem; color: #1F1547; line-height: 1.1",
+          paste0(format(
+            selected_val,
+            # Show first decimal even for integers
+            nsmall = 1
+          ), "%")
+        ),
+      ),
+      shiny::icon(change_arrow, style = "font-size: 1.25rem; color: #1F1547"),
+      span(
+        style = "color: #1F1547; font-size: 1.25rem; font-weight: 400",
+        " ", abs(change), "pts"
+      ),
+      br(),
+      span(
+        style = "color: #BBBBBB; font-size: 0.75rem; font-weight: 400",
+        toupper("Unemployment rate")
+      ),
+      br()
+    )
+  })
+
+  hovered <- reactiveValues(
+    last = as.character(max(ur_bar_data$date)),
+    ever = FALSE
+  )
+
+
+  session$onFlushed(function() {
+    if (isFALSE(isolate(hovered$ever))) {
+      session$sendCustomMessage(
+        type = "overview_ur_bar_hovered_set",
+        message = isolate(hovered$last)
+      )
+    }
+  },
+  once = F
+  )
+
+  observeEvent(input$overview_ur_bar_hovered,
+    {
+      if (!is.null(input$overview_ur_bar_hovered)) {
+        hovered$last <<- input$overview_ur_bar_hovered
+        hovered$ever <<- TRUE
+      } else {
+        session$sendCustomMessage(
+          type = "overview_ur_bar_hovered_set",
+          message = hovered$last
+        )
+      }
+    },
+    ignoreNULL = F
+  )
+
+  output$hover_ur <- renderText({
+    ur_bar_data$value[ur_bar_data$date == hovered$last]
+  })
+
+
+
+  # Overview: footnote and main table ----
   footnote <- reactive({
     req(dash_data)
     latest <- max(ts_summ$latest_date)
     div(
-      htmltools::HTML(
+      shiny::HTML(
         paste0(
           "This dashboard is produced by the <b>Strategy and Priority ",
           "Projects - Data + Analytics</b> team at the Victorian Department ",
@@ -262,18 +428,46 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE
   )
 
+  djpr_plot_server("ind_partrate_un_line",
+    viz_ind_partrate_un_line,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = Sys.Date() - (10 * 365)
+  )
+
+  djpr_plot_server("ind_partrate_un_scatter",
+    viz_ind_partrate_un_scatter,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
+    date_slider = FALSE
+  )
+
   djpr_plot_server("ind_partrate_line",
-                   plot_function = viz_ind_partrate_line,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423051C"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change)
+    plot_function = viz_ind_partrate_line,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423051C"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change
+  )
 
   # Inclusion ------
 
+
+  # Inclusion: women and men -----
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_emppopratio_line",
     viz_gr_emppopratio_line,
@@ -336,6 +530,21 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 10)
   )
 
+  djpr_plot_server("gr_full_part_line",
+    viz_gr_full_part_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423237A",
+      "A84423461V",
+      "A84423245A",
+      "A84423469L"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (365.25 * 5)
+  )
+
+  # Inclusion: age ----
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
     viz_gr_yth_emp_sincecovid_line,
@@ -358,17 +567,18 @@ labour_server <- function(input, output, session) {
   )
 
   djpr_plot_server("gr_yth_lfpartrate_vicaus_line",
-                   viz_gr_yth_lfpartrate_vicaus_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84424622R",
-                     "A84424692W"
-                   ), df = dash_data) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                                              before = 11, complete = TRUE
-                     )),
-                   width_percent = 45)
+    viz_gr_yth_lfpartrate_vicaus_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84424622R",
+      "A84424692W"
+    ), df = dash_data) %>%
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value,
+        before = 11, complete = TRUE
+      )),
+    width_percent = 45
+  )
 
   # Inclusion: youth focus box -----
 
@@ -460,7 +670,53 @@ labour_server <- function(input, output, session) {
   #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
   # })
 
+  # Inclusion: long term unemployment ------
 
+  djpr_plot_server("gr_ltunemp_line",
+    viz_gr_ltunemp_line,
+    data = filter_dash_data(c(
+      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+      "A84423687K",
+      "A84423089K",
+      "A84597681W"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = as.Date("2000-01-01")
+  )
+
+  djpr_plot_server("gr_ltunvic_bar",
+    viz_gr_ltunvic_bar,
+    data = filter_dash_data(c(
+      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+      "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+      "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+      "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+      "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE
+  )
+
+  djpr_plot_server("gr_ltunvic_area",
+    viz_gr_ltunvic_area,
+    data = filter_dash_data(c(
+      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+      "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+      "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+      "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+      "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change
+  )
 
   # Regions ------
 

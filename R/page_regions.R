@@ -5,7 +5,7 @@ page_regions <- function(...) {
     # tagList(
     #   "This page contains information about employment and unemployment across",
     #   "the different regions of Victoria.",
-    #   htmltools::tags$b("More information will be included with future releases. "),
+    #   shiny::tags$b("More information will be included with future releases. "),
     #   "For more information about overall labour force indicators ",
     #   "see the ",
     #   actionLink("link_indicators", "indicators page"),
@@ -13,7 +13,7 @@ page_regions <- function(...) {
     #   actionLink("link_inclusion", "inclusion page"), "."
     # ),
     # Unemployment by region -----
-    h2("Unemployment by region"),
+    h2(br(), "Unemployment by region"),
     djpr_plot_title(textOutput("title_unemprate_vic")),
     djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
     fluidRow(
@@ -31,18 +31,19 @@ page_regions <- function(...) {
     djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
     djpr_plot_ui("reg_unemprate_multiline",
-                 height = "500px"),
+      height = "500px"
+    ),
     djpr_plot_ui("reg_unemprate_dispersion"),
     br(),
 
     # Regional Vic vs Greater Melb -----
-    h2("Regional Victoria and Greater Melbourne"),
+    h2(br(), "Regional Victoria and Greater Melbourne"),
     djpr_plot_ui("reg_melvic_line"),
     htmlOutput("text_emp_regions"),
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
     # Regional focus box ------
-    h2("Victorian regions"),
+    h2(br(), "Victorian regions"),
     # Box for regional focus
     focus_box(
       selectInput("focus_region",

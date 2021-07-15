@@ -76,10 +76,10 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
     )
 
   lab_df <- data %>%
-    dplyr::select(industry, value) %>%
+    dplyr::select(.data$industry, .data$value) %>%
     dplyr::mutate(
-      lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
-      lab_hjust = dplyr::if_else(value >= 0, 0, 1)
+      lab_y = dplyr::if_else(.data$value >= 0, .data$value + 0.1, .data$value - 0.75),
+      lab_hjust = dplyr::if_else(.data$value >= 0, 0, 1)
     )
 
   title <- paste0(
@@ -101,18 +101,18 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
   # draw bar chart for all 19 industries plus Vic total
   data %>%
     ggplot(aes(
-      x = stats::reorder(industry, value),
-      y = value
+      x = stats::reorder(.data$industry, .data$value),
+      y = .data$value
     )) +
     geom_col(
-      aes(fill = -value)
+      aes(fill = -.data$value)
     ) +
     geom_text(
       data = lab_df,
       aes(
-        y = lab_y,
-        hjust = lab_hjust,
-        label = paste0(round(value, 1), "%")
+        y = .data$lab_y,
+        hjust = .data$lab_hjust,
+        label = paste0(round(.data$value, 1), "%")
       ),
       colour = "black",
       size = 11 / .pt
@@ -382,15 +382,15 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
 
   data <- data %>%
-    dplyr::group_by(industry) %>%
+    dplyr::group_by(.data$industry) %>%
     dplyr::mutate(
-      value = 100 * ((value / dplyr::lag(value, 4)) - 1)
+      value = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1)
     ) %>%
-    select(date, industry, value) %>%
+    dplyr::select(.data$date, .data$industry, .data$value) %>%
     dplyr::ungroup()
 
   data %>%
-    dplyr::filter(!is.na(value)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
     djpr_ts_linechart(
       col_var = .data$industry,
       label_num = paste0(round(.data$value, 1), "%"),
@@ -577,28 +577,31 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
-    dplyr::select(date, value, series, indicator, sex, industry, gcc_restofstate)
+    dplyr::select(
+      .data$date, .data$value, .data$series,
+      .data$indicator, .data$sex, .data$industry, .data$gcc_restofstate
+    )
 
   df <- df %>%
     dplyr::group_by(.data$sex, .data$industry) %>%
     dplyr::summarise(
-      value = sum(value),
-      date = max(date)
+      value = sum(.data$value),
+      date = max(.data$date)
     ) %>%
     dplyr::ungroup()
 
   df <- df %>%
-    dplyr::group_by(industry) %>%
-    dplyr::mutate(perc = value / sum(value)) %>%
+    dplyr::group_by(.data$industry) %>%
+    dplyr::mutate(perc = .data$value / sum(.data$value)) %>%
     dplyr::ungroup()
 
   df <- df %>%
-    dplyr::mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
+    dplyr::mutate(order = if_else(.data$industry == "Victoria, all industries", 2, 1))
 
   label_df <- df %>%
-    dplyr::group_by(industry) %>%
-    dplyr::arrange(desc(sex)) %>%
-    dplyr::mutate(label_y = cumsum(perc) - perc + (perc / 2))
+    dplyr::group_by(.data$industry) %>%
+    dplyr::arrange(desc(.data$sex)) %>%
+    dplyr::mutate(label_y = cumsum(.data$perc) - .data$perc + (.data$perc / 2))
 
   legend_df <- label_df %>%
     dplyr::filter(.data$industry != "Victoria, all industries")
@@ -625,8 +628,8 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
 
   df %>%
     ggplot(aes(
-      x = stats::reorder(stringr::str_wrap(industry, 15), -order),
-      y = value, fill = sex
+      x = stats::reorder(stringr::str_wrap(.data$industry, 15), -.data$order),
+      y = .data$value, fill = .data$sex
     )) +
     geom_col(
       position = "fill",
@@ -649,7 +652,6 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     theme_djpr() +
     djpr_fill_manual(2) +
     djpr_colour_manual(2) +
-    # scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
     theme(
       axis.text.x = element_blank(),
       axis.ticks = element_blank(),

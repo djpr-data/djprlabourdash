@@ -50,8 +50,7 @@ test_that("all viz_*() functions at least produce a plot", {
   for (i in seq_along(viz_funcs)) {
     vdiffr::expect_doppelganger(
       title = viz_funcs[i],
-      fig = plots[[i]],
-      path = ""
+      fig = plots[[i]]
     )
   }
 })
