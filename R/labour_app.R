@@ -237,8 +237,8 @@ labour_server <- function(input, output, session) {
   output$ind_empgrowth_sincecovid_text <- renderUI({
     text_active(
       paste(
-        "There were XX million Victorians employed in XX, up from XX million in XX.",
-        "Employment grew by XX per cent over the year to XX,",
+        "There were XX million Victorians employed in XX, compared to XX million in XX.",
+        "Employment changed by XX per cent over the year to XX,",
         "a",
         dplyr::case_when(
           get_summ("A84423349V", .data$ptile_d_year_abs) < 0.33 ~
