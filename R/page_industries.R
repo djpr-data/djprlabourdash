@@ -3,6 +3,7 @@ page_industries <- function(...) {
     title = "Industries",
     h1("Victoria's industries"),
     br(),
+    "Note that industries data is not seasonally adjusted and is released quarterly.",
     djpr_plot_ui("industries_empchange_sincecovid_bar"),
     br(),
     focus_box(
