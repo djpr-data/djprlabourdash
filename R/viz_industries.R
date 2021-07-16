@@ -372,7 +372,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
                                     df = dash_data
                                     ),
                                     chosen_industry = "Agriculture, Forestry and Fishing") {
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -380,10 +380,10 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
       )
     )
 
-  data <- data %>%
+  df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
 
-  data <- data %>%
+  df <- df %>%
     dplyr::group_by(.data$industry) %>%
     dplyr::mutate(
       value = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1)
@@ -391,7 +391,12 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$date, .data$industry, .data$value) %>%
     dplyr::ungroup()
 
-  data %>%
+  # df <- df %>%
+  #   arrange(.data$industry, across(starts_with("Victoria, all industries")))
+  #
+  # df <- arrange(df, desc(industry))
+
+  df %>%
     dplyr::filter(!is.na(.data$value)) %>%
     djpr_ts_linechart(
       col_var = .data$industry,
