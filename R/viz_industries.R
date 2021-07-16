@@ -208,7 +208,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
   latest_date <- format(max(data$date), "%b %Y")
 
   # add entry for data$industry for "Victoria, all industries" where ""
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -217,12 +217,12 @@ table_industries_employment <- function(data = filter_dash_data(c(
     )
 
   # filter out the chosen industry and vic_total
-  data <- data %>%
+  df <- df %>%
     group_by(.data$indicator) %>%
     dplyr::filter(.data$industry %in%
       c("Victoria, all industries", .env$chosen_industry))
 
-  table_df <- data %>%
+  table_df <- df %>%
     dplyr::group_by(.data$industry, .data$indicator) %>%
     dplyr::mutate(
       d_quarter = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
@@ -265,8 +265,6 @@ table_industries_employment <- function(data = filter_dash_data(c(
     ) %>%
     tidyr::spread(key = .data$industry, value = .data$value)
 
-
-
   table_df <- table_df %>%
     dplyr::mutate(indic_order = dplyr::case_when(
       indicator == "Employed total" ~ 1,
@@ -280,6 +278,10 @@ table_industries_employment <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::arrange(.data$indic_order, .data$series_order) %>%
     dplyr::select(-ends_with("order"))
+
+  # Fix to ensure that Victoria, all industries is always the last column
+  table_df <- table_df %>%
+    dplyr::select(.data$indicator, .data$series, chosen_industry, .data$`Victoria, all industries`)
 
   col_names <- names(table_df)
 
