@@ -546,7 +546,7 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
     labs(
       title = title,
       subtitle = paste0(tools::toTitleCase(indic_long), " by age, Victoria"),
-      caption = paste0(caption_lfs(), " Smoothed using 12 month moving average.")
+      caption = paste0(caption_lfs_det_m(), " Smoothed using 12 month moving average.")
     )
 }
 
