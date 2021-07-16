@@ -1438,16 +1438,14 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
 
-viz_gr_waterfall_chart <- function(data = filter_dash_data(c("A84424777J",
-                                                               "A84424785J",
-                                                               "A84424786K",
-                                                               "A84424778K",
-                                                               "A84424780W",
-                                                               "A84424598A",
-                                                               "A84424600A",
-                                                               "A84424688F",
-                                                               "A84424689J",
-                                                               "A84424694A"),
+viz_gr_waterfall_chart <- function(data = filter_dash_data(c("A84424598A",
+                                                              "A84424778K",
+                                                              "A84424597X",
+                                                              "A84424777J",
+                                                              "A84424600A",
+                                                              "A84424780W",
+                                                              "A84424694A"),
+
 
 df = dash_data
 )){
@@ -1469,60 +1467,115 @@ df = dash_data
   df <- data %>%
     dplyr::mutate(indicator = dplyr:: case_when(
       .data$series=="> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~"NAFTE_UN",
-      .data$series =="> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~"NAFTE_NILF",
-      .data$series =="> Victoria ;  Unemployed total ;"  ~"Un_Total",
-      .data$series =="> Victoria ;  Labour force total ;"   ~"LF",
-      .data$series =="> Victoria ;  Civilian population aged 15-24 years ;"  ~ "CiV_Pop",
-      .data$series =="> Victoria ;  Attending full-time education ;  Employed total ;"   ~ "AFE_Emplo_total",
       .data$series =="> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "AFE_un_total",
+      .data$series =="> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~"NAFTE_NILF",
       .data$series =="> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "AFE_NILF",
-      .data$series =="> Victoria ;  Attending full-time education ;  > Employed full-time ;"  ~ "AFE_EF",
-      .data$series =="> Victoria ;  Attending full-time education ;  > Employed part-time ;" ~"AFE_EP" ,
+      .data$series =="> Victoria ;  Attending full-time education ;  Employed total ;"   ~ "AFE_Emplo_total",
+      .data$series =="> Victoria ;  Not attending full-time education ;  Employed total ;"  ~ "NAFL_Emplo_total",
+      .data$series =="> Victoria ;  Civilian population aged 15-24 years ;"  ~ "CiV_Pop",
       )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
-  #create order
+
+  df <- df %>%
+    dplyr::mutate(perc = .data$value / sum(.data$value))
+
+  # df <- df %>%
+  #   dplyr::select(.data$date, .data$value, .data$indicator) %>%
+  #   tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
 
   df <- df %>%
     dplyr::mutate(
       indicator =
         factor(.data$indicator,
                levels = c(
-                 "CiV_Pop",
-                 "AFE_NILF",
-                 "NAFTE_NILF",
-                 "LF",
-                 "AFE_Emplo_total",
-                 "AFE_EF",
-                 "AFE_EP",
-                 "Un_Total",
+                 "NAFTE_UN",
                  "AFE_un_total",
-                 "NAFTE_UN"
-               ),
+                 "NAFTE_NILF",
+                 "AFE_NILF",
+                 "AFE_Emplo_total",
+                 "NAFL_Emplo_total",
+                 "CiV_Pop"),
+               ordered = TRUE
+        )
+    ) %>%
+
+    dplyr::mutate(id = group_indices(., indicator))
+
+
+  df %>%
+    mutate(y_start = cumsum(value) - value,
+           y_end = cumsum(value),
+           row_order = row_number()) %>%
+    ggplot(aes(x = reorder(indicator, row_order),
+               xend = reorder(indicator, row_order),
+               y = y_start,
+               yend = y_end))+
+    geom_segment(size =10)+
+    # geom_rect(aes(x = id,
+    #               xmin = group.id - 0.25, # control bar gap width
+    #               xmax = group.id + 0.25,
+    #               ymin = end.bar,
+    #               ymax = start.bar),
+    #           color = NA,
+    #           alpha = 0.95)+
+    theme_djpr()+
+      djpr_fill_manual(7) +
+      djpr_colour_manual(7) +
+       theme(
+      axis.title = element_blank(),
+      axis.text.y = element_text(size = 12
+    )) +
+  labs(
+    title = "title",
+    subtitle = "Youth education and work Victoria",
+    caption = caption_lfs())
+
+  #create order
+
+
+  df <- df %>%
+    dplyr::mutate(
+      indicator =
+        factor(.data$indicator,
+               levels = c(
+                 "NAFTE_UN",
+                 "AFE_un_total",
+                 "NAFTE_NILF",
+                 "AFE_NILF",
+                 "AFE_Emplo_total",
+                 "NAFL_Emplo_total",
+                 "CiV_Pop"),
                ordered = TRUE
         )
     ) %>%
 
   dplyr::mutate(id = group_indices(., indicator)) #create group id
-  dplyr::mutate(end.bar = cumsum(value),          #not working
-                 start.bar = c(0, head(end.bar, -1)))
-
- df %>%
-    ggplot(aes(
-      x = .data$id,
-      y = .data$value,
-      fill = indicator)
-    ) +
-    geom_rect(aes(x = id,
-              xmin = group.id - 0.25, # control bar gap width
-              xmax = group.id + 0.25,
-              ymin = end.bar,
-              ymax = start.bar),
-    color = NA,
-    alpha = 0.95)  +
-    theme_djpr()
 
 
 
+
+ # df %>%
+ #    ggplot(aes(
+ #      x = .data$id,
+ #      y = .data$value,
+ #      fill = indicator)
+ #    ) +
+ #    geom_rect(aes(x = id,
+ #              xmin = group.id - 0.25, # control bar gap width
+ #              xmax = group.id + 0.25,
+ #              ymin = end.bar,
+ #              ymax = start.bar),
+ #    color = NA,
+ #    alpha = 0.95)  +
+ #    theme_djpr()+
+ # djpr_fill_manual(7) +
+ #   djpr_colour_manual(7)+
+ #
+ # labs(
+ #   title = "title",
+ #   subtitle = "Youth education and work Victoria",
+ #   caption = caption_lfs()
+ # )
 
 }
