@@ -281,7 +281,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
 
   # Fix to ensure that Victoria, all industries is always the last column
   table_df <- table_df %>%
-    dplyr::select(.data$indicator, .data$series, chosen_industry, .data$`Victoria, all industries`)
+    dplyr::select(.data$indicator, .data$series, .env$chosen_industry, .data$`Victoria, all industries`)
 
   col_names <- names(table_df)
 
