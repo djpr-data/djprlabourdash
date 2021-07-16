@@ -76,7 +76,7 @@ table_overview <- function(data = filter_dash_data(series_ids = c(
       "A85223451R",
       "A84423356T"
     ),
-    highlight_rows = c(1, 6, 7, 13, 17, 18, 19, 20)
+    highlight_rows = c(1, 6, 12, 16, 17, 18, 19)
   )
 }
 
