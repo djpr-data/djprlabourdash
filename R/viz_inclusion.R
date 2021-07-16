@@ -709,7 +709,7 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24, by state and territory"),
-      caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average."),
       y = paste0("Youth ", indic_long)
     )
 }
