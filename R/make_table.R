@@ -68,10 +68,12 @@
 #' }
 
 make_table <- function(data,
-                       dashboard_or_briefing = "dashboard",
+                       dashboard_or_briefing = c("dashboard", "briefing"),
                        years_in_sparklines = 2,
                        row_order = NULL,
                        highlight_rows = NULL) {
+
+  dashboard_or_briefing <- match.arg(dashboard_or_briefing)
 
   # Change value of indicator column for specific series IDs
   df <- rename_indicators(data)
@@ -90,6 +92,10 @@ make_table <- function(data,
       dplyr::mutate(order = match(.data$series_id, row_order)) %>%
       dplyr::arrange(.data$order) %>%
       dplyr::select(-.data$order)
+  }
+
+  if (!is.null(highlight_rows)) {
+    highlight_rows <- which(summary_df$series_id %in% highlight_rows)
   }
 
   if (dashboard_or_briefing == "dashboard") {
