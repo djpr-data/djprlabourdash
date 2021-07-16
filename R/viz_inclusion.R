@@ -204,6 +204,7 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$sex,
+      y_labels = function(x) paste0(x, "%"),
       label_num = paste0(round(.data$value, 1), "%")
     ) +
     labs(
