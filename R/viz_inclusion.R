@@ -1499,11 +1499,13 @@ df = dash_data
     tidyr::pivot_longer(!.data$date, names_to="indicator", values_to = "value") %>%
     dplyr::filter(grepl("prop", .data$indicator))
 
- #data for title
+ #data for title &label
   df_title <- df2 %>%
     tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$value) %>%
-    dplyr::mutate(vulnerable=100*(NAFTE_UN_prop +NAFTE_NILF_prop)) %>%
-    dplyr::select (.data$vulnerable)
+    dplyr::mutate(vulnerable=100*(NAFTE_UN_prop +NAFTE_NILF_prop),
+                  labour_force=100* (NAFTE_UN_prop + AFE_un_total_prop+ AFE_Emplo_total_prop+NAFL_Emplo_total_prop),
+                  unemployed_total= 100*(NAFTE_UN_prop + AFE_un_total_prop)) %>%
+    dplyr::select(.data$date, .data$vulnerable, .data$labour_force,.data$unemployed_total)
 
  latest_month <- format(max(df$date), "%B %Y")
 
@@ -1527,11 +1529,10 @@ df = dash_data
                ordered = TRUE
         )
     ) %>%
+    dplyr::mutate(id = group_indices(., indicator)) %>%
+    dplyr::arrange(.data$indicator, .data$id)
 
-    dplyr::mutate(id = group_indices(., indicator))
-
-
-  df %>%
+  df_chart <-df %>%
     mutate(y_start = cumsum(value) - value,
            y_end = cumsum(value),
            id = row_number()) %>%
@@ -1551,10 +1552,10 @@ df = dash_data
     #           color = NA,
     #           alpha = 0.95)+
     theme_djpr()+
-    # scale_fill_manual(values = suppressWarnings(djpr_pal(10)[c(1, 7)])) +
-    #  scale_colour_manual(
-    #  values = suppressWarnings(djpr_pal(10)[c(1, 7)])
-    # ) +
+    scale_fill_manual(values = suppressWarnings(djpr_pal(10)[c(1, 7)])) +
+     scale_colour_manual(
+     values = suppressWarnings(djpr_pal(10)[c(1, 7)])
+    ) +
        theme(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12
