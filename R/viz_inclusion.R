@@ -1476,15 +1476,43 @@ df = dash_data
       )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
+#calculate the proportion
+  df2 <- df %>%
+      dplyr::select(.data$date, .data$value, .data$indicator) %>%
+       tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
+      dplyr::mutate(
+        NAFTE_UN_prop = .data$NAFTE_UN/
+        (.data$CiV_Pop),
+        AFE_un_total_prop = .data$AFE_un_total/
+          (.data$CiV_Pop),
+        NAFTE_NILF_prop = .data$NAFTE_NILF/
+          (.data$CiV_Pop),
+        AFE_NILF_prop = .data$AFE_NILF/
+          (.data$CiV_Pop),
+        AFE_Emplo_total_prop = .data$AFE_Emplo_total/
+          (.data$CiV_Pop),
+        NAFL_Emplo_total_prop = .data$NAFL_Emplo_total/
+          (.data$CiV_Pop),
+        CiV_Pop_prop = .data$CiV_Pop/
+          (.data$CiV_Pop),
+    ) %>%
+    tidyr::pivot_longer(!.data$date, names_to="indicator", values_to = "value") %>%
+    dplyr::filter(grepl("prop", .data$indicator))
 
-  df <- df %>%
-    dplyr::mutate(perc = .data$value / sum(.data$value))
+ #data for title
+  df_title <- df2 %>%
+    tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$value) %>%
+    dplyr::mutate(vulnerable=100*(NAFTE_UN_prop +NAFTE_NILF_prop)) %>%
+    dplyr::select (.data$vulnerable)
 
-  # df <- df %>%
-  #   dplyr::select(.data$date, .data$value, .data$indicator) %>%
-  #   tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
+ latest_month <- format(max(df$date), "%B %Y")
 
-  df <- df %>%
+ title <- paste0(
+   round2(df_title$vulnerable, 1),
+   " per cent of Victorian aged 15-24 years,were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
+   format(df2$date, "%B %Y"))
+
+ df <- df %>%
     dplyr::mutate(
       indicator =
         factor(.data$indicator,
@@ -1506,76 +1534,35 @@ df = dash_data
   df %>%
     mutate(y_start = cumsum(value) - value,
            y_end = cumsum(value),
-           row_order = row_number()) %>%
-    ggplot(aes(x = reorder(indicator, row_order),
-               xend = reorder(indicator, row_order),
+           id = row_number()) %>%
+    # ggplot(aes(x = indicator, id,
+    #            xend =indicator, id,
+    ggplot(aes(x = reorder(indicator, id),
+               xend = reorder(indicator,id),
                y = y_start,
                yend = y_end))+
     geom_segment(size =10)+
-    # geom_rect(aes(x = id,
-    #               xmin = group.id - 0.25, # control bar gap width
-    #               xmax = group.id + 0.25,
-    #               ymin = end.bar,
-    #               ymax = start.bar),
+    #
+    # geom_rect(aes(x = indicator,
+    #               xmin = indicator - 0.25, # control bar gap width
+    #               xmax = indicator + 0.25,
+    #               ymin = y_end,
+    #               ymax = y_start),
     #           color = NA,
     #           alpha = 0.95)+
     theme_djpr()+
-      djpr_fill_manual(7) +
-      djpr_colour_manual(7) +
+    # scale_fill_manual(values = suppressWarnings(djpr_pal(10)[c(1, 7)])) +
+    #  scale_colour_manual(
+    #  values = suppressWarnings(djpr_pal(10)[c(1, 7)])
+    # ) +
        theme(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12
     )) +
   labs(
-    title = "title",
-    subtitle = "Youth education and work Victoria",
+    title = title,
+    subtitle = "Victorian youth education and employment status",
     caption = caption_lfs())
 
-  #create order
-
-
-  df <- df %>%
-    dplyr::mutate(
-      indicator =
-        factor(.data$indicator,
-               levels = c(
-                 "NAFTE_UN",
-                 "AFE_un_total",
-                 "NAFTE_NILF",
-                 "AFE_NILF",
-                 "AFE_Emplo_total",
-                 "NAFL_Emplo_total",
-                 "CiV_Pop"),
-               ordered = TRUE
-        )
-    ) %>%
-
-  dplyr::mutate(id = group_indices(., indicator)) #create group id
-
-
-
-
- # df %>%
- #    ggplot(aes(
- #      x = .data$id,
- #      y = .data$value,
- #      fill = indicator)
- #    ) +
- #    geom_rect(aes(x = id,
- #              xmin = group.id - 0.25, # control bar gap width
- #              xmax = group.id + 0.25,
- #              ymin = end.bar,
- #              ymax = start.bar),
- #    color = NA,
- #    alpha = 0.95)  +
- #    theme_djpr()+
- # djpr_fill_manual(7) +
- #   djpr_colour_manual(7)+
- #
- # labs(
- #   title = "title",
- #   subtitle = "Youth education and work Victoria",
- #   caption = caption_lfs()
- # )
 
 }
