@@ -391,11 +391,6 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$date, .data$industry, .data$value) %>%
     dplyr::ungroup()
 
-  # df <- df %>%
-  #   arrange(.data$industry, across(starts_with("Victoria, all industries")))
-  #
-  # df <- arrange(df, desc(industry))
-
   df %>%
     dplyr::filter(!is.na(.data$value)) %>%
     djpr_ts_linechart(
@@ -403,7 +398,11 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
-    labs(
+    scale_colour_manual(values = c(
+      "Victoria, all industries" = djprtheme::djpr_royal_blue,
+#      "Wholesale Trade" = djprtheme::djpr_green)) +
+      chosen_industry = djprtheme::djpr_green)) +
+      labs(
       subtitle = "Change in total employment",
       caption = caption_lfs_det_q(),
       title = paste0(
