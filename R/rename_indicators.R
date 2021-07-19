@@ -18,9 +18,11 @@ rename_indicators <- function(data) {
         .data$series_id == "A84423242V" ~ "Male unemployment rate",
         .data$series_id == "A84423466F" ~ "Female unemployment rate",
         .data$series_id == "A84433601W" ~ "Youth unemployment rate",
+        .data$series_id == "A84424691V" ~ "Youth unemployment rate",
         .data$series_id == "A84423243W" ~ "Male participation rate",
         .data$series_id == "A84423467J" ~ "Female participation rate",
         .data$series_id == "A84433602X" ~ "Youth participation rate",
+        .data$series_id == "A84424692W" ~ "Youth participation rate",
         .data$series_id == "A84600079X" ~ "Regional unemployment rate",
         .data$series_id == "A84424687C" ~ "Youth employment",
         .data$series_id == "A84423349V" ~

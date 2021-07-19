@@ -144,7 +144,7 @@ create_summary_df <- function(data,
 
     out <- changedf %>%
       dplyr::select(-.data$date,
-                    ` ` = .data$indicator,
+                    indicator = .data$indicator,
                     {{ nice_latest_date }} := .data$latest_value,
                     {{ since_prev_date }} := .data$changeinmonth,
                     {{ since_prev_year }} := .data$changeinyear,

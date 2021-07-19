@@ -94,9 +94,35 @@ make_table <- function(data,
       dplyr::select(-.data$order)
   }
 
+  # Set highlight rows as numeric vector
   if (!is.null(highlight_rows)) {
     highlight_rows <- which(summary_df$series_id %in% highlight_rows)
   }
+
+  # Add note about release date if earlier than rest of data
+  date_notes <- df %>%
+    dplyr::group_by(.data$series_id, .data$indicator) %>%
+    dplyr::summarise(max_date = max(.data$date)) %>%
+    dplyr::ungroup() %>%
+    dplyr::mutate(indicator = dplyr::if_else(
+      .data$max_date == max(.data$max_date),
+      .data$indicator,
+      paste0(.data$indicator, " (", format(max_date, "%B %Y"), ")")
+    )) %>%
+    dplyr::select(.data$series_id, .data$indicator)
+
+  summary_df <- summary_df %>%
+    dplyr::ungroup() %>%
+    dplyr::select(-.data$indicator) %>%
+    dplyr::left_join(date_notes, by = "series_id") %>%
+    dplyr::select(.data$indicator, dplyr::everything())
+
+  if (dashboard_or_briefing == "briefing") {
+    summary_df <- summary_df %>%
+      dplyr::rename(` ` = .data$indicator)
+  }
+
+  # table_caption <- caption_auto(df)
 
   if (dashboard_or_briefing == "dashboard") {
     make_reactable(summary_df = summary_df,

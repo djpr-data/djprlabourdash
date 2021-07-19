@@ -11,8 +11,8 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
     "A84423354L",
     "A84423242V",
     "A84423466F",
-    "A84433601W",
-    # "A84600079X", Regional UR
+    "A84424691V",
+    "A84600079X", #Regional UR
     "A84423350C",
     "A84423349V",
     "A84423357V",
@@ -23,7 +23,7 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
     "A84423355R",
     "A84423243W",
     "A84423467J",
-    "A84433602X",
+    "A84424692W",
     "A84426256L",
     "A85223450L",
     "A85223451R",
@@ -35,8 +35,9 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84433601W",
+                                                                "A84424691V",
                                                                 "A84424687C",
-                                                                "A84433602X"),
+                                                                "A84424692W"),
                                          slider::slide_mean(.data$value, before = 11, complete = TRUE),
                                          .data$value
     )) %>%
@@ -59,8 +60,8 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
       "A84423354L",
       "A84423242V",
       "A84423466F",
-      "A84433601W",
-      # "A84600079X",
+      "A84424691V",
+      "A84600079X",
       "A84423350C",
       "A84423349V",
       "A84423357V",
@@ -71,7 +72,7 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
       "A84423355R",
       "A84423243W",
       "A84423467J",
-      "A84433602X",
+      "A84424692W",
       "A84426256L",
       "A85223450L",
       "A85223451R",
