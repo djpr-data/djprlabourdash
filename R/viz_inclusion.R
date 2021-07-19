@@ -1450,11 +1450,11 @@ viz_gr_waterfall_chart <- function(data = filter_dash_data(c("A84424598A",
 df = dash_data
 )){
   #select the necessary column
-  data <- data %>%
+  df <- data %>%
     dplyr::select( .data$date,.data$series, .data$value)
 
   # 12 month moving average
-  data <- data %>%
+  df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
                                              before = 11,
@@ -1464,7 +1464,7 @@ df = dash_data
     dplyr::filter(!is.na(.data$value))
 
   #create short name and pull the latest data
-  df <- data %>%
+  df <- df %>%
     dplyr::mutate(indicator = dplyr:: case_when(
       .data$series=="> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~"NAFTE_UN",
       .data$series =="> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "AFE_un_total",
@@ -1476,43 +1476,25 @@ df = dash_data
       )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
-#calculate the proportion for annotation
-df2 <- df %>%
-      dplyr::select(.data$date, .data$value, .data$indicator) %>%
-       tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
-      dplyr::mutate(
-        NAFTE_UN_prop = .data$NAFTE_UN/
-        (.data$CiV_Pop),
-        AFE_un_total_prop = .data$AFE_un_total/
-          (.data$CiV_Pop),
-        NAFTE_NILF_prop = .data$NAFTE_NILF/
-          (.data$CiV_Pop),
-        AFE_NILF_prop = .data$AFE_NILF/
-          (.data$CiV_Pop),
-        AFE_Emplo_total_prop = .data$AFE_Emplo_total/
-          (.data$CiV_Pop),
-        NAFL_Emplo_total_prop = .data$NAFL_Emplo_total/
-          (.data$CiV_Pop),
-        CiV_Pop_prop = .data$CiV_Pop/
-          (.data$CiV_Pop),
-    ) %>%
-    tidyr::pivot_longer(!.data$date, names_to="indicator", values_to = "value") %>%
-    dplyr::filter(grepl("prop", .data$indicator))
+  df <- df %>%
+    dplyr::mutate(perc = 100 * (value / value[indicator == "CiV_Pop"]))
+
 
  #data for title &label
-  df_title <- df2 %>%
-    tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$value) %>%
-    dplyr::mutate(vulnerable=100*(NAFTE_UN_prop +NAFTE_NILF_prop),
-                  labour_force=100* (NAFTE_UN_prop + AFE_un_total_prop+ AFE_Emplo_total_prop+NAFL_Emplo_total_prop),
-                  unemployed_total= 100*(NAFTE_UN_prop + AFE_un_total_prop)) %>%
+  df_title <- df %>%
+    dplyr::select(.data$indicator, .data$perc, .data$date) %>%
+    tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$perc) %>%
+    dplyr::mutate(vulnerable=(NAFTE_UN +NAFTE_NILF),
+                  labour_force=(NAFTE_UN + AFE_un_total+ AFE_Emplo_total+NAFL_Emplo_total),
+                  unemployed_total= (NAFTE_UN + AFE_un_total)) %>%
     dplyr::select(.data$date, .data$vulnerable, .data$labour_force,.data$unemployed_total)
 
- latest_month <- format(max(df$date), "%B %Y")
 
  title <- paste0(
    round2(df_title$vulnerable, 1),
    " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
-   format(df2$date, "%B %Y"))
+   format(df2$date, "%B %Y")) %>%
+   unique()
 
  df <- df %>%
     dplyr::mutate(
@@ -1532,43 +1514,62 @@ df2 <- df %>%
    dplyr::arrange(.data$indicator)
 
  #label name
- label_df<- df %>%
-   dplyr:: mutate(label= case_when (.data$indicator == "NAFTE_UN" ~ "Unemployed & not in education",
+ df <- df %>%
+   dplyr::mutate(label= case_when (.data$indicator == "NAFTE_UN" ~ "Unemployed & not in education",
                                     .data$indicator == "AFE_un_total" ~ "Unemployed & in education",
                                     .data$indicator == "NAFTE_NILF" ~ "Not in labour force or education",
-                                    .data$indicator== "AFE_NILF" ~ "Studying fulltime & not in labour force",
-                                    .data$indicator == "AFE_Emplo_total" ~ "Fulltime education & employed",
-                                    .data$indicator== "NAFL_Emplo_total" ~ "Not ineducation & employed",
-                                    .data$indicator== "CiV_Pop" ~ " Civilian population",
+                                    .data$indicator == "AFE_NILF" ~ "Studying full time & not in labour force",
+                                    .data$indicator == "AFE_Emplo_total" ~ "Full time education & employed",
+                                    .data$indicator == "NAFL_Emplo_total" ~ "Not in education & employed",
+                                    .data$indicator == "CiV_Pop" ~ "Civilian population",
 
                                     ))
 
  #use the same colour for the vulnerable group and the rest grey
- # df <- df %>%
- #    dplyr::mutate(indicator_group = dplyr::if_else(
- #      .data$indicator %in% c("NAFTE_UN","NAFTE_NILF"),
- #      .data$indicator, "Other"
- #    ))
+ df <- df %>%
+    dplyr::mutate(indicator_group = dplyr::if_else(
+      .data$indicator %in% c("NAFTE_UN","NAFTE_NILF"),
+      "Vulnerable",
+      "Other"
+    ))
 
-
-  df %>%
-    mutate(y_start = cumsum(value) - value,
+ df <-  df %>%
+   dplyr::mutate(y_start = cumsum(value) - value,
            y_end = cumsum(value),
-           id = row_number()) %>%
-    ggplot(aes(x = reorder(indicator, id),
-               xend = reorder(indicator,id),
+           id = row_number(),
+           label = stringr::str_wrap(label, 10))
+
+ df <- df %>%
+   dplyr::mutate(y_start = dplyr::if_else(indicator == "CiV_Pop", 0, y_start),
+          y_end = dplyr::if_else(indicator == "CiV_Pop", value, y_end))
+
+ df <- df %>%
+   mutate(bar_label = dplyr::if_else(
+     indicator == "CiV_Pop",
+     as.character(round2(value, 1)),
+     paste0(round2(value, 1), "\n(", round2(perc, 1), "%)")
+   ))
+
+ df %>%
+    ggplot(aes(x = reorder(label, id),
+               xend = reorder(label,id),
                y = y_start,
-               yend = y_end), fill= indicator)+
-    geom_segment(size = 10)+
+               yend = y_end,
+               colour = indicator_group)
+            ) +
+    geom_segment(size = 25)+
+   geom_text(aes(y = y_end,
+                 label = bar_label),
+             nudge_y = 25,
+             lineheight = 0.9,
+             size = 12 / .pt) +
     theme_djpr()+
-    # scale_fill_manual(values= c("NAFTE_UN" = djprtheme::djpr_royal_blue,
-    #                             "NAFTE_NILF" =djprtheme::djpr_royal_blue,
-    #                             "Other"= "grey70")) +
-     scale_fill_manual(values = suppressWarnings(djpr_pal(10)[c(1, 7)])) +
-     scale_colour_manual(
-     values = suppressWarnings(djpr_pal(10)[c(1, 7)])
-    ) +
-       theme(
+   scale_colour_manual(values = c(
+     "Vulnerable" = djprtheme::djpr_green,
+     "Other" = "grey65"
+   )) +
+   djpr_y_continuous(expand_top = 0.025) +
+   theme(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12
     )) +
