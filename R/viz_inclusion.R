@@ -1463,7 +1463,7 @@ df = dash_data
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-  #create short name
+  #create short name and pull the latest data
   df <- data %>%
     dplyr::mutate(indicator = dplyr:: case_when(
       .data$series=="> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~"NAFTE_UN",
@@ -1476,8 +1476,8 @@ df = dash_data
       )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
-#calculate the proportion
-  df2 <- df %>%
+#calculate the proportion for annotation
+df2 <- df %>%
       dplyr::select(.data$date, .data$value, .data$indicator) %>%
        tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
       dplyr::mutate(
@@ -1511,7 +1511,7 @@ df = dash_data
 
  title <- paste0(
    round2(df_title$vulnerable, 1),
-   " per cent of Victorian aged 15-24 years,were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
+   " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
    format(df2$date, "%B %Y"))
 
  df <- df %>%
@@ -1529,30 +1529,42 @@ df = dash_data
                ordered = TRUE
         )
     ) %>%
-    dplyr::mutate(id = group_indices(., indicator)) %>%
-    dplyr::arrange(.data$indicator, .data$id)
+   dplyr::arrange(.data$indicator)
 
-  df_chart <-df %>%
+ #label name
+ label_df<- df %>%
+   dplyr:: mutate(label= case_when (.data$indicator == "NAFTE_UN" ~ "Unemployed & not in education",
+                                    .data$indicator == "AFE_un_total" ~ "Unemployed & in education",
+                                    .data$indicator == "NAFTE_NILF" ~ "Not in labour force or education",
+                                    .data$indicator== "AFE_NILF" ~ "Studying fulltime & not in labour force",
+                                    .data$indicator == "AFE_Emplo_total" ~ "Fulltime education & employed",
+                                    .data$indicator== "NAFL_Emplo_total" ~ "Not ineducation & employed",
+                                    .data$indicator== "CiV_Pop" ~ " Civilian population",
+
+                                    ))
+
+ #use the same colour for the vulnerable group and the rest grey
+ # df <- df %>%
+ #    dplyr::mutate(indicator_group = dplyr::if_else(
+ #      .data$indicator %in% c("NAFTE_UN","NAFTE_NILF"),
+ #      .data$indicator, "Other"
+ #    ))
+
+
+  df %>%
     mutate(y_start = cumsum(value) - value,
            y_end = cumsum(value),
            id = row_number()) %>%
-    # ggplot(aes(x = indicator, id,
-    #            xend =indicator, id,
     ggplot(aes(x = reorder(indicator, id),
                xend = reorder(indicator,id),
                y = y_start,
-               yend = y_end))+
-    geom_segment(size =10)+
-    #
-    # geom_rect(aes(x = indicator,
-    #               xmin = indicator - 0.25, # control bar gap width
-    #               xmax = indicator + 0.25,
-    #               ymin = y_end,
-    #               ymax = y_start),
-    #           color = NA,
-    #           alpha = 0.95)+
+               yend = y_end), fill= indicator)+
+    geom_segment(size = 10)+
     theme_djpr()+
-    scale_fill_manual(values = suppressWarnings(djpr_pal(10)[c(1, 7)])) +
+    # scale_fill_manual(values= c("NAFTE_UN" = djprtheme::djpr_royal_blue,
+    #                             "NAFTE_NILF" =djprtheme::djpr_royal_blue,
+    #                             "Other"= "grey70")) +
+     scale_fill_manual(values = suppressWarnings(djpr_pal(10)[c(1, 7)])) +
      scale_colour_manual(
      values = suppressWarnings(djpr_pal(10)[c(1, 7)])
     ) +
@@ -1563,7 +1575,7 @@ df = dash_data
   labs(
     title = title,
     subtitle = "Victorian youth education and employment status",
-    caption = caption_lfs())
+    caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average."))
 
 
 }
