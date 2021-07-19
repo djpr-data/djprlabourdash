@@ -2,12 +2,12 @@
 % Please edit documentation in R/combine_words.R
 \name{combine_words}
 \alias{combine_words}
-\title{Combine elements of character vector into a single string with commas and 'and'}
+\title{Combine elements of vector into a single string with commas and 'and'}
 \usage{
 combine_words(words)
 }
 \arguments{
-\item{words}{Character vector of element(s) to be combined into one string}
+\item{words}{Vector of element(s) to be combined into one string.}
 }
 \value{
 A length one character vector; elements will be separated by commas.
@@ -17,6 +17,7 @@ Simplified version of \code{knitr::combine_words()}
 }
 \examples{
 combine_words(c("a", "b", "c"))
+combine_words(c(1, 2, 3))
 }
 \author{
 knitr authors
