@@ -204,6 +204,7 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$sex,
+      y_labels = function(x) paste0(x, "%"),
       label_num = paste0(round(.data$value, 1), "%")
     ) +
     labs(
@@ -417,7 +418,7 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
     )) +
     labs(
       title = title,
-      subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24"),
+      subtitle = paste0(stringr::str_to_sentence(indic_long), " for people aged 15-24"),
       caption = paste0(caption_lfs_det_m(), " Smoothed using a 12 month rolling average.")
     )
 }
@@ -545,8 +546,8 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
     ) +
     labs(
       title = title,
-      subtitle = paste0(tools::toTitleCase(indic_long), " by age, Victoria"),
-      caption = paste0(caption_lfs_det_m(), " Smoothed using 12 month moving average.")
+      subtitle = paste0(stringr::str_to_sentence(indic_long), " by age, Victoria"),
+      caption = paste0(caption_lfs(), " Smoothed using 12 month moving average.")
     )
 }
 
@@ -708,8 +709,8 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     theme_djpr(flipped = T) +
     labs(
       title = title,
-      subtitle = paste0(tools::toTitleCase(indic_long), " for people aged 15-24, by state and territory"),
-      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average."),
+      subtitle = paste0(stringr::str_to_sentence(indic_long), " for people aged 15-24, by state and territory"),
+      caption = paste0(caption_lfs(), "Data smoothed using a 12 month rolling average."),
       y = paste0("Youth ", indic_long)
     )
 }

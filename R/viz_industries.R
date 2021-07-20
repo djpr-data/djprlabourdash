@@ -208,7 +208,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
   latest_date <- format(max(data$date), "%b %Y")
 
   # add entry for data$industry for "Victoria, all industries" where ""
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -217,12 +217,12 @@ table_industries_employment <- function(data = filter_dash_data(c(
     )
 
   # filter out the chosen industry and vic_total
-  data <- data %>%
+  df <- df %>%
     group_by(.data$indicator) %>%
     dplyr::filter(.data$industry %in%
       c("Victoria, all industries", .env$chosen_industry))
 
-  table_df <- data %>%
+  table_df <- df %>%
     dplyr::group_by(.data$industry, .data$indicator) %>%
     dplyr::mutate(
       d_quarter = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
@@ -265,8 +265,6 @@ table_industries_employment <- function(data = filter_dash_data(c(
     ) %>%
     tidyr::spread(key = .data$industry, value = .data$value)
 
-
-
   table_df <- table_df %>%
     dplyr::mutate(indic_order = dplyr::case_when(
       indicator == "Employed total" ~ 1,
@@ -280,6 +278,10 @@ table_industries_employment <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::arrange(.data$indic_order, .data$series_order) %>%
     dplyr::select(-ends_with("order"))
+
+  # Fix to ensure that Victoria, all industries is always the last column
+  table_df <- table_df %>%
+    dplyr::select(.data$indicator, .data$series, .env$chosen_industry, .data$`Victoria, all industries`)
 
   col_names <- names(table_df)
 
@@ -370,7 +372,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
                                     df = dash_data
                                     ),
                                     chosen_industry = "Agriculture, Forestry and Fishing") {
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -378,26 +380,33 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
       )
     )
 
-  data <- data %>%
+  df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
 
-  data <- data %>%
+  df <- df %>%
     dplyr::group_by(.data$industry) %>%
     dplyr::mutate(
       value = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1)
     ) %>%
     dplyr::select(.data$date, .data$industry, .data$value) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
 
-  data %>%
-    dplyr::filter(!is.na(.data$value)) %>%
+  colours <- c(djprtheme::djpr_royal_blue,
+               djprtheme::djpr_green)
+
+  names(colours) <- c("Victoria, all industries",
+                      chosen_industry)
+
+  df %>%
     djpr_ts_linechart(
       col_var = .data$industry,
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
+    scale_colour_manual(values = colours) +
     labs(
-      subtitle = "Change in total employment",
+      subtitle = "Annual change in total employment",
       caption = caption_lfs_det_q(),
       title = paste0(
         "Annual employment growth in ",
