@@ -2,17 +2,15 @@
 #' Produce tables for LFS dashboard and associated briefing materials
 #' @param data A dataframe containing data to be summarised and displayed;
 #' a DF returned by `filter_dash_data()` is expected
-#' @param dashboard_or_briefing Either "dashboard" or "briefing"
 #' @noRd
 
-table_overview <- function(dashboard_or_briefing = "dashboard") {
-
+table_overview <- function() {
   data <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
     "A84423466F",
     "A84424691V",
-    "A84600079X", #Regional UR
+    "A84600079X", # Regional UR
     "A84423350C",
     "A84423349V",
     "A84423357V",
@@ -34,12 +32,14 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
-    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84433601W",
-                                                                "A84424691V",
-                                                                "A84424687C",
-                                                                "A84424692W"),
-                                         slider::slide_mean(.data$value, before = 11, complete = TRUE),
-                                         .data$value
+    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c(
+      "A84433601W",
+      "A84424691V",
+      "A84424687C",
+      "A84424692W"
+    ),
+    slider::slide_mean(.data$value, before = 11, complete = TRUE),
+    .data$value
     )) %>%
     dplyr::ungroup()
 
@@ -48,14 +48,13 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84600079X"),
-                                         slider::slide_mean(.data$value, before = 2, complete = TRUE),
-                                         .data$value
+      slider::slide_mean(.data$value, before = 2, complete = TRUE),
+      .data$value
     )) %>%
     dplyr::ungroup()
 
   make_table(
     data = data,
-    dashboard_or_briefing = dashboard_or_briefing,
     row_order = c(
       "A84423354L",
       "A84423242V",
@@ -78,18 +77,20 @@ table_overview <- function(dashboard_or_briefing = "dashboard") {
       "A85223451R",
       "A84423356T"
     ),
-    highlight_rows = c("A84423354L",
-                       "A84423349V",
-                       "A84423355R",
-                       "A84426256L",
-                       "A85223450L",
-                       "A85223451R",
-                       "A84423356T")
+    highlight_rows = c(
+      "A84423354L",
+      "A84423349V",
+      "A84423355R",
+      "A84426256L",
+      "A85223450L",
+      "A85223451R",
+      "A84423356T"
+    )
   )
 }
 
 table_ind_employment <- function(dashboard_or_briefing = "dashboard") {
-  data = filter_dash_data(c(
+  data <- filter_dash_data(c(
     "A84423349V",
     "A84423357V",
     "A84423356T",
@@ -105,13 +106,12 @@ table_ind_employment <- function(dashboard_or_briefing = "dashboard") {
     ))
 
   make_table(table_data,
-             dashboard_or_briefing = dashboard_or_briefing
+    dashboard_or_briefing = dashboard_or_briefing
   )
 }
 
 table_ind_unemp_summary <- function(dashboard_or_briefing = "dashboard") {
-
-  data = filter_dash_data(c(
+  data <- filter_dash_data(c(
     "A84423354L", # Unemp rate
     "A84423350C", # Unemp total
     "A85223451R", # Underut rate
@@ -137,12 +137,12 @@ table_ind_unemp_summary <- function(dashboard_or_briefing = "dashboard") {
     ))
 
   make_table(table_data,
-             dashboard_or_briefing = dashboard_or_briefing
+    dashboard_or_briefing = dashboard_or_briefing
   )
 }
 
 table_ind_hours_summary <- function(dashboard_or_briefing = "dashboard") {
-  data = filter_dash_data(c(
+  data <- filter_dash_data(c(
     "A84426256L" # , # Total hours
   ))
 
@@ -153,6 +153,6 @@ table_ind_hours_summary <- function(dashboard_or_briefing = "dashboard") {
     ))
 
   make_table(table_data,
-                 dashboard_or_briefing = dashboard_or_briefing
+    dashboard_or_briefing = dashboard_or_briefing
   )
 }

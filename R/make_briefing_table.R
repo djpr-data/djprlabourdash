@@ -17,7 +17,6 @@ make_briefing_table <- function(df,
                                   "Change in past year",
                                   "Change during govt"
                                 )) {
-
   df <- df %>%
     dplyr::select(-.data$series_id)
 
@@ -71,8 +70,10 @@ make_briefing_table <- function(df,
       flextable::padding(i = non_highlight_rows, j = 1, padding.left = 20)
 
     flex <- flex %>%
-      flextable::border(i = highlight_rows,
-                        border.top = flextable::fp_border_default())
+      flextable::border(
+        i = highlight_rows,
+        border.top = flextable::fp_border_default()
+      )
   } else {
     # Bold all row labels if no highlight row chosen
     flex <- flex %>%

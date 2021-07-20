@@ -91,20 +91,25 @@ page_regions <- function(...) {
     br(),
     h2(br(), "Australian regions"),
     focus_box(
-      selectInput(inputId = "aus_regions_indicator",
-                  label = "Select indicator",
-                  choices = c(
-                    "Unemployment rate" = "unemp_rate",
-                    "Participation rate" = "part_rate",
-                    "Employment-to-population ratio" = "emp_pop"
-                  ),
-                  width = "100%",
-                  selected = "unemp_rate"),
+      selectInput(
+        inputId = "aus_regions_indicator",
+        label = "Select indicator",
+        choices = c(
+          "Unemployment rate" = "unemp_rate",
+          "Participation rate" = "part_rate",
+          "Employment-to-population ratio" = "emp_pop"
+        ),
+        width = "100%",
+        selected = "unemp_rate"
+      ),
       column(6,
-             djpr_plot_ui("reg_regionstates_dot"), height = "600px"),
-      column(6,
-             djpr_plot_ui("reg_regionstates_bar", height = "600px")
-             )
+        djpr_plot_ui("reg_regionstates_dot"),
+        height = "600px"
+      ),
+      column(
+        6,
+        djpr_plot_ui("reg_regionstates_bar", height = "600px")
+      )
     ),
     br(),
     htmlOutput("regions_footnote"),

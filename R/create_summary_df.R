@@ -25,7 +25,8 @@ create_summary_df <- function(data,
 
   # Drop unneeded columns -----
   summary_df <- data %>%
-    dplyr::select(.data$date, .data$series_id,
+    dplyr::select(
+      .data$date, .data$series_id,
       .data$indicator, .data$value, .data$unit
     )
 
@@ -145,11 +146,11 @@ create_summary_df <- function(data,
 
     out <- changedf %>%
       dplyr::select(-.data$date,
-                    indicator = .data$indicator,
-                    {{ nice_latest_date }} := .data$latest_value,
-                    {{ since_prev_date }} := .data$changeinmonth,
-                    {{ since_prev_year }} := .data$changeinyear,
-                    `Since Nov 2014` = .data$changesince14
+        indicator = .data$indicator,
+        {{ nice_latest_date }} := .data$latest_value,
+        {{ since_prev_date }} := .data$changeinmonth,
+        {{ since_prev_year }} := .data$changeinyear,
+        `Since Nov 2014` = .data$changesince14
       )
   }
 
