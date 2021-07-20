@@ -7,7 +7,7 @@ caption_auto <- function(data,
     dplyr::group_by(.data$table_no, .data$frequency, .data$date) %>%
     dplyr::summarise() %>%
     dplyr::mutate(
-      cat_no = stringr::str_sub(table_no, 1L, 4L),
+      cat_no = stringr::str_sub(.data$table_no, 1L, 4L),
       release = dplyr::case_when(
         cat_no == "6202" ~ "ABS Labour Force monthly",
         cat_no == "6291" &

@@ -27,13 +27,16 @@ corresponding rows to be included in the output table}
 \item{highlight_rows}{Numeric vector of rows in the table to highlight.
 Highlighted rows are bolded and have a top border; non-highlighted rows
 are indented. If \code{NULL} then all rows are non-bold, non-indented.}
+
+\item{notes}{Optional notes to add to caption. Source will be inferred
+automatically based on the data using \code{caption_auto()}.}
 }
 \description{
 Create a table for the dashboard or a briefing document
 }
 \examples{
 dash_data <- load_dash_data()
-
+\dontrun{
 make_table(
   data = filter_dash_data(series_ids = c(
     "A84423354L",
@@ -81,5 +84,5 @@ make_table(
   ),
   highlight_rows = c("A84426256L","A85223450L", "A84423242V")
 )
-
+}
 }

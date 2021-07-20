@@ -142,7 +142,7 @@ create_summary_df <- function(data,
   # Add sparklines
   sparklines <- summary_df %>%
     dplyr::filter(.data$date >= startdate) %>%
-    make_sparklines(group_var = indicator)
+    make_sparklines(group_var = .data$indicator)
 
   sparklines <- dplyr::tibble(
     indicator = names(sparklines),

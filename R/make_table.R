@@ -8,9 +8,11 @@
 #' @param highlight_rows Numeric vector of rows in the table to highlight.
 #' Highlighted rows are bolded and have a top border; non-highlighted rows
 #' are indented. If `NULL` then all rows are non-bold, non-indented.
+#' @param notes Optional notes to add to caption. Source will be inferred
+#' automatically based on the data using `caption_auto()`.
 #' @examples
 #' dash_data <- load_dash_data()
-#'
+#' \dontrun{
 #' make_table(
 #'   data = filter_dash_data(series_ids = c(
 #'     "A84423354L",
@@ -58,7 +60,7 @@
 #'   ),
 #'   highlight_rows = c("A84426256L","A85223450L", "A84423242V")
 #' )
-#'
+#' }
 make_table <- function(data,
                        destination = c("dashboard", "briefing"),
                        years_in_sparklines = 2,
@@ -98,7 +100,7 @@ make_table <- function(data,
     dplyr::mutate(indicator = dplyr::if_else(
       .data$max_date == max(.data$max_date),
       .data$indicator,
-      paste0(.data$indicator, " (", format(max_date, "%B %Y"), ")")
+      paste0(.data$indicator, " (", format(.data$max_date, "%B %Y"), ")")
     )) %>%
     dplyr::select(.data$series_id, .data$indicator)
 
