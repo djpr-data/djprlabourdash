@@ -404,10 +404,9 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
-    theme_djpr() +
     scale_colour_manual(values = colours) +
     labs(
-      subtitle = "Change in total employment",
+      subtitle = "Annual change in total employment",
       caption = caption_lfs_det_q(),
       title = paste0(
         "Annual employment growth in ",
