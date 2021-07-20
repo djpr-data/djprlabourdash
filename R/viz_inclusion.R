@@ -1493,7 +1493,7 @@ df = dash_data
  title <- paste0(
    round2(df_title$vulnerable, 1),
    " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
-   format(df2$date, "%B %Y")) %>%
+   format(df$date, "%B %Y")) %>%
    unique()
 
  df <- df %>%
@@ -1502,8 +1502,8 @@ df = dash_data
         factor(.data$indicator,
                levels = c(
                  "NAFTE_UN",
-                 "AFE_un_total",
                  "NAFTE_NILF",
+                 "AFE_un_total",
                  "AFE_NILF",
                  "AFE_Emplo_total",
                  "NAFL_Emplo_total",
@@ -1560,12 +1560,16 @@ df = dash_data
     geom_segment(size = 25)+
    geom_text(aes(y = y_end,
                  label = bar_label),
-             nudge_y = 25,
+             nudge_y = 28,
              lineheight = 0.9,
              size = 12 / .pt) +
+   geom_text(data = data.frame(x = 1.55447221432208, y = 221.947133391407, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
+             mapping = aes(x = x, y = y, label = label),
+             size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE)+
+
     theme_djpr()+
    scale_colour_manual(values = c(
-     "Vulnerable" = djprtheme::djpr_green,
+     "Vulnerable" = djprtheme::djpr_royal_blue,
      "Other" = "grey65"
    )) +
    djpr_y_continuous(expand_top = 0.025) +
@@ -1575,7 +1579,7 @@ df = dash_data
     )) +
   labs(
     title = title,
-    subtitle = "Victorian youth education and employment status",
+    subtitle = "Victorian youth education and employment status ('000).",
     caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average."))
 
 
