@@ -29,6 +29,7 @@ create_summary_df <- function(data,
       .data$indicator, .data$value, .data$unit
     )
 
+
   # Calculate change over time -----
   summary_df <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
@@ -153,6 +154,14 @@ create_summary_df <- function(data,
   }
 
   stopifnot(nrow(out) == length(unique(data$series_id)))
+
+  # Add sparklines
+  # sparklines <- summary_df %>%
+  #   dplyr::filter(.data$date >= startdate) %>%
+  #   make_sparklines(group_var = indicator)
+  #
+  # out <- out %>%
+  #   mutate(sparklines = sparklines)
 
   out
 }

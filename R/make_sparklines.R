@@ -52,5 +52,5 @@ make_sparklines <- function(df, group_var, date_var = date, value_var = value) {
     lapply(groups, make_group_line, df = df,
            cols = cols, min_x = min_date, max_x = max_date
            ) %>%
-      setNames(groups)
+      stats::setNames(groups)
   }
