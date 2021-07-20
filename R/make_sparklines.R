@@ -42,7 +42,7 @@ make_sparklines <- function(df, group_var, date_var = date, value_var = value) {
     df %>%
       dplyr::filter({{ group_var }} == .env$group) %>%
       ggplot(aes(x = {{ date_var }}, y = {{ value_var }}, col = {{ group_var }})) +
-      geom_line(colour = col) +
+      geom_line(colour = col, size = 0.75) +
       scale_x_date(
         limits = c(min_x, max_x),
         expand = expansion(mult = 0)

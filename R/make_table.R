@@ -73,9 +73,7 @@ make_table <- function(data,
   df <- rename_indicators(data)
 
   # Create a summary dataframe with one row per unique indicator
-  summary_df <- create_summary_df(df,
-    dashboard_or_briefing = dashboard_or_briefing
-  )
+  summary_df <- create_summary_df(df)
 
   # Reorder dataframe if row_order is specified
   if (!is.null(row_order)) {
@@ -112,30 +110,11 @@ make_table <- function(data,
     dplyr::left_join(date_notes, by = "series_id") %>%
     dplyr::select(.data$indicator, dplyr::everything())
 
-  if (dashboard_or_briefing == "briefing") {
-    summary_df <- summary_df %>%
+  summary_df <- summary_df %>%
       dplyr::rename(` ` = .data$indicator)
-  }
 
   # table_caption <- caption_auto(df)
-
-  if (dashboard_or_briefing == "dashboard") {
-    make_reactable(
-      summary_df = summary_df,
-      raw_data = df,
-      years_in_sparklines = years_in_sparklines,
+  make_briefing_table(summary_df,
       highlight_rows = highlight_rows
     )
-  } else {
-    make_briefing_table(summary_df,
-      highlight_rows = highlight_rows,
-      header_row = c(
-        "",
-        "Current figures",
-        "Change in past month",
-        "Change in past year",
-        "Change during govt"
-      )
-    )
-  }
 }

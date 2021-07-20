@@ -228,9 +228,10 @@ labour_server <- function(input, output, session) {
     text_overview_summary(ts_summ)
   })
 
-  output$main_table <- reactable::renderReactable({
+  output$main_table <- renderUI({
     req(dash_data)
-    table_overview()
+    table_overview() %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 

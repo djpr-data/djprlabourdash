@@ -19,7 +19,6 @@
 #' )))
 #' }
 create_summary_df <- function(data,
-                              dashboard_or_briefing = "dashboard",
                               years_in_sparklines = 2) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
@@ -119,17 +118,7 @@ create_summary_df <- function(data,
   changedf <- changedf %>%
     dplyr::select(!dplyr::ends_with("pc"))
 
-  if (dashboard_or_briefing == "dashboard") {
-    out <- summary_df %>%
-      dplyr::group_by(.data$indicator, .data$series_id) %>%
-      dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
-      dplyr::left_join(changedf, by = c("indicator", "series_id")) %>%
-      dplyr::select(-.data$date)
-
-    # for_reactable is FALSE if the table is intended for a use
-    # other than the dashboard, eg. Word-based briefing tables
-  } else {
-    # Format column names
+  # Format column names
     dates <- unique(data$date) %>%
       sort()
 
@@ -152,17 +141,19 @@ create_summary_df <- function(data,
         {{ since_prev_year }} := .data$changeinyear,
         `Since Nov 2014` = .data$changesince14
       )
-  }
 
   stopifnot(nrow(out) == length(unique(data$series_id)))
 
   # Add sparklines
-  # sparklines <- summary_df %>%
-  #   dplyr::filter(.data$date >= startdate) %>%
-  #   make_sparklines(group_var = indicator)
-  #
-  # out <- out %>%
-  #   mutate(sparklines = sparklines)
+  sparklines <- summary_df %>%
+    dplyr::filter(.data$date >= startdate) %>%
+    make_sparklines(group_var = indicator)
+
+  out <- out %>%
+    dplyr::mutate(sparklines = .env$sparklines) %>%
+    dplyr::select(.data$indicator, .data$sparklines, dplyr::everything())
+
+  names(out)[2] <- paste0("Last ", years_in_sparklines, " years")
 
   out
 }

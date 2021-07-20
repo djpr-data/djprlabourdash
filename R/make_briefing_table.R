@@ -12,11 +12,13 @@ make_briefing_table <- function(df,
                                 highlight_rows = NULL,
                                 header_row = c(
                                   "",
+                                  "Recent trend",
                                   "Current figures",
                                   "Change in past month",
                                   "Change in past year",
                                   "Change during govt"
-                                )) {
+                                )
+                                ) {
   df <- df %>%
     dplyr::select(-.data$series_id)
 
@@ -26,8 +28,18 @@ make_briefing_table <- function(df,
   base_flex <- df %>%
     flextable::flextable()
 
-  # Ensure the flextable fits the container (eg. Word doc) it is placed in
+  # Add sparklines
   flex <- base_flex %>%
+    compose(
+      # j = "SPARKLINES",
+      j = 2,
+      value = as_paragraph(gg_chunk(value = .,
+                                    height = 0.4, width = 1)),
+      use_dot = TRUE)
+
+
+  # Ensure the flextable fits the container (eg. Word doc) it is placed in
+  flex <- flex %>%
     flextable::set_table_properties(layout = "autofit")
 
   # Add an extra header row
