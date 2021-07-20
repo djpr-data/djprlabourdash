@@ -324,8 +324,9 @@ labour_server <- function(input, output, session) {
   # })
 
   # Indicators: table of employment indicators
-  output$ind_emp_table <- reactable::renderReactable({
-    table_ind_employment()
+  output$ind_emp_table <- renderUI({
+    table_ind_employment() %>%
+      flextable::htmltools_value()
   })
 
   # Indicators: slopgraph of emp-pop ratios in states
@@ -358,8 +359,9 @@ labour_server <- function(input, output, session) {
   )
 
   # Indicators: unemployment ------
-  output$ind_unemp_summary <- reactable::renderReactable({
-    table_ind_unemp_summary()
+  output$ind_unemp_summary <- renderUI({
+    table_ind_unemp_summary() %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 

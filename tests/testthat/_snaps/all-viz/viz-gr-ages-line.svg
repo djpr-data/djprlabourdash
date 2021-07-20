@@ -1095,6 +1095,6 @@
 <text x='608.10' y='549.75' text-anchor='middle' style='font-size: 14.00px; font-family: sans;' textLength='31.15px' lengthAdjust='spacingAndGlyphs'>2021</text>
 <text x='0.14' y='34.42' style='font-size: 11.20px; fill: #53565A; font-family: sans;' textLength='182.43px' lengthAdjust='spacingAndGlyphs'>Unemployment Rate by age, Victoria</text>
 <text x='0.14' y='16.83' style='font-size: 14.00px; font-weight: bold; fill: #004676; font-family: sans;' textLength='600.89px' lengthAdjust='spacingAndGlyphs'>The youth unemployment rate is 10 percentage points higher than the rate for people aged 25-54</text>
-<text x='0.14' y='572.95' style='font-size: 7.77px; font-style: italic; font-family: sans;' textLength='427.20px' lengthAdjust='spacingAndGlyphs'>Source: ABS Labour Force (monthly). Note: most recent data is for March 2021. Smoothed using 12 month moving average.</text>
+<text x='0.14' y='572.95' style='font-size: 7.77px; font-style: italic; font-family: sans;' textLength='460.02px' lengthAdjust='spacingAndGlyphs'>Source: ABS Labour Force, Detailed (monthly). Note: most recent data is for March 2021. Smoothed using 12 month moving average.</text>
 </g>
 </svg>

@@ -4,7 +4,7 @@
 #' a DF returned by `filter_dash_data()` is expected
 #' @noRd
 
-table_overview <- function() {
+table_overview <- function(destination = "dashboard") {
   data <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
@@ -55,6 +55,7 @@ table_overview <- function() {
 
   make_table(
     data = data,
+    destination = destination,
     row_order = c(
       "A84423354L",
       "A84423242V",
@@ -85,11 +86,12 @@ table_overview <- function() {
       "A85223450L",
       "A85223451R",
       "A84423356T"
-    )
+    ),
+    notes = " All data seasonally adjusted, other than youth figures, which are smoothed using a 12 month rolling average, and regional figures, which are smoothed using a 3 month rolling average."
   )
 }
 
-table_ind_employment <- function(dashboard_or_briefing = "dashboard") {
+table_ind_employment <- function(destination = "dashboard") {
   data <- filter_dash_data(c(
     "A84423349V",
     "A84423357V",
@@ -106,11 +108,11 @@ table_ind_employment <- function(dashboard_or_briefing = "dashboard") {
     ))
 
   make_table(table_data,
-    dashboard_or_briefing = dashboard_or_briefing
+    destination = destination
   )
 }
 
-table_ind_unemp_summary <- function(dashboard_or_briefing = "dashboard") {
+table_ind_unemp_summary <- function(destination = "dashboard") {
   data <- filter_dash_data(c(
     "A84423354L", # Unemp rate
     "A84423350C", # Unemp total
@@ -137,11 +139,11 @@ table_ind_unemp_summary <- function(dashboard_or_briefing = "dashboard") {
     ))
 
   make_table(table_data,
-    dashboard_or_briefing = dashboard_or_briefing
+    destination = destination
   )
 }
 
-table_ind_hours_summary <- function(dashboard_or_briefing = "dashboard") {
+table_ind_hours_summary <- function(destination = "dashboard") {
   data <- filter_dash_data(c(
     "A84426256L" # , # Total hours
   ))
@@ -153,6 +155,6 @@ table_ind_hours_summary <- function(dashboard_or_briefing = "dashboard") {
     ))
 
   make_table(table_data,
-    dashboard_or_briefing = dashboard_or_briefing
+    destination = destination
   )
 }

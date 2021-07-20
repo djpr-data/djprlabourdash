@@ -1,9 +1,5 @@
-#' Create a summary dataframe for use in a table to be displayed
-#' Either in a reactable or a static briefing table
+#' Create a summary dataframe for use in a table
 #' @param data Dataframe of input data
-#' @param dashboard_or_briefing Character; either 'dashboard'
-#' (if the table is intended for the dashboard),
-#' or 'briefing' (if the table is intended for the briefing tables).
 #' @param years_in_sparklines Number of years worth of data to include in
 #' sparkline
 #' @examples
@@ -51,7 +47,6 @@ create_summary_df <- function(data,
     dplyr::ungroup()
 
   # Reformat columns -----
-
   summary_df <- summary_df %>%
     dplyr::mutate(across(
       c(dplyr::ends_with("pc")),
@@ -119,28 +114,28 @@ create_summary_df <- function(data,
     dplyr::select(!dplyr::ends_with("pc"))
 
   # Format column names
-    dates <- unique(data$date) %>%
-      sort()
+  dates <- unique(data$date) %>%
+    sort()
 
-    latest_date <- max(changedf$date)
-    prev_date <- dates[length(dates) - 1]
-    prev_year <- dates[length(dates) - 12]
+  latest_date <- max(changedf$date)
+  prev_date <- dates[length(dates) - 1]
+  prev_year <- dates[length(dates) - 12]
 
-    nice_latest_date <- format(latest_date, "%b %Y")
-    nice_prev_date <- format(prev_date, "%b %Y")
-    nice_prev_year <- format(prev_year, "%b %Y")
+  nice_latest_date <- format(latest_date, "%b %Y")
+  nice_prev_date <- format(prev_date, "%b %Y")
+  nice_prev_year <- format(prev_year, "%b %Y")
 
-    since_prev_date <- paste0("Since ", nice_prev_date)
-    since_prev_year <- paste0("Since ", nice_prev_year)
+  since_prev_date <- paste0("Since ", nice_prev_date)
+  since_prev_year <- paste0("Since ", nice_prev_year)
 
-    out <- changedf %>%
-      dplyr::select(-.data$date,
-        indicator = .data$indicator,
-        {{ nice_latest_date }} := .data$latest_value,
-        {{ since_prev_date }} := .data$changeinmonth,
-        {{ since_prev_year }} := .data$changeinyear,
-        `Since Nov 2014` = .data$changesince14
-      )
+  out <- changedf %>%
+    dplyr::select(-.data$date,
+      indicator = .data$indicator,
+      {{ nice_latest_date }} := .data$latest_value,
+      {{ since_prev_date }} := .data$changeinmonth,
+      {{ since_prev_year }} := .data$changeinyear,
+      `Since Nov 2014` = .data$changesince14
+    )
 
   stopifnot(nrow(out) == length(unique(data$series_id)))
 
@@ -149,8 +144,13 @@ create_summary_df <- function(data,
     dplyr::filter(.data$date >= startdate) %>%
     make_sparklines(group_var = indicator)
 
+  sparklines <- dplyr::tibble(
+    indicator = names(sparklines),
+    sparklines = sparklines
+  )
+
   out <- out %>%
-    dplyr::mutate(sparklines = .env$sparklines) %>%
+    dplyr::left_join(sparklines, by = "indicator") %>%
     dplyr::select(.data$indicator, .data$sparklines, dplyr::everything())
 
   names(out)[2] <- paste0("Last ", years_in_sparklines, " years")

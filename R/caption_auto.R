@@ -1,5 +1,6 @@
 
-caption_auto <- function(data) {
+caption_auto <- function(data,
+                         notes = NULL) {
   sources <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -26,5 +27,17 @@ caption_auto <- function(data) {
     dplyr::pull(.data$desc) %>%
     unique()
 
-  combine_words(sources)
+  out <- combine_words(sources)
+
+  if (length(sources > 1)) {
+    out <- paste0("Sources: ", out, ".")
+  } else {
+    out <- paste0("Source: ", out, ".")
+  }
+
+  if (!is.null(notes)) {
+    out <- paste0(out, "\nNotes: ", notes)
+  }
+
+  out
 }

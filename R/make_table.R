@@ -1,17 +1,14 @@
 #' Create a table for the dashboard or a briefing document
 #' @param data A data frame containing data to summarise
+#' @param destination "dashboard" or "briefing"
 #' @param years_in_sparklines Period of time to include in the sparkline line
-#' charts. Only relevant when `dashboard_or_briefing` =
-#' "dashboard".
+#' charts.
 #' @param row_order Vector of series IDs, in the order in which you wish the
 #' corresponding rows to be included in the output table
 #' @param highlight_rows Numeric vector of rows in the table to highlight.
 #' Highlighted rows are bolded and have a top border; non-highlighted rows
 #' are indented. If `NULL` then all rows are non-bold, non-indented.
-#' @return Either a `reactable` (if `dashboard_or_briefing` = "dashboard") or a
-#' `flextable` (if `dashboard_or_briefing` = "briefing") summarising `data`.
 #' @examples
-#' \dontrun{
 #' dash_data <- load_dash_data()
 #'
 #' make_table(
@@ -37,7 +34,6 @@
 #'     "A85223451R",
 #'     "A84423356T"
 #'   )),
-#'   dashboard_or_briefing = "dashboard",
 #'   row_order = c(
 #'     "A84423354L",
 #'     "A84423242V",
@@ -60,14 +56,16 @@
 #'     "A85223451R",
 #'     "A84423356T"
 #'   ),
-#'   highlight_rows = c(1, 6, 7, 13, 17, 18, 19, 20)
+#'   highlight_rows = c("A84426256L","A85223450L", "A84423242V")
 #' )
-#' }
 #'
 make_table <- function(data,
+                       destination = c("dashboard", "briefing"),
                        years_in_sparklines = 2,
                        row_order = NULL,
-                       highlight_rows = NULL) {
+                       highlight_rows = NULL,
+                       notes = NULL) {
+  destination <- match.arg(destination)
 
   # Change value of indicator column for specific series IDs
   df <- rename_indicators(data)
@@ -111,10 +109,137 @@ make_table <- function(data,
     dplyr::select(.data$indicator, dplyr::everything())
 
   summary_df <- summary_df %>%
-      dplyr::rename(` ` = .data$indicator)
+    dplyr::rename(` ` = .data$indicator)
 
-  # table_caption <- caption_auto(df)
-  make_briefing_table(summary_df,
-      highlight_rows = highlight_rows
+
+  summary_df <- summary_df %>%
+    dplyr::select(-.data$series_id)
+
+  names(summary_df) <- toupper(names(summary_df))
+
+  # Create a basic flextable using the supplied dataframe
+  base_flex <- summary_df %>%
+    flextable::flextable()
+
+  # Add sparklines
+  flex <- base_flex %>%
+    flextable::compose(
+      j = 2,
+      value = flextable::as_paragraph(
+        flextable::gg_chunk(
+          value = .,
+          height = 0.38,
+          width = 1
+        )
+      ),
+      use_dot = TRUE
     )
+
+
+  # Ensure the flextable fits the container (eg. Word doc) it is placed in
+  flex <- flex %>%
+    flextable::set_table_properties(layout = "autofit")
+
+  # Add an extra header row
+  flex <- flex %>%
+    flextable::add_header_row(values = c(
+      "",
+      "Recent trend",
+      "Current figures",
+      "Change in past month",
+      "Change in past year",
+      "Change during govt"
+    ))
+
+  # Add borders
+  flex <- flex %>%
+    flextable::border_remove()
+
+  if (destination == "dashboard") {
+    flex <- flex %>%
+      flextable::border(border.top = flextable::fp_border_default(
+        color = "grey90", width = 0.25))
+  }
+
+  flex <- flex %>%
+    flextable::border(
+      i = 1,
+      border.top = flextable::fp_border_default()
+    ) %>%
+    flextable::border(i = 1, part = "header", border.top = flextable::fp_border_default()) %>%
+    flextable::border(i = nrow(summary_df), border.bottom = flextable::fp_border_default())
+
+  # Ensure font, font size, and bolding is correct
+  if (destination == "dashboard") {
+    font_family <- "Roboto"
+    font_size_main <- 10.5
+    font_size_secondary <- 9
+  } else if (destination == "briefing") {
+    font_family <- "Arial"
+    font_size_main <- 9
+    font_size_secondary <- 8
+  }
+
+  flex <- flex %>%
+    flextable::font(fontname = font_family) %>%
+    flextable::font(fontname = font_family, part = "header") %>%
+    flextable::fontsize(size = font_size_main) %>%
+    flextable::fontsize(size = font_size_main, i = 1, part = "header") %>%
+    flextable::fontsize(size = font_size_secondary, i = 2, part = "header") %>%
+    flextable::bold(i = 1, part = "header")
+
+  # Right align columns other than the first one (row label/indicator)
+  flex <- flex %>%
+    flextable::align(j = -1, align = "right") %>%
+    flextable::align(j = -1, align = "right", part = "header")
+
+  # Bold highlight rows, indent non-highlight rows
+  if (!is.null(highlight_rows)) {
+    flex <- flex %>%
+      flextable::bold(i = highlight_rows, j = 1)
+
+    all_rows <- 1:nrow(summary_df)
+    non_highlight_rows <- all_rows[!all_rows %in% highlight_rows]
+
+    flex <- flex %>%
+      flextable::padding(i = non_highlight_rows, j = 1, padding.left = 20)
+
+    flex <- flex %>%
+      flextable::border(
+        i = highlight_rows,
+        border.top = flextable::fp_border_default()
+      )
+  }
+
+  # Add caption
+  if (destination == "dashboard") {
+    caption_notes <- paste0(notes,
+                            " Shading of cells is based on how the indicator relates to historical trends. If the indicator grew by around its typical amount, the cell will be white. If growth was very strong relative to historical levels, it will be dark green. If it was weak relative to historical growth, the cell will be dark red.")
+
+  } else {
+    if (is.null(notes)) {
+      caption_notes <- NULL
+    } else {
+      caption_notes <- notes
+    }
+  }
+
+  table_caption <- caption_auto(df,
+                                notes = caption_notes)
+
+  flex <- flex %>%
+    flextable::add_footer(` ` = table_caption) %>%
+    flextable::merge_at(j = 1:length(flex$col_keys),
+                        part = "footer") %>%
+    flextable::italic(part = "footer") %>%
+    flextable::font(fontname = font_family) %>%
+    flextable::fontsize(size = font_size_secondary * 0.85,
+                        part = "footer") %>%
+    flextable::color(part = "footer",
+                      color = "#343a40") %>%
+    flextable::line_spacing(part = "footer",
+                            space = 0.8)
+
+
+  flex
 }

@@ -49,15 +49,6 @@ Some text goes here. Regular text.
 
 ```{r}
 
-table_overview(dashboard_or_briefing = "briefing")
+table_overview()
 ```
 
-## Another heading
-
-More text
-
-```{r}
-table_ind_employment(dashboard_or_briefing = "briefing")
-```
-
-More text

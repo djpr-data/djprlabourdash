@@ -30,12 +30,9 @@ page_overview <- function(...) {
     ),
     br(),
     centred_row(
-      tagList(
-        uiOutput("main_table") %>%
-          djpr_with_spinner(hide.ui = TRUE),
-        caption_reactable(" All data seasonally adjusted, other than youth figures, which are smoothed using a 12 month rolling average, and regional figures, which are smoothed using a 3 month rolling average.")
-      )
-    ),
+        uiOutput("main_table", height = "800px") %>%
+          djpr_with_spinner(hide.ui = TRUE)
+      ),
     br(),
     centred_row(htmlOutput("overview_footnote")),
     br(),
