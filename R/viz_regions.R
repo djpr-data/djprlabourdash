@@ -1303,11 +1303,19 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
   vic_rank <- latest$rank[latest$state == "Reg. Vic"]
   vic_level <- paste0(vic_level_raw, "%")
   latest_date_pretty <- format(max(df$date), "%B %Y")
+  covid_date_pretty <- format(as.Date("2020-03-01"), "%B %Y")
 
   title_part_1 <- dplyr::case_when(
-    sign(vic_level_raw) == 1 ~ paste0("rose by ", vic_level, " since "),
-    sign(vic_level_raw) == -1 ~ paste0("fell by ", vic_level, " since "),
-    sign(vic_level_raw) == 0 ~ "is the same as it was in "
+    sign(vic_level_raw) == 1 ~ paste0("rose by ", vic_level,
+                                      " between ", covid_date_pretty,
+                                      " and ", latest_date_pretty),
+    sign(vic_level_raw) == -1 ~ paste0("fell by ", vic_level,
+                                       " between ", covid_date_pretty,
+                                       " and ", latest_date_pretty),
+    sign(vic_level_raw) == 0 ~ paste0("was the same in",
+                                      latest_date_pretty,
+                                      "as it was in ",
+                                      covid_date_pretty)
   )
 
   title_part_2 <- dplyr::case_when(
@@ -1323,7 +1331,6 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
 
   title <- paste0("Employment in regional Victoria ",
          title_part_1,
-         latest_date_pretty,
          " and has risen the ",
          title_part_2,
          " fastest of any Australian regional area")
