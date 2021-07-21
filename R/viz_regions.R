@@ -1300,7 +1300,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     dplyr::mutate(rank = dplyr::min_rank(-.data$value))
 
   vic_rank <- latest$rank[latest$state == "Reg. Vic"]
-  vic_level <- paste0(round2(latest$value[latest$state == "Reg. Vic"], 1), "%")
+  vic_level <- paste0(round(latest$value[latest$state == "Reg. Vic"], 1), "%")
 
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(
