@@ -6,7 +6,7 @@
 \usage{
 make_table(
   data,
-  dashboard_or_briefing = "dashboard",
+  dashboard_or_briefing = c("dashboard", "briefing"),
   years_in_sparklines = 2,
   row_order = NULL,
   highlight_rows = NULL

@@ -92,7 +92,7 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
     djpr_ts_linechart(
       col_var = .data$state,
       y_labels = function(x) paste0(x, "%"),
-      label_num = paste0(round(.data$value, 1), "%")
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
       subtitle = "Annual employment growth in Victoria and Australia",
@@ -395,7 +395,7 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = paste0(round(.data$value, 1), "%")),
+      aes(label = paste0(round2(.data$value, 1), "%")),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -435,7 +435,7 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
   latest_values <- data %>%
     dplyr::filter(date == max(.data$date)) %>%
     dplyr::mutate(
-      value = round(.data$value, 1),
+      value = round2(.data$value, 1),
       date = format(.data$date, "%B %Y")
     ) %>%
     dplyr::select(.data$geog, .data$value, .data$date) %>%
@@ -454,7 +454,7 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
   data %>%
     djpr_ts_linechart(
       col_var = .data$geog,
-      label_num = paste0(round(.data$value, 1), "%")
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
       subtitle = "Unemployment rate in Victoria and Australia",
@@ -509,7 +509,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
 
   title <- paste0(
     "In ", format(unique(label_df$date), "%B %Y"), ", ",
-    round(label_df$value[label_df$under == "Underutilisation rate"], 1),
+    round2(label_df$value[label_df$under == "Underutilisation rate"], 1),
     " per cent of the Victorian labour force was either unemployed",
     " or underemployed"
   )
@@ -695,7 +695,7 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       x_expand_mult = c(0, 0.22)
     ) +
@@ -889,7 +889,7 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
   data %>%
     djpr_ts_linechart(
       col_var = .data$geog,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
