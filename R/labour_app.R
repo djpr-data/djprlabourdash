@@ -1021,6 +1021,27 @@ labour_server <- function(input, output, session) {
                    width_percent = 46,
                    date_slider = FALSE)
 
+  djpr_plot_server(
+    "reg_emp_regionstates_sincecovid_line",
+    viz_reg_emp_regionstates_sincecovid_line,
+    data = filter_dash_data(c("A84600075R",
+                              "A84599625R",
+                              "A84599781T",
+                              "A84599607K",
+                              "A84600243R",
+                              "A84599715V",
+                              "A84599631K"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(
+        value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+      dplyr::filter(date >= as.Date("2020-01-01")),
+    date_slider = FALSE,
+    plt_change = plt_change
+  )
+
   # Industries ------
 
   djpr_plot_server("industries_empchange_sincecovid_bar",

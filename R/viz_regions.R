@@ -1299,39 +1299,36 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     ungroup() %>%
     dplyr::mutate(rank = dplyr::min_rank(-.data$value))
 
+  vic_level_raw <- round2(latest$value[latest$state == "Reg. Vic"], 1)
   vic_rank <- latest$rank[latest$state == "Reg. Vic"]
-  vic_level <- paste0(round2(latest$value[latest$state == "Reg. Vic"], 1), "%")
+  vic_level <- paste0(vic_level_raw, "%")
+  latest_date_pretty <- format(max(df$date), "%B %Y")
 
-  title <- dplyr::case_when(
-    vic_rank == 1 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the highest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    vic_rank == 2 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the second highest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    vic_rank == 3 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the third highest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    vic_rank == 4 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the fourth highest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    vic_rank == 5 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the fifth highest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    vic_rank == 6 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the second lowest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    vic_rank == 7 ~ paste0(
-      "Employment in regional Victoria changed by ", vic_level,
-      " since March 2020 and is the lowest of any Australian regional area in ",
-      format(max(data$date), "%B %Y")),
-    )
+  title_part_1 <- dplyr::case_when(
+    sign(vic_level_raw) == 1 ~ paste0("rose by ", vic_level, " since "),
+    sign(vic_level_raw) == -1 ~ paste0("fell by ", vic_level, " since "),
+    sign(vic_level_raw) == 0 ~ "is the same as it was in "
+  )
+
+  title_part_2 <- dplyr::case_when(
+    vic_rank == 1 ~ "",
+    vic_rank == 2 ~ "second",
+    vic_rank == 3 ~ "third",
+    vic_rank == 4 ~ "fourth",
+    vic_rank == 5 ~ "fifth",
+    vic_rank == 6 ~ "sixth",
+    vic_rank == 7 ~ "seventh",
+    vic_rank == 8 ~ "eighth"
+  )
+
+  title <- paste0("Employment in regional Victoria ",
+         title_part_1,
+         latest_date_pretty,
+         " and has risen the ",
+         title_part_2,
+         " fastest of any Australian regional area")
+
+  other_colour <- "grey70"
 
   df %>%
     djpr_ts_linechart(
@@ -1346,7 +1343,11 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
     scale_colour_manual(values = c(
       "Reg. Vic" = djprtheme::djpr_royal_blue,
       "Reg. NSW" = djprtheme::djpr_green,
-      "Other" = "grey87"
+      "Reg. NT" = other_colour,
+      "Reg. Tas" = other_colour,
+      "Reg. SA" = other_colour,
+      "Reg. QLD" = other_colour,
+      "Reg. WA" = other_colour
     )) +
     labs(
       title = title,
