@@ -42,7 +42,7 @@ page_regions <- function(...) {
     htmlOutput("text_emp_regions"),
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
-    # Regional focus box ------
+    # Victorian regions focus box ------
     h2(br(), "Victorian regions"),
     # Box for regional focus
     focus_box(
@@ -83,7 +83,7 @@ page_regions <- function(...) {
       column(
         6,
         br(),
-        reactable::reactableOutput("table_region_focus") %>%
+        uiOutput("table_region_focus") %>%
           djpr_with_spinner(),
         djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average.")
       )

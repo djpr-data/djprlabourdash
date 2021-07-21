@@ -892,8 +892,9 @@ labour_server <- function(input, output, session) {
       ts_summ
     )
 
-  output$table_region_focus <- reactable::renderReactable({
-    table_region_focus(sa4 = input$focus_region)
+  output$table_region_focus <- renderUI({
+    table_region_focus(sa4 = input$focus_region) %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(
       input$focus_region,

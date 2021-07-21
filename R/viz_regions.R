@@ -1079,63 +1079,34 @@ table_region_focus <- function(data = filter_dash_data(
     dplyr::select(.data$indicator, .data$series, {{ sa4 }}, dplyr::everything())
 
   table_df %>%
-    rename(
-      region = 3,
-      aggregate = 4
-    ) %>%
-    reactable::reactable(
-      columns = list(
-        indicator = reactable::colDef(
-          name = "",
-          minWidth = 65,
-          style = reactable::JS("function(rowInfo, colInfo, state) {
-        var firstSorted = state.sorted[0]
-        // Merge cells if unsorted
-        if (!firstSorted || firstSorted.id === 'indicator') {
-          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
-          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
-            return { visibility: 'hidden' }
-          }
-        }
-      }")
-        ),
-        series = reactable::colDef(
-          name = "",
-          minWidth = 30
-        ),
-        region = reactable::colDef(
-          name = names(table_df)[3],
-          align = "center",
-          minWidth = 40,
-          headerStyle = col_header_style
-        ),
-        aggregate = reactable::colDef(
-          name = names(table_df)[4],
-          align = "center",
-          minWidth = 40,
-          headerStyle = col_header_style
-        )
-      ),
-      defaultColDef = reactable::colDef(
-        minWidth = 50
-      ),
-      highlight = TRUE,
-      resizable = TRUE,
-      sortable = FALSE,
-      theme = reactable::reactableTheme(
-        borderColor = "#dfe2e5",
-        stripedColor = "#f6f8fa",
-        highlightColor = "#f0f5f9",
-        cellPadding = "7px 1px 1px 1px",
-        tableStyle = list(`border-bottom` = "1px solid #000"),
-        headerStyle = list(
-          fontWeight = "normal",
-          `border-bottom` = "1px solid #000"
-        ),
-        groupHeaderStyle = list(fontWeight = "normal"),
-        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      )
-    )
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(indicator = dplyr::if_else(
+      dplyr::row_number() != 1,
+      "",
+      .data$indicator
+    )) %>%
+    dplyr::rename(` ` = indicator,
+                  `  ` = series) %>%
+    flextable::flextable() %>%
+    flextable::bold(part = "header") %>%
+    flextable::border_remove() %>%
+    flextable::border(part = "body",
+                      j = 2:4,
+                      i = 2:nrow(table_df),
+                      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)) %>%
+    flextable::border(part = "body",
+                      i = c(1, 4, 7),
+                      border.top = flextable::fp_border_default()) %>%
+    flextable::border(part = "body",
+                      i = nrow(table_df),
+                      border.bottom = flextable::fp_border_default()) %>%
+    flextable::autofit(add_w = 0, add_h = 0) %>%
+    flextable::font(part = "body", fontname = "Roboto") %>%
+    flextable::font(part = "header", fontname = "Roboto") %>%
+    flextable::fontsize(size = 9) %>%
+    flextable::fontsize(size = 9, part = "header")
+
+
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
