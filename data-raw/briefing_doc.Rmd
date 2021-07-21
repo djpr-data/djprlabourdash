@@ -49,8 +49,8 @@ Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 
 Some text goes here. Regular text. 
 
+Table description goes here
 ```{r}
-
 table_overview()
 ```
 

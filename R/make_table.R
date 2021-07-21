@@ -121,18 +121,11 @@ make_table <- function(data,
   names(summary_df) <- toupper(names(summary_df))
 
   # Create a basic flextable using the supplied dataframe
-  if (destination == "dashboard") {
-    flex <- summary_df %>%
+  flex <- summary_df %>%
       flextable::flextable()
-  } else {
-    flex <- summary_df %>%
-      flextable::flextable(col_keys = names(summary_df)[c(1, 3:ncol(summary_df))]
-                                                        )
-  }
 
   # Add sparklines
-  if (destination == "dashboard") {
-    flex <- flex %>%
+  flex <- flex %>%
       flextable::compose(
         j = 2,
         value = flextable::as_paragraph(
@@ -144,15 +137,13 @@ make_table <- function(data,
         ),
         use_dot = TRUE
       )
-    }
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
     flextable::set_table_properties(layout = "autofit")
 
   # Add an extra header row
-  if (destination == "dashboard") {
-    header_row <- c(
+  header_row <- c(
       "",
       "Recent trend",
       "Current figures",
@@ -160,15 +151,6 @@ make_table <- function(data,
       "Change in past year",
       "Change during govt"
     )
-  } else {
-    header_row <- c(
-      "",
-      "Current figures",
-      "Change in past month",
-      "Change in past year",
-      "Change during govt"
-    )
-  }
 
   flex <- flex %>%
     flextable::add_header_row(values = header_row)
@@ -188,7 +170,7 @@ make_table <- function(data,
       i = 1,
       border.top = flextable::fp_border_default()
     ) %>%
-    flextable::border(i = 1, part = "header", border.top = flextable::fp_border_default()) %>%
+    # flextable::border(i = 1, part = "header", border.top = flextable::fp_border_default()) %>%
     flextable::border(i = nrow(summary_df), border.bottom = flextable::fp_border_default())
 
   # Ensure font, font size, and bolding is correct
