@@ -249,7 +249,7 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$gcc_restofstate,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       hline = 0
     ) +
@@ -444,7 +444,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = round(.data$value, 1)),
+      aes(label = round2(.data$value, 1)),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -885,7 +885,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
   comb %>%
     djpr_ts_linechart(
       col_var = .data$col_var,
-      label_num = paste0(round(.data$value, 1), "%")
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
     scale_x_date(
       breaks = scales::breaks_pretty(5),
@@ -1336,7 +1336,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
   df %>%
     djpr_ts_linechart(
       col_var = .data$state,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       hline = 0
     ) +
     scale_y_continuous(
