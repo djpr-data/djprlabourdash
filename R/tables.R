@@ -4,7 +4,9 @@
 #' a DF returned by `filter_dash_data()` is expected
 #' @noRd
 
-table_overview <- function(destination = "dashboard") {
+table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                    unset = "dashboard")
+                           ) {
   data <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",

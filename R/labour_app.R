@@ -9,6 +9,8 @@
 labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
+  Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
+
   myenv <- as.environment(1)
 
   assign("dash_data",

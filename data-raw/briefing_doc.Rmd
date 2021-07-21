@@ -39,6 +39,8 @@ knitr::opts_chunk$set(
 ```{r load-data}
 
 dash_data <- load_dash_data()
+
+Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
 
 # Victorian labour force summary

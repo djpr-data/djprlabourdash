@@ -15,7 +15,7 @@
 #' )))
 #' }
 create_summary_df <- function(data,
-                              years_in_sparklines = 2) {
+                              years_in_sparklines = 3) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   # Drop unneeded columns -----
@@ -142,15 +142,15 @@ create_summary_df <- function(data,
   # Add sparklines
   sparklines <- summary_df %>%
     dplyr::filter(.data$date >= startdate) %>%
-    make_sparklines(group_var = .data$indicator)
+    make_sparklines(group_var = .data$series_id)
 
   sparklines <- dplyr::tibble(
-    indicator = names(sparklines),
+    series_id = names(sparklines),
     sparklines = sparklines
   )
 
   out <- out %>%
-    dplyr::left_join(sparklines, by = "indicator") %>%
+    dplyr::left_join(sparklines, by = "series_id") %>%
     dplyr::select(.data$indicator, .data$sparklines, dplyr::everything())
 
   names(out)[2] <- paste0("Last ", years_in_sparklines, " years")

@@ -63,7 +63,7 @@
 #' }
 make_table <- function(data,
                        destination = c("dashboard", "briefing"),
-                       years_in_sparklines = 2,
+                       years_in_sparklines = 3,
                        row_order = NULL,
                        highlight_rows = NULL,
                        notes = NULL) {
@@ -73,7 +73,8 @@ make_table <- function(data,
   df <- rename_indicators(data)
 
   # Create a summary dataframe with one row per unique indicator
-  summary_df <- create_summary_df(df)
+  summary_df <- create_summary_df(df,
+                                  years_in_sparklines = years_in_sparklines)
 
   # Reorder dataframe if row_order is specified
   if (!is.null(row_order)) {
@@ -120,38 +121,57 @@ make_table <- function(data,
   names(summary_df) <- toupper(names(summary_df))
 
   # Create a basic flextable using the supplied dataframe
-  base_flex <- summary_df %>%
-    flextable::flextable()
+  if (destination == "dashboard") {
+    flex <- summary_df %>%
+      flextable::flextable()
+  } else {
+    flex <- summary_df %>%
+      flextable::flextable(col_keys = names(summary_df)[c(1, 3:ncol(summary_df))]
+                                                        )
+  }
 
   # Add sparklines
-  flex <- base_flex %>%
-    flextable::compose(
-      j = 2,
-      value = flextable::as_paragraph(
-        flextable::gg_chunk(
-          value = .,
-          height = 0.38,
-          width = 1
-        )
-      ),
-      use_dot = TRUE
-    )
-
+  if (destination == "dashboard") {
+    flex <- flex %>%
+      flextable::compose(
+        j = 2,
+        value = flextable::as_paragraph(
+          flextable::gg_chunk(
+            value = .,
+            height = 0.38,
+            width = 1
+          )
+        ),
+        use_dot = TRUE
+      )
+    }
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
     flextable::set_table_properties(layout = "autofit")
 
   # Add an extra header row
-  flex <- flex %>%
-    flextable::add_header_row(values = c(
+  if (destination == "dashboard") {
+    header_row <- c(
       "",
       "Recent trend",
       "Current figures",
       "Change in past month",
       "Change in past year",
       "Change during govt"
-    ))
+    )
+  } else {
+    header_row <- c(
+      "",
+      "Current figures",
+      "Change in past month",
+      "Change in past year",
+      "Change during govt"
+    )
+  }
+
+  flex <- flex %>%
+    flextable::add_header_row(values = header_row)
 
   # Add borders
   flex <- flex %>%
@@ -231,7 +251,7 @@ make_table <- function(data,
 
   flex <- flex %>%
     flextable::add_footer(` ` = table_caption) %>%
-    flextable::merge_at(j = 1:length(flex$col_keys),
+    flextable::merge_at(j = 1:flextable::ncol_keys(flex),
                         part = "footer") %>%
     flextable::italic(part = "footer") %>%
     flextable::font(fontname = font_family) %>%
