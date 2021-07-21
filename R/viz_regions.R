@@ -1336,7 +1336,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
   df %>%
     djpr_ts_linechart(
       col_var = .data$state,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       hline = 0
     ) +
     scale_y_continuous(
