@@ -1624,10 +1624,11 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
     dplyr::select(!.data$series)
 
 
+  #calculate annual growth
   df <- df %>%
   dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator) %>%
-    dplyr::mutate(value =(.data$value / lag(.data$value, 12) - 1)) %>%
+    dplyr::mutate(value = (.data$value / lag(.data$value, 12) - 1)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
@@ -1646,6 +1647,7 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
 
   latest_month <- format(max(df$date), "%B %Y")
 
+  #create title
   title <- dplyr::case_when(
     youth_not_attending >  youth_total ~
       paste0("Unemployment rate grew faster for youth not attending school in the year to ", latest_month),
@@ -1655,6 +1657,7 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
       paste0("Unemployment rate grew at around the same pace for youth not attending school in the year to ", latest_month),
     TRUE ~ paste0("Annual unemployment growth for youth not attending school and average Victorian youth")
   )
+
 
   df %>%
     djpr_ts_linechart(
