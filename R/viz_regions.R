@@ -72,7 +72,7 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
     )
 
   paste0(
-    "The unemployment rate across Victoria ranges from ",
+    "The unemployment rate across Victoria ranged from ",
     round2(high_low$min_ur, 1),
     " per cent in ",
     high_low$min_sa4,
@@ -85,7 +85,7 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
   )
 }
 
-map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84600145K",
+map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
                                                                   "A84599659L",
                                                                   "A84600019W",
                                                                   "A84600187J",
@@ -103,8 +103,6 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84600145K"
                                                                   "A84599929A",
                                                                   "A84600121T",
                                                                   "A84600037A",
-                                                                  "A84600144J",
-                                                                  "A84600145K",
                                                                   "A84599658K",
                                                                   "A84599660W",
                                                                   "A84600018V",
