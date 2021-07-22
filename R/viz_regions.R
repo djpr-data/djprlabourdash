@@ -206,6 +206,13 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
     dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
 
+  label_title <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ paste0("Unemployment<br/> rate (per cent)"),
+    selected_indicator == "part_rate" ~ paste0("Participation<br/> rate (per cent)"),
+    selected_indicator == "emp_pop" ~ paste0("Employment to<br/> population ratio<br/> (per cent)"),
+    TRUE ~ NA_character_
+    )
+
   # Produce dynamic map, all of Victoria ----
   map <- mapdata %>%
     leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
@@ -226,8 +233,8 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
         weight = 2, # thickness of region boundary
         bringToFront = FALSE
       ), # FALSE = metro outline remains
-      label = sprintf( # region label definition
-        "<strong>%s</strong><br/>", indic_long, ": %.1f", # label title, strong = bold, %.1f = 1 dec points
+      label = sprintf(
+        indic_long,
         mapdata$sa4_name_2016, # region name displayed in label
         mapdata$value
       ) %>% # eco data displayed in label
@@ -248,7 +255,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
       values = mapdata$value, # fill data
       bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "Unemployment<br/>rate (per cent)", # label title
+      title = label_title,
       opacity = 1,
     ) %>%
     # label opacity
