@@ -122,69 +122,71 @@ make_table <- function(data,
   flex <- summary_df %>%
       flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
 
-  # Define cell colours ----
-  # Create a summary table that will be used for conditional formatting
-  # Note we do not use the dashboard-level ts_summ for this, as we want to ensure
-  # any data pre-processing (such as rolling averages) are captured
+  if (destination == "dashboard") {
+    # Define cell colours ----
+    # Create a summary table that will be used for conditional formatting
+    # Note we do not use the dashboard-level ts_summ for this, as we want to ensure
+    # any data pre-processing (such as rolling averages) are captured
 
-  df_summ <- djprshiny::ts_summarise(data)
+    df_summ <- djprshiny::ts_summarise(data)
 
-  # Full palette for table
-  full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
+    # Full palette for table
+    full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
 
-  # Function that takes a series ID and summary item and returns a colour
-  get_col <- function(series_ids, item, df_summ = df_summ, full_pal = full_pal) {
-    up_is_good <- get_summ(series_ids, "up_is_good", df = df_summ)
-    x <- get_summ(series_ids, item, df = df_summ)
-    x <- ifelse(up_is_good, x, 1 - x)
-    x <- ceiling(x * 100)
-    out <- full_pal[x]
-    # If a colour cannot be found, return white
-    if (length(out) != length(series_ids) ||
-        is.null(out) ||
-        is.na(out)) {
-      out <- rep("white", length(series_ids))
+    # Function that takes a series ID and summary item and returns a colour
+    get_col <- function(series_ids, item, df_summ = df_summ, full_pal = full_pal) {
+      up_is_good <- get_summ(series_ids, "up_is_good", df = df_summ)
+      x <- get_summ(series_ids, item, df = df_summ)
+      x <- ifelse(up_is_good, x, 1 - x)
+      x <- ceiling(x * 100)
+      out <- full_pal[x]
+      # If a colour cannot be found, return white
+      if (length(out) != length(series_ids) ||
+          is.null(out) ||
+          is.na(out)) {
+        out <- rep("white", length(series_ids))
+      }
+      out
     }
-    out
-  }
 
-  cols_d_period <- get_col(summary_df$SERIES_ID,
-                           "ptile_d_period_abs",
-                           df_summ, full_pal)
+    cols_d_period <- get_col(summary_df$SERIES_ID,
+                             "ptile_d_period_abs",
+                             df_summ, full_pal)
 
-  # Add conditional formatting to flextable
-  flex <- flex %>%
-    # Latest value column
-    flextable::bg(j = 3,
-                  source = "SERIES_ID",
-                  bg = function(x) {
-                    get_col(x,
-                            item = "ptile_latest_value",
-                            df_summ = df_summ,
-                            full_pal = full_pal)
-                  },
-                  part = "body")  %>%
-    # Change in past month column
-    flextable::bg(j = 4,
-                  source = "SERIES_ID",
-                  bg = function(x) {
-                    get_col(x,
-                            item = "ptile_d_period_abs",
-                            df_summ = df_summ,
-                            full_pal = full_pal)
+    # Add conditional formatting to flextable
+    flex <- flex %>%
+      # Latest value column
+      flextable::bg(j = 3,
+                    source = "SERIES_ID",
+                    bg = function(x) {
+                      get_col(x,
+                              item = "ptile_latest_value",
+                              df_summ = df_summ,
+                              full_pal = full_pal)
                     },
-                  part = "body")  %>%
-    # # Change in past year column
-    flextable::bg(j = 5,
-                  source = "SERIES_ID",
-                  bg = function(x) {
-                    get_col(x,
-                            item = "ptile_d_year_abs",
-                            df_summ = df_summ,
-                            full_pal = full_pal)
-                  },
-                  part = "body")
+                    part = "body")  %>%
+      # Change in past month column
+      flextable::bg(j = 4,
+                    source = "SERIES_ID",
+                    bg = function(x) {
+                      get_col(x,
+                              item = "ptile_d_period_abs",
+                              df_summ = df_summ,
+                              full_pal = full_pal)
+                      },
+                    part = "body")  %>%
+      # # Change in past year column
+      flextable::bg(j = 5,
+                    source = "SERIES_ID",
+                    bg = function(x) {
+                      get_col(x,
+                              item = "ptile_d_year_abs",
+                              df_summ = df_summ,
+                              full_pal = full_pal)
+                    },
+                    part = "body")
 
+  }
   # Set lineheight -----
   flex <- flex %>%
     flextable::line_spacing(space = 1)
