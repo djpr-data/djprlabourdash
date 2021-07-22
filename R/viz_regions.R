@@ -1085,8 +1085,8 @@ table_region_focus <- function(data = filter_dash_data(
       "",
       .data$indicator
     )) %>%
-    dplyr::rename(` ` = indicator,
-                  `  ` = series) %>%
+    dplyr::rename(` ` = .data$indicator,
+                  `  ` = .data$series) %>%
     flextable::flextable() %>%
     flextable::bold(part = "header") %>%
     flextable::border_remove() %>%

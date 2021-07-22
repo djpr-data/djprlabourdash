@@ -118,7 +118,6 @@ make_table <- function(data,
 
   names(summary_df) <- toupper(names(summary_df))
 
-
   # Create a basic flextable using the supplied dataframe
   flex <- summary_df %>%
       flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
@@ -140,22 +139,55 @@ make_table <- function(data,
     x <- ifelse(up_is_good, x, 1 - x)
     x <- ceiling(x * 100)
     out <- full_pal[x]
-    stopifnot(length(out) == length(series_ids))
+    # If a colour cannot be found, return white
+    if (length(out) != length(series_ids) ||
+        is.null(out) ||
+        is.na(out)) {
+      out <- rep("white", length(series_ids))
+    }
     out
   }
 
-  # Add conditional formatting of cells to flextable
+  cols_d_period <- get_col(summary_df$SERIES_ID,
+                           "ptile_d_period_abs",
+                           df_summ, full_pal)
+
+  # Add conditional formatting to flextable
   flex <- flex %>%
+    # Latest value column
+    flextable::bg(j = 3,
+                  source = "SERIES_ID",
+                  bg = function(x) {
+                    get_col(x,
+                            item = "ptile_latest_value",
+                            df_summ = df_summ,
+                            full_pal = full_pal)
+                  },
+                  part = "body")  %>%
+    # Change in past month column
     flextable::bg(j = 4,
                   source = "SERIES_ID",
                   bg = function(x) {
-                    # print(x)
                     get_col(x,
                             item = "ptile_d_period_abs",
                             df_summ = df_summ,
                             full_pal = full_pal)
                     },
+                  part = "body")  %>%
+    # # Change in past year column
+    flextable::bg(j = 5,
+                  source = "SERIES_ID",
+                  bg = function(x) {
+                    get_col(x,
+                            item = "ptile_d_year_abs",
+                            df_summ = df_summ,
+                            full_pal = full_pal)
+                  },
                   part = "body")
+
+  # Set lineheight -----
+  flex <- flex %>%
+    flextable::line_spacing(space = 1)
 
   # Add sparklines
   flex <- flex %>%
@@ -173,7 +205,15 @@ make_table <- function(data,
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
-    flextable::set_table_properties(layout = "autofit")
+    flextable::autofit(add_w = 0, add_h = 0)
+
+  # Centre content
+  flex <- flex %>%
+    flextable::align(
+      j = 3:flextable::ncol_keys(flex),
+      i = 1,
+      align = "justify") %>%
+    flextable::valign()
 
   # Add an extra header row
   header_row <- c(
@@ -276,6 +316,11 @@ make_table <- function(data,
                       color = "#343a40") %>%
     flextable::line_spacing(part = "footer",
                             space = 0.8)
+
+  # Reduce width of number cols
+  flex <- flex %>%
+    flextable::width(j = 3:flextable::ncol_keys(flex),
+                     width = 1)
 
 
   flex
