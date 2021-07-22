@@ -234,8 +234,9 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
         bringToFront = FALSE
       ), # FALSE = metro outline remains
       label = sprintf(
-        indic_long,
+        "<strong>%s</strong><br/>%s: %.1f",
         mapdata$sa4_name_2016, # region name displayed in label
+        indic_long,
         mapdata$value
       ) %>% # eco data displayed in label
         lapply(shiny::HTML),
@@ -267,6 +268,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
       color = "black",
       weight = 1
     )
+
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
 }
