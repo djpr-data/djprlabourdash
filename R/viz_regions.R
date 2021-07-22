@@ -145,9 +145,9 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84600145K"
 {
 
   indic_long <- dplyr::case_when(
-    selected_indicator == "unemp_rate" ~ "unemployment rate",
-    selected_indicator == "part_rate" ~ "participation rate",
-    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
     TRUE ~ NA_character_
   )
 
@@ -229,7 +229,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84600145K"
         bringToFront = FALSE
       ), # FALSE = metro outline remains
       label = sprintf( # region label definition
-        "<strong>%s</strong><br/>Unemployment rate: %.1f", # label title, strong = bold, %.1f = 1 dec points
+        "<strong>%s</strong><br/>", indic_long, ": %.1f", # label title, strong = bold, %.1f = 1 dec points
         mapdata$sa4_name_2016, # region name displayed in label
         mapdata$value
       ) %>% # eco data displayed in label
