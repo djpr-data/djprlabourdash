@@ -1438,20 +1438,174 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
 
-viz_gr_waterfall_chart <- function(data = filter_dash_data(c("A84424598A",
-                                                              "A84424778K",
-                                                              "A84424597X",
-                                                              "A84424777J",
-                                                              "A84424600A",
-                                                              "A84424780W",
-                                                              "A84424694A"),
-
-
-df = dash_data
-)){
-  #select the necessary column
+viz_gr_waterfall_chart <- function(data = filter_dash_data(c(
+                                     "A84424598A",
+                                     "A84424778K",
+                                     "A84424597X",
+                                     "A84424777J",
+                                     "A84424600A",
+                                     "A84424780W",
+                                     "A84424694A"
+                                   ),
+                                   df = dash_data
+                                   )) {
+  # select the necessary column
   df <- data %>%
-    dplyr::select( .data$date,.data$series, .data$value)
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  # 12 month moving average
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
+
+  # create short name and pull the latest data
+  df <- df %>%
+    dplyr::mutate(indicator = dplyr::case_when(
+      .data$series == "> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~ "NAFTE_UN",
+      .data$series == "> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "AFE_un_total",
+      .data$series == "> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~ "NAFTE_NILF",
+      .data$series == "> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "AFE_NILF",
+      .data$series == "> Victoria ;  Attending full-time education ;  Employed total ;" ~ "AFE_Emplo_total",
+      .data$series == "> Victoria ;  Not attending full-time education ;  Employed total ;" ~ "NAFL_Emplo_total",
+      .data$series == "> Victoria ;  Civilian population aged 15-24 years ;" ~ "CiV_Pop",
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  df <- df %>%
+    dplyr::mutate(perc = 100 * (value / value[indicator == "CiV_Pop"]))
+
+
+  # data for title &label
+  df_title <- df %>%
+    dplyr::select(.data$indicator, .data$perc, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$perc) %>%
+    dplyr::mutate(
+      vulnerable = (NAFTE_UN + NAFTE_NILF),
+      labour_force = (NAFTE_UN + AFE_un_total + AFE_Emplo_total + NAFL_Emplo_total),
+      unemployed_total = (NAFTE_UN + AFE_un_total)
+    ) %>%
+    dplyr::select(.data$date, .data$vulnerable, .data$labour_force, .data$unemployed_total)
+
+
+  title <- paste0(
+    round2(df_title$vulnerable, 1),
+    " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
+    format(df$date, "%B %Y")
+  ) %>%
+    unique()
+
+  df <- df %>%
+    dplyr::mutate(
+      indicator =
+        factor(.data$indicator,
+          levels = c(
+            "NAFTE_UN",
+            "NAFTE_NILF",
+            "AFE_un_total",
+            "AFE_NILF",
+            "AFE_Emplo_total",
+            "NAFL_Emplo_total",
+            "CiV_Pop"
+          ),
+          ordered = TRUE
+        )
+    ) %>%
+    dplyr::arrange(.data$indicator)
+
+  # label name
+  df <- df %>%
+    dplyr::mutate(label = case_when(
+      .data$indicator == "NAFTE_UN" ~ "Unemployed & not in education",
+      .data$indicator == "AFE_un_total" ~ "Unemployed & in education",
+      .data$indicator == "NAFTE_NILF" ~ "Not in labour force or education",
+      .data$indicator == "AFE_NILF" ~ "Studying full time & not in labour force",
+      .data$indicator == "AFE_Emplo_total" ~ "Full time education & employed",
+      .data$indicator == "NAFL_Emplo_total" ~ "Not in education & employed",
+      .data$indicator == "CiV_Pop" ~ "Civilian population",
+    ))
+
+  # use the same colour for the vulnerable group and the rest grey
+  df <- df %>%
+    dplyr::mutate(indicator_group = dplyr::if_else(
+      .data$indicator %in% c("NAFTE_UN", "NAFTE_NILF"),
+      "Vulnerable",
+      "Other"
+    ))
+
+  df <- df %>%
+    dplyr::mutate(
+      y_start = cumsum(value) - value,
+      y_end = cumsum(value),
+      id = row_number(),
+      label = stringr::str_wrap(label, 10)
+    )
+
+  df <- df %>%
+    dplyr::mutate(
+      y_start = dplyr::if_else(indicator == "CiV_Pop", 0, y_start),
+      y_end = dplyr::if_else(indicator == "CiV_Pop", value, y_end)
+    )
+
+  df <- df %>%
+    mutate(bar_label = dplyr::if_else(
+      indicator == "CiV_Pop",
+      as.character(round2(value, 1)),
+      paste0(round2(value, 1), "\n(", round2(perc, 1), "%)")
+    ))
+
+  df %>%
+    ggplot(aes(
+      x = reorder(label, id),
+      xend = reorder(label, id),
+      y = y_start,
+      yend = y_end,
+      colour = indicator_group
+    )) +
+    geom_segment(size = 25) +
+    geom_text(aes(
+      y = y_end,
+      label = bar_label
+    ),
+    nudge_y = 28,
+    lineheight = 0.9,
+    size = 12 / .pt
+    ) +
+    geom_text(
+      data = data.frame(x = 1.55447221432208, y = 221.947133391407, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
+      mapping = aes(x = x, y = y, label = label),
+      size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE
+    ) +
+    theme_djpr() +
+    scale_colour_manual(values = c(
+      "Vulnerable" = djprtheme::djpr_royal_blue,
+      "Other" = "grey65"
+    )) +
+    djpr_y_continuous(expand_top = 0.025) +
+    theme(
+      axis.title = element_blank(),
+      axis.text.y = element_text(size = 12)
+    ) +
+    labs(
+      title = title,
+      subtitle = "Victorian youth education and employment status ('000).",
+      caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
+    )
+}
+
+#engagement in education and employment
+
+viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
+                                                                 "A84433601W"),
+
+                                                             df = dash_data )) {
+  # select the necessary column
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
 
   # 12 month moving average
   df <- df %>%
@@ -1463,124 +1617,54 @@ df = dash_data
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-  #create short name and pull the latest data
   df <- df %>%
-    dplyr::mutate(indicator = dplyr:: case_when(
-      .data$series=="> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~"NAFTE_UN",
-      .data$series =="> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "AFE_un_total",
-      .data$series =="> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~"NAFTE_NILF",
-      .data$series =="> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "AFE_NILF",
-      .data$series =="> Victoria ;  Attending full-time education ;  Employed total ;"   ~ "AFE_Emplo_total",
-      .data$series =="> Victoria ;  Not attending full-time education ;  Employed total ;"  ~ "NAFL_Emplo_total",
-      .data$series =="> Victoria ;  Civilian population aged 15-24 years ;"  ~ "CiV_Pop",
-      )) %>%
-    dplyr::filter(.data$date == max(.data$date))
+    dplyr::mutate(indicator = dplyr::case_when(
+      .data$series == "15-24 years ;  > Victoria ;  Not attending full-time education ;  Unemployment rate ;" ~ " Youth not attending school unemploment rate",
+      .data$series == "15-24 years ;  > Victoria ;  Unemployment rate ;"  ~ " Victorian youth unemployment rate")) %>%
+    dplyr::select(!.data$series)
+
 
   df <- df %>%
-    dplyr::mutate(perc = 100 * (value / value[indicator == "CiV_Pop"]))
+  dplyr::arrange(.data$date) %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(value =(.data$value / lag(.data$value, 12) - 1)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup()
 
+  # create latest data by cohort
+  youth_not_attending <- df %>%
+    dplyr::filter(.data$indicator == " Youth not attending school unemploment rate" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
- #data for title &label
-  df_title <- df %>%
-    dplyr::select(.data$indicator, .data$perc, .data$date) %>%
-    tidyr::pivot_wider(names_from =.data$indicator, values_from = .data$perc) %>%
-    dplyr::mutate(vulnerable=(NAFTE_UN +NAFTE_NILF),
-                  labour_force=(NAFTE_UN + AFE_un_total+ AFE_Emplo_total+NAFL_Emplo_total),
-                  unemployed_total= (NAFTE_UN + AFE_un_total)) %>%
-    dplyr::select(.data$date, .data$vulnerable, .data$labour_force,.data$unemployed_total)
+  youth_total <- df %>%
+    dplyr::filter(.data$indicator == " Victorian youth unemployment rate" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
+  latest_month <- format(max(df$date), "%B %Y")
 
- title <- paste0(
-   round2(df_title$vulnerable, 1),
-   " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
-   format(df$date, "%B %Y")) %>%
-   unique()
+  title <- dplyr::case_when(
+    youth_not_attending >  youth_total ~
+      paste0("Unemployment rate grew faster for youth not attending school in the year to ", latest_month),
+    youth_not_attending <  youth_total ~
+      paste0("Unemployment rate grew slower for youth not attending school in the year to ", latest_month),
+    youth_not_attending == youth_total ~
+      paste0("Unemployment rate grew at around the same pace for youth not attending school in the year to ", latest_month),
+    TRUE ~ paste0("Annual unemployment growth for youth not attending school and average Victorian youth")
+  )
 
- df <- df %>%
-    dplyr::mutate(
-      indicator =
-        factor(.data$indicator,
-               levels = c(
-                 "NAFTE_UN",
-                 "NAFTE_NILF",
-                 "AFE_un_total",
-                 "AFE_NILF",
-                 "AFE_Emplo_total",
-                 "NAFL_Emplo_total",
-                 "CiV_Pop"),
-               ordered = TRUE
-        )
-    ) %>%
-   dplyr::arrange(.data$indicator)
-
- #label name
- df <- df %>%
-   dplyr::mutate(label= case_when (.data$indicator == "NAFTE_UN" ~ "Unemployed & not in education",
-                                    .data$indicator == "AFE_un_total" ~ "Unemployed & in education",
-                                    .data$indicator == "NAFTE_NILF" ~ "Not in labour force or education",
-                                    .data$indicator == "AFE_NILF" ~ "Studying full time & not in labour force",
-                                    .data$indicator == "AFE_Emplo_total" ~ "Full time education & employed",
-                                    .data$indicator == "NAFL_Emplo_total" ~ "Not in education & employed",
-                                    .data$indicator == "CiV_Pop" ~ "Civilian population",
-
-                                    ))
-
- #use the same colour for the vulnerable group and the rest grey
- df <- df %>%
-    dplyr::mutate(indicator_group = dplyr::if_else(
-      .data$indicator %in% c("NAFTE_UN","NAFTE_NILF"),
-      "Vulnerable",
-      "Other"
-    ))
-
- df <-  df %>%
-   dplyr::mutate(y_start = cumsum(value) - value,
-           y_end = cumsum(value),
-           id = row_number(),
-           label = stringr::str_wrap(label, 10))
-
- df <- df %>%
-   dplyr::mutate(y_start = dplyr::if_else(indicator == "CiV_Pop", 0, y_start),
-          y_end = dplyr::if_else(indicator == "CiV_Pop", value, y_end))
-
- df <- df %>%
-   mutate(bar_label = dplyr::if_else(
-     indicator == "CiV_Pop",
-     as.character(round2(value, 1)),
-     paste0(round2(value, 1), "\n(", round2(perc, 1), "%)")
-   ))
-
- df %>%
-    ggplot(aes(x = reorder(label, id),
-               xend = reorder(label,id),
-               y = y_start,
-               yend = y_end,
-               colour = indicator_group)
-            ) +
-    geom_segment(size = 25)+
-   geom_text(aes(y = y_end,
-                 label = bar_label),
-             nudge_y = 28,
-             lineheight = 0.9,
-             size = 12 / .pt) +
-   geom_text(data = data.frame(x = 1.55447221432208, y = 221.947133391407, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
-             mapping = aes(x = x, y = y, label = label),
-             size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE)+
-
-    theme_djpr()+
-   scale_colour_manual(values = c(
-     "Vulnerable" = djprtheme::djpr_royal_blue,
-     "Other" = "grey65"
-   )) +
-   djpr_y_continuous(expand_top = 0.025) +
-   theme(
-      axis.title = element_blank(),
-      axis.text.y = element_text(size = 12
-    )) +
-  labs(
-    title = title,
-    subtitle = "Victorian youth education and employment status ('000).",
-    caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average."))
-
-
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "ppts"),
+      y_labels = function(x) paste0(x, "ppts")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Annual unemployment growth rate of Victorian youth ",
+      caption = caption_lfs()
+    )
 }
