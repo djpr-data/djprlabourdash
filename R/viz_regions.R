@@ -85,7 +85,7 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
   )
 }
 
-map_unemp_emp_partrate_vic <- function(data = filter_dash_data(c("A84600145K",
+map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84600145K",
                                                                   "A84599659L",
                                                                   "A84600019W",
                                                                   "A84600187J",
