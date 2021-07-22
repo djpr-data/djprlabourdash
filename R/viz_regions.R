@@ -1650,9 +1650,9 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
       aes(tooltip = paste0(
         .data$series,
         "\n",
-        .data$date,
+        format(.data$date, "%B %Y"),
         "\n",
-        round2(.data$value, 1)
+        round2(.data$value, 1), "%"
       ))
     ) +
     ggrepel::geom_text_repel(
