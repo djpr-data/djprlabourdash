@@ -4,7 +4,7 @@
 \alias{create_summary_df}
 \title{Create a summary dataframe for use in a table}
 \usage{
-create_summary_df(data, years_in_sparklines = 2)
+create_summary_df(data, years_in_sparklines = 3)
 }
 \arguments{
 \item{data}{Dataframe of input data}

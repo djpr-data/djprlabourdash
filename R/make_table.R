@@ -62,12 +62,14 @@
 #' )
 #' }
 make_table <- function(data,
-                       destination = c("dashboard", "briefing"),
+                       destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                              unset = "dashboard"),
                        years_in_sparklines = 3,
                        row_order = NULL,
                        highlight_rows = NULL,
                        notes = NULL) {
-  destination <- match.arg(destination)
+
+  stopifnot(destination %in% c("dashboard", "briefing"))
 
   # Change value of indicator column for specific series IDs
   df <- rename_indicators(data)
@@ -114,15 +116,46 @@ make_table <- function(data,
   summary_df <- summary_df %>%
     dplyr::rename(` ` = .data$indicator)
 
-
-  summary_df <- summary_df %>%
-    dplyr::select(-.data$series_id)
-
   names(summary_df) <- toupper(names(summary_df))
+
 
   # Create a basic flextable using the supplied dataframe
   flex <- summary_df %>%
-      flextable::flextable()
+      flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
+
+  # Define cell colours ----
+  # Create a summary table that will be used for conditional formatting
+  # Note we do not use the dashboard-level ts_summ for this, as we want to ensure
+  # any data pre-processing (such as rolling averages) are captured
+
+  df_summ <- djprshiny::ts_summarise(data)
+
+  # Full palette for table
+  full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
+
+  # Function that takes a series ID and summary item and returns a colour
+  get_col <- function(series_ids, item, df_summ = df_summ, full_pal = full_pal) {
+    up_is_good <- get_summ(series_ids, "up_is_good", df = df_summ)
+    x <- get_summ(series_ids, item, df = df_summ)
+    x <- ifelse(up_is_good, x, 1 - x)
+    x <- ceiling(x * 100)
+    out <- full_pal[x]
+    stopifnot(length(out) == length(series_ids))
+    out
+  }
+
+  # Add conditional formatting of cells to flextable
+  flex <- flex %>%
+    flextable::bg(j = 4,
+                  source = "SERIES_ID",
+                  bg = function(x) {
+                    # print(x)
+                    get_col(x,
+                            item = "ptile_d_period_abs",
+                            df_summ = df_summ,
+                            full_pal = full_pal)
+                    },
+                  part = "body")
 
   # Add sparklines
   flex <- flex %>%
@@ -215,7 +248,7 @@ make_table <- function(data,
       )
   }
 
-  # Add caption
+  # Add caption / footer
   if (destination == "dashboard") {
     caption_notes <- paste0(notes,
                             " Shading of cells is based on how the indicator relates to historical trends. If the indicator grew by around its typical amount, the cell will be white. If growth was very strong relative to historical levels, it will be dark green. If it was weak relative to historical growth, the cell will be dark red.")

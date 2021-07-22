@@ -6,8 +6,8 @@
 \usage{
 make_table(
   data,
-  destination = c("dashboard", "briefing"),
-  years_in_sparklines = 2,
+  destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST", unset = "dashboard"),
+  years_in_sparklines = 3,
   row_order = NULL,
   highlight_rows = NULL,
   notes = NULL
