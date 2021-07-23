@@ -319,10 +319,6 @@ make_table <- function(data,
     flextable::line_spacing(part = "footer",
                             space = 0.8)
 
-  # Reduce width of number cols
-  flex <- flex %>%
-    flextable::width(j = 3:flextable::ncol_keys(flex),
-                     width = 1)
 
 
   flex
