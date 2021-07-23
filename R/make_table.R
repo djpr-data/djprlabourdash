@@ -58,17 +58,17 @@
 #'     "A85223451R",
 #'     "A84423356T"
 #'   ),
-#'   highlight_rows = c("A84426256L","A85223450L", "A84423242V")
+#'   highlight_rows = c("A84426256L", "A85223450L", "A84423242V")
 #' )
 #' }
 make_table <- function(data,
                        destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                              unset = "dashboard"),
+                         unset = "dashboard"
+                       ),
                        years_in_sparklines = 3,
                        row_order = NULL,
                        highlight_rows = NULL,
                        notes = NULL) {
-
   stopifnot(destination %in% c("dashboard", "briefing"))
 
   # Change value of indicator column for specific series IDs
@@ -76,7 +76,8 @@ make_table <- function(data,
 
   # Create a summary dataframe with one row per unique indicator
   summary_df <- create_summary_df(df,
-                                  years_in_sparklines = years_in_sparklines)
+    years_in_sparklines = years_in_sparklines
+  )
 
   # Reorder dataframe if row_order is specified
   if (!is.null(row_order)) {
@@ -120,7 +121,7 @@ make_table <- function(data,
 
   # Create a basic flextable using the supplied dataframe
   flex <- summary_df %>%
-      flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
+    flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
 
   if (destination == "dashboard") {
     # Define cell colours ----
@@ -142,50 +143,60 @@ make_table <- function(data,
       out <- full_pal[x]
       # If a colour cannot be found, return white
       if (length(out) != length(series_ids) ||
-          is.null(out) ||
-          is.na(out)) {
+        is.null(out) ||
+        is.na(out)) {
         out <- rep("white", length(series_ids))
       }
       out
     }
 
-    cols_d_period <- get_col(summary_df$SERIES_ID,
-                             "ptile_d_period_abs",
-                             df_summ, full_pal)
+    cols_d_period <- get_col(
+      summary_df$SERIES_ID,
+      "ptile_d_period_abs",
+      df_summ, full_pal
+    )
 
     # Add conditional formatting to flextable
     flex <- flex %>%
       # Latest value column
-      flextable::bg(j = 3,
-                    source = "SERIES_ID",
-                    bg = function(x) {
-                      get_col(x,
-                              item = "ptile_latest_value",
-                              df_summ = df_summ,
-                              full_pal = full_pal)
-                    },
-                    part = "body")  %>%
+      flextable::bg(
+        j = 3,
+        source = "SERIES_ID",
+        bg = function(x) {
+          get_col(x,
+            item = "ptile_latest_value",
+            df_summ = df_summ,
+            full_pal = full_pal
+          )
+        },
+        part = "body"
+      ) %>%
       # Change in past month column
-      flextable::bg(j = 4,
-                    source = "SERIES_ID",
-                    bg = function(x) {
-                      get_col(x,
-                              item = "ptile_d_period_abs",
-                              df_summ = df_summ,
-                              full_pal = full_pal)
-                      },
-                    part = "body")  %>%
+      flextable::bg(
+        j = 4,
+        source = "SERIES_ID",
+        bg = function(x) {
+          get_col(x,
+            item = "ptile_d_period_abs",
+            df_summ = df_summ,
+            full_pal = full_pal
+          )
+        },
+        part = "body"
+      ) %>%
       # # Change in past year column
-      flextable::bg(j = 5,
-                    source = "SERIES_ID",
-                    bg = function(x) {
-                      get_col(x,
-                              item = "ptile_d_year_abs",
-                              df_summ = df_summ,
-                              full_pal = full_pal)
-                    },
-                    part = "body")
-
+      flextable::bg(
+        j = 5,
+        source = "SERIES_ID",
+        bg = function(x) {
+          get_col(x,
+            item = "ptile_d_year_abs",
+            df_summ = df_summ,
+            full_pal = full_pal
+          )
+        },
+        part = "body"
+      )
   }
   # Set lineheight -----
   flex <- flex %>%
@@ -193,17 +204,17 @@ make_table <- function(data,
 
   # Add sparklines
   flex <- flex %>%
-      flextable::compose(
-        j = 2,
-        value = flextable::as_paragraph(
-          flextable::gg_chunk(
-            value = .,
-            height = 0.38,
-            width = 1
-          )
-        ),
-        use_dot = TRUE
-      )
+    flextable::compose(
+      j = 2,
+      value = flextable::as_paragraph(
+        flextable::gg_chunk(
+          value = .,
+          height = 0.38,
+          width = 1
+        )
+      ),
+      use_dot = TRUE
+    )
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
@@ -214,18 +225,19 @@ make_table <- function(data,
     flextable::align(
       j = 3:flextable::ncol_keys(flex),
       i = 1,
-      align = "justify") %>%
+      align = "justify"
+    ) %>%
     flextable::valign()
 
   # Add an extra header row
   header_row <- c(
-      "",
-      "Recent trend",
-      "Current figures",
-      "Change in past month",
-      "Change in past year",
-      "Change during govt"
-    )
+    "",
+    "Recent trend",
+    "Current figures",
+    "Change in past month",
+    "Change in past year",
+    "Change during govt"
+  )
 
   flex <- flex %>%
     flextable::add_header_row(values = header_row)
@@ -237,7 +249,8 @@ make_table <- function(data,
   if (destination == "dashboard") {
     flex <- flex %>%
       flextable::border(border.top = flextable::fp_border_default(
-        color = "grey90", width = 0.25))
+        color = "grey90", width = 0.25
+      ))
   }
 
   flex <- flex %>%
@@ -292,9 +305,10 @@ make_table <- function(data,
 
   # Add caption / footer
   if (destination == "dashboard") {
-    caption_notes <- paste0(notes,
-                            " Shading of cells is based on how the indicator relates to historical trends. If the indicator grew by around its typical amount, the cell will be white. If growth was very strong relative to historical levels, it will be dark green. If it was weak relative to historical growth, the cell will be dark red.")
-
+    caption_notes <- paste0(
+      notes,
+      " Shading of cells is based on how the indicator relates to historical trends. If the indicator grew by around its typical amount, the cell will be white. If growth was very strong relative to historical levels, it will be dark green. If it was weak relative to historical growth, the cell will be dark red."
+    )
   } else {
     if (is.null(notes)) {
       caption_notes <- NULL
@@ -304,22 +318,29 @@ make_table <- function(data,
   }
 
   table_caption <- caption_auto(df,
-                                notes = caption_notes)
+    notes = caption_notes
+  )
 
   flex <- flex %>%
     flextable::add_footer(` ` = table_caption) %>%
-    flextable::merge_at(j = 1:flextable::ncol_keys(flex),
-                        part = "footer") %>%
+    flextable::merge_at(
+      j = 1:flextable::ncol_keys(flex),
+      part = "footer"
+    ) %>%
     flextable::italic(part = "footer") %>%
     flextable::font(fontname = font_family) %>%
-    flextable::fontsize(size = font_size_secondary * 0.85,
-                        part = "footer") %>%
-    flextable::color(part = "footer",
-                      color = "#343a40") %>%
-    flextable::line_spacing(part = "footer",
-                            space = 0.8)
-
-
+    flextable::fontsize(
+      size = font_size_secondary * 0.85,
+      part = "footer"
+    ) %>%
+    flextable::color(
+      part = "footer",
+      color = "#343a40"
+    ) %>%
+    flextable::line_spacing(
+      part = "footer",
+      space = 0.8
+    )
 
   flex
 }

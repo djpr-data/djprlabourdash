@@ -30,9 +30,9 @@ page_overview <- function(...) {
     ),
     br(),
     centred_row(
-        uiOutput("main_table", height = "800px") %>%
-          djpr_with_spinner(hide.ui = TRUE)
-      ),
+      uiOutput("main_table", height = "800px") %>%
+        djpr_with_spinner(hide.ui = TRUE)
+    ),
     br(),
     centred_row(htmlOutput("overview_footnote")),
     br(),

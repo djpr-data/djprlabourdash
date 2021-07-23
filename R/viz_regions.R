@@ -1085,29 +1085,35 @@ table_region_focus <- function(data = filter_dash_data(
       "",
       .data$indicator
     )) %>%
-    dplyr::rename(` ` = .data$indicator,
-                  `  ` = .data$series) %>%
+    dplyr::rename(
+      ` ` = .data$indicator,
+      `  ` = .data$series
+    ) %>%
     flextable::flextable() %>%
     flextable::bold(part = "header") %>%
     flextable::border_remove() %>%
-    flextable::border(part = "body",
-                      j = 2:4,
-                      i = 2:nrow(table_df),
-                      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)) %>%
-    flextable::border(part = "body",
-                      i = c(1, 4, 7),
-                      border.top = flextable::fp_border_default()) %>%
-    flextable::border(part = "body",
-                      i = nrow(table_df),
-                      border.bottom = flextable::fp_border_default()) %>%
+    flextable::border(
+      part = "body",
+      j = 2:4,
+      i = 2:nrow(table_df),
+      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = c(1, 4, 7),
+      border.top = flextable::fp_border_default()
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = nrow(table_df),
+      border.bottom = flextable::fp_border_default()
+    ) %>%
     # flextable::autofit(add_w = 0, add_h = 0) %>%
     flextable::set_table_properties("autofit", width = 1) %>%
     flextable::font(part = "body", fontname = "Roboto") %>%
     flextable::font(part = "header", fontname = "Roboto") %>%
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
-
-
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
