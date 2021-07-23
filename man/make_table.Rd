@@ -82,7 +82,7 @@ make_table(
     "A85223451R",
     "A84423356T"
   ),
-  highlight_rows = c("A84426256L","A85223450L", "A84423242V")
+  highlight_rows = c("A84426256L", "A85223450L", "A84423242V")
 )
 }
 }
