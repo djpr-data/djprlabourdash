@@ -1,40 +1,3 @@
-#' Function to create the graphs for the 'Regions' subpage on the dashboard.
-#' @name title_unemprate_vic
-#' @param data the dataframe containing data to visualise
-#' @examples
-#' \dontrun{
-#'
-#' dash_data <- load_dash_data()
-#'
-#' # for 'viz_emp_regions_sincecovid':
-#' data <- filter_dash_data(c(
-#'   "A84600141A",
-#'   "A84600075R"
-#' )) %>%
-#'   dplyr::filter(date >= as.Date("2020-01-01"))
-#'
-#' # for 'viz_reg_unemprate_multiline':
-#' data <- filter_dash_data(c(
-#'   "A84600253V",
-#'   "A84599659L",
-#'   "A84600019W",
-#'   "A84600187J",
-#'   "A84599557X",
-#'   "A84600115W",
-#'   "A84599851L",
-#'   "A84599923L",
-#'   "A84600025T",
-#'   "A84600193C",
-#'   "A84599665J",
-#'   "A84600031L",
-#'   "A84599671C",
-#'   "A84599677T",
-#'   "A84599683L",
-#'   "A84599929A",
-#'   "A84600121T",
-#'   "A84600037A"
-#' ))
-#' }
 #' @importFrom rlang `:=`
 
 title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84599659L",
@@ -612,7 +575,7 @@ viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("A845996
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = round(.data$value, 1)),
+      aes(label = paste0(round2(.data$value, 1), "%")),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
