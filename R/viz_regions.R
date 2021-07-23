@@ -1050,11 +1050,18 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
     sa4_df
   )
 
+  colours <- c(djprtheme::djpr_royal_blue,
+               djprtheme::djpr_green)
+
+  names(colours) <- c("Regional Victoria",
+                      sa4)
+
   comb %>%
     djpr_ts_linechart(
       col_var = .data$col_var,
       label_num = paste0(round(.data$value, 1), "%")
     ) +
+    scale_colour_manual(values = colours) +
     scale_x_date(
       breaks = scales::breaks_pretty(5),
       date_labels = "%b\n%Y",
