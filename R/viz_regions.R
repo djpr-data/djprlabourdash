@@ -1366,7 +1366,10 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       "\n",
       round2(.data$value, 1)
     )) %>%
-    ggplot(aes(x = .data$date, y = .data$value, col = .data$gcc_restofstate)) +
+    djpr_ts_linechart(
+      col_var = .data$gcc_restofstate,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")) +
     geom_line() +
     ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
       size = 3,
