@@ -1576,7 +1576,7 @@ viz_gr_waterfall_chart <- function(data = filter_dash_data(c(
     size = 12 / .pt
     ) +
     geom_text(
-      data = data.frame(x = 1.55447221432208, y = 221.947133391407, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
+      data = data.frame(x = 1.55, y = 221.94, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
       mapping = aes(x = x, y = y, label = label),
       size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE
     ) +
