@@ -1027,7 +1027,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       subtitle = "Long-term unemployment rate in Victoria and Australia, per cent of labour force",
-      caption = caption_lfs_det_m(),
+      caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
       title = title
     ) +
     scale_y_continuous(
