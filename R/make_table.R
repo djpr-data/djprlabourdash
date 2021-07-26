@@ -70,6 +70,8 @@ make_table <- function(data,
                        highlight_rows = NULL,
                        notes = NULL) {
   stopifnot(destination %in% c("dashboard", "briefing"))
+  stopifnot(inherits(data, "data.frame"))
+  stopifnot(nrow(data) >= 1)
 
   # Change value of indicator column for specific series IDs
   df <- rename_indicators(data)
@@ -142,9 +144,7 @@ make_table <- function(data,
       x <- ceiling(x * 100)
       out <- full_pal[x]
       # If a colour cannot be found, return white
-      if (length(out) != length(series_ids) ||
-        is.null(out) ||
-        is.na(out)) {
+      if (length(out) != length(series_ids)) {
         out <- rep("white", length(series_ids))
       }
       out
@@ -153,7 +153,7 @@ make_table <- function(data,
     cols_d_period <- get_col(
       summary_df$SERIES_ID,
       "ptile_d_period_abs",
-      df_summ, full_pal
+      df_summ = df_summ, full_pal = full_pal
     )
 
     # Add conditional formatting to flextable
