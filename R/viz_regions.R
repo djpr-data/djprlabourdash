@@ -790,7 +790,11 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       expand = expansion(
         add = c(0, days_in_data * 0.2)
       ),
-      breaks = scales::breaks_pretty(n = 4),
+      breaks = djprtheme::breaks_right(
+        limits = c(min(df_tidy$date),
+                   max(df_tidy$date)),
+        n_breaks = 4
+        ),
       date_labels = "%b\n%Y"
     ) +
     scale_colour_manual(values = c(
@@ -821,7 +825,9 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     theme_djpr() +
     scale_x_date(
       date_labels = "%b\n%Y",
-      breaks = scales::breaks_pretty(n = 4)
+      breaks = djprtheme::breaks_right(c(min(df_summ$date),
+                                         max(df_summ$date)),
+      n_breaks = 4)
     ) +
     djpr_y_continuous(
       limits = function(x) c(0, max(x)) # ,
