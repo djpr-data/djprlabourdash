@@ -1668,6 +1668,6 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
     labs(
       title = title,
       subtitle = "Annual unemployment growth rate of Victorian youth ",
-      caption = caption_lfs()
+      caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 }
