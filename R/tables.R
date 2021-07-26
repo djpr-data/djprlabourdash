@@ -28,7 +28,8 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
     "A85223450L",
     "A85223451R",
     "A84423356T"
-  ))
+  ),
+  df = dash_data)
 
   # Youth data = 12m rolling average
   data <- data %>%
