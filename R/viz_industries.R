@@ -136,7 +136,7 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
         "Growth in employment by industry between February 2020 and ",
         format(max(data$date), "%B %Y")
       ),
-      caption = caption_lfs_det_q()
+      caption = paste0(caption_lfs_det_q(), "Data not seasonally adjusted. ")
     )
 }
 
@@ -664,7 +664,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
         "Percentage share of men and women employed in industries in ",
         format(max(df$date), "%B %Y"), "."
       ),
-      caption = caption_lfs_det_q(),
+      caption = paste0(caption_lfs_det_q(), "Data not seasonally adjusted."),
       title = title
     )
 }
