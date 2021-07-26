@@ -13,18 +13,27 @@ page_regions <- function(...) {
     #   actionLink("link_inclusion", "inclusion page"), "."
     # ),
     # Unemployment by region -----
-    h2(br(), "Unemployment by region"),
-    djpr_plot_title(textOutput("title_unemprate_vic")),
-    djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
+    h2(br(), "Labour force status by region"),
+    selectInput("lf_status_region",
+                label = "Choose an indicator",
+                choices = c(
+                  "Unemployment rate" = "unemp_rate",
+                  "Participation rate" = "part_rate",
+                  "Employment to population ratio" = "emp_pop"
+                ),
+                selected = "unemp_rate"
+                ),
+    djpr_plot_title(textOutput("title_unemp_emppop_partrate_vic")),
+    djpr_plot_subtitle(textOutput("subtitle_unemp_emppop_partrate_vic")),
     fluidRow(
       column(
         6,
-        leaflet::leafletOutput("reg_unemprate_map") %>%
+        leaflet::leafletOutput("map_unemp_emppop_partrate_vic") %>%
           djpr_with_spinner()
       ),
       column(
         6,
-        plotOutput("reg_unemprate_bar") %>%
+        plotOutput("reg_unemp_emppop_partrate_bar") %>%
           djpr_with_spinner()
       )
     ),
@@ -111,6 +120,8 @@ page_regions <- function(...) {
         djpr_plot_ui("reg_regionstates_bar", height = "600px")
       )
     ),
+    br(),
+    djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),
     htmlOutput("regions_footnote"),
     br()
