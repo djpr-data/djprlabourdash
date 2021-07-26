@@ -875,15 +875,15 @@
 <text x='29.64' y='363.09' text-anchor='end' style='font-size: 12.00px; font-family: sans;' textLength='17.34px' lengthAdjust='spacingAndGlyphs'>5%</text>
 <text x='29.64' y='215.95' text-anchor='end' style='font-size: 12.00px; font-family: sans;' textLength='24.02px' lengthAdjust='spacingAndGlyphs'>10%</text>
 <polyline points='35.92,506.09 358.45,506.09 ' style='stroke-width: 0.75; stroke-linecap: butt;' />
-<polyline points='49.00,509.58 49.00,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='169.68,509.58 169.68,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='290.32,509.58 290.32,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<text x='49.00' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='19.35px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='49.00' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2000</text>
-<text x='169.68' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='19.35px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='169.68' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2010</text>
-<text x='290.32' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='19.35px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='290.32' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2020</text>
+<polyline points='63.04,509.58 63.04,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='183.68,509.58 183.68,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='304.36,509.58 304.36,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<text x='63.04' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='63.04' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2001</text>
+<text x='183.68' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='183.68' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2011</text>
+<text x='304.36' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='304.36' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2021</text>
 <text x='5.62' y='64.04' style='font-size: 14.00px; fill: #53565A; font-family: sans;' textLength='249.06px' lengthAdjust='spacingAndGlyphs'>Highest and lowest unemployment rates</text>
 <text x='5.62' y='79.16' style='font-size: 14.00px; fill: #53565A; font-family: sans;' textLength='165.76px' lengthAdjust='spacingAndGlyphs'>in Victorian regions (SA4s)</text>
 </g>
@@ -1183,15 +1183,15 @@
 <text x='373.91' y='299.95' text-anchor='end' style='font-size: 12.00px; font-family: sans;' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>6</text>
 <text x='373.91' y='194.81' text-anchor='end' style='font-size: 12.00px; font-family: sans;' textLength='6.67px' lengthAdjust='spacingAndGlyphs'>9</text>
 <polyline points='380.19,506.09 702.72,506.09 ' style='stroke-width: 0.75; stroke-linecap: butt;' />
-<polyline points='409.55,509.58 409.55,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='540.95,509.58 540.95,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<polyline points='672.32,509.58 672.32,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
-<text x='409.55' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='19.35px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='409.55' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2000</text>
-<text x='540.95' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='19.35px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='540.95' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2010</text>
-<text x='672.32' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='19.35px' lengthAdjust='spacingAndGlyphs'>Jan</text>
-<text x='672.32' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2020</text>
+<polyline points='424.83,509.58 424.83,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='556.20,509.58 556.20,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<polyline points='687.61,509.58 687.61,506.09 ' style='stroke-width: 0.56; stroke-linecap: butt;' />
+<text x='424.83' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='424.83' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2001</text>
+<text x='556.20' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='556.20' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2011</text>
+<text x='687.61' y='520.63' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='20.67px' lengthAdjust='spacingAndGlyphs'>Mar</text>
+<text x='687.61' y='533.59' text-anchor='middle' style='font-size: 12.00px; font-family: sans;' textLength='26.70px' lengthAdjust='spacingAndGlyphs'>2021</text>
 <text x='367.24' y='64.04' style='font-size: 14.00px; fill: #53565A; font-family: sans;' textLength='217.95px' lengthAdjust='spacingAndGlyphs'>Range between highest and lowest</text>
 <text x='367.24' y='79.16' style='font-size: 14.00px; fill: #53565A; font-family: sans;' textLength='120.64px' lengthAdjust='spacingAndGlyphs'>(percentage points)</text>
 </g>

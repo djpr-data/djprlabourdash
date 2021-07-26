@@ -2,28 +2,18 @@
 % Please edit documentation in R/create_summary_df.R
 \name{create_summary_df}
 \alias{create_summary_df}
-\title{Create a summary dataframe for use in a table to be displayed
-Either in a reactable or a static briefing table}
+\title{Create a summary dataframe for use in a table}
 \usage{
-create_summary_df(
-  data,
-  dashboard_or_briefing = "dashboard",
-  years_in_sparklines = 2
-)
+create_summary_df(data, years_in_sparklines = 3)
 }
 \arguments{
 \item{data}{Dataframe of input data}
-
-\item{dashboard_or_briefing}{Character; either 'dashboard'
-(if the table is intended for the dashboard),
-or 'briefing' (if the table is intended for the briefing tables).}
 
 \item{years_in_sparklines}{Number of years worth of data to include in
 sparkline}
 }
 \description{
-Create a summary dataframe for use in a table to be displayed
-Either in a reactable or a static briefing table
+Create a summary dataframe for use in a table
 }
 \examples{
 \dontrun{

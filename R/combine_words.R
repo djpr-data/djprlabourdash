@@ -11,27 +11,30 @@
 #' @export
 #'
 
-combine_words <- function (words) {
-
+combine_words <- function(words) {
   and <- " and "
 
   n <- length(words)
 
-  if (n == 0)
+  if (n == 0) {
     return(words)
+  }
 
-  words = paste0("", words, "")
+  words <- paste0("", words, "")
 
-  if (n == 1)
+  if (n == 1) {
     return(words)
+  }
 
-  if (n == 2)
+  if (n == 2) {
     return(paste(words, collapse = and))
+  }
 
-  if (grepl("^ ", and) && grepl(" $", ", "))
-    and = gsub("^ ", "", and)
+  if (grepl("^ ", and) && grepl(" $", ", ")) {
+    and <- gsub("^ ", "", and)
+  }
 
-  words[n] = paste0(and, words[n])
+  words[n] <- paste0(and, words[n])
 
   paste(words, collapse = ", ")
 }

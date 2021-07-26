@@ -38,7 +38,7 @@ rename_indicators <- function(data) {
         .data$series_id == "A84433601W" ~
         "Youth unemployment rate",
         .data$series_id == "A84423350C" ~
-          "Unemployed persons",
+        "Unemployed persons",
         TRUE ~ .data$indicator
       )
     )
