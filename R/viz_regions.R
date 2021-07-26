@@ -1031,16 +1031,11 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
       label_num = paste0(round(.data$value, 1), "%")
     ) +
     scale_colour_manual(values = colours) +
-    scale_x_date(
-      breaks = scales::breaks_pretty(5),
-      date_labels = "%b\n%Y",
-      expand = expansion(mult = c(0.05, 0.25))
-    ) +
     scale_y_continuous(
       limits = function(limits) c(0, limits[2]),
       labels = function(x) paste0(x, "%"),
-      breaks = scales::breaks_pretty(4),
-      expand = expansion(mult = c(0, 0.05))
+      breaks = scales::breaks_pretty(5),
+      expand = expansion(mult = c(0, 0.15))
     ) +
     labs(
       title = paste0(
