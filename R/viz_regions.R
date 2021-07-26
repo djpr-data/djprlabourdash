@@ -1333,48 +1333,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       col_var = .data$gcc_restofstate,
       label_num = paste0(round(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")) +
-    geom_line() +
-    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
-      size = 3,
-      colour = "white",
-      alpha = 0.01
-    ) +
-    geom_point(
-      data = max_date,
-      fill = "white",
-      stroke = 1.5,
-      size = 2.5,
-      shape = 21
-    ) +
-    ggrepel::geom_label_repel(
-      data = max_date,
-      aes(label = .data$label),
-      hjust = 0,
-      nudge_x = days_in_data * 0.05,
-      label.padding = 0.01,
-      label.size = NA,
-      lineheight = 0.9,
-      point.padding = unit(0, "lines"),
-      direction = "y",
-      seed = 123,
-      show.legend = FALSE,
-      min.segment.length = unit(5, "lines"),
-      size = 14 / .pt
-    ) +
     facet_wrap(~indicator, scales = "free_y") +
-    djprtheme::theme_djpr() +
-    djpr_colour_manual(2) +
-    scale_y_continuous(
-      breaks = scales::breaks_pretty(4),
-      labels = function(x) paste0(x, "%")
-    ) +
-    scale_x_date(
-      expand = expansion(
-        add = c(0, days_in_data * 0.25)
-      ),
-      date_labels = "%b\n%Y"
-    ) +
-    coord_cartesian(clip = "off") +
     theme(
       axis.title = element_blank(),
       panel.spacing = unit(1.5, "lines")
