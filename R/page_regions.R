@@ -116,6 +116,8 @@ page_regions <- function(...) {
              )
     ),
     br(),
+    djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
+    br(),
     htmlOutput("regions_footnote"),
     br()
   )

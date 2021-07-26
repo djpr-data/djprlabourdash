@@ -112,7 +112,7 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
       aes(
         y = .data$lab_y,
         hjust = .data$lab_hjust,
-        label = paste0(round(.data$value, 1), "%")
+        label = paste0(round2(.data$value, 1), "%")
       ),
       colour = "black",
       size = 11 / .pt
@@ -401,7 +401,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$industry,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     scale_colour_manual(values = colours) +
