@@ -1597,12 +1597,14 @@ viz_gr_waterfall_chart <- function(data = filter_dash_data(c(
     )
 }
 
-#engagement in education and employment
+# engagement in education and employment
 
-viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
-                                                                 "A84433601W"),
-
-                                                             df = dash_data )) {
+viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
+                                       "A84433475V",
+                                       "A84433601W"
+                                     ),
+                                     df = dash_data
+                                     )) {
   # select the necessary column
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
@@ -1611,8 +1613,8 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
   df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -1620,13 +1622,14 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
       .data$series == "15-24 years ;  > Victoria ;  Not attending full-time education ;  Unemployment rate ;" ~ " Youth not attending school unemploment rate",
-      .data$series == "15-24 years ;  > Victoria ;  Unemployment rate ;"  ~ " Victorian youth unemployment rate")) %>%
+      .data$series == "15-24 years ;  > Victoria ;  Unemployment rate ;" ~ " Victorian youth unemployment rate"
+    )) %>%
     dplyr::select(!.data$series)
 
 
-  #calculate annual growth
+  # calculate annual growth
   df <- df %>%
-  dplyr::arrange(.data$date) %>%
+    dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(value = (.data$value / lag(.data$value, 12) - 1)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
@@ -1635,26 +1638,26 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
   # create latest data by cohort
   youth_not_attending <- df %>%
     dplyr::filter(.data$indicator == " Youth not attending school unemploment rate" &
-                    .data$date == max(.data$date)) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
   youth_total <- df %>%
     dplyr::filter(.data$indicator == " Victorian youth unemployment rate" &
-                    .data$date == max(.data$date)) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
   latest_month <- format(max(df$date), "%B %Y")
 
-  #create title
+  # create title
   title <- dplyr::case_when(
-    youth_not_attending >  youth_total ~
-      paste0("Unemployment rate grew faster for youth not attending school in the year to ", latest_month),
-    youth_not_attending <  youth_total ~
-      paste0("Unemployment rate grew slower for youth not attending school in the year to ", latest_month),
+    youth_not_attending > youth_total ~
+    paste0("Unemployment rate grew faster for youth not attending school in the year to ", latest_month),
+    youth_not_attending < youth_total ~
+    paste0("Unemployment rate grew slower for youth not attending school in the year to ", latest_month),
     youth_not_attending == youth_total ~
-      paste0("Unemployment rate grew at around the same pace for youth not attending school in the year to ", latest_month),
+    paste0("Unemployment rate grew at around the same pace for youth not attending school in the year to ", latest_month),
     TRUE ~ paste0("Annual unemployment growth for youth not attending school and average Victorian youth")
   )
 
@@ -1672,77 +1675,73 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
     )
 }
 
-viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c("A84423244X",
-                                                                    "A84423468K"),
-
-                                                             df = dash_data )){
-
-
+viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
+                                          "A84423244X",
+                                          "A84423468K"
+                                        ),
+                                        df = dash_data
+                                        )) {
   df <- data %>%
     dplyr::select(.data$date, .data$value, .data$sex, .data$indicator) %>%
     dplyr::mutate(series = .data$indicator)
 
-    min_year <- format(min(df$date), "%Y")
-    max_year <- format(max(df$date), "%Y")
+  min_year <- format(min(df$date), "%Y")
+  max_year <- format(max(df$date), "%Y")
 
-    df1 <- df %>%
-      dplyr::mutate(indicator = paste0("Average ", min_year, "-", max_year)) %>%
-      dplyr::group_by(.data$sex, .data$indicator) %>%
-      dplyr::mutate(value = mean(.data$value)) %>%
-      dplyr::ungroup()
+  df1 <- df %>%
+    dplyr::mutate(indicator = paste0("Average ", min_year, "-", max_year)) %>%
+    dplyr::group_by(.data$sex, .data$indicator) %>%
+    dplyr::mutate(value = mean(.data$value)) %>%
+    dplyr::ungroup()
 
-    df <-
-      dplyr::bind_rows(df1,df)
+  df <-
+    dplyr::bind_rows(df1, df)
 
-    # Create title
-    latest_change <- df %>%
-      dplyr::filter(!grepl("Average", .data$indicator)) %>%
-      dplyr::select(.data$date, .data$sex, .data$value, .data$indicator) %>%
-      dplyr::group_by(.data$sex) %>%
-      dplyr::arrange(.data$date) %>%
-      dplyr::mutate(value = (.data$value - dplyr::lag(.data$value, 1))) %>%
-      dplyr::filter(date == max(.data$date)) %>%
-      dplyr::ungroup() %>%
-      tidyr::pivot_wider(
-        names_from = .data$sex,
-        values_from = .data$value
-      ) %>%
-      dplyr::mutate(
-        date = format(.data$date, "%B %Y")
-      )
-
-
-    title <- dplyr::case_when(
-      latest_change$Females > latest_change$Males ~
-        paste0("The change in females employment to population ratio in ", latest_change$date, " was higher than males"),
-      latest_change$Females < latest_change$Males ~
-        paste0("The change in females employment to population ratio in ", latest_change$date, " was lower than males"),
-      latest_change$Females == latest_change$Males ~
-        paste0("The change females employment to population ratio in ", latest_change$date, " was the same as males"),
-      TRUE ~ "Employment to population ratio by gender"
+  # Create title
+  latest_change <- df %>%
+    dplyr::filter(!grepl("Average", .data$indicator)) %>%
+    dplyr::select(.data$date, .data$sex, .data$value, .data$indicator) %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = (.data$value - dplyr::lag(.data$value, 1))) %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::ungroup() %>%
+    tidyr::pivot_wider(
+      names_from = .data$sex,
+      values_from = .data$value
+    ) %>%
+    dplyr::mutate(
+      date = format(.data$date, "%B %Y")
     )
 
 
-
-    df %>%
-      djpr_ts_linechart(
-        col_var = .data$indicator,
-        label_num = paste0(round2(.data$value, 1), "%"),
-        y_labels = function(x) paste0(x, "%"),
-        x_expand_mult = c(0, 0.22)
-      ) +
-      scale_colour_manual(values =rev(c(
-        djpr_pal(2),
-        "grey60"
-      ))) +
-      labs(
-        subtitle = "Employment to population ratio by gender for Victoria ",
-        caption = caption_lfs(),
-        title = title
-      ) +
-      facet_wrap(~sex, ncol = 1, scales = "free_y")
+  title <- dplyr::case_when(
+    latest_change$Females > latest_change$Males ~
+    paste0("The change in females employment to population ratio in ", latest_change$date, " was higher than males"),
+    latest_change$Females < latest_change$Males ~
+    paste0("The change in females employment to population ratio in ", latest_change$date, " was lower than males"),
+    latest_change$Females == latest_change$Males ~
+    paste0("The change females employment to population ratio in ", latest_change$date, " was the same as males"),
+    TRUE ~ "Employment to population ratio by gender"
+  )
 
 
 
-
-    }
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%"),
+      x_expand_mult = c(0, 0.22)
+    ) +
+    scale_colour_manual(values = rev(c(
+      djpr_pal(2),
+      "grey60"
+    ))) +
+    labs(
+      subtitle = "Employment to population ratio by gender for Victoria ",
+      caption = caption_lfs(),
+      title = title
+    ) +
+    facet_wrap(~sex, ncol = 1, scales = "free_y")
+}
