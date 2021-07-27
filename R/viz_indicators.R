@@ -961,6 +961,7 @@ viz_gr_gen_full_part_line <- function(data = filter_dash_data(c("A84423349V",
     "it was in March 2020"
   )
 
+
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
