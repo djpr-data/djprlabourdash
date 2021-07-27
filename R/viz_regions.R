@@ -435,8 +435,8 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
       sa4 = gsub(" and South ", " & S. ", .data$sa4, fixed = TRUE)
     )
 
-  max_y <- max(data$value)
-  mid_x <- stats::median(data$date)
+  max_y <- max(df$value)
+  mid_x <- stats::median(df$date)
 
   df <- df %>%
     dplyr::mutate(
@@ -489,6 +489,10 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
 
   subtitle <- paste0(indic_long, " by region (SA4)")
 
+  limit_max <- dplyr::if_else(
+      max_y < 20, 10, 75
+    )
+
   df %>%
     djpr_ts_linechart(
       col_var = .data$line_col,
@@ -503,7 +507,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
           0,
           min(c(
             limits[2],
-            max_y
+            limit_max
           ))
         )
       },
