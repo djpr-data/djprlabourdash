@@ -399,7 +399,6 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
                                                                             df = dash_data),
                                                     selected_indicator = "unemp_rate" )
 {
-
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -470,10 +469,10 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
       y = .env$max_y
     )
 
-  reg_sa4s <- sort(unique(data$sa4[data$line_col == "Rest of Victoria"]))
-  melb_sa4s <- sort(unique(data$sa4[data$line_col == "Greater Melbourne"]))
+  reg_sa4s <- sort(unique(.data$sa4[.data$line_col == "Rest of Victoria"]))
+  melb_sa4s <- sort(unique(.data$sa4[.data$line_col == "Greater Melbourne"]))
 
-  data$sa4 <- factor(data$sa4,
+  .data$sa4 <- factor(.data$sa4,
     levels = c("Victoria", reg_sa4s, melb_sa4s)
   )
 
@@ -484,9 +483,11 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
     dplyr::pull(.data$sa4)
 
   title <- paste0(
-    highest_current_ur, " had the highest unemployment rate in Victoria in ",
+    highest_current_ur, " had the highest ", indic_long, " in Victoria in ",
     format(max(data$date), "%B %Y")
   )
+
+  subtitle <- paste0(indic_long, " by region (SA4)")
 
   df %>%
     djpr_ts_linechart(
@@ -534,7 +535,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
     ) +
     labs(
       title = title,
-      subtitle = "Unemployment rate by region (SA4)",
+      subtitle = subtitle,
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
