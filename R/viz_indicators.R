@@ -899,11 +899,13 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_gen_full_part_line <- function(data = filter_dash_data(c("A84423349V",
-                                                                  "A84423357V"),
-                                                              df = dash_data
-                                                              ) %>%
-                                        dplyr::filter(date >= as.Date("2020-01-01"))){
+viz_gr_gen_full_part_line <- function(data = filter_dash_data(c(
+                                        "A84423349V",
+                                        "A84423357V"
+                                      ),
+                                      df = dash_data
+                                      ) %>%
+                                        dplyr::filter(date >= as.Date("2020-01-01"))) {
 
   # calculate part time employment using total + FT employment
   df <- data %>%
@@ -932,7 +934,7 @@ viz_gr_gen_full_part_line <- function(data = filter_dash_data(c("A84423349V",
   df <- df %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-01-01")]) - 1))
+      .data$value[.data$date == as.Date("2020-01-01")]) - 1))
 
 
   latest_full_time <- df %>%
@@ -973,5 +975,4 @@ viz_gr_gen_full_part_line <- function(data = filter_dash_data(c("A84423349V",
       subtitle = "Cumulative change in full-time and part-time employment since March 2020 for Victorian workers",
       caption = caption_lfs()
     )
-
-  }
+}
