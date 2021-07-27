@@ -503,7 +503,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
           0,
           min(c(
             limits[2],
-            10
+            max_y
           ))
         )
       },
