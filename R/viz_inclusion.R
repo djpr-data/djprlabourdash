@@ -1438,7 +1438,7 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
 
-viz_gr_waterfall_chart <- function(data = filter_dash_data(c(
+viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
                                      "A84424598A",
                                      "A84424778K",
                                      "A84424597X",

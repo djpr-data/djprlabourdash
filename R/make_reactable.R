@@ -20,7 +20,6 @@ make_reactable <- function(data,
                            row_var = "indicator",
                            row_order = NULL,
                            highlight_rows = NULL) {
-
   sparklinelist <- create_summary_df(
     data = data,
     years_in_sparklines = years_in_sparklines,
@@ -118,7 +117,6 @@ make_reactable <- function(data,
             } else {
               cell_padding
             }
-
           },
           minWidth = 100,
           # Highlight rows are not indented; non-highlight rows are
