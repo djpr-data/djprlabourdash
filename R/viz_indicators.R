@@ -898,3 +898,79 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
       title = title
     )
 }
+
+viz_gr_gen_full_part_line <- function(data = filter_dash_data(c("A84423349V",
+                                                                  "A84423357V"),
+                                                              df = dash_data
+                                                              ) %>%
+                                        dplyr::filter(date >= as.Date("2020-01-01"))){
+
+  # calculate part time employment using total + FT employment
+  df <- data %>%
+    dplyr::select(.data$date, .data$indicator, .data$value) %>%
+    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
+    dplyr::group_by(.data$date) %>%
+    dplyr::mutate(
+      `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`
+    ) %>%
+    dplyr::select(!.data$`Employed total`) %>%
+    dplyr::ungroup()
+
+  # preparing data to calculate indexed value
+  df <- df %>%
+    tidyr::pivot_longer(
+      cols = !c(.data$date),
+      names_to = "indicator",
+      values_to = "value"
+    )
+
+  df <- df %>%
+    dplyr::group_by(.data$indicator, .data$date) %>%
+    dplyr::summarise(value = sum(.data$value))
+
+
+  df <- df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+                                    .data$value[.data$date == as.Date("2020-01-01")]) - 1))
+
+
+  latest_full_time <- df %>%
+    dplyr::filter(
+      .data$indicator == "Employed full-time",
+      .data$date == max(.data$date)
+    ) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  latest_part_time <- df %>%
+    dplyr::filter(
+      .data$indicator == "Employed part-time",
+      .data$date == max(.data$date)
+    ) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  title <- paste0(
+    "The number Victorians employed full-time is ",
+    dplyr::case_when(
+      latest_full_time > 0 ~ paste0(latest_full_time, " per cent higher than "),
+      latest_full_time == 0 ~ "the same as ",
+      latest_full_time < 0 ~ paste0(latest_full_time, " per cent lower than ")
+    ),
+    "it was in March 2020"
+  )
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Cumulative change in full-time and part-time employment since March 2020 for Victorian workers",
+      caption = caption_lfs()
+    )
+
+  }
