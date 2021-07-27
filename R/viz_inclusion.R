@@ -1721,7 +1721,7 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     latest_change$Females < latest_change$Males ~
     paste0("The change in females employment to population ratio in ", latest_change$date, " was lower than males"),
     latest_change$Females == latest_change$Males ~
-    paste0("The change females employment to population ratio in ", latest_change$date, " was the same as males"),
+    paste0("The change in females employment to population ratio in ", latest_change$date, " was the same as males"),
     TRUE ~ "Employment to population ratio by gender"
   )
 
