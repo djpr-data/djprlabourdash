@@ -39,6 +39,8 @@ knitr::opts_chunk$set(
 ```{r load-data}
 
 dash_data <- load_dash_data()
+
+Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
 
 # Victorian labour force summary
@@ -47,17 +49,8 @@ dash_data <- load_dash_data()
 
 Some text goes here. Regular text. 
 
+Table description goes here
 ```{r}
-
-table_overview(dashboard_or_briefing = "briefing")
+table_overview()
 ```
 
-## Another heading
-
-More text
-
-```{r}
-table_ind_employment(dashboard_or_briefing = "briefing")
-```
-
-More text

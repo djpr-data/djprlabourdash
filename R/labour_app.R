@@ -9,6 +9,8 @@
 labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
+  Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
+
   myenv <- as.environment(1)
 
   assign("dash_data",
@@ -39,13 +41,16 @@ labour_server <- function(input, output, session) {
       y = .data$value,
       data_id = as.character(.data$date),
       fill = dplyr::if_else(.data$date == max(.data$date),
-                            "max",
-                            "other")
+        "max",
+        "other"
+      )
     )) +
     # ggiraph::geom_col_interactive(fill = "#A1BBD2") +
     scale_fill_manual(
-      values = c("max" = "#1F1547",
-                 "other" = "#A1BBD2")
+      values = c(
+        "max" = "#1F1547",
+        "other" = "#A1BBD2"
+      )
     ) +
     geom_col() +
     theme_void() +
@@ -225,9 +230,10 @@ labour_server <- function(input, output, session) {
     text_overview_summary(ts_summ)
   })
 
-  output$main_table <- reactable::renderReactable({
+  output$main_table <- renderUI({
     req(dash_data)
-    table_overview()
+    table_overview() %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 
@@ -320,8 +326,9 @@ labour_server <- function(input, output, session) {
   # })
 
   # Indicators: table of employment indicators
-  output$ind_emp_table <- reactable::renderReactable({
-    table_ind_employment()
+  output$ind_emp_table <- renderUI({
+    table_ind_employment() %>%
+      flextable::htmltools_value()
   })
 
   # Indicators: slopgraph of emp-pop ratios in states
@@ -354,8 +361,9 @@ labour_server <- function(input, output, session) {
   )
 
   # Indicators: unemployment ------
-  output$ind_unemp_summary <- reactable::renderReactable({
-    table_ind_unemp_summary()
+  output$ind_unemp_summary <- renderUI({
+    table_ind_unemp_summary() %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 
@@ -755,43 +763,83 @@ labour_server <- function(input, output, session) {
     djpr_plot_caption(paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."))
   })
 
-  output$title_unemprate_vic <- renderText({
-    title_unemprate_vic()
+  output$title_unemp_emppop_partrate_vic <- renderText({
+    title_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
   })
 
-  output$reg_unemprate_map <-
-    leaflet::renderLeaflet({
-      map_unemprate_vic()
-    }) %>%
-    bindCache(ts_summ)
+  output$subtitle_unemp_emppop_partrate_vic <- renderText({
 
-  output$reg_unemprate_bar <- renderPlot({
-    df <- filter_dash_data(c(
-      "A84600253V",
-      "A84599659L",
-      "A84600019W",
-      "A84600187J",
-      "A84599557X",
-      "A84600115W",
-      "A84599851L",
-      "A84599923L",
-      "A84600025T",
-      "A84600193C",
-      "A84599665J",
-      "A84600031L",
-      "A84599671C",
-      "A84599677T",
-      "A84599683L",
-      "A84599929A",
-      "A84600121T",
-      "A84600037A"
-    )) %>%
-      dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-      dplyr::filter(.data$date == max(.data$date))
+    indic_long <- dplyr::case_when(input$lf_status_region == "unemp_rate" ~
+                              "Unemployment rate",
+                            input$lf_status_region == "part_rate" ~
+                              "Participation rate",
+                            input$lf_status_region == "emp_pop" ~
+                              "Employment to population")
+
+    paste0(indic_long, " by region (SA4), per cent")
+  })
+
+  output$map_unemp_emppop_partrate_vic <-
+    leaflet::renderLeaflet({
+      map_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
+    })
+
+  output$reg_unemp_emppop_partrate_bar <- renderPlot({
+    df <- filter_dash_data(c("A84599659L",
+                             "A84600019W",
+                             "A84600187J",
+                             "A84599557X",
+                             "A84600115W",
+                             "A84599851L",
+                             "A84599923L",
+                             "A84600025T",
+                             "A84600193C",
+                             "A84599665J",
+                             "A84600031L",
+                             "A84599671C",
+                             "A84599677T",
+                             "A84599683L",
+                             "A84599929A",
+                             "A84600121T",
+                             "A84600037A",
+                             "A84599658K",
+                             "A84599660W",
+                             "A84600018V",
+                             "A84600020F",
+                             "A84600186F",
+                             "A84600188K",
+                             "A84599556W",
+                             "A84599558A",
+                             "A84600114V",
+                             "A84600116X",
+                             "A84599850K",
+                             "A84599852R",
+                             "A84599922K",
+                             "A84599924R",
+                             "A84600024R",
+                             "A84600026V",
+                             "A84600192A",
+                             "A84600194F",
+                             "A84599664F",
+                             "A84599666K",
+                             "A84600030K",
+                             "A84600032R",
+                             "A84599670A",
+                             "A84599672F",
+                             "A84599676R",
+                             "A84599678V",
+                             "A84599682K",
+                             "A84599684R",
+                             "A84599928X",
+                             "A84599930K",
+                             "A84600120R",
+                             "A84600122V",
+                             "A84600036X",
+                             "A84600038C"),
+                           df = dash_data)
 
     df %>%
-      viz_reg_unemprate_bar()
+      viz_reg_unemp_emppop_partrate_bar(selected_indicator = input$lf_status_region)
   })
 
   djpr_plot_server("reg_unemprate_multiline",
@@ -884,8 +932,9 @@ labour_server <- function(input, output, session) {
       ts_summ
     )
 
-  output$table_region_focus <- reactable::renderReactable({
-    table_region_focus(sa4 = input$focus_region)
+  output$table_region_focus <- renderUI({
+    table_region_focus(sa4 = input$focus_region) %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(
       input$focus_region,
@@ -920,106 +969,114 @@ labour_server <- function(input, output, session) {
 
   # Regions: National focus box -----
   djpr_plot_server("reg_regionstates_dot",
-                   plot_function = viz_reg_regionstates_dot,
-                   data = filter_dash_data(c("A84599628W",
-                                             "A84599629X",
-                                             "A84599630J",
-                                             "A84600078W",
-                                             "A84600079X",
-                                             "A84600080J",
-                                             "A84599784X",
-                                             "A84599785A",
-                                             "A84599786C",
-                                             "A84599718A",
-                                             "A84599719C",
-                                             "A84599720L",
-                                             "A84600246W",
-                                             "A84600247X",
-                                             "A84600248A",
-                                             "A84599634T",
-                                             "A84599635V",
-                                             "A84599636W",
-                                             "A84599610X",
-                                             "A84599611A",
-                                             "A84599612C"),
-                                           df = dash_data),
-                   selected_indicator = reactive(input$aus_regions_indicator),
-                   plt_change = plt_change,
-                   width_percent = 46,
-                   height_percent = 150,
-                   date_slider = FALSE)
+    plot_function = viz_reg_regionstates_dot,
+    data = filter_dash_data(c(
+      "A84599628W",
+      "A84599629X",
+      "A84599630J",
+      "A84600078W",
+      "A84600079X",
+      "A84600080J",
+      "A84599784X",
+      "A84599785A",
+      "A84599786C",
+      "A84599718A",
+      "A84599719C",
+      "A84599720L",
+      "A84600246W",
+      "A84600247X",
+      "A84600248A",
+      "A84599634T",
+      "A84599635V",
+      "A84599636W",
+      "A84599610X",
+      "A84599611A",
+      "A84599612C"
+    ),
+    df = dash_data
+    ),
+    selected_indicator = reactive(input$aus_regions_indicator),
+    plt_change = plt_change,
+    width_percent = 46,
+    height_percent = 150,
+    date_slider = FALSE
+  )
 
   djpr_plot_server("reg_regionstates_bar",
-                   viz_reg_regionstates_bar,
-                   data = filter_dash_data(c("15-24_employed_rest of nsw",
-                                             "15-24_employed_rest of nt",
-                                             "15-24_employed_rest of qld",
-                                             "15-24_employed_rest of sa",
-                                             "15-24_employed_rest of tas.",
-                                             "15-24_employed_rest of vic.",
-                                             "15-24_employed_rest of wa",
-                                             "15-24_nilf_rest of nsw",
-                                             "15-24_nilf_rest of nt",
-                                             "15-24_nilf_rest of qld",
-                                             "15-24_nilf_rest of sa",
-                                             "15-24_nilf_rest of tas.",
-                                             "15-24_nilf_rest of vic.",
-                                             "15-24_nilf_rest of wa",
-                                             "15-24_unemployed_rest of nsw",
-                                             "15-24_unemployed_rest of nt",
-                                             "15-24_unemployed_rest of qld",
-                                             "15-24_unemployed_rest of sa",
-                                             "15-24_unemployed_rest of tas.",
-                                             "15-24_unemployed_rest of vic.",
-                                             "15-24_unemployed_rest of wa",
-                                             "25-54_employed_rest of nsw",
-                                             "25-54_employed_rest of nt",
-                                             "25-54_employed_rest of qld",
-                                             "25-54_employed_rest of sa",
-                                             "25-54_employed_rest of tas.",
-                                             "25-54_employed_rest of vic.",
-                                             "25-54_employed_rest of wa",
-                                             "25-54_nilf_rest of nsw",
-                                             "25-54_nilf_rest of nt",
-                                             "25-54_nilf_rest of qld",
-                                             "25-54_nilf_rest of sa",
-                                             "25-54_nilf_rest of tas.",
-                                             "25-54_nilf_rest of vic.",
-                                             "25-54_nilf_rest of wa",
-                                             "25-54_unemployed_rest of nsw",
-                                             "25-54_unemployed_rest of nt",
-                                             "25-54_unemployed_rest of qld",
-                                             "25-54_unemployed_rest of sa",
-                                             "25-54_unemployed_rest of tas.",
-                                             "25-54_unemployed_rest of vic.",
-                                             "25-54_unemployed_rest of wa",
-                                             "55+_employed_rest of nsw",
-                                             "55+_employed_rest of nt",
-                                             "55+_employed_rest of qld",
-                                             "55+_employed_rest of sa",
-                                             "55+_employed_rest of tas.",
-                                             "55+_employed_rest of vic.",
-                                             "55+_employed_rest of wa",
-                                             "55+_nilf_rest of nsw",
-                                             "55+_nilf_rest of nt",
-                                             "55+_nilf_rest of qld",
-                                             "55+_nilf_rest of sa",
-                                             "55+_nilf_rest of tas.",
-                                             "55+_nilf_rest of vic.",
-                                             "55+_nilf_rest of wa",
-                                             "55+_unemployed_rest of nsw",
-                                             "55+_unemployed_rest of nt",
-                                             "55+_unemployed_rest of qld",
-                                             "55+_unemployed_rest of sa",
-                                             "55+_unemployed_rest of tas.",
-                                             "55+_unemployed_rest of vic.",
-                                             "55+_unemployed_rest of wa"),
-                                           df = dash_data),
-                   selected_indicator = reactive(input$aus_regions_indicator),
-                   plt_change = plt_change,
-                   height_percent = 150,
-                   width_percent = 46,
-                   date_slider = FALSE)
+    viz_reg_regionstates_bar,
+    data = filter_dash_data(c(
+      "15-24_employed_rest of nsw",
+      "15-24_employed_rest of nt",
+      "15-24_employed_rest of qld",
+      "15-24_employed_rest of sa",
+      "15-24_employed_rest of tas.",
+      "15-24_employed_rest of vic.",
+      "15-24_employed_rest of wa",
+      "15-24_nilf_rest of nsw",
+      "15-24_nilf_rest of nt",
+      "15-24_nilf_rest of qld",
+      "15-24_nilf_rest of sa",
+      "15-24_nilf_rest of tas.",
+      "15-24_nilf_rest of vic.",
+      "15-24_nilf_rest of wa",
+      "15-24_unemployed_rest of nsw",
+      "15-24_unemployed_rest of nt",
+      "15-24_unemployed_rest of qld",
+      "15-24_unemployed_rest of sa",
+      "15-24_unemployed_rest of tas.",
+      "15-24_unemployed_rest of vic.",
+      "15-24_unemployed_rest of wa",
+      "25-54_employed_rest of nsw",
+      "25-54_employed_rest of nt",
+      "25-54_employed_rest of qld",
+      "25-54_employed_rest of sa",
+      "25-54_employed_rest of tas.",
+      "25-54_employed_rest of vic.",
+      "25-54_employed_rest of wa",
+      "25-54_nilf_rest of nsw",
+      "25-54_nilf_rest of nt",
+      "25-54_nilf_rest of qld",
+      "25-54_nilf_rest of sa",
+      "25-54_nilf_rest of tas.",
+      "25-54_nilf_rest of vic.",
+      "25-54_nilf_rest of wa",
+      "25-54_unemployed_rest of nsw",
+      "25-54_unemployed_rest of nt",
+      "25-54_unemployed_rest of qld",
+      "25-54_unemployed_rest of sa",
+      "25-54_unemployed_rest of tas.",
+      "25-54_unemployed_rest of vic.",
+      "25-54_unemployed_rest of wa",
+      "55+_employed_rest of nsw",
+      "55+_employed_rest of nt",
+      "55+_employed_rest of qld",
+      "55+_employed_rest of sa",
+      "55+_employed_rest of tas.",
+      "55+_employed_rest of vic.",
+      "55+_employed_rest of wa",
+      "55+_nilf_rest of nsw",
+      "55+_nilf_rest of nt",
+      "55+_nilf_rest of qld",
+      "55+_nilf_rest of sa",
+      "55+_nilf_rest of tas.",
+      "55+_nilf_rest of vic.",
+      "55+_nilf_rest of wa",
+      "55+_unemployed_rest of nsw",
+      "55+_unemployed_rest of nt",
+      "55+_unemployed_rest of qld",
+      "55+_unemployed_rest of sa",
+      "55+_unemployed_rest of tas.",
+      "55+_unemployed_rest of vic.",
+      "55+_unemployed_rest of wa"
+    ),
+    df = dash_data
+    ),
+    selected_indicator = reactive(input$aus_regions_indicator),
+    plt_change = plt_change,
+    height_percent = 150,
+    width_percent = 46,
+    date_slider = FALSE
+  )
 
   djpr_plot_server(
     "reg_emp_regionstates_sincecovid_line",

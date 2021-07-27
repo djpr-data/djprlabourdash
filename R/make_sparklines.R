@@ -25,32 +25,35 @@ make_sparklines <- function(df, group_var, date_var = date, value_var = value) {
   stopifnot(inherits(df, "data.frame"))
 
   date_var_vec <- df %>%
-    dplyr::pull( {{ date_var}} )
+    dplyr::pull({{ date_var }})
 
-    min_date <- min(date_var_vec)
-    max_date <- max(date_var_vec)
+  min_date <- min(date_var_vec)
+  max_date <- max(date_var_vec)
 
-    groups <- df %>%
-      dplyr::pull( {{ group_var }} ) %>%
-      unique()
+  groups <- df %>%
+    dplyr::pull({{ group_var }}) %>%
+    unique()
 
-    cols <- grDevices::colorRampPalette(suppressWarnings(djprtheme::djpr_pal(10)))(length(groups))
+  cols <- grDevices::colorRampPalette(suppressWarnings(djprtheme::djpr_pal(10)))(length(groups))
 
-    make_group_line <- function(df, group, cols, min_x, max_x ) {
-      col <- cols[which(group == groups)]
+  make_group_line <- function(df, group, cols, min_x, max_x) {
+    col <- cols[which(group == groups)]
 
-      df %>%
-        dplyr::filter({{group_var}} == .env$group) %>%
-        ggplot(aes(x = {{date_var}}, y = {{value_var}}, col = {{group_var}})) +
-        geom_line(colour = col) +
-        scale_x_date(limits = c(min_x, max_x),
-                     expand = expansion(mult = 0)) +
-        theme_void() +
-        theme(legend.position = "none")
-    }
-
-    lapply(groups, make_group_line, df = df,
-           cols = cols, min_x = min_date, max_x = max_date
-           ) %>%
-      stats::setNames(groups)
+    df %>%
+      dplyr::filter({{ group_var }} == .env$group) %>%
+      ggplot(aes(x = {{ date_var }}, y = {{ value_var }}, col = {{ group_var }})) +
+      geom_line(colour = col, size = 0.75) +
+      scale_x_date(
+        limits = c(min_x, max_x),
+        expand = expansion(mult = 0)
+      ) +
+      theme_void() +
+      theme(legend.position = "none")
   }
+
+  lapply(groups, make_group_line,
+    df = df,
+    cols = cols, min_x = min_date, max_x = max_date
+  ) %>%
+    stats::setNames(groups)
+}
