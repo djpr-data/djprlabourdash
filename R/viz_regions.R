@@ -458,7 +458,6 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
         )
     )
 
-
   vic <- df %>%
     filter(.data$sa4 == "Victoria") %>%
     select(-.data$sa4)
