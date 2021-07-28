@@ -437,7 +437,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
       sa4 = gsub(" and South ", " & S. ", .data$sa4, fixed = TRUE)
     )
 
-  max_y <- max(df$value)
+  max_y <- max(df$value) * 1.08
   mid_x <- stats::median(df$date)
 
   df <- df %>%
@@ -485,7 +485,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
     dplyr::pull(.data$sa4)
 
   title <- paste0(
-    highest_current_ur, " had the highest ", indic_long, " in Victoria in ",
+    highest_current_ur, " had the highest ", tolower(indic_long), " in Victoria in ",
     format(max(data$date), "%B %Y")
   )
 
@@ -494,27 +494,14 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
   min_limit <- dplyr::if_else(
     selected_indicator == "unemp_rate",
     0,
-    50)
+    min(df$value)
+  )
 
-  max_limit <- dplyr::if_else(
-    selected_indicator == "unemp_rate",
-    10,
-    80)
-
-  break1 <- dplyr::if_else(
-    selected_indicator == "unemp_rate",
+  lower_padding <- dplyr::if_else(
+    min_limit == 0,
     0,
-    50)
-
-  break2 <- dplyr::if_else(
-    selected_indicator == "unemp_rate",
-    10,
-    70)
-
-  break3 <- dplyr::if_else(
-    selected_indicator == "unemp_rate",
-    20,
-    90)
+    0.05
+  )
 
   df %>%
     djpr_ts_linechart(
@@ -524,9 +511,9 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
     ) +
     scale_y_continuous(
       labels = function(x) paste0(x, "%"),
-      limits = c(min_limit, max_limit),
-      breaks = c(break1, break2, break3),
-      expand = expansion(mult = c(0, 0.1))
+      limits = c(min_limit, max_y),
+      breaks = scales::breaks_pretty(n = 3),
+      expand = expansion(mult = c(lower_padding, 0.1))
     ) +
     geom_label(
       data = facet_labels,
@@ -535,16 +522,15 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
         y = .data$y,
         x = .data$x
       ),
-      nudge_y = 0.1,
       lineheight = 0.85,
-      label.padding = unit(0.05, "lines"),
+      label.padding = unit(0.02, "lines"),
       label.size = 0,
       size = 12 / .pt
     ) +
     geom_line(data = vic) +
     facet_wrap(~ factor(sa4), ncol = 6, scales = "free_x") +
     scale_x_date(
-      # date_labels = "%Y",
+      date_labels = "%Y",
       breaks = scales::breaks_pretty(n = 3)
     ) +
     theme(
