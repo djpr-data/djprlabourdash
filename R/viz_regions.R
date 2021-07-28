@@ -508,12 +508,12 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
 
   break2 <- dplyr::if_else(
     selected_indicator == "unemp_rate",
-    20,
+    10,
     70)
 
   break3 <- dplyr::if_else(
     selected_indicator == "unemp_rate",
-    40,
+    20,
     90)
 
   df %>%
