@@ -1472,12 +1472,12 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
       .data$series == "> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "afe_nilf",
       .data$series == "> Victoria ;  Attending full-time education ;  Employed total ;" ~ "afe_emplo_total",
       .data$series == "> Victoria ;  Not attending full-time education ;  Employed total ;" ~ "nafl_emplo_total",
-      .data$series == "> Victoria ;  Civilian population aged 15-24 years ;" ~ "CiV_Pop",
+      .data$series == "> Victoria ;  Civilian population aged 15-24 years ;" ~ "civ_pop",
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
   df <- df %>%
-    dplyr::mutate(perc = 100 * (value / value[indicator == "CiV_Pop"]))
+    dplyr::mutate(perc = 100 * (value / value[indicator == "civ_pop"]))
 
 
   # data for title &label
@@ -1510,7 +1510,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
             "afe_nilf",
             "afe_emplo_total",
             "nafl_emplo_total",
-            "CiV_Pop"
+            "civ_pop"
           ),
           ordered = TRUE
         )
@@ -1526,7 +1526,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
       .data$indicator == "afe_nilf" ~ "Studying full time & not in labour force",
       .data$indicator == "afe_emplo_total" ~ "Full time education & employed",
       .data$indicator == "nafl_emplo_total" ~ "Not in education & employed",
-      .data$indicator == "CiV_Pop" ~ "Civilian population",
+      .data$indicator == "civ_pop" ~ "Civilian population",
     ))
 
   # use the same colour for the vulnerable group and the rest grey
@@ -1547,13 +1547,13 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::mutate(
-      y_start = dplyr::if_else(indicator == "CiV_Pop", 0, y_start),
-      y_end = dplyr::if_else(indicator == "CiV_Pop", value, y_end)
+      y_start = dplyr::if_else(indicator == "civ_pop", 0, y_start),
+      y_end = dplyr::if_else(indicator == "civ_pop", value, y_end)
     )
 
   df <- df %>%
     mutate(bar_label = dplyr::if_else(
-      indicator == "CiV_Pop",
+      indicator == "civ_pop",
       as.character(round2(value, 1)),
       paste0(round2(value, 1), "\n(", round2(perc, 1), "%)")
     ))
