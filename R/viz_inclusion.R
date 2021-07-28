@@ -1494,7 +1494,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
 
   title <- paste0(
     round2(df_title$vulnerable, 1),
-    " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a cohort most at risk of becoming long term unemployed ",
+    " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a group most at risk of becoming long term unemployed ",
     format(df$date, "%B %Y")
   ) %>%
     unique()
