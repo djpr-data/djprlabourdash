@@ -1745,3 +1745,48 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     ) +
     facet_wrap(~sex, ncol = 1, scales = "free_y")
 }
+
+viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
+                                                                 "A84424695C",
+                                                                 "A84424696F"),
+
+
+                                                               df = dash_data ))
+
+{
+
+          df <- data %>%
+          dplyr::select(.data$date, .data$series, .data$value)
+
+        # 12 month moving average
+        df <- df %>%
+        dplyr::group_by(.data$series) %>%
+        dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+            )) %>%
+          dplyr::ungroup() %>%
+          dplyr::filter(!is.na(.data$value))
+
+          df <- df %>%
+          dplyr::mutate(indicator = dplyr::case_when(
+              .data$series == "> Victoria ;  Employed total ;" ~ "Employed total",
+              .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
+              .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
+    ))
+
+
+    #calculate proportion youth employment by type
+
+  df <- df %>%
+    dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
+    dplyr::select(.data$date, .data$perc, .data$indicator)
+    dplyr::mutate(series = .data$indicator)
+
+  min_year <- format(min(df$date), "%Y")
+  max_year <- format(max(df$date), "%Y")
+
+
+
+  }
+
