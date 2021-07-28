@@ -469,10 +469,10 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
       y = .env$max_y
     )
 
-  reg_sa4s <- sort(unique(.data$sa4[.data$line_col == "Rest of Victoria"]))
-  melb_sa4s <- sort(unique(.data$sa4[.data$line_col == "Greater Melbourne"]))
+  reg_sa4s <- sort(unique(df$sa4[df$line_col == "Rest of Victoria"]))
+  melb_sa4s <- sort(unique(df$sa4[df$line_col == "Greater Melbourne"]))
 
-  .data$sa4 <- factor(.data$sa4,
+  df$sa4 <- factor(df$sa4,
     levels = c("Victoria", reg_sa4s, melb_sa4s)
   )
 
