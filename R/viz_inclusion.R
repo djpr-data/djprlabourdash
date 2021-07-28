@@ -1439,16 +1439,16 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
 }
 
 viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
-                                     "A84424598A",
-                                     "A84424778K",
-                                     "A84424597X",
-                                     "A84424777J",
-                                     "A84424600A",
-                                     "A84424780W",
-                                     "A84424694A"
-                                   ),
-                                   df = dash_data
-                                   )) {
+                                            "A84424598A",
+                                            "A84424778K",
+                                            "A84424597X",
+                                            "A84424777J",
+                                            "A84424600A",
+                                            "A84424780W",
+                                            "A84424694A"
+                                          ),
+                                          df = dash_data
+                                          )) {
   # select the necessary column
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
@@ -1691,7 +1691,6 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
   df1 <- df %>%
     dplyr::mutate(indicator = paste0("Average ", min_year, "-", max_year)) %>%
     dplyr::group_by(.data$sex, .data$indicator) %>%
-
     dplyr::mutate(value = mean(.data$value)) %>%
     dplyr::ungroup()
 
@@ -1747,90 +1746,84 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     facet_wrap(~sex, ncol = 1, scales = "free_y")
 }
 
-viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
-                                                                 "A84424695C",
-                                                                 "A84424696F"),
+viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
+                                          "A84424687C",
+                                          "A84424695C",
+                                          "A84424696F"
+                                        ),
+                                        df = dash_data
+                                        )) {
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
 
+  # 12 month moving average
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
 
-                                                               df = dash_data ))
-
-{
-
-        df <- data %>%
-          dplyr::select(.data$date, .data$series, .data$value)
-
-        # 12 month moving average
-        df <- df %>%
-            dplyr::group_by(.data$series) %>%
-            dplyr::mutate(value = slider::slide_mean(.data$value,
-                                                 before = 11,
-                                             complete = TRUE
-            )) %>%
-              dplyr::ungroup() %>%
-              dplyr::filter(!is.na(.data$value))
-
-        df <- df %>%
-          dplyr::mutate(indicator = dplyr::case_when(
-              .data$series == "> Victoria ;  Employed total ;" ~ "Employed total",
-              .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
-              .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
+  df <- df %>%
+    dplyr::mutate(indicator = dplyr::case_when(
+      .data$series == "> Victoria ;  Employed total ;" ~ "Employed total",
+      .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
+      .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
     ))
 
 
-    #calculate proportion of youth employment by type
+  # calculate proportion of youth employment by type
 
-    df <- df %>%
-        dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
-        dplyr::select(.data$date, .data$perc, .data$indicator)
+  df <- df %>%
+    dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
+    dplyr::select(.data$date, .data$perc, .data$indicator)
 
-   df <- df %>%
-          dplyr::filter(!grepl("Employed total", .data$indicator)) %>%
-          dplyr::mutate(value=.data$perc)
-
-
-
-   latest_year <- df %>%
-     dplyr::group_by(.data$indicator) %>%
-     dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
-     dplyr::filter(.data$date == max(.data$date)) %>%
-     dplyr::select(.data$date, .data$indicator, .data$d_year) %>%
-     tidyr::spread(key = .data$indicator, value = .data$d_year)
-
-   latest_date <- format(latest_year$date, "%B %Y")
-
-   title <- dplyr::case_when(
-     latest_year$"Employed full-time" > 0 &
-       latest_year$"Employed part-time" < 0 ~
-       paste0(
-         "A larger proportion of Victorian youth employed full-time in ",
-         latest_date, " than a year earlier"
-       ),
-     latest_year$"Employed full-time" < 0 &
-       latest_year$"Employed part-time" > 0  ~
-       paste0(
-         "A lower proportion of Victorian youth employed full-time in ",
-         latest_date, " than a year earlier "
-       ),
-     TRUE ~ "Full-time and part-time employment of Victorian youth"
-   )
+  df <- df %>%
+    dplyr::filter(!grepl("Employed total", .data$indicator)) %>%
+    dplyr::mutate(value = .data$perc)
 
 
 
+  latest_year <- df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::select(.data$date, .data$indicator, .data$d_year) %>%
+    tidyr::spread(key = .data$indicator, value = .data$d_year)
+
+  latest_date <- format(latest_year$date, "%B %Y")
+
+  title <- dplyr::case_when(
+    latest_year$"Employed full-time" > 0 &
+      latest_year$"Employed part-time" < 0 ~
+    paste0(
+      "A larger proportion of Victorian youth employed full-time in ",
+      latest_date, " than a year earlier"
+    ),
+    latest_year$"Employed full-time" < 0 &
+      latest_year$"Employed part-time" > 0 ~
+    paste0(
+      "A lower proportion of Victorian youth employed full-time in ",
+      latest_date, " than a year earlier "
+    ),
+    TRUE ~ "Full-time and part-time employment of Victorian youth"
+  )
 
 
-   df %>%
-     djpr_ts_linechart(
-       col_var = .data$indicator,
-       label_num = paste0(round2(.data$value, 1), "%"),
-       y_labels = function(x) paste0(x, "%")
-     ) +
-     labs(
-       title = title,
-       subtitle = "The proportion of full-time and part-time employment of Victorian youth. ",
-       caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
-     )
 
 
 
-    }
-
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = "The proportion of full-time and part-time employment of Victorian youth. ",
+      caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
+    )
+}
