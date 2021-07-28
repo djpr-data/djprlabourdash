@@ -1120,8 +1120,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
 }
 
 table_region_focus <- function(data = filter_dash_data(
-                                 c(
-                                   "A84600141A",
+                                 c("A84600141A",
                                    "A84600144J",
                                    "A84600145K",
                                    "A84599655C",
@@ -1177,12 +1176,31 @@ table_region_focus <- function(data = filter_dash_data(
                                    "A84600121T",
                                    "A84600033T",
                                    "A84600036X",
-                                   "A84600037A"
-                                 )
+                                   "A84600037A",
+                                   "A84599660W",
+                                   "A84600020F",
+                                   "A84600188K",
+                                   "A84599558A",
+                                   "A84600116X",
+                                   "A84599852R",
+                                   "A84599924R",
+                                   "A84600026V",
+                                   "A84600194F",
+                                   "A84599666K",
+                                   "A84600032R",
+                                   "A84599672F",
+                                   "A84599678V",
+                                   "A84599684R",
+                                   "A84599930K",
+                                   "A84600122V",
+                                   "A84600038C",
+                                   "A84600080J",
+                                   "A84600146L")
                                ) %>%
                                  dplyr::group_by(.data$series_id) %>%
                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)),
-                               sa4 = "Geelong") {
+                               sa4 = "Geelong")
+{
   in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
@@ -1192,13 +1210,13 @@ table_region_focus <- function(data = filter_dash_data(
 
   latest_date <- format(max(data$date), "%b %Y")
 
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
       "North West",
       .data$sa4
     ))
 
-  data <- data %>%
+  df <- df %>%
     dplyr::mutate(gcc_restofstate = dplyr::if_else(.data$gcc_restofstate ==
       "Rest of Vic.",
     "Regional Victoria",
@@ -1210,7 +1228,7 @@ table_region_focus <- function(data = filter_dash_data(
     )) %>%
     dplyr::filter(.data$geog %in% c(.env$broad_region, .env$sa4))
 
-  table_df <- data %>%
+  table_df <- df %>%
     dplyr::group_by(.data$geog, .data$indicator) %>%
     dplyr::mutate(
       d_month = dplyr::if_else(.data$indicator == "Employed total",
@@ -1285,6 +1303,7 @@ table_region_focus <- function(data = filter_dash_data(
       aggregate = 4
     ) %>%
     reactable::reactable(
+      defaultPageSize = 12,
       columns = list(
         indicator = reactable::colDef(
           name = "",
