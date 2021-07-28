@@ -1756,18 +1756,18 @@ viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
 
 {
 
-          df <- data %>%
+        df <- data %>%
           dplyr::select(.data$date, .data$series, .data$value)
 
         # 12 month moving average
         df <- df %>%
-        dplyr::group_by(.data$series) %>%
-        dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
+            dplyr::group_by(.data$series) %>%
+            dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                 before = 11,
                                              complete = TRUE
             )) %>%
-          dplyr::ungroup() %>%
-          dplyr::filter(!is.na(.data$value))
+              dplyr::ungroup() %>%
+              dplyr::filter(!is.na(.data$value))
 
         df <- df %>%
           dplyr::mutate(indicator = dplyr::case_when(
@@ -1777,15 +1777,45 @@ viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
     ))
 
 
-    #calculate proportion youth employment by type
+    #calculate proportion of youth employment by type
 
-  df <- df %>%
-    dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
-    dplyr::select(.data$date, .data$perc, .data$indicator)
+    df <- df %>%
+        dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
+        dplyr::select(.data$date, .data$perc, .data$indicator)
 
    df <- df %>%
-    dplyr::filter(!grepl("Employed total", .data$indicator)) %>%
-    dplyr::mutate(value=.data$perc)
+          dplyr::filter(!grepl("Employed total", .data$indicator)) %>%
+          dplyr::mutate(value=.data$perc)
+
+
+
+   latest_year <- df %>%
+     dplyr::group_by(.data$indicator) %>%
+     dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
+     dplyr::filter(.data$date == max(.data$date)) %>%
+     dplyr::select(.data$date, .data$indicator, .data$d_year) %>%
+     tidyr::spread(key = .data$indicator, value = .data$d_year)
+
+   latest_date <- format(latest_year$date, "%B %Y")
+
+   title <- dplyr::case_when(
+     latest_year$"Employed full-time" > 0 &
+       latest_year$"Employed part-time" < 0 ~
+       paste0(
+         "A larger proportion of Victorian youth employed full-time in ",
+         latest_date, " than a year earlier"
+       ),
+     latest_year$"Employed full-time" < 0 &
+       latest_year$"Employed part-time" > 0  ~
+       paste0(
+         "A lower proportion of Victorian youth employed full-time in ",
+         latest_date, " than a year earlier "
+       ),
+     TRUE ~ "Full-time and part-time employment of Victorian youth"
+   )
+
+
+
 
 
    df %>%
@@ -1795,8 +1825,8 @@ viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
        y_labels = function(x) paste0(x, "%")
      ) +
      labs(
-       title = "title",
-       subtitle = "Proportion Victorian youth employment by type ",
+       title = title,
+       subtitle = "The proportion of full-time and part-time employment of Victorian youth. ",
        caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
      )
 
