@@ -395,9 +395,11 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
                                                                               "A84600120R",
                                                                               "A84600122V",
                                                                               "A84600036X",
-                                                                              "A84600038C"),
+                                                                              "A84600038C",
+                                                                              "A84600252T",
+                                                                              "A84600254W"),
                                                                             df = dash_data),
-                                                    selected_indicator = "unemp_rate" )
+                                                    selected_indicator = "unemp_rate")
 {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
