@@ -1466,12 +1466,12 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
   # create short name and pull the latest data
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
-      .data$series == "> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~ "NAFTE_UN",
-      .data$series == "> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "AFE_un_total",
-      .data$series == "> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~ "NAFTE_NILF",
-      .data$series == "> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "AFE_NILF",
-      .data$series == "> Victoria ;  Attending full-time education ;  Employed total ;" ~ "AFE_Emplo_total",
-      .data$series == "> Victoria ;  Not attending full-time education ;  Employed total ;" ~ "NAFL_Emplo_total",
+      .data$series == "> Victoria ;  Not attending full-time education ;  Unemployed total ;" ~ "nafte_un",
+      .data$series == "> Victoria ;  Attending full-time education ;  Unemployed total ;" ~ "afe_un_total",
+      .data$series == "> Victoria ;  Not attending full-time education ;  Not in the labour force (NILF) ;" ~ "nafte_nilf",
+      .data$series == "> Victoria ;  Attending full-time education ;  Not in the labour force (NILF) ;" ~ "afe_nilf",
+      .data$series == "> Victoria ;  Attending full-time education ;  Employed total ;" ~ "afe_emplo_total",
+      .data$series == "> Victoria ;  Not attending full-time education ;  Employed total ;" ~ "nafl_emplo_total",
       .data$series == "> Victoria ;  Civilian population aged 15-24 years ;" ~ "CiV_Pop",
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
@@ -1485,9 +1485,9 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     dplyr::select(.data$indicator, .data$perc, .data$date) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$perc) %>%
     dplyr::mutate(
-      vulnerable = (NAFTE_UN + NAFTE_NILF),
-      labour_force = (NAFTE_UN + AFE_un_total + AFE_Emplo_total + NAFL_Emplo_total),
-      unemployed_total = (NAFTE_UN + AFE_un_total)
+      vulnerable = (nafte_un + nafte_nilf),
+      labour_force = (nafte_un + afe_un_total + afe_emplo_total + nafl_emplo_total),
+      unemployed_total = (nafte_un + afe_un_total)
     ) %>%
     dplyr::select(.data$date, .data$vulnerable, .data$labour_force, .data$unemployed_total)
 
@@ -1504,12 +1504,12 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
       indicator =
         factor(.data$indicator,
           levels = c(
-            "NAFTE_UN",
-            "NAFTE_NILF",
-            "AFE_un_total",
-            "AFE_NILF",
-            "AFE_Emplo_total",
-            "NAFL_Emplo_total",
+            "nafte_un",
+            "nafte_nilf",
+            "afe_un_total",
+            "afe_nilf",
+            "afe_emplo_total",
+            "nafl_emplo_total",
             "CiV_Pop"
           ),
           ordered = TRUE
@@ -1520,19 +1520,19 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
   # label name
   df <- df %>%
     dplyr::mutate(label = case_when(
-      .data$indicator == "NAFTE_UN" ~ "Unemployed & not in education",
-      .data$indicator == "AFE_un_total" ~ "Unemployed & in education",
-      .data$indicator == "NAFTE_NILF" ~ "Not in labour force or education",
-      .data$indicator == "AFE_NILF" ~ "Studying full time & not in labour force",
-      .data$indicator == "AFE_Emplo_total" ~ "Full time education & employed",
-      .data$indicator == "NAFL_Emplo_total" ~ "Not in education & employed",
+      .data$indicator == "nafte_un" ~ "Unemployed & not in education",
+      .data$indicator == "afe_un_total" ~ "Unemployed & in education",
+      .data$indicator == "nafte_nilf" ~ "Not in labour force or education",
+      .data$indicator == "afe_nilf" ~ "Studying full time & not in labour force",
+      .data$indicator == "afe_emplo_total" ~ "Full time education & employed",
+      .data$indicator == "nafl_emplo_total" ~ "Not in education & employed",
       .data$indicator == "CiV_Pop" ~ "Civilian population",
     ))
 
   # use the same colour for the vulnerable group and the rest grey
   df <- df %>%
     dplyr::mutate(indicator_group = dplyr::if_else(
-      .data$indicator %in% c("NAFTE_UN", "NAFTE_NILF"),
+      .data$indicator %in% c("nafte_un", "nafte_nilf"),
       "Vulnerable",
       "Other"
     ))
