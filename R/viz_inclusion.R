@@ -1691,6 +1691,7 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
   df1 <- df %>%
     dplyr::mutate(indicator = paste0("Average ", min_year, "-", max_year)) %>%
     dplyr::group_by(.data$sex, .data$indicator) %>%
+
     dplyr::mutate(value = mean(.data$value)) %>%
     dplyr::ungroup()
 
@@ -1768,7 +1769,7 @@ viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
           dplyr::ungroup() %>%
           dplyr::filter(!is.na(.data$value))
 
-          df <- df %>%
+        df <- df %>%
           dplyr::mutate(indicator = dplyr::case_when(
               .data$series == "> Victoria ;  Employed total ;" ~ "Employed total",
               .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
@@ -1781,12 +1782,25 @@ viz_gr_youth_full_part_line<- function(data = filter_dash_data(c("A84424687C",
   df <- df %>%
     dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
     dplyr::select(.data$date, .data$perc, .data$indicator)
-    dplyr::mutate(series = .data$indicator)
 
-  min_year <- format(min(df$date), "%Y")
-  max_year <- format(max(df$date), "%Y")
+   df <- df %>%
+    dplyr::filter(!grepl("Employed total", .data$indicator)) %>%
+    dplyr::mutate(value=.data$perc)
+
+
+   df %>%
+     djpr_ts_linechart(
+       col_var = .data$indicator,
+       label_num = paste0(round2(.data$value, 1), "%"),
+       y_labels = function(x) paste0(x, "%")
+     ) +
+     labs(
+       title = "title",
+       subtitle = "Proportion Victorian youth employment by type ",
+       caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
+     )
 
 
 
-  }
+    }
 
