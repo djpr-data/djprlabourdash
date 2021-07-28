@@ -491,9 +491,30 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
 
   subtitle <- paste0(indic_long, " by region (SA4)")
 
-  limit_max <- dplyr::if_else(
-      max_y < 20, 10, 75
-    )
+  min_limit <- dplyr::if_else(
+    selected_indicator == "unemp_rate",
+    0,
+    50)
+
+  max_limit <- dplyr::if_else(
+    selected_indicator == "unemp_rate",
+    10,
+    80)
+
+  break1 <- dplyr::if_else(
+    selected_indicator == "unemp_rate",
+    0,
+    50)
+
+  break2 <- dplyr::if_else(
+    selected_indicator == "unemp_rate",
+    20,
+    70)
+
+  break3 <- dplyr::if_else(
+    selected_indicator == "unemp_rate",
+    40,
+    90)
 
   df %>%
     djpr_ts_linechart(
@@ -503,16 +524,8 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
     ) +
     scale_y_continuous(
       labels = function(x) paste0(x, "%"),
-      limits = function(limits) c(0, limits[2]),
-      breaks = function(limits) {
-        c(
-          0,
-          min(c(
-            limits[2],
-            limit_max
-          ))
-        )
-      },
+      limits = c(min_limit, max_limit),
+      breaks = c(break1, break2, break3),
       expand = expansion(mult = c(0, 0.1))
     ) +
     geom_label(
