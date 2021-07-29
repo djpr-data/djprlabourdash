@@ -12,21 +12,19 @@ page_indicators <- function(...) {
     #   actionLink("link_regions", "regions page"), "."
     # ),
     h2(br(), "Employment"),
-    htmlOutput("ind_empgrowth_sincecovid_text"),
-    reactable::reactableOutput("ind_emp_table") %>%
+    # htmlOutput("ind_empgrowth_sincecovid_text"),
+    uiOutput("ind_emp_table") %>%
       djpr_with_spinner(hide.ui = TRUE),
-    caption_reactable(),
     djpr_plot_ui("ind_emp_sincecovid_line"),
     djpr_plot_ui("ind_emppop_state_slope"),
     djpr_plot_ui("ind_empgro_line"),
     # htmlOutput("ind_emp_dotpoints"),
     # djpr_plot_ui("ind_empgro_line"),
     h2(br(), "Unemployment & underemployment"),
-    reactable::reactableOutput(
+    uiOutput(
       "ind_unemp_summary"
     ) %>%
       djpr_with_spinner(hide.ui = TRUE),
-    caption_reactable("Youth unemployment rate is not seasonally adjusted. It is smoothed using a 12 month rolling average."),
     djpr_plot_ui("ind_unemprate_line"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),

@@ -1,18 +1,10 @@
-#' Create a summary dataframe for use in a table to be displayed
-#' Either in a reactable or a static briefing table
+#' Create a summary dataframe for use in a table
 #' @param data Dataframe of input data
-#' @param for_reactable logical; if TRUE, series_id column is retained,
-#' data for sparkline is included, column names are not nicely formatted
-#' @param years_in_sparkline Number of years worth of data to include in
+#' @param years_in_sparklines Number of years worth of data to include in
 #' sparkline
-#' @param row_var "Quoted" name of column that contains series names to be
-#' used as the row names in the output table
-#' @param period Period covered by most recent change, such as "month" or
-#' "quarter". Used for column heading in the returned DF.
-#' @param row_order If `NULL`, table will be sorted in alphabetical order.
-#' Otherwise, `row_order` should be a vector of row names in the order in which
-#' you want them to appear in the table.
 #' @examples
+#' \dontrun{
+#' dash_data <- load_dash_data()
 #' create_summary_df(data = filter_dash_data(c(
 #'   "A84423349V",
 #'   "A84423357V",
@@ -21,43 +13,22 @@
 #'   "A84423468K",
 #'   "pt_emp_vic"
 #' )))
-#' @export
+#' }
 create_summary_df <- function(data,
-                              for_reactable = TRUE,
-                              pretty_names = FALSE,
-                              years_in_sparklines = 2,
-                              row_var = "indicator",
-                              period = "month",
-                              row_order = NULL) {
+                              years_in_sparklines = 3) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   # Drop unneeded columns -----
   summary_df <- data %>%
-    dplyr::select(.data$date, .data$series_id,
-      series = .env$row_var, .data$value, .data$unit
+    dplyr::select(
+      .data$date, .data$series_id,
+      .data$indicator, .data$value, .data$unit
     )
 
-  # Tweak series names ----
-  summary_df <- summary_df %>%
-    dplyr::mutate(series = dplyr::case_when(
-      .data$series_id == "A84423349V" ~
-      "Employed (persons)",
-      .data$series_id == "A84423237A" ~
-      "Employed (males)",
-      .data$series_id == "A84423461V" ~
-      "Employed (females)",
-      .data$series_id == "A85223450L" ~
-      "Underemployment rate",
-      .data$series_id == "A84423354L" ~
-      "Unemployment rate",
-      .data$series_id == "A84433601W" ~
-      "Youth unemployment rate",
-      TRUE ~ .data$series
-    ))
 
   # Calculate change over time -----
   summary_df <- summary_df %>%
-    dplyr::group_by(.data$series) %>%
+    dplyr::group_by(.data$indicator, .data$series_id) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(
       is_level = if_else(grepl("000", .data$unit), TRUE, FALSE),
@@ -72,10 +43,10 @@ create_summary_df <- function(data,
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
       changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
     ) %>%
-    dplyr::filter(.data$date >= startdate)
+    dplyr::filter(.data$date >= startdate) %>%
+    dplyr::ungroup()
 
   # Reformat columns -----
-
   summary_df <- summary_df %>%
     dplyr::mutate(across(
       c(dplyr::ends_with("pc")),
@@ -100,7 +71,7 @@ create_summary_df <- function(data,
     dplyr::ungroup() %>%
     dplyr::select(-.data$unit, .data$is_level)
 
-  # If a number is -0.0, change to 0.0
+  # If a rounded number is -0.0, change to 0.0
   summary_df <- summary_df %>%
     dplyr::mutate(dplyr::across(
       dplyr::starts_with("changein"),
@@ -110,11 +81,11 @@ create_summary_df <- function(data,
   ## Select only the latest changes
 
   changedf <- summary_df %>%
-    dplyr::group_by(.data$series) %>%
+    dplyr::group_by(.data$indicator, .data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(
       .data$date,
-      .data$series,
+      .data$indicator,
       .data$series_id,
       .data$latest_value,
       .data$changeinmonth,
@@ -128,57 +99,61 @@ create_summary_df <- function(data,
   changedf <- changedf %>%
     mutate(
       changeinmonth = ifelse(
-        changeinmonthpc != "-",
-        paste0(changeinmonth, "\n(", changeinmonthpc, ")"),
-        changeinmonth
+        .data$changeinmonthpc != "-",
+        paste0(.data$changeinmonth, "\n(", .data$changeinmonthpc, ")"),
+        .data$changeinmonth
       ),
       changeinyear = ifelse(
-        changeinyearpc != "-",
-        paste0(changeinyear, "\n(", changeinyearpc, ")"),
-        changeinyear
+        .data$changeinyearpc != "-",
+        paste0(.data$changeinyear, "\n(", .data$changeinyearpc, ")"),
+        .data$changeinyear
       )
     )
 
   changedf <- changedf %>%
     dplyr::select(!dplyr::ends_with("pc"))
 
-  ## Created df in format required for sparkline ----
+  # Format column names
+  dates <- unique(data$date) %>%
+    sort()
 
-  # for_reactable is TRUE if the table is to be used on the
-  # dashboard
-  if (isTRUE(for_reactable)) {
-    out <- summary_df %>%
-      dplyr::group_by(.data$series) %>%
-      dplyr::summarise(n = list(list(value = dplyr::c_across("value")))) %>%
-      dplyr::left_join(changedf, by = "series") %>%
-      dplyr::select(-.data$date)
+  latest_date <- max(changedf$date)
+  prev_date <- dates[length(dates) - 1]
+  prev_year <- dates[length(dates) - 12]
 
-    # for_reactable is FALSE if the table is intended for a use
-    # other than the dashboard, eg. Word-based briefing tables
-  } else {
-    dates <- unique(summary_df$date) %>%
-      sort()
+  nice_latest_date <- format(latest_date, "%b %Y")
+  nice_prev_date <- format(prev_date, "%b %Y")
+  nice_prev_year <- format(prev_year, "%b %Y")
 
-    latest_date <- max(summary_df$date)
-    prev_date <- dates[length(dates) - 1]
-    prev_year <- dates[length(dates) - 12]
+  since_prev_date <- paste0("Since ", nice_prev_date)
+  since_prev_year <- paste0("Since ", nice_prev_year)
 
-    nice_latest_date <- format(latest_date, "%b %Y")
-    nice_prev_date <- format(prev_date, "%b %Y")
-    nice_prev_year <- format(prev_year, "%b %Y")
+  out <- changedf %>%
+    dplyr::select(-.data$date,
+      indicator = .data$indicator,
+      {{ nice_latest_date }} := .data$latest_value,
+      {{ since_prev_date }} := .data$changeinmonth,
+      {{ since_prev_year }} := .data$changeinyear,
+      `Since Nov 2014` = .data$changesince14
+    )
 
-    since_prev_date <- paste0("Since ", nice_prev_date)
-    since_prev_year <- paste0("Since ", nice_prev_year)
+  stopifnot(nrow(out) == length(unique(data$series_id)))
 
-    out <- changedf %>%
-      dplyr::select(-series_id, -date,
-        ` ` = series,
-        {{ nice_latest_date }} := latest_value,
-        {{ since_prev_date }} := changeinmonth,
-        {{ since_prev_year }} := changeinyear,
-        `Since Nov 2014` = changesince14
-      )
-  }
+  # Add sparklines
+  sparklines <- summary_df %>%
+    dplyr::filter(.data$date >= startdate) %>%
+    make_sparklines(group_var = .data$series_id)
+
+  sparklines <- dplyr::tibble(
+    series_id = names(sparklines),
+    sparklines = sparklines
+  )
+
+  out <- out %>%
+    dplyr::left_join(sparklines, by = "series_id") %>%
+    dplyr::select(.data$indicator, .data$sparklines, dplyr::everything())
+
+  names(out)[2] <- paste0("Last ", years_in_sparklines, " years")
 
   out
 }

@@ -13,18 +13,27 @@ page_regions <- function(...) {
     #   actionLink("link_inclusion", "inclusion page"), "."
     # ),
     # Unemployment by region -----
-    h2(br(), "Unemployment by region"),
-    djpr_plot_title(textOutput("title_unemprate_vic")),
-    djpr_plot_subtitle("Unemployment rate by region (SA4), per cent"),
+    h2(br(), "Labour force status by region"),
+    selectInput("lf_status_region",
+                label = "Choose an indicator",
+                choices = c(
+                  "Unemployment rate" = "unemp_rate",
+                  "Participation rate" = "part_rate",
+                  "Employment to population ratio" = "emp_pop"
+                ),
+                selected = "unemp_rate"
+                ),
+    djpr_plot_title(textOutput("title_unemp_emppop_partrate_vic")),
+    djpr_plot_subtitle(textOutput("subtitle_unemp_emppop_partrate_vic")),
     fluidRow(
       column(
         6,
-        leaflet::leafletOutput("reg_unemprate_map") %>%
+        leaflet::leafletOutput("map_unemp_emppop_partrate_vic") %>%
           djpr_with_spinner()
       ),
       column(
         6,
-        plotOutput("reg_unemprate_bar") %>%
+        plotOutput("reg_unemp_emppop_partrate_bar") %>%
           djpr_with_spinner()
       )
     ),
@@ -42,8 +51,8 @@ page_regions <- function(...) {
     htmlOutput("text_emp_regions"),
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
-    # Regional focus box ------
-    h2(br(), "Regional focus"),
+    # Victorian regions focus box ------
+    h2(br(), "Victorian regions"),
     # Box for regional focus
     focus_box(
       selectInput("focus_region",
@@ -83,11 +92,36 @@ page_regions <- function(...) {
       column(
         6,
         br(),
-        reactable::reactableOutput("table_region_focus") %>%
+        uiOutput("table_region_focus") %>%
           djpr_with_spinner(),
         djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average.")
       )
     ),
+    br(),
+    h2(br(), "Australian regions"),
+    focus_box(
+      selectInput(
+        inputId = "aus_regions_indicator",
+        label = "Select indicator",
+        choices = c(
+          "Unemployment rate" = "unemp_rate",
+          "Participation rate" = "part_rate",
+          "Employment-to-population ratio" = "emp_pop"
+        ),
+        width = "100%",
+        selected = "unemp_rate"
+      ),
+      column(6,
+        djpr_plot_ui("reg_regionstates_dot"),
+        height = "600px"
+      ),
+      column(
+        6,
+        djpr_plot_ui("reg_regionstates_bar", height = "600px")
+      )
+    ),
+    br(),
+    djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),
     htmlOutput("regions_footnote"),
     br()

@@ -4,6 +4,16 @@ author: "DJPR SPP Data + Analytics"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   officedown::rdocx_document:
+    reference_docx: !expr system.file('djpr_word_template.docx', package = 'djprshiny')
+    page_size:
+      width: 8.3
+      height: 11.7
+      orient: "portrait"
+    page_margins:
+      bottom: 0.5
+      top: 0.5
+      left: 0.5
+      right: 0.5
     tables:
       layout: autofit
       caption:
@@ -17,6 +27,8 @@ editor_options:
 ```{r setup, include=FALSE}
 library(officedown)
 library(flextable)
+pkgload::load_all()
+
 knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
@@ -24,41 +36,21 @@ knitr::opts_chunk$set(
   warning = FALSE
   )
 ```
+```{r load-data}
+
+dash_data <- load_dash_data()
+
+Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
+```
+
 # Victorian labour force summary
 
-## R Markdown
+## Heading
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Some text goes here. Regular text. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r, eval = T}
-pkgload::load_all()
-dash_data <- load_dash_data()
-overview_data <- filter_dash_data(series_ids = c(
-                             "A84423349V", # Employed total
-                             "A84423355R", # Part rate
-                             "A84423354L", # Unemp rate
-                             "A84423350C", # Unemp total
-                             "A85223451R", # Underut rate
-                             "A84426256L", # Hours worked
-                             "A85223450L", # Underemp rate
-                             "A84423357V", # Emp FT
-                             "pt_emp_vic" # Emp PT
-                           ))
-
-overview_data %>%
-  create_summary_df(for_reactable = FALSE) %>%
-  make_briefing_table()
-
+Table description goes here
+```{r}
+table_overview()
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

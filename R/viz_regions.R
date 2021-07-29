@@ -1,67 +1,87 @@
-#' Function to create the graphs for the 'Regions' subpage on the dashboard.
-#' @name title_unemprate_vic
-#' @param data the dataframe containing data to visualise
-#' @examples
-#' \dontrun{
-#'
-#' dash_data <- load_dash_data()
-#'
-#' # for 'viz_emp_regions_sincecovid':
-#' data <- filter_dash_data(c(
-#'   "A84600141A",
-#'   "A84600075R"
-#' )) %>%
-#'   dplyr::filter(date >= as.Date("2020-01-01"))
-#'
-#' # for 'viz_reg_unemprate_multiline':
-#' data <- filter_dash_data(c(
-#'   "A84600253V",
-#'   "A84599659L",
-#'   "A84600019W",
-#'   "A84600187J",
-#'   "A84599557X",
-#'   "A84600115W",
-#'   "A84599851L",
-#'   "A84599923L",
-#'   "A84600025T",
-#'   "A84600193C",
-#'   "A84599665J",
-#'   "A84600031L",
-#'   "A84599671C",
-#'   "A84599677T",
-#'   "A84599683L",
-#'   "A84599929A",
-#'   "A84600121T",
-#'   "A84600037A"
-#' ))
-#' }
 #' @importFrom rlang `:=`
-title_unemprate_vic <- function(data = filter_dash_data(c(
-                                  "A84599659L",
-                                  "A84600019W",
-                                  "A84600187J",
-                                  "A84599557X",
-                                  "A84600115W",
-                                  "A84599851L",
-                                  "A84599923L",
-                                  "A84600025T",
-                                  "A84600193C",
-                                  "A84599665J",
-                                  "A84600031L",
-                                  "A84599671C",
-                                  "A84599677T",
-                                  "A84599683L",
-                                  "A84599929A",
-                                  "A84600121T",
-                                  "A84600037A"
-                                )) %>%
-                                  group_by(.data$series_id) %>%
-                                  mutate(value = slider::slide_mean(.data$value,
-                                    before = 2,
-                                    complete = TRUE
-                                  )) %>%
-                                  dplyr::filter(.data$date == max(.data$date))) {
-  high_low <- data %>%
+
+title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84599659L",
+                                                                      "A84600019W",
+                                                                      "A84600187J",
+                                                                      "A84599557X",
+                                                                      "A84600115W",
+                                                                      "A84599851L",
+                                                                      "A84599923L",
+                                                                      "A84600025T",
+                                                                      "A84600193C",
+                                                                      "A84599665J",
+                                                                      "A84600031L",
+                                                                      "A84599671C",
+                                                                      "A84599677T",
+                                                                      "A84599683L",
+                                                                      "A84599929A",
+                                                                      "A84600121T",
+                                                                      "A84600037A",
+                                                                      "A84599658K",
+                                                                      "A84599660W",
+                                                                      "A84600018V",
+                                                                      "A84600020F",
+                                                                      "A84600186F",
+                                                                      "A84600188K",
+                                                                      "A84599556W",
+                                                                      "A84599558A",
+                                                                      "A84600114V",
+                                                                      "A84600116X",
+                                                                      "A84599850K",
+                                                                      "A84599852R",
+                                                                      "A84599922K",
+                                                                      "A84599924R",
+                                                                      "A84600024R",
+                                                                      "A84600026V",
+                                                                      "A84600192A",
+                                                                      "A84600194F",
+                                                                      "A84599664F",
+                                                                      "A84599666K",
+                                                                      "A84600030K",
+                                                                      "A84600032R",
+                                                                      "A84599670A",
+                                                                      "A84599672F",
+                                                                      "A84599676R",
+                                                                      "A84599678V",
+                                                                      "A84599682K",
+                                                                      "A84599684R",
+                                                                      "A84599928X",
+                                                                      "A84599930K",
+                                                                      "A84600120R",
+                                                                      "A84600122V",
+                                                                      "A84600036X",
+                                                                      "A84600038C"),
+                                                                    df = dash_data),
+                                            selected_indicator = "unemp_rate")
+{
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
+  df <- data %>%
+    mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  # Reduce to selected_indicator
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  # 3 month smoothing
+  df <- df %>%
+    group_by(.data$series_id) %>%
+    mutate(value = slider::slide_mean(.data$value,
+                                      before = 2,
+                                      complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  high_low <- df %>%
     dplyr::ungroup() %>%
     summarise(
       min_sa4 = .data$sa4[.data$value == min(.data$value)],
@@ -72,7 +92,8 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
     )
 
   paste0(
-    "The unemployment rate across Victoria ranges from ",
+    indic_long,
+    " across Victoria ranged from ",
     round2(high_low$min_ur, 1),
     " per cent in ",
     high_low$min_sa4,
@@ -85,35 +106,89 @@ title_unemprate_vic <- function(data = filter_dash_data(c(
   )
 }
 
-map_unemprate_vic <- function(data = filter_dash_data(c(
-                                "A84600253V",
-                                "A84600145K",
-                                "A84599659L",
-                                "A84600019W",
-                                "A84600187J",
-                                "A84599557X",
-                                "A84600115W",
-                                "A84599851L",
-                                "A84599923L",
-                                "A84600025T",
-                                "A84600193C",
-                                "A84600079X",
-                                "A84599665J",
-                                "A84600031L",
-                                "A84599671C",
-                                "A84599677T",
-                                "A84599683L",
-                                "A84599929A",
-                                "A84600121T",
-                                "A84600037A"
-                              )) %>%
-                                group_by(.data$series_id) %>%
-                                mutate(value = slider::slide_mean(.data$value,
-                                  before = 2,
-                                  complete = TRUE
-                                )) %>%
-                                dplyr::filter(.data$date == max(.data$date)),
-                              zoom = 6) {
+map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
+                                                                  "A84599659L",
+                                                                  "A84600019W",
+                                                                  "A84600187J",
+                                                                  "A84599557X",
+                                                                  "A84600115W",
+                                                                  "A84599851L",
+                                                                  "A84599923L",
+                                                                  "A84600025T",
+                                                                  "A84600193C",
+                                                                  "A84599665J",
+                                                                  "A84600031L",
+                                                                  "A84599671C",
+                                                                  "A84599677T",
+                                                                  "A84599683L",
+                                                                  "A84599929A",
+                                                                  "A84600121T",
+                                                                  "A84600037A",
+                                                                  "A84599658K",
+                                                                  "A84599660W",
+                                                                  "A84600018V",
+                                                                  "A84600020F",
+                                                                  "A84600186F",
+                                                                  "A84600188K",
+                                                                  "A84599556W",
+                                                                  "A84599558A",
+                                                                  "A84600114V",
+                                                                  "A84600116X",
+                                                                  "A84599850K",
+                                                                  "A84599852R",
+                                                                  "A84599922K",
+                                                                  "A84599924R",
+                                                                  "A84600024R",
+                                                                  "A84600026V",
+                                                                  "A84600192A",
+                                                                  "A84600194F",
+                                                                  "A84599664F",
+                                                                  "A84599666K",
+                                                                  "A84600030K",
+                                                                  "A84600032R",
+                                                                  "A84599670A",
+                                                                  "A84599672F",
+                                                                  "A84599676R",
+                                                                  "A84599678V",
+                                                                  "A84599682K",
+                                                                  "A84599684R",
+                                                                  "A84599928X",
+                                                                  "A84599930K",
+                                                                  "A84600120R",
+                                                                  "A84600122V",
+                                                                  "A84600036X",
+                                                                  "A84600038C"),
+                                                               df = dash_data),
+                                       selected_indicator = "unemp_rate",
+                                       zoom = 6)
+{
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
+  df <- data %>%
+    mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  # Reduce to selected_indicator
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  # 3 month smoothing
+  df <- df %>%
+    group_by(.data$series_id) %>%
+    mutate(value = slider::slide_mean(.data$value,
+                                      before = 2,
+                                      complete = TRUE
+                                    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- sa42016 %>%
@@ -121,7 +196,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sa4_code_2016 < 297)
 
   # Fix issue with different naming for North West region in Victoria
-  data <- data %>%
+  df <- df %>%
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
         "North West",
@@ -131,7 +206,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
 
   # Join shape file with data to create mapdata ----
   mapdata <- sa4_shp %>%
-    dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
+    dplyr::left_join(df, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour palette
   # Switched here from binned to continuous colours
@@ -151,6 +226,13 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
   metro_outline <- mapdata %>%
     dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
     dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
+
+  label_title <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ paste0("Unemployment<br/> rate (per cent)"),
+    selected_indicator == "part_rate" ~ paste0("Participation<br/> rate (per cent)"),
+    selected_indicator == "emp_pop" ~ paste0("Employment to<br/> population ratio<br/> (per cent)"),
+    TRUE ~ NA_character_
+    )
 
   # Produce dynamic map, all of Victoria ----
   map <- mapdata %>%
@@ -172,9 +254,10 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
         weight = 2, # thickness of region boundary
         bringToFront = FALSE
       ), # FALSE = metro outline remains
-      label = sprintf( # region label definition
-        "<strong>%s</strong><br/>Unemployment rate: %.1f", # label title, strong = bold, %.1f = 1 dec points
+      label = sprintf(
+        "<strong>%s</strong><br/>%s: %.1f",
         mapdata$sa4_name_2016, # region name displayed in label
+        indic_long,
         mapdata$value
       ) %>% # eco data displayed in label
         lapply(shiny::HTML),
@@ -194,7 +277,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
       values = mapdata$value, # fill data
       bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "Unemployment<br/>rate (per cent)", # label title
+      title = label_title,
       opacity = 1,
     ) %>%
     # label opacity
@@ -206,6 +289,7 @@ map_unemprate_vic <- function(data = filter_dash_data(c(
       color = "black",
       weight = 1
     )
+
   # Display dynamic map: can zoom in, zoom out and hover over regions displaying distinct data----
   map
 }
@@ -249,7 +333,7 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$gcc_restofstate,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       hline = 0
     ) +
@@ -398,42 +482,89 @@ viz_reg_unemprate_multiline <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
-                                    "A84600253V",
-                                    "A84599659L",
-                                    "A84600019W",
-                                    "A84600187J",
-                                    "A84599557X",
-                                    "A84600115W",
-                                    "A84599851L",
-                                    "A84599923L",
-                                    "A84600025T",
-                                    "A84600193C",
-                                    "A84599665J",
-                                    "A84600031L",
-                                    "A84599671C",
-                                    "A84599677T",
-                                    "A84599683L",
-                                    "A84599929A",
-                                    "A84600121T",
-                                    "A84600037A"
-                                  ),
-                                  df = dash_data
-                                  ) %>%
-                                    dplyr::group_by(.data$series_id) %>%
-                                    dplyr::mutate(value = slider::slide_mean(.data$value,
-                                      before = 2,
-                                      complete = TRUE
-                                    )) %>%
-                                    dplyr::filter(.data$date == max(.data$date))) {
-  data <- data %>%
+viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("A84599659L",
+                                                            "A84600019W",
+                                                            "A84600187J",
+                                                            "A84599557X",
+                                                            "A84600115W",
+                                                            "A84599851L",
+                                                            "A84599923L",
+                                                            "A84600025T",
+                                                            "A84600193C",
+                                                            "A84599665J",
+                                                            "A84600031L",
+                                                            "A84599671C",
+                                                            "A84599677T",
+                                                            "A84599683L",
+                                                            "A84599929A",
+                                                            "A84600121T",
+                                                            "A84600037A",
+                                                            "A84599658K",
+                                                            "A84599660W",
+                                                            "A84600018V",
+                                                            "A84600020F",
+                                                            "A84600186F",
+                                                            "A84600188K",
+                                                            "A84599556W",
+                                                            "A84599558A",
+                                                            "A84600114V",
+                                                            "A84600116X",
+                                                            "A84599850K",
+                                                            "A84599852R",
+                                                            "A84599922K",
+                                                            "A84599924R",
+                                                            "A84600024R",
+                                                            "A84600026V",
+                                                            "A84600192A",
+                                                            "A84600194F",
+                                                            "A84599664F",
+                                                            "A84599666K",
+                                                            "A84600030K",
+                                                            "A84600032R",
+                                                            "A84599670A",
+                                                            "A84599672F",
+                                                            "A84599676R",
+                                                            "A84599678V",
+                                                            "A84599682K",
+                                                            "A84599684R",
+                                                            "A84599928X",
+                                                            "A84599930K",
+                                                            "A84600120R",
+                                                            "A84600122V",
+                                                            "A84600036X",
+                                                            "A84600038C"),
+                                  df = dash_data),
+                                  selected_indicator = "unemp_rate")
+{
+
+  df <- data %>%
+    mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  # Reduce to selected_indicator
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  # 3 month smoothing
+  df <- df %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2,
+                                             complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
       "Warrnambool & S. West",
       .data$sa4
     ))
 
-  data %>%
+  df %>%
     ggplot(aes(
       x = stats::reorder(.data$sa4, .data$value),
       y = .data$value
@@ -444,7 +575,7 @@ viz_reg_unemprate_bar <- function(data = filter_dash_data(c(
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = round(.data$value, 1)),
+      aes(label = paste0(round2(.data$value, 1), "%")),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -659,7 +790,11 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       expand = expansion(
         add = c(0, days_in_data * 0.2)
       ),
-      breaks = scales::breaks_pretty(n = 4),
+      breaks = djprtheme::breaks_right(
+        limits = c(min(df_tidy$date),
+                   max(df_tidy$date)),
+        n_breaks = 4
+        ),
       date_labels = "%b\n%Y"
     ) +
     scale_colour_manual(values = c(
@@ -690,7 +825,9 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     theme_djpr() +
     scale_x_date(
       date_labels = "%b\n%Y",
-      breaks = scales::breaks_pretty(n = 4)
+      breaks = djprtheme::breaks_right(c(min(df_summ$date),
+                                         max(df_summ$date)),
+      n_breaks = 4)
     ) +
     djpr_y_continuous(
       limits = function(x) c(0, max(x)) # ,
@@ -882,21 +1019,23 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
     sa4_df
   )
 
+  colours <- c(djprtheme::djpr_royal_blue,
+               djprtheme::djpr_green)
+
+  names(colours) <- c("Regional Victoria",
+                      sa4)
+
   comb %>%
     djpr_ts_linechart(
       col_var = .data$col_var,
-      label_num = paste0(round(.data$value, 1), "%")
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
-    scale_x_date(
-      breaks = scales::breaks_pretty(5),
-      date_labels = "%b\n%Y",
-      expand = expansion(mult = c(0.05, 0.25))
-    ) +
+    scale_colour_manual(values = colours) +
     scale_y_continuous(
       limits = function(limits) c(0, limits[2]),
       labels = function(x) paste0(x, "%"),
-      breaks = scales::breaks_pretty(4),
-      expand = expansion(mult = c(0, 0.05))
+      breaks = scales::breaks_pretty(5),
+      expand = expansion(mult = c(0, 0.15))
     ) +
     labs(
       title = paste0(
@@ -1079,63 +1218,41 @@ table_region_focus <- function(data = filter_dash_data(
     dplyr::select(.data$indicator, .data$series, {{ sa4 }}, dplyr::everything())
 
   table_df %>%
-    rename(
-      region = 3,
-      aggregate = 4
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(indicator = dplyr::if_else(
+      dplyr::row_number() != 1,
+      "",
+      .data$indicator
+    )) %>%
+    dplyr::rename(
+      ` ` = .data$indicator,
+      `  ` = .data$series
     ) %>%
-    reactable::reactable(
-      columns = list(
-        indicator = reactable::colDef(
-          name = "",
-          minWidth = 65,
-          style = reactable::JS("function(rowInfo, colInfo, state) {
-        var firstSorted = state.sorted[0]
-        // Merge cells if unsorted
-        if (!firstSorted || firstSorted.id === 'indicator') {
-          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
-          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
-            return { visibility: 'hidden' }
-          }
-        }
-      }")
-        ),
-        series = reactable::colDef(
-          name = "",
-          minWidth = 30
-        ),
-        region = reactable::colDef(
-          name = names(table_df)[3],
-          align = "center",
-          minWidth = 40,
-          headerStyle = col_header_style
-        ),
-        aggregate = reactable::colDef(
-          name = names(table_df)[4],
-          align = "center",
-          minWidth = 40,
-          headerStyle = col_header_style
-        )
-      ),
-      defaultColDef = reactable::colDef(
-        minWidth = 50
-      ),
-      highlight = TRUE,
-      resizable = TRUE,
-      sortable = FALSE,
-      theme = reactable::reactableTheme(
-        borderColor = "#dfe2e5",
-        stripedColor = "#f6f8fa",
-        highlightColor = "#f0f5f9",
-        cellPadding = "7px 1px 1px 1px",
-        tableStyle = list(`border-bottom` = "1px solid #000"),
-        headerStyle = list(
-          fontWeight = "normal",
-          `border-bottom` = "1px solid #000"
-        ),
-        groupHeaderStyle = list(fontWeight = "normal"),
-        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      )
-    )
+    flextable::flextable() %>%
+    flextable::bold(part = "header") %>%
+    flextable::border_remove() %>%
+    flextable::border(
+      part = "body",
+      j = 2:4,
+      i = 2:nrow(table_df),
+      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = c(1, 4, 7),
+      border.top = flextable::fp_border_default()
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = nrow(table_df),
+      border.bottom = flextable::fp_border_default()
+    ) %>%
+    # flextable::autofit(add_w = 0, add_h = 0) %>%
+    flextable::set_table_properties("autofit", width = 1) %>%
+    flextable::font(part = "body", fontname = "Roboto") %>%
+    flextable::font(part = "header", fontname = "Roboto") %>%
+    flextable::fontsize(size = 9) %>%
+    flextable::fontsize(size = 9, part = "header")
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
@@ -1191,49 +1308,11 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       "\n",
       round2(.data$value, 1)
     )) %>%
-    ggplot(aes(x = .data$date, y = .data$value, col = .data$gcc_restofstate)) +
-    geom_line() +
-    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
-      size = 3,
-      colour = "white",
-      alpha = 0.01
-    ) +
-    geom_point(
-      data = max_date,
-      fill = "white",
-      stroke = 1.5,
-      size = 2.5,
-      shape = 21
-    ) +
-    ggrepel::geom_label_repel(
-      data = max_date,
-      aes(label = .data$label),
-      hjust = 0,
-      nudge_x = days_in_data * 0.05,
-      label.padding = 0.01,
-      label.size = NA,
-      lineheight = 0.9,
-      point.padding = unit(0, "lines"),
-      direction = "y",
-      seed = 123,
-      show.legend = FALSE,
-      min.segment.length = unit(5, "lines"),
-      size = 14 / .pt
-    ) +
+    djpr_ts_linechart(
+      col_var = .data$gcc_restofstate,
+      label_num = paste0(round(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")) +
     facet_wrap(~indicator, scales = "free_y") +
-    djprtheme::theme_djpr() +
-    djpr_colour_manual(2) +
-    scale_y_continuous(
-      breaks = scales::breaks_pretty(4),
-      labels = function(x) paste0(x, "%")
-    ) +
-    scale_x_date(
-      expand = expansion(
-        add = c(0, days_in_data * 0.25)
-      ),
-      date_labels = "%b\n%Y"
-    ) +
-    coord_cartesian(clip = "off") +
     theme(
       axis.title = element_blank(),
       panel.spacing = unit(1.5, "lines")
@@ -1242,5 +1321,581 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       title = title,
       subtitle = "Employment to population ratio and unemployment rate and in Greater Melbourne and the rest of Victoria",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
+    )
+}
+
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
+                                                       "A84600075R",
+                                                       "A84599625R",
+                                                       "A84599781T",
+                                                       "A84599607K",
+                                                       "A84600243R",
+                                                       "A84599715V",
+                                                       "A84599631K"
+                                                     ),
+                                                     df = dash_data
+                                                     ) %>%
+                                                       dplyr::group_by(.data$series_id) %>%
+                                                       dplyr::mutate(
+                                                         value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+                                                       ) %>%
+                                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
+  df <- data %>%
+    dplyr::mutate(
+      state = dplyr::case_when(
+        .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
+        "Reg. Vic",
+        .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
+        "Reg. NSW",
+        .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
+        "Reg. QLD",
+        .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
+        "Reg. NT",
+        .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
+        "Reg. WA",
+        .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
+        "Reg. SA",
+        .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
+        "Reg. Tas",
+        TRUE ~ .data$state
+      )
+    ) %>%
+    dplyr::mutate(
+      state_group = dplyr::if_else(
+        .data$state %in% c(
+          "Reg. Vic", "Reg. NSW"
+        ),
+        .data$state,
+        "Other"
+      )
+    )
+
+  df <- df %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+
+  latest <- df %>%
+    dplyr::select(.data$date, .data$state, .data$value) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    ungroup() %>%
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value))
+
+  vic_level_raw <- round2(latest$value[latest$state == "Reg. Vic"], 1)
+  vic_rank <- latest$rank[latest$state == "Reg. Vic"]
+  vic_level <- paste0(vic_level_raw, "%")
+  latest_date_pretty <- format(max(df$date), "%B %Y")
+  covid_date_pretty <- format(as.Date("2020-03-01"), "%B %Y")
+
+  title_part_1 <- dplyr::case_when(
+    sign(vic_level_raw) == 1 ~ paste0("rose by ", vic_level,
+                                      " between ", covid_date_pretty,
+                                      " and ", latest_date_pretty),
+    sign(vic_level_raw) == -1 ~ paste0("fell by ", vic_level,
+                                       " between ", covid_date_pretty,
+                                       " and ", latest_date_pretty),
+    sign(vic_level_raw) == 0 ~ paste0("was the same in",
+                                      latest_date_pretty,
+                                      "as it was in ",
+                                      covid_date_pretty)
+  )
+
+  title_part_2 <- dplyr::case_when(
+    vic_rank == 1 ~ "",
+    vic_rank == 2 ~ "second",
+    vic_rank == 3 ~ "third",
+    vic_rank == 4 ~ "fourth",
+    vic_rank == 5 ~ "fifth",
+    vic_rank == 6 ~ "sixth",
+    vic_rank == 7 ~ "seventh",
+    vic_rank == 8 ~ "eighth"
+  )
+
+  title <- paste0("Employment in regional Victoria ",
+         title_part_1,
+         " and has risen the ",
+         title_part_2,
+         " fastest of any Australian regional area")
+
+  other_colour <- "grey70"
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$state,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      hline = 0
+    ) +
+    scale_y_continuous(
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_colour_manual(values = c(
+      "Reg. Vic" = djprtheme::djpr_royal_blue,
+      "Reg. NSW" = djprtheme::djpr_green,
+      "Reg. NT" = other_colour,
+      "Reg. Tas" = other_colour,
+      "Reg. SA" = other_colour,
+      "Reg. QLD" = other_colour,
+      "Reg. WA" = other_colour
+    )) +
+    labs(
+      title = title,
+      subtitle = "Cumulative change in employment for regional states and territories of Australia since March 2020",
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average.")
+    )
+}
+
+viz_reg_regionstates_dot <- function(data = filter_dash_data(c(
+                                       "A84599628W",
+                                       "A84599629X",
+                                       "A84599630J",
+                                       "A84600078W",
+                                       "A84600079X",
+                                       "A84600080J",
+                                       "A84599784X",
+                                       "A84599785A",
+                                       "A84599786C",
+                                       "A84599718A",
+                                       "A84599719C",
+                                       "A84599720L",
+                                       "A84600246W",
+                                       "A84600247X",
+                                       "A84600248A",
+                                       "A84599634T",
+                                       "A84599635V",
+                                       "A84599636W",
+                                       "A84599610X",
+                                       "A84599611A",
+                                       "A84599612C"
+                                     ),
+                                     df = dash_data
+                                     ),
+                                     selected_indicator = "unemp_rate") {
+  df <- data %>%
+    dplyr::select(.data$date, .data$value, .data$series, .data$indicator) %>%
+    dplyr::mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  df <- df %>%
+    dplyr::mutate(
+      series = gsub(";.*", "", .data$series),
+      series = gsub(">> Rest of ", "Regional ", .data$series),
+      series = dplyr::if_else(grepl("Northern Territory", .data$series),
+        "Regional NT",
+        .data$series
+      ),
+      series = stringr::str_trim(.data$series)
+    )
+
+  # 3 month average
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(
+      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+    ) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup()
+
+  # select most current and one year prior
+  df <- df %>%
+    dplyr::filter(.data$date %in% c(
+      max(.data$date),
+      subtract_years(max(.data$date), 1)
+    ))
+
+  # create ranking
+  df <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(rank = dplyr::dense_rank(-.data$value)) %>%
+    dplyr::select(.data$rank, .data$series) %>%
+    dplyr::right_join(df, by = "series")
+
+  # create min_date and max_date
+  df_wide <- df %>%
+    dplyr::mutate(data_type = dplyr::if_else(.data$date == min(.data$date),
+      "min_date",
+      "max_date"
+    )) %>%
+    dplyr::select(.data$data_type, .data$value, .data$series, .data$rank) %>%
+    tidyr::spread(key = .data$data_type, value = .data$value) %>%
+    dplyr::mutate(arrow_end = dplyr::if_else(.data$max_date > .data$min_date,
+      .data$max_date - 0.08,
+      .data$max_date + 0.08
+    ))
+
+  latest_values <- df %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      .data$series == "Regional Vic."
+    ) %>%
+    dplyr::select(.data$series, .data$value, .data$date) %>%
+    tidyr::pivot_wider(names_from = .data$series, values_from = .data$value)
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
+  title <- paste0(
+    "The ", tolower(indic_long),
+    " in regional Victoria was ",
+    round2(latest_values$`Regional Vic.`, 1),
+    " per cent in ",
+    format(latest_values$date, "%B %Y")
+  )
+
+  df %>%
+    ggplot(aes(
+      x = stats::reorder(.data$series, .data$rank),
+      y = .data$value,
+      col = factor(.data$date)
+    )) +
+    geom_segment(
+      data = df_wide,
+      aes(
+        x = stats::reorder(.data$series, .data$rank),
+        xend = stats::reorder(.data$series, .data$rank),
+        y = .data$min_date,
+        yend = .data$arrow_end
+      ),
+      arrow = arrow(
+        angle = 25,
+        length = unit(0.5, "line"),
+        type = "closed"
+      ),
+      inherit.aes = FALSE
+    ) +
+    ggiraph::geom_point_interactive(
+      size = 4,
+      aes(tooltip = paste0(
+        .data$series,
+        "\n",
+        format(.data$date, "%B %Y"),
+        "\n",
+        round2(.data$value, 1), "%"
+      ))
+    ) +
+    ggrepel::geom_text_repel(
+      data = df %>%
+        dplyr::filter(.data$series == "Regional Vic."),
+      aes(label = format(.data$date, "%b %Y")),
+      size = 14 / .pt,
+      direction = "x",
+      force = 10,
+      min.segment.length = unit(10, "lines"),
+      nudge_x = 0.33
+    ) +
+    coord_flip() +
+    scale_y_continuous(
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(4),
+      expand = expansion(add = 0.5)
+    ) +
+    scale_colour_manual(
+      values = suppressWarnings(djpr_pal(10)[c(1, 8)])
+    ) +
+    theme_djpr(flipped = T) +
+    labs(
+      title = title,
+      subtitle = paste0(indic_long, " in regional areas of Australia"),
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average."),
+      y = paste0("", indic_long)
+    )
+}
+
+viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
+                                       "15-24_employed_rest of nsw",
+                                       "15-24_employed_rest of nt",
+                                       "15-24_employed_rest of qld",
+                                       "15-24_employed_rest of sa",
+                                       "15-24_employed_rest of tas.",
+                                       "15-24_employed_rest of vic.",
+                                       "15-24_employed_rest of wa",
+                                       "15-24_nilf_rest of nsw",
+                                       "15-24_nilf_rest of nt",
+                                       "15-24_nilf_rest of qld",
+                                       "15-24_nilf_rest of sa",
+                                       "15-24_nilf_rest of tas.",
+                                       "15-24_nilf_rest of vic.",
+                                       "15-24_nilf_rest of wa",
+                                       "15-24_unemployed_rest of nsw",
+                                       "15-24_unemployed_rest of nt",
+                                       "15-24_unemployed_rest of qld",
+                                       "15-24_unemployed_rest of sa",
+                                       "15-24_unemployed_rest of tas.",
+                                       "15-24_unemployed_rest of vic.",
+                                       "15-24_unemployed_rest of wa",
+                                       "25-54_employed_rest of nsw",
+                                       "25-54_employed_rest of nt",
+                                       "25-54_employed_rest of qld",
+                                       "25-54_employed_rest of sa",
+                                       "25-54_employed_rest of tas.",
+                                       "25-54_employed_rest of vic.",
+                                       "25-54_employed_rest of wa",
+                                       "25-54_nilf_rest of nsw",
+                                       "25-54_nilf_rest of nt",
+                                       "25-54_nilf_rest of qld",
+                                       "25-54_nilf_rest of sa",
+                                       "25-54_nilf_rest of tas.",
+                                       "25-54_nilf_rest of vic.",
+                                       "25-54_nilf_rest of wa",
+                                       "25-54_unemployed_rest of nsw",
+                                       "25-54_unemployed_rest of nt",
+                                       "25-54_unemployed_rest of qld",
+                                       "25-54_unemployed_rest of sa",
+                                       "25-54_unemployed_rest of tas.",
+                                       "25-54_unemployed_rest of vic.",
+                                       "25-54_unemployed_rest of wa",
+                                       "55+_employed_rest of nsw",
+                                       "55+_employed_rest of nt",
+                                       "55+_employed_rest of qld",
+                                       "55+_employed_rest of sa",
+                                       "55+_employed_rest of tas.",
+                                       "55+_employed_rest of vic.",
+                                       "55+_employed_rest of wa",
+                                       "55+_nilf_rest of nsw",
+                                       "55+_nilf_rest of nt",
+                                       "55+_nilf_rest of qld",
+                                       "55+_nilf_rest of sa",
+                                       "55+_nilf_rest of tas.",
+                                       "55+_nilf_rest of vic.",
+                                       "55+_nilf_rest of wa",
+                                       "55+_unemployed_rest of nsw",
+                                       "55+_unemployed_rest of nt",
+                                       "55+_unemployed_rest of qld",
+                                       "55+_unemployed_rest of sa",
+                                       "55+_unemployed_rest of tas.",
+                                       "55+_unemployed_rest of vic.",
+                                       "55+_unemployed_rest of wa"
+                                     ),
+                                     df = dash_data
+                                     ),
+                                     selected_indicator = "unemp_rate") {
+  df <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+    dplyr::ungroup()
+
+  df <- df %>%
+    dplyr::select(.data$date, .data$series, .data$value) %>%
+    tidyr::separate(
+      col = .data$series,
+      into = c("age", "indic", "geog"),
+      sep = " ; "
+    )
+
+  df <- df %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  # calculate participation, unemployment rate and employment to pop ratio for each regional area
+  df <- df %>%
+    tidyr::pivot_wider(
+      names_from = .data$indic,
+      values_from = .data$value
+    )
+
+  df <- df %>%
+    dplyr::group_by(.data$date, .data$age) %>%
+    dplyr::summarise(
+      Employed = sum(.data$Employed),
+      NILF = sum(.data$NILF),
+      Unemployed = sum(.data$Unemployed)
+    ) %>%
+    dplyr::mutate(geog = "Rest of Aus.") %>%
+    dplyr::bind_rows(df)
+
+  df <- df %>%
+    dplyr::mutate(
+      part_rate = 100 * ((.data$Employed + .data$Unemployed) / (.data$Employed + .data$Unemployed + .data$NILF)),
+      unemp_rate = 100 * (.data$Unemployed / (.data$Employed + .data$Unemployed)),
+      emp_pop = 100 * (.data$Employed / (.data$Employed + .data$Unemployed + .data$NILF))
+    )
+
+  # depending on selected_indicator, chose measure to be calculated
+  df <- df %>%
+    dplyr::rename(value = .env$selected_indicator) %>%
+    dplyr::select(.data$date, .data$age, .data$geog, .data$value)
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "unemployment rate",
+    selected_indicator == "part_rate" ~ "participation rate",
+    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
+  subtitle <- paste0(
+    "The ", indic_long,
+    " in regional areas by age in ", format(max(data$date), "%B %Y")
+  )
+
+  df <- df %>%
+    dplyr::mutate(state_group = dplyr::if_else(
+      .data$geog %in% c("Rest of Vic.", "Rest of Aus."), .data$geog, "Other"
+    ))
+
+  df <- df %>%
+    dplyr::mutate(
+      geog = gsub(";.*", "", .data$geog),
+      geog = gsub("Rest of ", "Regional ", .data$geog)
+    )
+
+  title_df <- df %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(.data$geog %in% c("Regional Aus.", "Regional Vic.")) %>%
+    dplyr::select(.data$age, .data$geog, .data$value) %>%
+    dplyr::group_by(.data$age) %>%
+    dplyr::mutate(rank = rank(.data$value))
+
+  title <- dplyr::case_when(
+    all(title_df$rank[title_df$geog == "Regional Vic."] == 1) ~
+    paste0(
+      "Regional Victoria had a lower ",
+      indic_long,
+      " than regional Australia across all age groups in ",
+      format(max(df$date), "%B %Y")
+    ),
+    title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 1 ~
+    paste0(
+      "Regional Victoria had a lower ",
+      indic_long,
+      " for young people than regional Australia in ",
+      format(max(df$date), "%B %Y")
+    ),
+    title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 2 ~
+    paste0(
+      "Regional Victoria had a higher ",
+      indic_long,
+      " for young people than regional Australia in ",
+      format(max(df$date), "%B %Y")
+    ),
+    TRUE ~
+    paste0(
+      "Regional ", indic_long, " by age by State and Territory, ",
+      format(max(df$date), "%B %Y")
+    )
+  )
+
+  max_value <- max(df$value)
+
+  df <- df %>%
+    dplyr::mutate(tooltip = paste0(
+      .data$geog, "\n",
+      round2(.data$value, 1), "%"
+    ))
+
+  # use patchwork to make three plots and tie them together
+  patch_1 <- df %>%
+    dplyr::filter(.data$age == "15-24") %>%
+    ggplot(aes(
+      x = stats::reorder(.data$geog, .data$value),
+      y = .data$value,
+      fill = .data$state_group
+    )) +
+    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
+    coord_flip() +
+    theme_djpr(flipped = TRUE) +
+    djpr_y_continuous(
+      limits = c(0, max_value),
+      breaks = scales::breaks_pretty(5)
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Rest of Vic." = djprtheme::djpr_royal_blue,
+        "Rest of Aus." = djprtheme::djpr_green,
+        "Other" = "grey75"
+      )
+    ) +
+    labs(subtitle = "Age 15-24") +
+    theme(
+      plot.subtitle = element_text(
+        hjust = 0.5,
+        colour = "black",
+        size = 14
+      ),
+      axis.title.x = element_blank(),
+      axis.text.x = element_blank()
+    )
+
+  patch_2 <- df %>%
+    dplyr::filter(.data$age == "25-54") %>%
+    ggplot(aes(
+      x = stats::reorder(.data$geog, .data$value),
+      y = .data$value,
+      fill = .data$state_group
+    )) +
+    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
+    coord_flip() +
+    theme_djpr(flipped = TRUE) +
+    djpr_y_continuous(
+      limits = c(0, max_value),
+      breaks = scales::breaks_pretty(5)
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Rest of Vic." = djprtheme::djpr_royal_blue,
+        "Rest of Aus." = djprtheme::djpr_green,
+        "Other" = "grey70"
+      )
+    ) +
+    labs(subtitle = "Age 25-54") +
+    theme(
+      plot.subtitle = element_text(
+        hjust = 0.5,
+        colour = "black",
+        size = 14
+      ),
+      axis.title.x = element_blank(),
+      axis.text.x = element_blank()
+    )
+
+  patch_3 <- df %>%
+    dplyr::filter(.data$age == "55+") %>%
+    ggplot(aes(
+      x = stats::reorder(.data$geog, .data$value),
+      y = .data$value,
+      fill = .data$state_group
+    )) +
+    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
+    coord_flip() +
+    theme_djpr(flipped = TRUE) +
+    djpr_y_continuous(
+      limits = c(0, max_value),
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_fill_manual(
+      values = c(
+        "Rest of Vic." = djprtheme::djpr_royal_blue,
+        "Rest of Aus." = djprtheme::djpr_green,
+        "Other" = "grey70"
+      )
+    ) +
+    labs(subtitle = "Age 55+") +
+    theme(
+      plot.subtitle = element_text(
+        hjust = 0.5,
+        colour = "black",
+        size = 14
+      ),
+      axis.title.x = element_blank()
+    )
+
+  patchwork::wrap_plots(
+    patch_1, patch_2, patch_3,
+    ncol = 1
+  ) +
+    patchwork::plot_annotation(
+      title = title,
+      subtitle = subtitle,
+      caption = paste0(caption_lfs_det_m(), " Data is smoothed using a 12 month rolling average."),
+      theme = theme_djpr()
     )
 }

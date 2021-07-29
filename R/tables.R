@@ -1,113 +1,137 @@
-#' Create a Reactable to summarise key ABS LFS indicators
-#' @param data A dataframe containing tidied ABS Labour Force Survey
-#' @param years_in_sparklines Numeric; indicating the number of years of data
-#' to include in the sparkline charts in the returned reactable.
-#' @param row_var String - variable name in data to use for row names,
-#' as in "indicator"
-#' @return A reactable (htmlwidget) including sparklines
-#' @author Darren Wong, Duy Nguyen
-#' @examples
-#' # Using the data available to this dashboard
-#' \dontrun{
-#' dash_data <- load_dash_data()
-#' table_ids <- c(
-#'   "A84423349V",
-#'   "A84423356T",
-#'   "A84423355R",
-#'   "A84423354L",
-#'   "A84423350C",
-#'   "A85223451R"
-#' )
-#'
-#' table_data <- filter_dash_data(table_ids)
-#'
-#' table_overview()
-#' }
-#'
-table_overview <- function(data = filter_dash_data(series_ids = c("A84423354L",
-                                                                    "A84423242V",
-                                                                    "A84423466F",
-                                                                    "A84433601W",
-                                                                    "A84600079X",
-                                                                    "A84423350C",
-                                                                    "A84423349V",
-                                                                    "A84423357V",
-                                                                    "pt_emp_vic",
-                                                                    "A84423461V",
-                                                                    "A84423237A",
-                                                                    "A84424687C",
-                                                                    "A84423355R",
-                                                                    "A84423243W",
-                                                                    "A84423467J",
-                                                                    "A84433602X",
-                                                                    "A84426256L",
-                                                                    "A85223450L",
-                                                                    "A85223451R",
-                                                                    "A84423356T")),
-                           years_in_sparklines = 2,
-                           row_var = "indicator") {
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @param data A dataframe containing data to be summarised and displayed;
+#' a DF returned by `filter_dash_data()` is expected
+#' @noRd
 
+table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                             unset = "dashboard"
+                           )) {
+  data <- filter_dash_data(series_ids = c(
+    "A84423354L",
+    "A84423242V",
+    "A84423466F",
+    "A84424691V",
+    "A84600079X", # Regional UR
+    "A84423350C",
+    "A84423349V",
+    "A84423357V",
+    "pt_emp_vic",
+    "A84423461V",
+    "A84423237A",
+    "A84424687C",
+    "A84423355R",
+    "A84423243W",
+    "A84423467J",
+    "A84424692W",
+    "A84426256L",
+    "A85223450L",
+    "A85223451R",
+    "A84423356T"
+  ),
+  df = dash_data)
+
+  # Youth data = 12m rolling average
   data <- data %>%
-    dplyr::mutate(
-      indicator = dplyr::case_when(
-        .data$series_id == "A84423242V" ~ "Male unemployment rate",
-        .data$series_id == "A84423466F" ~ "Female unemployment rate",
-        .data$series_id == "A84433601W" ~ "Youth unemployment rate",
-        .data$series_id == "A84423243W" ~ "Male participation rate",
-        .data$series_id == "A84423467J" ~ "Female participation rate",
-        .data$series_id == "A84433602X" ~ "Youth participation rate",
-        .data$series_id == "A84600079X" ~ "Regional unemployment rate",
-        TRUE ~ .data$indicator
-      )
-    )
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c(
+      "A84433601W",
+      "A84424691V",
+      "A84424687C",
+      "A84424692W"
+    ),
+    slider::slide_mean(.data$value, before = 11, complete = TRUE),
+    .data$value
+    )) %>%
+    dplyr::ungroup()
 
-  make_reactable(
+  # Regional data = 3m rolling average
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84600079X"),
+      slider::slide_mean(.data$value, before = 2, complete = TRUE),
+      .data$value
+    )) %>%
+    dplyr::ungroup()
+
+  make_table(
     data = data,
-    years_in_sparklines = years_in_sparklines,
-    row_var = row_var
+    destination = destination,
+    row_order = c(
+      "A84423354L",
+      "A84423242V",
+      "A84423466F",
+      "A84424691V",
+      "A84600079X",
+      "A84423350C",
+      "A84423349V",
+      "A84423357V",
+      "pt_emp_vic",
+      "A84423461V",
+      "A84423237A",
+      "A84424687C",
+      "A84423355R",
+      "A84423243W",
+      "A84423467J",
+      "A84424692W",
+      "A84426256L",
+      "A85223450L",
+      "A85223451R",
+      "A84423356T"
+    ),
+    highlight_rows = c(
+      "A84423354L",
+      "A84423349V",
+      "A84423355R",
+      "A84426256L",
+      "A85223450L",
+      "A85223451R",
+      "A84423356T"
+    ),
+    notes = " All data seasonally adjusted, other than youth figures, which are smoothed using a 12 month rolling average, and regional figures, which are smoothed using a 3 month rolling average."
   )
 }
 
-table_ind_employment <- function(data = filter_dash_data(c(
-                                   "A84423349V",
-                                   "A84423357V",
-                                   "A84423356T",
-                                   "A84423244X",
-                                   "A84423468K",
-                                   "pt_emp_vic"
-                                 )),
-                                 years_in_sparklines = 2,
-                                 row_var = "indicator") {
+table_ind_employment <- function(destination = "dashboard") {
+  data <- filter_dash_data(c(
+    "A84423349V",
+    "A84423357V",
+    "A84423356T",
+    "A84423244X",
+    "A84423468K",
+    "pt_emp_vic"
+  ))
+
   table_data <- data %>%
     mutate(indicator = if_else(.data$sex != "",
       paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  make_reactable_mem(table_data,
-    years_in_sparklines = years_in_sparklines,
-    row_var = row_var
+  make_table(table_data,
+    destination = destination
   )
 }
 
-table_ind_unemp_summary <- function(data = filter_dash_data(c(
-                                      "A84423354L", # Unemp rate
-                                      "A84423350C", # Unemp total
-                                      "A85223451R", # Underut rate
-                                      "A84433601W", # Youth unemp,
-                                      "A84423242V", # Male unemp
-                                      "A84423466F" # Female unemp
-                                    )),
-                                    years_in_sparklines = 2,
-                                    row_var = "indicator") {
+table_ind_unemp_summary <- function(destination = "dashboard") {
+  data <- filter_dash_data(c(
+    "A84423354L", # Unemp rate
+    "A84423350C", # Unemp total
+    "A85223451R", # Underut rate
+    "A84433601W", # Youth unemp,
+    "A84423242V", # Male unemp
+    "A84423466F" # Female unemp
+  ))
 
   # Youth unemployment = 12m rolling average
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
-                                         slider::slide_mean(.data$value, before = 11, complete = TRUE),
-                                         .data$value
+      slider::slide_mean(.data$value, before = 11, complete = TRUE),
+      .data$value
     )) %>%
     dplyr::ungroup()
 
@@ -117,26 +141,23 @@ table_ind_unemp_summary <- function(data = filter_dash_data(c(
       .data$indicator
     ))
 
-
-  make_reactable_mem(table_data,
-    years_in_sparklines = years_in_sparklines,
-    row_var = row_var
+  make_table(table_data,
+    destination = destination
   )
 }
 
-table_ind_hours_summary <- function(data = filter_dash_data(c(
-                                      "A84426256L" # , # Total hours
-                                    )),
-                                    years_in_sparklines = 2,
-                                    row_var = "indicator") {
+table_ind_hours_summary <- function(destination = "dashboard") {
+  data <- filter_dash_data(c(
+    "A84426256L" # , # Total hours
+  ))
+
   table_data <- data %>%
     mutate(indicator = if_else(.data$sex != "",
       paste0(.data$indicator, " (", .data$sex, ")"),
       .data$indicator
     ))
 
-  make_reactable_mem(table_data,
-    years_in_sparklines = years_in_sparklines,
-    row_var = row_var
+  make_table(table_data,
+    destination = destination
   )
 }

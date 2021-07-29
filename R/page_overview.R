@@ -11,7 +11,8 @@ page_overview <- function(...) {
       column(2),
       column(
         4,
-        ggiraph::girafeOutput("overview_ur_bar", height = "125px", width = "100%")
+        plotOutput("ur_bar_static", height = "125px")
+        # ggiraph::girafeOutput("overview_ur_bar", height = "125px", width = "100%")
       ),
       column(
         4,
@@ -29,11 +30,8 @@ page_overview <- function(...) {
     ),
     br(),
     centred_row(
-      tagList(
-        reactable::reactableOutput("main_table") %>%
-          djpr_with_spinner(hide.ui = TRUE),
-        caption_reactable("All data seasonally adjusted, other than the youth unemployment which is a 3 month rolling average of unadjusted data.")
-      )
+      uiOutput("main_table", height = "800px") %>%
+        djpr_with_spinner(hide.ui = TRUE)
     ),
     br(),
     centred_row(htmlOutput("overview_footnote")),
