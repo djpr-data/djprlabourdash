@@ -58,6 +58,8 @@ page_inclusion <- function(...) {
       )
     ),
     br(),
+    djpr_plot_ui("gr_youth_eduemp_waterfall"),
+    br(),
     h2(br(), "Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),
     djpr_plot_ui("gr_ltunvic_bar"),

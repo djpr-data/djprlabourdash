@@ -683,13 +683,21 @@ labour_server <- function(input, output, session) {
     })
   )
 
-  # output$gr_ages_line <- renderPlot({
-  #   viz_gr_ages_line(selected_indicator = input$youth_focus)
-  # })
-  #
-  # output$gr_yth_melbvrest_line <- renderPlot({
-  #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
-  # })
+  djpr_plot_server("gr_youth_eduemp_waterfall",
+                   plot_function = viz_gr_youth_eduemp_waterfall,
+                   data = filter_dash_data(c(
+                     "A84424598A",
+                     "A84424778K",
+                     "A84424597X",
+                     "A84424777J",
+                     "A84424600A",
+                     "A84424780W",
+                     "A84424694A"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
 
   # Inclusion: long term unemployment ------
 

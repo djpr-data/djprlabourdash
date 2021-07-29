@@ -1486,19 +1486,18 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     dplyr::select(.data$indicator, .data$perc, .data$date) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$perc) %>%
     dplyr::mutate(
-      vulnerable = (nafte_un + nafte_nilf),
-      labour_force = (nafte_un + afe_un_total + afe_emplo_total + nafl_emplo_total),
-      unemployed_total = (nafte_un + afe_un_total)
+      vulnerable = (nafte_un + nafte_nilf)
     ) %>%
-    dplyr::select(.data$date, .data$vulnerable, .data$labour_force, .data$unemployed_total)
+    dplyr::select(.data$date, .data$vulnerable)
 
 
   title <- paste0(
+    "In ",
+    format(df_title$date, "%B %Y"),
+    ", ",
     round2(df_title$vulnerable, 1),
-    " per cent of Victorian aged 15-24 years, were not in education and either not in the labour force or unemployed, a group most at risk of becoming long term unemployed ",
-    format(df$date, "%B %Y")
-  ) %>%
-    unique()
+    " per cent of Victorians aged 15-24 years were not in education and not in work, a group most at risk of becoming long term unemployed"
+  )
 
   df <- df %>%
     dplyr::mutate(
@@ -1572,28 +1571,29 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
       y = y_end,
       label = bar_label
     ),
-    nudge_y = 28,
+    nudge_y = 35,
     lineheight = 0.9,
     size = 12 / .pt
     ) +
-    geom_text(
-      data = data.frame(x = 1.55, y = 221.94, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
+    geom_label(
+      data = data.frame(x = 1.55, y = 230, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
       mapping = aes(x = x, y = y, label = label),
-      size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE
+      size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE,
+      label.size = 0
     ) +
     theme_djpr() +
     scale_colour_manual(values = c(
       "Vulnerable" = djprtheme::djpr_royal_blue,
       "Other" = "grey65"
     )) +
-    djpr_y_continuous(expand_top = 0.025) +
+    djpr_y_continuous(expand_top = 0.075) +
     theme(
       axis.title = element_blank(),
       axis.text.y = element_text(size = 12)
     ) +
     labs(
       title = title,
-      subtitle = "Victorian youth education and employment status ('000).",
+      subtitle = "Education and labour force status of Victorian youths ('000s)",
       caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 }
