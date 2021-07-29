@@ -764,15 +764,43 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                            "A84599683L",
                                            "A84599929A",
                                            "A84600121T",
-                                           "A84600037A"
-                                         ),
-                                         df = dash_data
-                                         ) %>%
-                                           dplyr::group_by(.data$series_id) %>%
-                                           dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE))) {
-  df_summ <- data %>%
+                                           "A84600037A"),
+                                         df = dash_data),
+                                         selected_indicator = "all")  #all, metro or regional
+{
+  df <- data %>%
+    dplyr::mutate(
+      sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
+    dplyr::mutate(
+      geog = dplyr::if_else(grepl("Melbourne", .data$sa4),
+                            "Melbourne",
+                            .data$sa4)
+    ) %>%
+    dplyr::mutate(indicator_short = dplyr::case_when(
+      .data$geog == "Victoria" ~ "vic",
+      .data$geog == "Melbourne" ~ "metro",
+      TRUE ~ "regional"
+    ))
+
+  # Reduce df depending on selected_indicator
+
+
+
+
+  # 3 months smoothing
+  df <- df %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE))
+
+  df <- df %>%
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+                                       "Warrnambool & S. West",
+                                       .data$sa4
+    ))
+
+  df_summ <- df %>%
     dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
+#    dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(
       vic = .data$value[.data$sa4 == "Victoria"],
