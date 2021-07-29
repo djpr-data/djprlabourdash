@@ -899,7 +899,7 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_gen_full_part_line <- function(data = filter_dash_data(c(
+viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
                                         "A84423349V",
                                         "A84423357V"
                                       ),
