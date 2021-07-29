@@ -5,7 +5,12 @@
 \title{Take a data frame summarising data and create a flextable for
 a briefing table}
 \usage{
-make_briefing_table(df, highlight_rows = NULL)
+make_briefing_table(
+  df,
+  highlight_rows = NULL,
+  header_row = c("", "Current figures", "Change in past month", "Change in past year",
+    "Change during govt")
+)
 }
 \arguments{
 \item{df}{Dataframe created using \code{create_summary_df()}}

@@ -5,8 +5,10 @@
 \title{Create a Reactable to summarise key ABS LFS indicators}
 \usage{
 table_overview(
-  data = filter_dash_data(series_ids = c("A84423349V", "A84423355R", "A84423354L",
-    "A84423350C", "A85223451R", "A84426256L", "A85223450L", "A84423357V", "pt_emp_vic")),
+  data = filter_dash_data(series_ids = c("A84423354L", "A84423242V", "A84423466F",
+    "A84433601W", "A84600079X", "A84423350C", "A84423349V", "A84423357V", "pt_emp_vic",
+    "A84423461V", "A84423237A", "A84424687C", "A84423355R", "A84423243W", "A84423467J",
+    "A84433602X", "A84426256L", "A85223450L", "A85223451R", "A84423356T")),
   years_in_sparklines = 2,
   row_var = "indicator"
 )

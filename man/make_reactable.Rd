@@ -8,7 +8,8 @@ make_reactable(
   data,
   years_in_sparklines = 2,
   row_var = "indicator",
-  row_order = NULL
+  row_order = NULL,
+  highlight_rows = NULL
 )
 }
 \arguments{
@@ -23,6 +24,10 @@ the table - as in "indicator"}
 \item{row_order}{If \code{NULL}, table will be sorted in alphabetical order.
 Otherwise, \code{row_order} should be a vector of row names in the order in which
 you want them to appear in the table.}
+
+\item{highlight_rows}{numeric vector of rows in the table body (ie.
+excluding column names / header row) to highlight. Non-highlighted rows
+will be indented. When \code{NULL}, no row is highlighted.}
 }
 \description{
 Each row is an indicator; columns are levels / change over particular periods
