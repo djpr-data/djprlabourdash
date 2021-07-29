@@ -503,16 +503,16 @@ labour_server <- function(input, output, session) {
 
   # Inclusion: women and men -----
   # Groups: line chart of emp-pop by sex
-  djpr_plot_server("gr_emppopratio_line",
-    viz_gr_emppopratio_line,
-    data = filter_dash_data(c(
-      "A84423356T",
-      "A84423244X",
-      "A84423468K"
-    )),
-    date_slider_value_min = Sys.Date() - (365.25 * 10),
-    plt_change = plt_change
-  )
+  djpr_plot_server("gr_gen_emppopratio_line",
+                   plot_function = viz_gr_gen_emppopratio_line,
+                   data = filter_dash_data(c(
+                     "A84423244X",
+                     "A84423468K"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   plt_change = plt_change)
 
   # Bar chart: LF status by sex, latest month
 

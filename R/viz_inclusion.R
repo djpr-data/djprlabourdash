@@ -872,62 +872,6 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 #     )
 # }
 
-viz_gr_emppopratio_line <- function(data = filter_dash_data(c(
-                                      "A84423356T",
-                                      "A84423244X",
-                                      "A84423468K"
-                                    ))) {
-  df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(.data$sex == "",
-      "Persons",
-      .data$sex
-    ))
-
-  latest_year <- df %>%
-    dplyr::group_by(.data$sex) %>%
-    dplyr::mutate(d_year = .data$value - dplyr::lag(.data$value, 12)) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(.data$date, .data$sex, .data$d_year) %>%
-    tidyr::spread(key = .data$sex, value = .data$d_year)
-
-  nice_date <- format(latest_year$date, "%B %Y")
-
-  title <- dplyr::case_when(
-    latest_year$Females > 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "A larger proportion of Victorian men and women are in work in ",
-      nice_date, " than a year earlier"
-    ),
-    latest_year$Females > 0 &
-      latest_year$Males < 0 ~
-    paste0(
-      "The proportion of Victorian women in work rose over the year to ",
-      nice_date, " but the male employment to population ratio fell"
-    ),
-    latest_year$Females < 0 &
-      latest_year$Males > 0 ~
-    paste0(
-      "The proportion of Victorian men in work rose over the year to ",
-      nice_date, " but the female employment to population ratio fell"
-    ),
-    TRUE ~ "Employment to population ratio for Victorian men and women"
-  )
-
-  df %>%
-    djpr_ts_linechart(
-      col_var = .data$sex,
-      label_num = paste0(round2(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
-    ) +
-    labs(
-      title = title,
-      subtitle = "Employment to population ratio by sex, Victoria",
-      caption = caption_lfs()
-    )
-}
-
-
 # long-term unemployment
 
 viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
@@ -1696,36 +1640,35 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
                      max_date = max(.data$date))
 
   # Create title
-  latest_change <- df %>%
-    dplyr::filter(!grepl("Average", .data$indicator)) %>%
-    dplyr::select(.data$date, .data$sex, .data$value, .data$indicator) %>%
+  title_df <- df %>%
     dplyr::group_by(.data$sex) %>%
-    dplyr::arrange(.data$date) %>%
-    dplyr::mutate(value = (.data$value - dplyr::lag(.data$value, 1))) %>%
-    dplyr::filter(date == max(.data$date)) %>%
-    dplyr::ungroup() %>%
-    tidyr::pivot_wider(
-      names_from = .data$sex,
-      values_from = .data$value
-    ) %>%
-    dplyr::mutate(
-      date = format(.data$date, "%B %Y")
-    )
+    dplyr::summarise(latest_value = .data$value[.data$date == max(.data$date)]) %>%
+    dplyr::left_join(ave_df, by = "sex") %>%
+    dplyr::mutate(diff = latest_value - ave,
+                  diff_desc = dplyr::case_when(
+                    diff > 1 ~ "well above",
+                    diff < -1 ~ "well below",
+                    diff > 0  ~ "slightly above",
+                    diff < 0 ~ "slightly below",
+                    diff == 0 ~ "equal to"
+                  ))
 
-
-  title <- dplyr::case_when(
-    latest_change$Females > latest_change$Males ~
-    paste0("The change in females employment to population ratio in ", latest_change$date, " was higher than males"),
-    latest_change$Females < latest_change$Males ~
-    paste0("The change in females employment to population ratio in ", latest_change$date, " was lower than males"),
-    latest_change$Females == latest_change$Males ~
-    paste0("The change in females employment to population ratio in ", latest_change$date, " was the same as males"),
-    TRUE ~ "Employment to population ratio by gender"
-  )
-
+  title <- paste0("The proportion of Victorian women in work was ",
+         title_df$diff_desc[title_df$sex == "Females"],
+         " its long-run average in ",
+         format(unique(title_df$max_date), "%B %Y"),
+         ", while the rate for men was ",
+         title_df$diff_desc[title_df$sex == "Males"],
+         " its long-run average")
 
 
   df %>%
+    dplyr::mutate(tooltip =
+                    paste0(
+                      .data$sex, "\n",
+                      format(.data$date, "%b %Y"), "\n",
+                      round2(.data$value, 1), "%"
+                    )) %>%
     djpr_ts_linechart(
       col_var = .data$sex,
       label_num = paste0(round2(.data$value, 1), "%"),
@@ -1742,17 +1685,16 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     geom_text(data = ave_df,
               aes(x = max_date,
                   y = ave,
-                  label = paste0("Average", .data$ave, "%")),
+                  label = paste0("Average\n", round2(.data$ave, 1), "%")),
               hjust = 1,
-              nudge_y = 0.5,
-              size = 14 / .pt,
-              vjust = 0) +
+              nudge_y = -0.5,
+              size = 12 / .pt,
+              vjust = 1) +
     labs(
-      subtitle = "Employment to population ratio by gender for Victoria ",
+      subtitle = "Employment to population ratio by sex for Victoria ",
       caption = caption_lfs(),
       title = title
-    ) +
-    facet_wrap(~sex, ncol = 1, scales = "free_y")
+    )
 }
 
 viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
