@@ -360,6 +360,19 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: cumulative change in PT / FT since COVID
+  djpr_plot_server("ind_gen_full_part_line",
+                   plot_function = viz_ind_gen_full_part_line,
+                   data = filter_dash_data(c(
+                     "pt_emp_vic",
+                     "A84423357V"
+                   ),
+                   df = dash_data
+                   ) %>%
+                     dplyr::filter(date >= as.Date("2020-01-01")),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
   # Indicators: unemployment ------
   output$ind_unemp_summary <- renderUI({
     table_ind_unemp_summary() %>%
