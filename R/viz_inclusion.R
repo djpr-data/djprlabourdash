@@ -1689,14 +1689,11 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
   min_year <- format(min(df$date), "%Y")
   max_year <- format(max(df$date), "%Y")
 
-  df1 <- df %>%
-    dplyr::mutate(indicator = paste0("Average ", min_year, "-", max_year)) %>%
-    dplyr::group_by(.data$sex, .data$indicator) %>%
-    dplyr::mutate(value = mean(.data$value)) %>%
-    dplyr::ungroup()
-
-  df <-
-    dplyr::bind_rows(df1, df)
+  ave_df <- df %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::summarise(ave = mean(.data$value),
+                     min_date = min(.data$date),
+                     max_date = max(.data$date))
 
   # Create title
   latest_change <- df %>%
@@ -1730,15 +1727,26 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
 
   df %>%
     djpr_ts_linechart(
-      col_var = .data$indicator,
+      col_var = .data$sex,
       label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%"),
       x_expand_mult = c(0, 0.22)
     ) +
-    scale_colour_manual(values = rev(c(
-      djpr_pal(2),
-      "grey60"
-    ))) +
+    geom_segment(data = ave_df,
+                 aes(x = min_date,
+                     xend = max_date,
+                     y = ave,
+                     yend = ave),
+                 size = 1,
+                 linetype  = 2) +
+    geom_text(data = ave_df,
+              aes(x = max_date,
+                  y = ave,
+                  label = paste0("Average", .data$ave, "%")),
+              hjust = 1,
+              nudge_y = 0.5,
+              size = 14 / .pt,
+              vjust = 0) +
     labs(
       subtitle = "Employment to population ratio by gender for Victoria ",
       caption = caption_lfs(),
