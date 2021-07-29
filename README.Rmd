@@ -9,8 +9,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  fig.retina = 2
 )
+library(djprlabourdash)
+
 ```
 
 # djprlabourdash
@@ -54,10 +57,199 @@ devtools::install_github("djpr-data/djprlabourdash", dependencies = TRUE)
 
 There are three types of branches in this repository:
 
-1.  The `main` branch contains the code corresponding to the current live dashboard. When any changes are made in `main`, an automatic process is triggered via GitHub Actions that re-deploys the Shiny web app - ie. it updates the live dashboard to reflect any changes made in `main`. Changes to `main` are almost always made via pull requests from `dev`. The only exception to this is urgent 'hotfix' changes made by the project administrator.
+1.  The `main` branch contains the code corresponding to the current live dashboard.
 
-2.  The `dev` branch is the main working branch for the repository. Code from project contributors is added in 'feature branches' which are then merged into `dev`, tested, then merged into `main`.
+2.  The `dev` branch is the main working branch for the repository. This is where contributions by different people are integrated and tested before being deployed to the live dashboard.
 
-3.  Feature branches are created by project contributors to add or modify code. For example, a feature branch might be created to add a new function, or a range of new functions, to the code base. Branches are created off `dev` and are merged back into `dev` through a pull request when work is completed.
+3.  Feature branches are created by project contributors to add or modify the dashboard's functionality.
 
-![](images/djprlabourdash%20git%20branches.png)
+```{r, include=FALSE}
+# drawn at https://app.diagrams.net/
+```
+
+![](images/djprlabourdash%20git%20branches.svg)
+
+When any changes are made in `main`, an automatic process is triggered via GitHub Actions that re-deploys the Shiny web app - ie. the live dashboard is updated to reflect any changes made in `main`. Changes to `main` are almost always made via pull requests from `dev`. The only exception to this are urgent 'hotfix' changes made by the project administrator.
+
+Code from project contributors is always added in 'feature branches' which are then merged into `dev`, tested, then merged into `main`.
+
+## Folder structure and key files
+
+Because `djprlabourdash` is structured as an R package, the folder structure reflects R package conventions. These include:
+
+-   All functions in the package live in files ending in `.R` in the `/R` subfolder of the package.
+
+-   Documentation for individual functions lives in `.Rd` files in the `/man` subfolder of the package. These are created automatically based on [special comments in .R files](https://r-pkgs.org/man.html?q=roxy#roxygen-comments) and should not be edited directly.
+
+-   Code to create data used by the package ('internal data') is saved in `/data-raw`. This folder also contains some code ('scratchpads') that is used to test certain functions and can ultimately be discarded.
+
+-   Tests that ensure functions do what they are expected to do are saved in `/tests`.
+
+There are some other files and folders of note:
+
+-   [DESCRIPTION](https://r-pkgs.org/description.html#pkg-description) is a file included in all R packages that descriptions what the package does, who created it, and what other packages the package depends on ('imports'). Package contributors should generally not edit this file directly - if an additional package needs to be added, use `usethis::use_package("packagename")`.
+
+-   [NAMESPACE](https://r-pkgs.org/namespace.html?q=NAMESPACE#namespace) is another file included in all R packages. It tells R which functions from this package should be made available to users ("exported") and which functions from other packages should be available to this package ("imported"). It shouldn't be directly edited.
+
+-   `/.github` contains code for GitHub to execute using [Github Actions](https://docs.github.com/en/actions). This includes instructions to check the package (using [R CMD check](https://r-pkgs.org/r-cmd-check.html)) to make sure that it passes all the built-in tests and does what an R package is expected to do - this is done whenever anyone initiates a pull request to the `main` or `dev` branches. It also includes instructions to deploy the dashboard to shinyapps.io whenever anything is changed in the `main` branch. Package contributors should not edit these files.
+
+-   `/rsconnect` contains information used as part of the deployment of the dashboard to shinyapps.io. These files are created automatically and should not be directly edited.
+
+## Code structure
+
+As noted above, all functions live in the `/R` folder of the package. The key files for contributors to be aware of are:
+
+-   Files starting with `viz_` contain functions to make the graphs on the dashboard.
+
+-   Files starting with `page_` define the user interface for individual pages of the dashboard.
+
+-   The `labour_app.R` file contains the server-side code for the Shiny app.
+
+There are some other files related to tables and utility functions.
+
+## Dashboard data
+
+All data in the dashboard is publicly available. The [`djprdashdata` repository](https://github.com/djpr-data/djprdashdata) extracts this data from the ABS, minimally transforms it, and stores it. See [`djprdashdata`](https://github.com/djpr-data/djprdashdata) for further information about data extraction and storage.
+
+### Loading dashboard data
+
+Data is loaded into the dashboard using the function `djprlabourdash::load_dash_data()`. This function is executed once at the start of each dashboard session, ensuring any upstream change in the data is (nearly) immediately reflected on the dashboard itself.
+
+In interactive sessions where a contributor is working with the dashboard data, the following command should be run at the beginning of the session:
+
+```{r}
+# First, run `load_all()` to ensure that this package's functions are available
+# devtools::load_all()
+dash_data <- load_dash_data()
+```
+
+Note that `dash_data` is a data frame (tibble) with a nested structure. Each row of the tibble corresponds to an ABS series ID. The `data` column of the tibble contains a list of tibbles that must be unnested prior to use.
+
+```{r}
+dash_data
+```
+
+### Filtering dashboard data
+
+Users generally work with the `dash_data` object using the `filter_dash_data()` function. This function takes a vector of ABS time series ID(s) and returned a tibble containing the corresponding data. This output is unnested for the user, meaning that project contributors can generally ignore the nested nature of `dash_data`.
+
+A lookup table of series IDs is available from the `djprdashdata` package:
+
+```{r}
+djprdashdata::lfs_lookup
+```
+
+If a user wanted to get a data frame with the number of unemployed people in Bendigo each month from 1998 to present, they would use `filter_dash_data()` as follows:
+
+```{r}
+bendigo_unemp <- filter_dash_data("A84600028X")
+bendigo_unemp
+```
+
+It is then straightforward to visualise this. We will use the `djprshiny::djpr_ts_linechart()` convenience function, which creates a ggplot2 object that generally meets our style guide:
+
+```{r}
+bendigo_unemp %>%
+  djpr_ts_linechart()
+```
+
+### `viz_` files
+
+Most contributions to the dashboard will come in the `viz_` files. These contain the code that creates the graphs on the dashboard.
+
+Generally, each graph has its own function -- the only exception are some functions that produce multiple related graphs that are combined with `{patchwork}`.
+
+### Naming graph functions
+
+Graph functions all **must start with `viz_`**. The general naming convention is:
+
+`viz_page_content_charttype()`
+
+where:
+
+-   `page` is an abbreviated version of the page name - like `ind` for the Indicators page;
+
+-   `content` provides some indication of the subject of the chart, like `partrate` for a chart of the participation rate; and
+
+-   `charttype` indicates the type of chart, such as `bar` for a bar chart.
+
+So the `viz_ind_partrate_bar()` function, for example, produces this chart:
+
+```{r}
+djprlabourdash:::viz_ind_partrate_bar()
+```
+
+### Graph functions' arguments
+
+**Each `viz_` function must have a first argument called `data`**. It can optionally have other arguments. **All arguments to `viz_` functions must have defaults supplied.**
+
+Generally, the default to the `data` argument will involve a call to `filter_dash_data()`. This function takes a vector of ABS time series ID(s) and returns a dataframe containing the data corresponding to those IDs, if it is present in the data loaded into the dashboard.
+
+These are examples of **good `viz_` functions** that satisfy these requirements:
+
+```{r, eval=FALSE}
+# This is good
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  data %>%
+    djpr_ts_linechart()
+}
+
+# This is also good
+viz_fake_function <- function(data = filter_dash_data("A84600028X"),
+                              min_date = as.Date("2010-01-01")) {
+  data %>%
+    dplyr::filter(.data$date >= min_date) %>%
+    djpr_ts_linechart()
+}
+
+```
+
+These are examples of **bad `viz_` functions** that do not satisfy the requirements:
+```{r, eval=FALSE}
+# THIS IS NOT OK - no data argument
+viz_fake_function <- function() {
+  filter_dash_data("A84600028X") %>%
+    djpr_ts_linechart()
+}
+
+# THIS IS NOT OK - no default supplied to data argument 
+viz_fake_function <- function(data) {
+  data %>%
+    djpr_ts_linechart()
+}
+
+# THIS IS NOT OK - no default supplied to min_date argument 
+viz_fake_function <- function(data = filter_dash_data("A84600028X"),
+                              min_date) {
+  data %>%
+    dplyr::filter(.data$date >= min_date) %>%
+    djpr_ts_linechart()
+}
+```
+
+### Graph functions' output
+
+All `viz_` functions must return a single object, which must be a ggplot2 plot. The automated tests that are run on the package test that each `viz_` function returns a ggplot2 plot -- ie. a single object that inherits class `gg` - and these tests will fail where this is not true.
+
+If multiple plots are returned, they should be combined using the `{patchwork}` package, which returns objects of class `gg`.
+
+These are examples of **good `viz_` functions** that return a `gg` object:
+```{r, eval = FALSE}
+# This is good - returns a single ggplot2 object
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  data %>%
+    djpr_ts_linechart()
+}
+
+# This is also good - returns a single ggplot2 object
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  data %>%
+    ggplot(aes(x = date, y = value)) +
+    geom_line() +
+    djprtheme::theme_djpr()
+}
+
+# This is also good - returns a {patchwork} object containing subplots
+
+
+```
