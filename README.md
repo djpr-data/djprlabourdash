@@ -279,11 +279,11 @@ bendigo_unemp %>%
 Most contributions to the dashboard will come in the `viz_` files. These
 contain the code that creates the graphs on the dashboard.
 
-Generally, each graph has its own function – the only exception are some
-functions that produce multiple related graphs that are combined with
-`{patchwork}`.
+Generally, **each graph has its own function** – the only exception are
+some functions that produce multiple related graphs that are combined
+with `{patchwork}`.
 
-### Naming graph functions
+### Graph functions’ names
 
 Graph functions all **must start with `viz_`**. The general naming
 convention is:
@@ -309,6 +309,12 @@ djprlabourdash:::viz_ind_partrate_bar()
 ```
 
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
+
+The different options for the `page` part of the `viz_` function names
+are: - `overview` for graphs on the Overview page; - `ind` for graphs on
+the Indicators page; - `gr` for graphs on the Inclusion page (formerly
+known as Groups); - `reg` for graphs on the Regions page; - `industries`
+for graphs on the Industries page.
 
 ### Graph functions’ arguments
 
@@ -518,3 +524,47 @@ djpr_plot_server(id = "ind_emppop_state_slope",
                    "A84423342C"
                    )))
 ```
+
+## Adding a chart to the dashboard: a step-by-step guide
+
+1.  If you do not already have a GitHub account, [create
+    one](https://github.com/join). Then ask Matt Cowgill or another
+    Data + Analytics administrator to add you to the `djpr-data` GitHub
+    team.
+2.  As a once-off step, you will need to create a local version of the
+    `djprlabourdash` repository on your machine. In RStudio, click
+    `File` -&gt; `New Project` -&gt; `Version Control` -&gt; `Git.` Then
+    paste the GitHub repository URL for `djprdashdata` and choose a
+    location for the project on your disk. Note that this copy of the
+    repository is just for you, so put it in a location that only you
+    have access to.
+3.  Create a new branch on GitHub in `djprlabourdash` from the `dev`
+    branch.
+4.  In RStudio, click the `Git` pane (by default this is in the
+    upper-right hand quadrant of the RStudio window). Click `Pull` then
+    switch to your new branch.
+5.  Open the relevant `viz_*.R` file from the `R` folder of the
+    repository. For example, if you want to contribute a chart to the
+    Indicators page, open `viz_indicators.R`.
+6.  Ensure you have nothing in your environment (if you click the
+    `Environment` pane in RStudio, there should be nothing there. Click
+    the broom icon to clear your environment.)
+7.  Run `devtools::load_all()` to make the functions of `djprlabourdash`
+    available to you.
+8.  To help you in the process of writing your graph function, download
+    the dashboard’s data and assign it to an object called `dash_data`,
+    by running this line:
+
+``` r
+dash_data <- load_dash_data()
+```
+
+9.  Add a new function to the `viz_*.R` file that is called `viz_`
+    something - eg. `viz_ind_emppop_state_slope` - and satisfies the
+    rules set out above. In short, it should have a `data` argument, it
+    can optionally have other arguments, all arguments must have default
+    values specified, and it must return a ggplot2 object.
+10. Check that your function works by running it in the console.
+11. Check that the dashboard (including your new function) passes the
+    automated test by clicking `Build` -&gt; `Check` in RStudio.
+12. 
