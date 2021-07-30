@@ -172,7 +172,6 @@ the session:
 ``` r
 # First, run `load_all()` to ensure that this package's functions are available
 # devtools::load_all()
-library(djprshiny)
 dash_data <- load_dash_data()
 ```
 
@@ -274,6 +273,8 @@ It is then straightforward to visualise this. We will use the
 ggplot2 object that generally meets our style guide:
 
 ``` r
+library(djprshiny)
+
 bendigo_unemp %>%
   djpr_ts_linechart()
 ```
