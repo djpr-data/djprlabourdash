@@ -1,5 +1,7 @@
 ---
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -120,6 +122,7 @@ In interactive sessions where a contributor is working with the dashboard data, 
 ```{r}
 # First, run `load_all()` to ensure that this package's functions are available
 # devtools::load_all()
+library(djprshiny)
 dash_data <- load_dash_data()
 ```
 
@@ -153,7 +156,7 @@ bendigo_unemp %>%
   djpr_ts_linechart()
 ```
 
-### `viz_` files
+## `viz_` files
 
 Most contributions to the dashboard will come in the `viz_` files. These contain the code that creates the graphs on the dashboard.
 
@@ -186,7 +189,6 @@ djprlabourdash:::viz_ind_partrate_bar()
 Generally, the default to the `data` argument will involve a call to `filter_dash_data()`. This function takes a vector of ABS time series ID(s) and returns a dataframe containing the data corresponding to those IDs, if it is present in the data loaded into the dashboard.
 
 These are examples of **good `viz_` functions** that satisfy these requirements:
-
 ```{r, eval=FALSE}
 # This is good
 viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
@@ -243,6 +245,14 @@ viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
 
 # This is also good - returns a single ggplot2 object
 viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  my_plot <- data %>%
+    djpr_ts_linechart()
+  
+  my_plot
+}
+
+# This is also good - returns a single ggplot2 object
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
   data %>%
     ggplot(aes(x = date, y = value)) +
     geom_line() +
@@ -250,6 +260,105 @@ viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
 }
 
 # This is also good - returns a {patchwork} object containing subplots
+viz_fake_function <- function(data = filter_dash_data(c("A84599665J",
+                                                        "A84600028X"))) {
+  
+  plot_1 <- data %>%
+    dplyr::filter(.data$series_id == "A84599665J") %>%
+    djpr_ts_linechart() +
+    labs(subtitle = "Number of unemployed people in Ballarat (000s)")
+  
+  plot_2 <- data %>%
+    dplyr::filter(.data$series_id == "A84600028X") %>%
+    djpr_ts_linechart() +
+    labs(subtitle = "Number of unemployed people in Bendigo (000s)")
+  
+  patchwork::wrap_plots(plot_1, plot_2, ncol = 1)
+}
+```
 
+These are examples of **bad `viz_` functions** that do not return a single `gg` object:
+```{r, eval = FALSE}
+# THIS IS NOT OK - doesn't return anything
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  my_plot <- data %>%
+    djpr_ts_linechart()
+}
+
+# THIS IS NOT OK - returns something other than a `gg` object
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  my_plot <- data %>%
+    djpr_ts_linechart()
+  
+  data
+}
+
+# THIS IS NOT OK - the function makes two plots, but only one is returned
+viz_fake_function <- function(data = filter_dash_data(c("A84599665J",
+                                                        "A84600028X"))) {
+  
+  plot_1 <- data %>%
+    dplyr::filter(.data$series_id == "A84599665J") %>%
+    djpr_ts_linechart() +
+    labs(subtitle = "Number of unemployed people in Ballarat (000s)")
+  
+  data %>%
+    dplyr::filter(.data$series_id == "A84600028X") %>%
+    djpr_ts_linechart() +
+    labs(subtitle = "Number of unemployed people in Bendigo (000s)")
+}
+
+# THIS IS NOT OK - the function returns a list of `gg` objects
+viz_fake_function <- function(data = filter_dash_data(c("A84599665J",
+                                                        "A84600028X"))) {
+  
+  plot_1 <- data %>%
+    dplyr::filter(.data$series_id == "A84599665J") %>%
+    djpr_ts_linechart() +
+    labs(subtitle = "Number of unemployed people in Ballarat (000s)")
+  
+  plot_2 <- data %>%
+    dplyr::filter(.data$series_id == "A84600028X") %>%
+    djpr_ts_linechart() +
+    labs(subtitle = "Number of unemployed people in Bendigo (000s)")
+  
+  list(plot_1, plot_2)
+}
 
 ```
+
+
+## Shiny conventions 
+Each `viz_` function produces a chart. These charts must be used somewhere on the Shiny dashboard. Like in any Shiny app, it is required that each chart has a unique identifier, which is used to connect the UI and server side of the app. 
+
+**We use the name of the relevant function without the `viz_` prefix as the unique identifier for Shiny.** For example, the unique identified for the `viz_ind_emppop_state_slope()` function is `"ind_emppop_state_slope"`. 
+
+Most charts are added to the dashboard using the `djpr_plot_server()` and `djpr_plot_ui()` functions. These live in the `{djprshiny}` package. These are the two components of a Shiny module that creates a chart environment with some standard features, including a download button, and an optional date slider and checkbox. This Shiny module turns a ggplot2 object into a responsive htmlwidget using the `ggiraph::girafe()` function. 
+
+UI code lives in files that start with `page_`. For example, the UI of the Indicators page of the dashboard lives in `page_indicators.R`. Within this file, we add code like this:
+
+```{r, eval = FALSE}
+djpr_plot_ui("ind_emppop_state_slope")
+```
+
+Server-side code lives in `labour_app.R`. Within this file, we add code like this:
+
+```{r, eval = FALSE}
+djpr_plot_server(id = "ind_emppop_state_slope",
+                 plot_function = viz_ind_emppop_state_slope,
+                 date_slider = FALSE,
+# plt_change informs the Shiny module about changes in the browser size, to assist with correct re-sizing of the graph when the window changes size
+                 plt_change = plt_change,
+                 data = filter_dash_data(c(
+                   "A84423272J",
+                   "A84423356T",
+                   "A84423286W",
+                   "A84423370L",
+                   "A84423328J",
+                   "A84423300F",
+                   "A84423314V",
+                   "A84423342C"
+                   )))
+```
+
+
