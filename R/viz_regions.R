@@ -780,12 +780,15 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       .data$geog == "Victoria" ~ "vic",
       .data$geog == "Melbourne" ~ "metro",
       TRUE ~ "regional"
-    ))
+    )) %>%
+    dplyr::select(date, value, indicator, sa4, indicator_short, geog)
 
   # Reduce df depending on selected_indicator
-
-
-
+  df1 <- df %>%
+    dplyr::filter(case_when(selected_indicator == "metro" ~
+                dplyr::filter(.$geog == "Melbourne"),
+              selected_indicator == "regional" ~
+                dplyr::filter(!.$geog == "Melbourne"))
 
   # 3 months smoothing
   df <- df %>%
