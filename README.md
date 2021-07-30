@@ -52,7 +52,13 @@ devtools::install_github("djpr-data/djprlabourdash", dependencies = TRUE)
 
 ## Git branch structure and deployment
 
-There are three types of branches in this repository:
+Git and GitHub are used to manage version control and collaboration
+within this project. See [Happy Git and GitHub for the
+useR](https://happygitwithr.com) for an introduction to Git and GitHub.
+
+Work in the repository happens in different
+[branches](https://happygitwithr.com/git-branches.html). There are three
+types of branches in this repository:
 
 1.  The `main` branch contains the code corresponding to the current
     live dashboard.
