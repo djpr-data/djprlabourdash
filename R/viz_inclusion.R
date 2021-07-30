@@ -1544,10 +1544,8 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
 
 # engagement in education and employment
 
-viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
-                                       "A84433475V",
-                                       "A84433601W"
-                                     ),
+viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c("A84433475V",
+                                           "A84424781X"),
                                      df = dash_data
                                      )) {
   # select the necessary column
@@ -1567,8 +1565,7 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
       .data$series == "15-24 years ;  > Victoria ;  Not attending full-time education ;  Unemployment rate ;" ~ " Youth not attending school unemploment rate",
-      .data$series == "15-24 years ;  > Victoria ;  Unemployment rate ;" ~ " Victorian youth unemployment rate"
-    )) %>%
+      .data$series == "> Victoria ;  Attending full-time education ;  Unemployment rate ;"   ~ " Youth attending school unemploment rate")) %>%
     dplyr::select(!.data$series)
 
 
@@ -1587,8 +1584,8 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
     dplyr::pull(.data$value) %>%
     round2(1)
 
-  youth_total <- df %>%
-    dplyr::filter(.data$indicator == " Victorian youth unemployment rate" &
+  youth_attending <- df %>%
+    dplyr::filter(.data$indicator == " Youth attending school unemploment rate" &
       .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
@@ -1597,11 +1594,11 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
 
   # create title
   title <- dplyr::case_when(
-    youth_not_attending > youth_total ~
+    youth_not_attending > youth_attending  ~
     paste0("Unemployment rate grew faster for youth not attending school in the year to ", latest_month),
-    youth_not_attending < youth_total ~
+    youth_not_attending <  youth_attending  ~
     paste0("Unemployment rate grew slower for youth not attending school in the year to ", latest_month),
-    youth_not_attending == youth_total ~
+    youth_not_attending ==  youth_attending  ~
     paste0("Unemployment rate grew at around the same pace for youth not attending school in the year to ", latest_month),
     TRUE ~ paste0("Annual unemployment growth for youth not attending school and average Victorian youth")
   )
@@ -1615,7 +1612,7 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Annual unemployment growth rate of Victorian youth ",
+      subtitle = "Annual unemployment growth rate for Victorian youth ",
       caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 }
