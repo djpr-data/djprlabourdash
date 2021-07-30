@@ -178,7 +178,8 @@ dash_data <- load_dash_data()
 Note that `dash_data` is a data frame (tibble) with a nested structure.
 Each row of the tibble corresponds to an ABS series ID. The `data`
 column of the tibble contains a list of tibbles that must be unnested
-prior to use.
+prior to use. Users generally do not need to do this directly, as the
+`filter_dash_data()` function does it for them (see below).
 
 ``` r
 dash_data
@@ -207,7 +208,7 @@ dash_data
 
 Users generally work with the `dash_data` object using the
 `filter_dash_data()` function. This function takes a vector of ABS time
-series ID(s) and returned a tibble containing the corresponding data.
+series ID(s) and returns a tibble containing the corresponding data.
 This output is unnested for the user, meaning that project contributors
 can generally ignore the nested nature of `dash_data`.
 
@@ -270,7 +271,8 @@ bendigo_unemp
 
 It is then straightforward to visualise this. We will use the
 `djprshiny::djpr_ts_linechart()` convenience function, which creates a
-ggplot2 object that generally meets our style guide:
+ggplot2 object that generally meets our style guide and has some
+standard elements, such as an annotation on the final point.
 
 ``` r
 library(djprshiny)
@@ -318,21 +320,24 @@ djprlabourdash:::viz_ind_partrate_bar()
 <img src="man/figures/README-unnamed-chunk-8-1.png" width="100%" />
 
 The different options for the `page` part of the `viz_` function names
-are: - `overview` for graphs on the Overview page; - `ind` for graphs on
-the Indicators page; - `gr` for graphs on the Inclusion page (formerly
-known as Groups); - `reg` for graphs on the Regions page; - `industries`
-for graphs on the Industries page.
+are:
+
+-   `overview` for graphs on the Overview page;
+-   `ind` for graphs on the Indicators page;
+-   `gr` for graphs on the Inclusion page (formerly known as Groups);
+-   `reg` for graphs on the Regions page;
+-   `industries` for graphs on the Industries page.
 
 ### Graph functions’ arguments
 
 **Each `viz_` function must have a first argument called `data`**. It
-can optionally have other arguments. **All arguments to `viz_` functions
-must have defaults supplied.**
+can have other arguments, but this is optional. **All arguments to
+`viz_` functions must have defaults supplied.**
 
 Generally, the default to the `data` argument will involve a call to
 `filter_dash_data()`. This function takes a vector of ABS time series
 ID(s) and returns a dataframe containing the data corresponding to those
-IDs, if it is present in the data loaded into the dashboard.
+IDs, if the data is present in the data loaded into the dashboard.
 
 These are examples of **good `viz_` functions** that satisfy these
 requirements:
@@ -350,6 +355,14 @@ viz_fake_function <- function(data = filter_dash_data("A84600028X"),
   data %>%
     dplyr::filter(.data$date >= min_date) %>%
     djpr_ts_linechart()
+}
+
+# This is also good - you don't have to use `djpr_ts_linechart()`
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  data %>%
+    ggplot(aes(x = date, y = value)) +
+    geom_line() +
+    djprtheme::theme_djpr()
 }
 ```
 
@@ -492,8 +505,8 @@ the package should do the same.
 ## Code convention: using functions from packages
 
 All packages you wish to use must be included in the `DESCRIPTION` file.
-If you want to use a package, open that file and check if the package is
-there. If it is not, add your package using
+If you want to use a package, open `DESCRIPTION` and check if the
+package is there. If it is not, add your package using
 `usethis::use_package("package_name")`. Before doing this, consider
 whether the functionality you need is present in a package already
 present in `DESCRIPTION`.
@@ -513,11 +526,11 @@ technically need to be called with `package_name::`, but they still
 
 ## Code convention: using `.data$` for non-standard evaluation
 
-Writing our code using the `{tidyverse}` packages means our code is
-readable and expressive. However, part of what makes tidyverse code
-readable is that it blurs the line between variables in your
+Writing our code using the `{tidyverse}` packages means our code tends
+to be readable and expressive. However, part of what makes tidyverse
+code readable is that it blurs the line between variables in your
 environment, and variables (columns) in the data frame you are operating
-on.
+on. This can cause problems.
 
 For example, let’s look at the `mpg` data frame that is supplied with
 the `{ggplot2}` package:
@@ -751,14 +764,14 @@ djpr_plot_server(id = "ind_emppop_state_slope",
 dash_data <- load_dash_data()
 ```
 
-11. Add a new function to the `viz_*.R` file that is called `viz_`
+1.  Add a new function to the `viz_*.R` file that is called `viz_`
     something - eg. `viz_ind_emppop_state_slope` - and satisfies the
     rules set out above. In short, it should have a `data` argument, it
     can optionally have other arguments, all arguments must have default
     values specified, and it must return a ggplot2 object. 12 Check that
     your function works by running it in the console. A ggplot2 chart
     should be displayed in RStudio.
-12. Check that the dashboard (including your new function) passes the
+2.  Check that the dashboard (including your new function) passes the
     automated test by clicking `Build` -&gt; `Check` in RStudio. It
     should go through the process of checking the passage and conclude
     by saying `0 ERRORS | 0 WARNINGS | 0 NOTES`. If you encounter errors

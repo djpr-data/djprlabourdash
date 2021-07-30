@@ -127,7 +127,7 @@ In interactive sessions where a contributor is working with the dashboard data, 
 dash_data <- load_dash_data()
 ```
 
-Note that `dash_data` is a data frame (tibble) with a nested structure. Each row of the tibble corresponds to an ABS series ID. The `data` column of the tibble contains a list of tibbles that must be unnested prior to use.
+Note that `dash_data` is a data frame (tibble) with a nested structure. Each row of the tibble corresponds to an ABS series ID. The `data` column of the tibble contains a list of tibbles that must be unnested prior to use. Users generally do not need to do this directly, as the `filter_dash_data()` function does it for them (see below).
 
 ```{r}
 dash_data
@@ -135,7 +135,7 @@ dash_data
 
 ### Filtering dashboard data
 
-Users generally work with the `dash_data` object using the `filter_dash_data()` function. This function takes a vector of ABS time series ID(s) and returned a tibble containing the corresponding data. This output is unnested for the user, meaning that project contributors can generally ignore the nested nature of `dash_data`.
+Users generally work with the `dash_data` object using the `filter_dash_data()` function. This function takes a vector of ABS time series ID(s) and returns a tibble containing the corresponding data. This output is unnested for the user, meaning that project contributors can generally ignore the nested nature of `dash_data`.
 
 A lookup table of series IDs is available from the `djprdashdata` package:
 
@@ -150,7 +150,7 @@ bendigo_unemp <- filter_dash_data("A84600028X")
 bendigo_unemp
 ```
 
-It is then straightforward to visualise this. We will use the `djprshiny::djpr_ts_linechart()` convenience function, which creates a ggplot2 object that generally meets our style guide:
+It is then straightforward to visualise this. We will use the `djprshiny::djpr_ts_linechart()` convenience function, which creates a ggplot2 object that generally meets our style guide and has some standard elements, such as an annotation on the final point.
 
 ```{r}
 library(djprshiny)
@@ -186,19 +186,21 @@ djprlabourdash:::viz_ind_partrate_bar()
 ```
 
 The different options for the `page` part of the `viz_` function names are:
-- `overview` for graphs on the Overview page;
-- `ind` for graphs on the Indicators page;
-- `gr` for graphs on the Inclusion page (formerly known as Groups);
-- `reg` for graphs on the Regions page;
-- `industries` for graphs on the Industries page.
+
+-   `overview` for graphs on the Overview page;
+-   `ind` for graphs on the Indicators page;
+-   `gr` for graphs on the Inclusion page (formerly known as Groups);
+-   `reg` for graphs on the Regions page;
+-   `industries` for graphs on the Industries page.
 
 ### Graph functions' arguments
 
-**Each `viz_` function must have a first argument called `data`**. It can optionally have other arguments. **All arguments to `viz_` functions must have defaults supplied.**
+**Each `viz_` function must have a first argument called `data`**. It can have other arguments, but this is optional. **All arguments to `viz_` functions must have defaults supplied.**
 
-Generally, the default to the `data` argument will involve a call to `filter_dash_data()`. This function takes a vector of ABS time series ID(s) and returns a dataframe containing the data corresponding to those IDs, if it is present in the data loaded into the dashboard.
+Generally, the default to the `data` argument will involve a call to `filter_dash_data()`. This function takes a vector of ABS time series ID(s) and returns a dataframe containing the data corresponding to those IDs, if the data is present in the data loaded into the dashboard.
 
 These are examples of **good `viz_` functions** that satisfy these requirements:
+
 ```{r, eval=FALSE}
 # This is good
 viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
@@ -214,9 +216,18 @@ viz_fake_function <- function(data = filter_dash_data("A84600028X"),
     djpr_ts_linechart()
 }
 
+# This is also good - you don't have to use `djpr_ts_linechart()`
+viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
+  data %>%
+    ggplot(aes(x = date, y = value)) +
+    geom_line() +
+    djprtheme::theme_djpr()
+}
+
 ```
 
 These are examples of **bad `viz_` functions** that do not satisfy the requirements:
+
 ```{r, eval=FALSE}
 # THIS IS NOT OK - no data argument
 viz_fake_function <- function() {
@@ -246,6 +257,7 @@ All `viz_` functions must return a single object, which must be a ggplot2 plot. 
 If multiple plots are returned, they should be combined using the `{patchwork}` package, which returns objects of class `gg`.
 
 These are examples of **good `viz_` functions** that return a `gg` object:
+
 ```{r, eval = FALSE}
 # This is good - returns a single ggplot2 object
 viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
@@ -288,6 +300,7 @@ viz_fake_function <- function(data = filter_dash_data(c("A84599665J",
 ```
 
 These are examples of **bad `viz_` functions** that do not return a single `gg` object:
+
 ```{r, eval = FALSE}
 # THIS IS NOT OK - doesn't return anything
 viz_fake_function <- function(data = filter_dash_data("A84600028X")) {
@@ -342,18 +355,21 @@ viz_fake_function <- function(data = filter_dash_data(c("A84599665J",
 The code in this package is generally written using the `{tidyverse}` packages, such as `{dplyr}`, `{tidyr}` and `{ggplot2}`. Contributions to the package should do the same.
 
 ## Code convention: using functions from packages
-All packages you wish to use must be included in the `DESCRIPTION` file. If you want to use a package, open that file and check if the package is there. If it is not, add your package using `usethis::use_package("package_name")`. Before doing this, consider whether the functionality you need is present in a package already present in `DESCRIPTION`.
+
+All packages you wish to use must be included in the `DESCRIPTION` file. If you want to use a package, open `DESCRIPTION` and check if the package is there. If it is not, add your package using `usethis::use_package("package_name")`. Before doing this, consider whether the functionality you need is present in a package already present in `DESCRIPTION`.
 
 Functions other than those from base R should generally be called using `package_name::function_name()`, as in `stringr::str_wrap()`. Omitting this - such as calling `str_wrap()` will generally cause a warning to be thrown by `R CMD check`.
 
-Avoiding importing functions using the Roxygen `@importFrom package_name function_name` pattern. 
+Avoiding importing functions using the Roxygen `@importFrom package_name function_name` pattern.
 
-The `djprlabourdash` package imports several packages in their entirety, including `ggplot2` and `shiny`. Functions from these packages do not technically need to be called with `package_name::`, but they still _can_ be called this way. If in doubt, use `::`. 
+The `djprlabourdash` package imports several packages in their entirety, including `ggplot2` and `shiny`. Functions from these packages do not technically need to be called with `package_name::`, but they still *can* be called this way. If in doubt, use `::`.
 
 ## Code convention: using `.data$` for non-standard evaluation
-Writing our code using the `{tidyverse}` packages means our code is readable and expressive. However, part of what makes tidyverse code readable is that it blurs the line between variables in your environment, and variables (columns) in the data frame you are operating on. 
+
+Writing our code using the `{tidyverse}` packages means our code tends to be readable and expressive. However, part of what makes tidyverse code readable is that it blurs the line between variables in your environment, and variables (columns) in the data frame you are operating on. This can cause problems.
 
 For example, let's look at the `mpg` data frame that is supplied with the `{ggplot2}` package:
+
 ```{r}
 head(ggplot2::mpg)
 ```
@@ -376,7 +392,6 @@ ggplot2::mpg %>%
 
 `dplyr::mutate()` again assumes that when we refer to `cty`, we are referring to the variable in `mpg`. This is correct in this case, but it is dangerously ambiguous. In a package like `djprlabourdash` we want to be explicit about whether we are referring to a variable within our dataframe, or a variable outside the data frame (an environment variable). To do this we use the `.data$` and `.env$` prefixes from the `{rlang}` package. So the code chunk above would instead be written like this:
 
-
 ```{r}
 cty <- 15
 
@@ -398,16 +413,18 @@ Again, we are being clear and unambiguous in our `mutate()` call. This pattern -
 See the [programming with `dplyr`](https://dplyr.tidyverse.org/articles/programming.html) vignette for more on non-standard evaluation.
 
 ## Code style
-We follow the [tidyverse style guide](https://style.tidyverse.org). To style your code consistent with this guide, run `styler::style_pkg()`. 
 
-Note that all functions, arguments, and objects should be named using `snake_case` - all letters are lower case, words separated with underscores. 
+We follow the [tidyverse style guide](https://style.tidyverse.org). To style your code consistent with this guide, run `styler::style_pkg()`.
 
-## Shiny conventions 
-Each `viz_` function produces a chart. These charts must be used somewhere on the Shiny dashboard. Like in any Shiny app, it is required that each chart has a unique identifier, which is used to connect the UI and server side of the app. 
+Note that all functions, arguments, and objects should be named using `snake_case` - all letters are lower case, words separated with underscores.
 
-**We use the name of the relevant function without the `viz_` prefix as the unique identifier for Shiny.** For example, the unique identified for the `viz_ind_emppop_state_slope()` function is `"ind_emppop_state_slope"`. 
+## Shiny conventions
 
-Most charts are added to the dashboard using the `djpr_plot_server()` and `djpr_plot_ui()` functions. These live in the `{djprshiny}` package. These are the two components of a Shiny module that creates a chart environment with some standard features, including a download button, and an optional date slider and checkbox. This Shiny module turns a ggplot2 object into a responsive htmlwidget using the `ggiraph::girafe()` function. 
+Each `viz_` function produces a chart. These charts must be used somewhere on the Shiny dashboard. Like in any Shiny app, it is required that each chart has a unique identifier, which is used to connect the UI and server side of the app.
+
+**We use the name of the relevant function without the `viz_` prefix as the unique identifier for Shiny.** For example, the unique identified for the `viz_ind_emppop_state_slope()` function is `"ind_emppop_state_slope"`.
+
+Most charts are added to the dashboard using the `djpr_plot_server()` and `djpr_plot_ui()` functions. These live in the `{djprshiny}` package. These are the two components of a Shiny module that creates a chart environment with some standard features, including a download button, and an optional date slider and checkbox. This Shiny module turns a ggplot2 object into a responsive htmlwidget using the `ggiraph::girafe()` function.
 
 UI code lives in files that start with `page_`. For example, the UI of the Indicators page of the dashboard lives in `page_indicators.R`. Within this file, we add code like this:
 
@@ -435,45 +452,49 @@ djpr_plot_server(id = "ind_emppop_state_slope",
                    )))
 ```
 
-
 ## Adding a chart to the dashboard: a step-by-step guide
 
 ### Creating a `viz_` function
-1. If you do not already have a GitHub account, [create one](https://github.com/join). Then ask Matt Cowgill or another Data + Analytics administrator to add you to the `djpr-data` GitHub team. 
-2. As a once-off step, you will need to create a local version of the `djprlabourdash` repository on your machine. In RStudio, click `File` -> `New Project` -> `Version Control` -> `Git.` Then paste the GitHub repository URL for `djprdashdata` and choose a location for the project on your disk. Note that this copy of the repository is just for you, so put it in a location that only you have access to.
-3. Create a new branch on GitHub in `djprlabourdash` from the `dev` branch.
-4. In RStudio, click the `Git` pane (by default this is in the upper-right hand quadrant of the RStudio window). Click `Pull` then switch to your new branch. **Ensure that you are working in your branch** - the name of the active Git branch is shown in the upper-right hand corner of the `Git` pane in RStudio - confirm this is your branch.
-5. Open the relevant `viz_*.R` file from the `R` folder of the repository. For example, if you want to contribute a chart to the Indicators page, open `viz_indicators.R`. 
-6. Ensure you have nothing in your environment (if you click the `Environment` pane in RStudio, there should be nothing there. Click the broom icon to clear your environment.)
-7. If you do not have the `devtools` package installed, install it using:
-`install.packages("devtools")`. This only needs to be done once.
-8. You will need to install the packages that `djprlabourdash` depends on. Do this using `devtools::install_deps()`.
-9. Run `devtools::load_all()` to make the functions of `djprlabourdash` available to you.
+
+1.  If you do not already have a GitHub account, [create one](https://github.com/join). Then ask Matt Cowgill or another Data + Analytics administrator to add you to the `djpr-data` GitHub team.
+2.  As a once-off step, you will need to create a local version of the `djprlabourdash` repository on your machine. In RStudio, click `File` -\> `New Project` -\> `Version Control` -\> `Git.` Then paste the GitHub repository URL for `djprdashdata` and choose a location for the project on your disk. Note that this copy of the repository is just for you, so put it in a location that only you have access to.
+3.  Create a new branch on GitHub in `djprlabourdash` from the `dev` branch.
+4.  In RStudio, click the `Git` pane (by default this is in the upper-right hand quadrant of the RStudio window). Click `Pull` then switch to your new branch. **Ensure that you are working in your branch** - the name of the active Git branch is shown in the upper-right hand corner of the `Git` pane in RStudio - confirm this is your branch.
+5.  Open the relevant `viz_*.R` file from the `R` folder of the repository. For example, if you want to contribute a chart to the Indicators page, open `viz_indicators.R`.
+6.  Ensure you have nothing in your environment (if you click the `Environment` pane in RStudio, there should be nothing there. Click the broom icon to clear your environment.)
+7.  If you do not have the `devtools` package installed, install it using: `install.packages("devtools")`. This only needs to be done once.
+8.  You will need to install the packages that `djprlabourdash` depends on. Do this using `devtools::install_deps()`.
+9.  Run `devtools::load_all()` to make the functions of `djprlabourdash` available to you.
 10. To help you in the process of writing your graph function, download the dashboard's data and assign it to an object called `dash_data`, by running this line:
+
 ```{r, eval = F}
 dash_data <- load_dash_data()
 ```
-11. Add a new function to the `viz_*.R` file that is called `viz_` something - eg. `viz_ind_emppop_state_slope` - and satisfies the rules set out above. In short, it should have a `data` argument, it can optionally have other arguments, all arguments must have default values specified, and it must return a ggplot2 object. 
-12 Check that your function works by running it in the console. A ggplot2 chart should be displayed in RStudio.
-13. Check that the dashboard (including your new function) passes the automated test by clicking `Build` -> `Check` in RStudio. It should go through the process of checking the passage and conclude by saying `0 ERRORS | 0 WARNINGS | 0 NOTES`. If you encounter errors here, you will need to fix the error, with help from teammates where required.
+
+1.  Add a new function to the `viz_*.R` file that is called `viz_` something - eg. `viz_ind_emppop_state_slope` - and satisfies the rules set out above. In short, it should have a `data` argument, it can optionally have other arguments, all arguments must have default values specified, and it must return a ggplot2 object. 12 Check that your function works by running it in the console. A ggplot2 chart should be displayed in RStudio.
+2.  Check that the dashboard (including your new function) passes the automated test by clicking `Build` -\> `Check` in RStudio. It should go through the process of checking the passage and conclude by saying `0 ERRORS | 0 WARNINGS | 0 NOTES`. If you encounter errors here, you will need to fix the error, with help from teammates where required.
 
 At this stage, you have successfully added a `viz_` function. The remaining steps are to add your graph to the dashboard, and to initiate a pull request to merge your code with the existing dashboard code base.
 
 ### Adding your graph to the dashboard
+
 The DJPR Jobs Dashboard is a web app made with the Shiny package. All Shiny apps have two key components - the UI and the server-side code. We need to edit each of them to add your chart to the dashboard.
 
 #### The UI side
-1. The UI code for each page of the dashboard lives in its own file. For example, the Indicators page code lives in `page_indicators.R`. Open the relevant `page_` file.
-2. Identify the location on the page where you want your graph to live. The elements in the UI page directly correspond to the content of the dashboard, and are in the same order. Each element is separated from the next with a comma.
-3. Add a `djprshiny::djpr_plot_ui()` call. The first argument must be a unique identifier for your graph. Our convention is to use the name of your `viz_` function (without the `viz_` part) as this identifier. For example, the identifier for `viz_ind_emppop_state_slope()` is `"ind_emppop_state_slope"`. Your code will look like
+
+1.  The UI code for each page of the dashboard lives in its own file. For example, the Indicators page code lives in `page_indicators.R`. Open the relevant `page_` file.
+2.  Identify the location on the page where you want your graph to live. The elements in the UI page directly correspond to the content of the dashboard, and are in the same order. Each element is separated from the next with a comma.
+3.  Add a `djprshiny::djpr_plot_ui()` call. The first argument must be a unique identifier for your graph. Our convention is to use the name of your `viz_` function (without the `viz_` part) as this identifier. For example, the identifier for `viz_ind_emppop_state_slope()` is `"ind_emppop_state_slope"`. Your code will look like
+
 ```{r, eval = F}
 djpr_plot_ui("ind_emppop_state_slope")
 ```
 
 #### The server side
-1. The server-side code lives in `labour_app.R`. Open this file.
-2. Find the relevant location in the file. Note that the order of the code within the server file does not matter, but for ease of maintenance we try to group server code from each page together, and order in (roughly) the same order as on the dashboard.
-3. Add a call to `djprshiny::djpr_plot_server()`. This calls your `viz_` function and sets up the plot environment that will be displayed to the user. Your code will look something like: 
+
+1.  The server-side code lives in `labour_app.R`. Open this file.
+2.  Find the relevant location in the file. Note that the order of the code within the server file does not matter, but for ease of maintenance we try to group server code from each page together, and order in (roughly) the same order as on the dashboard.
+3.  Add a call to `djprshiny::djpr_plot_server()`. This calls your `viz_` function and sets up the plot environment that will be displayed to the user. Your code will look something like:
 
 ```{r, eval = FALSE}
 djpr_plot_server(id = "ind_emppop_state_slope",
@@ -495,20 +516,22 @@ djpr_plot_server(id = "ind_emppop_state_slope",
 Note that for some charts you may want a `date_slider`, in which case you will set that argument to `TRUE`. There are other arguments to `djpr_plot_server()` that allow you to customise the plot environment - see `?djpr_plot_server()` for the help file.
 
 #### Manually inspecting your work
-1. Clear your environment and start a new R session (`Session` -> `Restart R`). This ensures that any objects you've created in your development process are not available. 
-2. Run `devtools::load_all()`
-3. Run `app()`
-4. Navigate to the place on the dashboard where you expect to see your graph. Confirm it is there. Check that any interactivity works as expected, such as tooltips, date sliders, and plot download buttons. 
+
+1.  Clear your environment and start a new R session (`Session` -\> `Restart R`). This ensures that any objects you've created in your development process are not available.
+2.  Run `devtools::load_all()`
+3.  Run `app()`
+4.  Navigate to the place on the dashboard where you expect to see your graph. Confirm it is there. Check that any interactivity works as expected, such as tooltips, date sliders, and plot download buttons.
 
 ### Merging your code with the main dashboard
-1. Ensure your work is saved.
-2. In the `Git` pane in RStudio, select all files. Click one of the checkboxes in the `Staged` column. 
-3. Click `Commit`
-4. Write an informative message to describe what you have done, such as "Add `viz_ind_emppop_state_slope()` function to the indicators page". Click `Commit` again. Click `Close` on the window that pops up to confirm your commit has worked.
-5. Click `Push`. Close the window that pops up, and close the Review Changes window. Your `Git` pane should now have no files listed in it.
-6. Go to the [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash) repository on GitHub. Navigate to your branch. Initiate a pull request by clicking the button marked `Compare & pull request`. 
-7. Ensure that your pull request is going from your branch to `dev`. 
-8. Write an informative pull request title and comment. The comment should describe what has been done in this batch of code, and any outstanding issues that must be fixed by others.
-9. Click `Create pull request`. 
+
+1.  Ensure your work is saved.
+2.  In the `Git` pane in RStudio, select all files. Click one of the checkboxes in the `Staged` column.
+3.  Click `Commit`
+4.  Write an informative message to describe what you have done, such as "Add `viz_ind_emppop_state_slope()` function to the indicators page". Click `Commit` again. Click `Close` on the window that pops up to confirm your commit has worked.
+5.  Click `Push`. Close the window that pops up, and close the Review Changes window. Your `Git` pane should now have no files listed in it.
+6.  Go to the [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash) repository on GitHub. Navigate to your branch. Initiate a pull request by clicking the button marked `Compare & pull request`.
+7.  Ensure that your pull request is going from your branch to `dev`.
+8.  Write an informative pull request title and comment. The comment should describe what has been done in this batch of code, and any outstanding issues that must be fixed by others.
+9.  Click `Create pull request`.
 
 A project admin will review your code, and GitHub will conduct automated test. Once the pull request has been concluded, your code will be merged into `dev` branch. At this stage the live dashboard on the web does not yet reflect your changes - this will be updated when `dev` is merged into `main`, which the project administrator does periodically.
