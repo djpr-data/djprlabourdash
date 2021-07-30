@@ -476,6 +476,181 @@ viz_fake_function <- function(data = filter_dash_data(c("A84599665J",
 }
 ```
 
+## Code convention: `{tidyverse}`-first
+
+The code in this package is generally written using the `{tidyverse}`
+packages, such as `{dplyr}`, `{tidyr}` and `{ggplot2}`. Contributions to
+the package should do the same.
+
+## Code convention: using functions from packages
+
+All packages you wish to use must be included in the `DESCRIPTION` file.
+If you want to use a package, open that file and check if the package is
+there. If it is not, add your package using
+`usethis::use_package("package_name")`. Before doing this, consider
+whether the functionality you need is present in a package already
+present in `DESCRIPTION`.
+
+Functions other than those from base R should generally be called using
+`package_name::function_name()`, as in `stringr::str_wrap()`. Omitting
+this - such as calling `str_wrap()` will generally cause a warning to be
+thrown by `R CMD check`.
+
+Avoiding importing functions using the Roxygen
+`@importFrom package_name function_name` pattern.
+
+The `djprlabourdash` package imports several packages in their entirety,
+including `ggplot2` and `shiny`. Functions from these packages do not
+technically need to be called with `package_name::`, but they still
+*can* be called this way. If in doubt, use `::`.
+
+## Code convention: using `.data$` for non-standard evaluation
+
+Writing our code using the `{tidyverse}` packages means our code is
+readable and expressive. However, part of what makes tidyverse code
+readable is that it blurs the line between variables in your
+environment, and variables (columns) in the data frame you are operating
+on.
+
+For example, let’s look at the `mpg` data frame that is supplied with
+the `{ggplot2}` package:
+
+``` r
+head(ggplot2::mpg)
+#> # A tibble: 6 × 11
+#>   manufacturer model displ  year   cyl trans      drv     cty   hwy fl    class 
+#>   <chr>        <chr> <dbl> <int> <int> <chr>      <chr> <int> <int> <chr> <chr> 
+#> 1 audi         a4      1.8  1999     4 auto(l5)   f        18    29 p     compa…
+#> 2 audi         a4      1.8  1999     4 manual(m5) f        21    29 p     compa…
+#> 3 audi         a4      2    2008     4 manual(m6) f        20    31 p     compa…
+#> 4 audi         a4      2    2008     4 auto(av)   f        21    30 p     compa…
+#> 5 audi         a4      2.8  1999     6 auto(l5)   f        16    26 p     compa…
+#> 6 audi         a4      2.8  1999     6 manual(m5) f        18    26 p     compa…
+```
+
+Each row of this data frame corresponds to a different type of car. Now,
+let’s say we want to calculate for each car the ratio of highway fuel
+efficiency (`hwy`) to city fuel efficiency (`cty`). We could do this
+with `dplyr::mutate()` as follows:
+
+``` r
+ggplot2::mpg %>%
+  dplyr::mutate(ratio = hwy / cty)
+#> # A tibble: 234 × 12
+#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
+#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
+#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
+#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
+#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
+#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
+#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
+#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
+#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
+#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
+#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#> # … with 224 more rows, and 1 more variable: ratio <dbl>
+```
+
+Here, `dplyr::mutate()` correctly assumes that we are referring to the
+`hwy` and `cty` variables within the `mpg` data frame. But what happens
+if we already have a variable called `cty` that is separate from this
+data frame?
+
+``` r
+cty <- 15
+
+ggplot2::mpg %>%
+  dplyr::mutate(ratio = hwy / cty)
+#> # A tibble: 234 × 12
+#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
+#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
+#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
+#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
+#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
+#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
+#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
+#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
+#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
+#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
+#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#> # … with 224 more rows, and 1 more variable: ratio <dbl>
+```
+
+`dplyr::mutate()` again assumes that when we refer to `cty`, we are
+referring to the variable in `mpg`. This is correct in this case, but it
+is dangerously ambiguous. In a package like `djprlabourdash` we want to
+be explicit about whether we are referring to a variable within our
+dataframe, or a variable outside the data frame (an environment
+variable). To do this we use the `.data$` and `.env$` prefixes from the
+`{rlang}` package. So the code chunk above would instead be written like
+this:
+
+``` r
+cty <- 15
+
+ggplot2::mpg %>%
+  dplyr::mutate(ratio = .data$hwy / .data$cty)
+#> # A tibble: 234 × 12
+#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
+#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
+#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
+#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
+#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
+#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
+#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
+#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
+#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
+#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
+#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#> # … with 224 more rows, and 1 more variable: ratio <dbl>
+```
+
+Now we have explicitly told `dplyr::mutate()` that we are referring to
+the `hwy` and `cty` variables within our data, so there can be no
+confusion. If, instead, we wanted to divide each car’s highway
+efficiency by a constant number, we could do:
+
+``` r
+cty <- 15
+
+ggplot2::mpg %>%
+  dplyr::mutate(ratio = .data$hwy / .env$cty)
+#> # A tibble: 234 × 12
+#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
+#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
+#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
+#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
+#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
+#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
+#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
+#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
+#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
+#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
+#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#> # … with 224 more rows, and 1 more variable: ratio <dbl>
+```
+
+Again, we are being clear and unambiguous in our `mutate()` call. This
+pattern - prefixing variables within our data frame with `.data$` -
+should be used in your code.
+
+See the [programming with
+`dplyr`](https://dplyr.tidyverse.org/articles/programming.html) vignette
+for more on non-standard evaluation.
+
+## Code style
+
+We follow the [tidyverse style guide](https://style.tidyverse.org). To
+style your code consistent with this guide, run `styler::style_pkg()`.
+
+Note that all functions, arguments, and objects should be named using
+`snake_case` - all letters are lower case, words separated with
+underscores.
+
 ## Shiny conventions
 
 Each `viz_` function produces a chart. These charts must be used
@@ -527,6 +702,8 @@ djpr_plot_server(id = "ind_emppop_state_slope",
 
 ## Adding a chart to the dashboard: a step-by-step guide
 
+### Creating a `viz_` function
+
 1.  If you do not already have a GitHub account, [create
     one](https://github.com/join). Then ask Matt Cowgill or another
     Data + Analytics administrator to add you to the `djpr-data` GitHub
@@ -542,16 +719,24 @@ djpr_plot_server(id = "ind_emppop_state_slope",
     branch.
 4.  In RStudio, click the `Git` pane (by default this is in the
     upper-right hand quadrant of the RStudio window). Click `Pull` then
-    switch to your new branch.
+    switch to your new branch. **Ensure that you are working in your
+    branch** - the name of the active Git branch is shown in the
+    upper-right hand corner of the `Git` pane in RStudio - confirm this
+    is your branch.
 5.  Open the relevant `viz_*.R` file from the `R` folder of the
     repository. For example, if you want to contribute a chart to the
     Indicators page, open `viz_indicators.R`.
 6.  Ensure you have nothing in your environment (if you click the
     `Environment` pane in RStudio, there should be nothing there. Click
     the broom icon to clear your environment.)
-7.  Run `devtools::load_all()` to make the functions of `djprlabourdash`
+7.  If you do not have the `devtools` package installed, install it
+    using: `install.packages("devtools")`. This only needs to be done
+    once.
+8.  You will need to install the packages that `djprlabourdash` depends
+    on. Do this using `devtools::install_deps()`.
+9.  Run `devtools::load_all()` to make the functions of `djprlabourdash`
     available to you.
-8.  To help you in the process of writing your graph function, download
+10. To help you in the process of writing your graph function, download
     the dashboard’s data and assign it to an object called `dash_data`,
     by running this line:
 
@@ -559,12 +744,119 @@ djpr_plot_server(id = "ind_emppop_state_slope",
 dash_data <- load_dash_data()
 ```
 
-9.  Add a new function to the `viz_*.R` file that is called `viz_`
+11. Add a new function to the `viz_*.R` file that is called `viz_`
     something - eg. `viz_ind_emppop_state_slope` - and satisfies the
     rules set out above. In short, it should have a `data` argument, it
     can optionally have other arguments, all arguments must have default
-    values specified, and it must return a ggplot2 object.
-10. Check that your function works by running it in the console.
-11. Check that the dashboard (including your new function) passes the
-    automated test by clicking `Build` -&gt; `Check` in RStudio.
-12. 
+    values specified, and it must return a ggplot2 object. 12 Check that
+    your function works by running it in the console. A ggplot2 chart
+    should be displayed in RStudio.
+12. Check that the dashboard (including your new function) passes the
+    automated test by clicking `Build` -&gt; `Check` in RStudio. It
+    should go through the process of checking the passage and conclude
+    by saying `0 ERRORS | 0 WARNINGS | 0 NOTES`. If you encounter errors
+    here, you will need to fix the error, with help from teammates where
+    required.
+
+At this stage, you have successfully added a `viz_` function. The
+remaining steps are to add your graph to the dashboard, and to initiate
+a pull request to merge your code with the existing dashboard code base.
+
+### Adding your graph to the dashboard
+
+The DJPR Jobs Dashboard is a web app made with the Shiny package. All
+Shiny apps have two key components - the UI and the server-side code. We
+need to edit each of them to add your chart to the dashboard.
+
+#### The UI side
+
+1.  The UI code for each page of the dashboard lives in its own file.
+    For example, the Indicators page code lives in `page_indicators.R`.
+    Open the relevant `page_` file.
+2.  Identify the location on the page where you want your graph to live.
+    The elements in the UI page directly correspond to the content of
+    the dashboard, and are in the same order. Each element is separated
+    from the next with a comma.
+3.  Add a `djprshiny::djpr_plot_ui()` call. The first argument must be a
+    unique identifier for your graph. Our convention is to use the name
+    of your `viz_` function (without the `viz_` part) as this
+    identifier. For example, the identifier for
+    `viz_ind_emppop_state_slope()` is `"ind_emppop_state_slope"`. Your
+    code will look like
+
+``` r
+djpr_plot_ui("ind_emppop_state_slope")
+```
+
+#### The server side
+
+1.  The server-side code lives in `labour_app.R`. Open this file.
+2.  Find the relevant location in the file. Note that the order of the
+    code within the server file does not matter, but for ease of
+    maintenance we try to group server code from each page together, and
+    order in (roughly) the same order as on the dashboard.
+3.  Add a call to `djprshiny::djpr_plot_server()`. This calls your
+    `viz_` function and sets up the plot environment that will be
+    displayed to the user. Your code will look something like:
+
+``` r
+djpr_plot_server(id = "ind_emppop_state_slope",
+                 plot_function = viz_ind_emppop_state_slope,
+                 date_slider = FALSE,
+                 plt_change = plt_change,
+                 data = filter_dash_data(c(
+                   "A84423272J",
+                   "A84423356T",
+                   "A84423286W",
+                   "A84423370L",
+                   "A84423328J",
+                   "A84423300F",
+                   "A84423314V",
+                   "A84423342C"
+                   )))
+```
+
+Note that for some charts you may want a `date_slider`, in which case
+you will set that argument to `TRUE`. There are other arguments to
+`djpr_plot_server()` that allow you to customise the plot environment -
+see `?djpr_plot_server()` for the help file.
+
+#### Manually inspecting your work
+
+1.  Clear your environment and start a new R session (`Session` -&gt;
+    `Restart R`). This ensures that any objects you’ve created in your
+    development process are not available.
+2.  Run `devtools::load_all()`
+3.  Run `app()`
+4.  Navigate to the place on the dashboard where you expect to see your
+    graph. Confirm it is there. Check that any interactivity works as
+    expected, such as tooltips, date sliders, and plot download buttons.
+
+### Merging your code with the main dashboard
+
+1.  Ensure your work is saved.
+2.  In the `Git` pane in RStudio, select all files. Click one of the
+    checkboxes in the `Staged` column.
+3.  Click `Commit`
+4.  Write an informative message to describe what you have done, such as
+    “Add `viz_ind_emppop_state_slope()` function to the indicators
+    page”. Click `Commit` again. Click `Close` on the window that pops
+    up to confirm your commit has worked.
+5.  Click `Push`. Close the window that pops up, and close the Review
+    Changes window. Your `Git` pane should now have no files listed in
+    it.
+6.  Go to the
+    [`djprlabourdash`](https://github.com/djpr-data/djprlabourdash)
+    repository on GitHub. Navigate to your branch. Initiate a pull
+    request by clicking the button marked `Compare & pull request`.
+7.  Ensure that your pull request is going from your branch to `dev`.
+8.  Write an informative pull request title and comment. The comment
+    should describe what has been done in this batch of code, and any
+    outstanding issues that must be fixed by others.
+9.  Click `Create pull request`.
+
+A project admin will review your code, and GitHub will conduct automated
+test. Once the pull request has been concluded, your code will be merged
+into `dev` branch. At this stage the live dashboard on the web does not
+yet reflect your changes - this will be updated when `dev` is merged
+into `main`, which the project administrator does periodically.
