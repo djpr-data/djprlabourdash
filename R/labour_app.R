@@ -360,6 +360,19 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: cumulative change in PT / FT since COVID
+  djpr_plot_server("ind_gen_full_part_line",
+                   plot_function = viz_ind_gen_full_part_line,
+                   data = filter_dash_data(c(
+                     "pt_emp_vic",
+                     "A84423357V"
+                   ),
+                   df = dash_data
+                   ) %>%
+                     dplyr::filter(date >= as.Date("2020-01-01")),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
   # Indicators: unemployment ------
   output$ind_unemp_summary <- renderUI({
     table_ind_unemp_summary() %>%
@@ -490,16 +503,16 @@ labour_server <- function(input, output, session) {
 
   # Inclusion: women and men -----
   # Groups: line chart of emp-pop by sex
-  djpr_plot_server("gr_emppopratio_line",
-    viz_gr_emppopratio_line,
-    data = filter_dash_data(c(
-      "A84423356T",
-      "A84423244X",
-      "A84423468K"
-    )),
-    date_slider_value_min = Sys.Date() - (365.25 * 10),
-    plt_change = plt_change
-  )
+  djpr_plot_server("gr_gen_emppopratio_line",
+                   plot_function = viz_gr_gen_emppopratio_line,
+                   data = filter_dash_data(c(
+                     "A84423244X",
+                     "A84423468K"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   plt_change = plt_change)
 
   # Bar chart: LF status by sex, latest month
 
@@ -683,13 +696,43 @@ labour_server <- function(input, output, session) {
     })
   )
 
-  # output$gr_ages_line <- renderPlot({
-  #   viz_gr_ages_line(selected_indicator = input$youth_focus)
-  # })
-  #
-  # output$gr_yth_melbvrest_line <- renderPlot({
-  #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
-  # })
+  djpr_plot_server("gr_youth_full_part_line",
+                   plot_function = viz_gr_youth_full_part_line,
+                   data = filter_dash_data(c(
+                     "A84424687C",
+                     "A84424695C",
+                     "A84424696F"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = TRUE)
+
+  djpr_plot_server("gr_youth_eduemp_waterfall",
+                   plot_function = viz_gr_youth_eduemp_waterfall,
+                   data = filter_dash_data(c(
+                     "A84424598A",
+                     "A84424778K",
+                     "A84424597X",
+                     "A84424777J",
+                     "A84424600A",
+                     "A84424780W",
+                     "A84424694A"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
+  djpr_plot_server("gr_yth_mostvuln_line",
+                   plot_function = viz_gr_yth_mostvuln_line,
+                   data = filter_dash_data(c("A84433475V",
+                                             "A84424781X"),
+                                           df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   date_slider = TRUE)
 
   # Inclusion: long term unemployment ------
 
