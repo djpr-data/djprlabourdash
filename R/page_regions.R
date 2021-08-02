@@ -52,6 +52,18 @@ page_regions <- function(...) {
     djpr_plot_ui("reg_unemp_emppop_partrate_multiline",
       height = "500px"
     ),
+    br(),
+    br(),
+    selectInput(
+      "sa4_type_dispersion",
+      label = "Choose regions",
+      choices = c(
+        "All Victorian SA4s" = "all",
+        "Metropolitan Melbourne SA4s" = "metropolitan",
+        "Rural and regional SA4s" = "regional"
+      ),
+      selected = "all"
+    ),
     djpr_plot_ui("reg_unemprate_dispersion"),
     br(),
 

@@ -986,14 +986,11 @@ labour_server <- function(input, output, session) {
       "A84599683L",
       "A84599929A",
       "A84600121T",
-      "A84600037A"
-    ),
-    df = dash_data
-    ) %>%
-      dplyr::group_by(.data$series_id) %>%
-      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)),
+      "A84600037A"),
+      df = dash_data),
     date_slider_value_min = as.Date("2014-11-01"),
-    plt_change = plt_change
+    plt_change = plt_change,
+    selected_indicator = reactive(input$sa4_type_dispersion)
   )
 
   # Regions: Focus box -----

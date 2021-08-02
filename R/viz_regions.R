@@ -772,7 +772,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
     dplyr::mutate(
-      geog = dplyr::if_else(grepl("Melbourne", .data$sa4),
+      geog = dplyr::if_else(grepl("Melbourne|Mornington", .data$sa4),
                             "Melbourne",
                             .data$sa4)
     ) %>%
@@ -781,7 +781,12 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       .data$geog == "Melbourne" ~ "metropolitan",
       TRUE ~ "regional"
     )) %>%
-    dplyr::select(date, value, indicator, sa4, indicator_short, geog)
+    dplyr::select(.data$date,
+                  .data$value,
+                  .data$indicator,
+                  .data$sa4,
+                  .data$indicator_short,
+                  .data$geog)
 
   df <- df %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
@@ -822,12 +827,18 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       -.data$date
     )
 
+  tooltip_ending <- dplyr::case_when(
+    selected_indicator == "all" ~ "Victorian SA4 ",
+    selected_indicator == "metropolitan" ~ "metro SA4 ",
+    selected_indicator == "regional" ~ "regional SA4 "
+  )
+
   df_tidy <- df_tidy %>%
     mutate(
       tooltip = case_when(
         .data$series == "vic" ~ "Victoria ",
-        .data$series == "max_ur" ~ "Highest ",
-        .data$series == "min_ur" ~ "Lowest ",
+        .data$series == "max_ur" ~ paste0("Highest ", tooltip_ending),
+        .data$series == "min_ur" ~ paste0("Lowest ", tooltip_ending),
         TRUE ~ NA_character_
       ),
       tooltip = paste0(.data$tooltip, round2(.data$value, 1), "%")
@@ -836,7 +847,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
   days_in_data <- as.numeric(max(data$date) - min(data$date))
 
   subtitle_1 <- paste0("Highest and lowest unemployment rates\nin ",
-  selected_indicator, " Victorian SA4s")
+                       selected_indicator, " Victorian SA4s")
 
   # First plot: Show highest / lowest / state-wide unemp rates----
   plot_high_low <- df_tidy %>%
@@ -865,7 +876,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     alpha = 0.01
     ) +
     ggrepel::geom_label_repel(
-      data = ~ filter(., date == max(date)),
+      data = ~ filter(., .data$date == max(.data$date)),
       aes(
         label = stringr::str_wrap(.data$tooltip, 7),
         col = .data$series,
@@ -913,7 +924,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   # Second plot: Range between high and low -----
   plot_range <- df_summ %>%
-    ggplot(aes(x = date, y = range)) +
+    ggplot(aes(x = .data$date, y = .data$range)) +
     ggiraph::geom_col_interactive(aes(tooltip = paste0(
       format(.data$date, "%B %Y"),
       "\n", round2(.data$range, 1), " ppts"
