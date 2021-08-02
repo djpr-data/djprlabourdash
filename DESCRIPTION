@@ -36,7 +36,6 @@ Imports:
     dplyr (>= 1.0.5),
     ggplot2,
     leaflet,
-    reactable,
     rlang,
     sf (>= 1.0),
     shiny (>= 1.6.0),
@@ -61,5 +60,6 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload
+    pkgload,
+    cachem
 Config/testthat/edition: 3
