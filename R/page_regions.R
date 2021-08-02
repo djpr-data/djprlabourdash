@@ -39,7 +39,17 @@ page_regions <- function(...) {
     ),
     djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
-    djpr_plot_ui("reg_unemprate_multiline",
+    br(),
+    selectInput("lf_status_multiline",
+                label = "Choose an indicator",
+                choices = c(
+                  "Unemployment rate" = "unemp_rate",
+                  "Participation rate" = "part_rate",
+                  "Employment to population ratio" = "emp_pop"
+                ),
+                selected = "unemp_rate"
+    ),
+    djpr_plot_ui("reg_unemp_emppop_partrate_multiline",
       height = "500px"
     ),
     djpr_plot_ui("reg_unemprate_dispersion"),
