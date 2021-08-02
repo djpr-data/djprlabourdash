@@ -54,9 +54,12 @@ page_regions <- function(...) {
     ),
     br(),
     br(),
-    "The graphs below explore the dispersion of levels of unemployment rates between different regions in Victoria.",
-    "The chosen classification for regions is by SA4, which is further explained ",
-    shiny::a("here.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4"),
+    "The graphs below explore the level of dispersion (i.e. the ",
+    "difference between minimum and maximum) of unemployment rates ", "
+    in different regions in Victoria. The breakdown of regions is by ",
+    shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4"),
+    br(),
+    br(),
     selectInput(
       "sa4_type_dispersion",
       label = "Choose regions",
