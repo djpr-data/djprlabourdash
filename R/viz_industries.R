@@ -205,7 +205,6 @@ table_industries_employment <- function(data = filter_dash_data(c(
                                         df = dash_data
                                         ),
                                         chosen_industry = "Agriculture, Forestry and Fishing") {
-  latest_date <- format(max(data$date), "%b %Y")
 
   # add entry for data$industry for "Victoria, all industries" where ""
   df <- data %>%
@@ -283,68 +282,41 @@ table_industries_employment <- function(data = filter_dash_data(c(
   table_df <- table_df %>%
     dplyr::select(.data$indicator, .data$series, .env$chosen_industry, .data$`Victoria, all industries`)
 
-  col_names <- names(table_df)
-
-  col_header_style <- list(
-    `font-weight` = "600"
-  )
-
-  my_table <- table_df %>%
-    rename(
-      industry = 3,
-      aggregate = 4
+  table_df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(indicator = dplyr::if_else(
+      dplyr::row_number() != 1,
+      "",
+      .data$indicator
+    )) %>%
+    dplyr::rename(
+      ` ` = .data$indicator,
+      `  ` = .data$series
     ) %>%
-    reactable::reactable(
-      columns = list(
-        indicator = reactable::colDef(
-          name = "",
-          minWidth = 65,
-          style = reactable::JS("function(rowInfo, colInfo, state) {
-        var firstSorted = state.sorted[0]
-        // Merge cells if unsorted
-        if (!firstSorted || firstSorted.id === 'indicator') {
-          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
-          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
-            return { visibility: 'hidden' }
-          }
-        }
-      }")
-        ),
-        series = reactable::colDef(
-          name = "",
-          minWidth = 45
-        ),
-        industry = reactable::colDef(
-          name = col_names[3],
-          headerStyle = col_header_style
-        ),
-        aggregate = reactable::colDef(
-          name = col_names[4],
-          headerStyle = col_header_style
-        )
-      ),
-      defaultColDef = reactable::colDef(
-        minWidth = 50
-      ),
-      highlight = TRUE,
-      resizable = TRUE,
-      sortable = FALSE,
-      theme = reactable::reactableTheme(
-        borderColor = "#dfe2e5",
-        stripedColor = "#f6f8fa",
-        highlightColor = "#f0f5f9",
-        cellPadding = "7px 1px 1px 1px",
-        tableStyle = list(`border-bottom` = "1px solid #000"),
-        headerStyle = list(
-          fontWeight = "normal",
-          `border-bottom` = "1px solid #000"
-        ),
-        groupHeaderStyle = list(fontWeight = "normal"),
-        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      )
-    )
-
-  my_table
+    flextable::flextable() %>%
+    flextable::bold(part = "header") %>%
+    flextable::border_remove() %>%
+    flextable::border(
+      part = "body",
+      j = 2:4,
+      i = 2:nrow(table_df),
+      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = c(1, 4, 7),
+      border.top = flextable::fp_border_default()
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = nrow(table_df),
+      border.bottom = flextable::fp_border_default()
+    ) %>%
+    flextable::set_table_properties("autofit", width = 1) %>%
+    flextable::font(part = "body", fontname = "Roboto") %>%
+    flextable::font(part = "header", fontname = "Roboto") %>%
+    flextable::fontsize(size = 9) %>%
+    flextable::fontsize(size = 9, part = "header")
 }
 
 viz_industries_emp_line <- function(data = filter_dash_data(c(
