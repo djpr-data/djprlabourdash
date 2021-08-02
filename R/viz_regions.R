@@ -1340,65 +1340,68 @@ table_region_focus <- function(data = filter_dash_data(
   table_df <- table_df %>%
     dplyr::select(.data$indicator, .data$series, {{ sa4 }}, dplyr::everything())
 
-  table_df %>%
-    rename(
-      region = 3,
-      aggregate = 4
+  out <- table_df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(indicator = dplyr::if_else(
+      dplyr::row_number() != 1,
+      "",
+      .data$indicator
+    )) %>%
+    dplyr::rename(
+      ` ` = .data$indicator,
+      `  ` = .data$series
     ) %>%
-    reactable::reactable(
-      defaultPageSize = 12,
-      columns = list(
-        indicator = reactable::colDef(
-          name = "",
-          minWidth = 65,
-          style = reactable::JS("function(rowInfo, colInfo, state) {
-        var firstSorted = state.sorted[0]
-        // Merge cells if unsorted
-        if (!firstSorted || firstSorted.id === 'indicator') {
-          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
-          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
-            return { visibility: 'hidden' }
-          }
-        }
-      }")
-        ),
-        series = reactable::colDef(
-          name = "",
-          minWidth = 30
-        ),
-        region = reactable::colDef(
-          name = names(table_df)[3],
-          align = "center",
-          minWidth = 40,
-          headerStyle = col_header_style
-        ),
-        aggregate = reactable::colDef(
-          name = names(table_df)[4],
-          align = "center",
-          minWidth = 40,
-          headerStyle = col_header_style
-        )
-      ),
-      defaultColDef = reactable::colDef(
-        minWidth = 50
-      ),
-      highlight = TRUE,
-      resizable = TRUE,
-      sortable = FALSE,
-      theme = reactable::reactableTheme(
-        borderColor = "#dfe2e5",
-        stripedColor = "#f6f8fa",
-        highlightColor = "#f0f5f9",
-        cellPadding = "7px 1px 1px 1px",
-        tableStyle = list(`border-bottom` = "1px solid #000"),
-        headerStyle = list(
-          fontWeight = "normal",
-          `border-bottom` = "1px solid #000"
-        ),
-        groupHeaderStyle = list(fontWeight = "normal"),
-        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      )
+    flextable::flextable() %>%
+    flextable::bold(part = "header") %>%
+    flextable::border_remove() %>%
+    flextable::border(
+      part = "body",
+      j = 2:4,
+      i = 2:nrow(table_df),
+      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = c(1, 4, 7),
+      border.top = flextable::fp_border_default()
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = nrow(table_df),
+      border.bottom = flextable::fp_border_default()
+    ) %>%
+    # flextable::autofit(add_w = 0, add_h = 0) %>%
+    flextable::set_table_properties("autofit", width = 1) %>%
+    flextable::font(part = "body", fontname = "Roboto") %>%
+    flextable::font(part = "header", fontname = "Roboto") %>%
+    flextable::fontsize(size = 9) %>%
+    flextable::fontsize(size = 9, part = "header")
+
+  table_caption <- caption_auto(data = data,
+                                notes = "Data not seasonally adjusted; smoothed using a 3 month rolling average.")
+  # Add caption
+  out <- out %>%
+    flextable::add_footer(` ` = table_caption) %>%
+    flextable::merge_at(
+      j = 1:flextable::ncol_keys(out),
+      part = "footer"
+    ) %>%
+    flextable::italic(part = "footer") %>%
+    flextable::font(fontname = "Roboto") %>%
+    flextable::fontsize(
+      size = 9 * 0.85,
+      part = "footer"
+    ) %>%
+    flextable::color(
+      part = "footer",
+      color = "#343a40"
+    ) %>%
+    flextable::line_spacing(
+      part = "footer",
+      space = 0.8
     )
+
+  out
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
@@ -1470,53 +1473,56 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("A84600075R",
-                                                                               "A84599625R",
-                                                                               "A84599781T",
-                                                                               "A84599607K",
-                                                                               "A84600243R",
-                                                                               "A84599715V",
-                                                                               "A84599631K"
-                                                                               ),
-                                      df = dash_data
-                                      ) %>%
-                                      dplyr::group_by(.data$series_id) %>%
-                                      dplyr::mutate(
-                                      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                                      dplyr::filter(date >= as.Date("2020-01-01"))) {
-
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
+                                                       "A84600075R",
+                                                       "A84599625R",
+                                                       "A84599781T",
+                                                       "A84599607K",
+                                                       "A84600243R",
+                                                       "A84599715V",
+                                                       "A84599631K"
+                                                     ),
+                                                     df = dash_data
+                                                     ) %>%
+                                                       dplyr::group_by(.data$series_id) %>%
+                                                       dplyr::mutate(
+                                                         value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+                                                       ) %>%
+                                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
   df <- data %>%
     dplyr::mutate(
       state = dplyr::case_when(
         .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-          "Reg. Vic",
+        "Reg. Vic",
         .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-          "Reg. NSW",
+        "Reg. NSW",
         .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-          "Reg. QLD",
+        "Reg. QLD",
         .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-          "Reg. NT",
+        "Reg. NT",
         .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-          "Reg. WA",
+        "Reg. WA",
         .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-          "Reg. SA",
+        "Reg. SA",
         .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-          "Reg. Tas",
-        TRUE ~ .data$state)
+        "Reg. Tas",
+        TRUE ~ .data$state
+      )
     ) %>%
     dplyr::mutate(
       state_group = dplyr::if_else(
         .data$state %in% c(
-        "Reg. Vic", "Reg. NSW"
-      ),
-      .data$state,
-      "Other")
+          "Reg. Vic", "Reg. NSW"
+        ),
+        .data$state,
+        "Other"
+      )
     )
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-                                  .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
 
   latest <- df %>%
     dplyr::select(.data$date, .data$state, .data$value) %>%
@@ -1586,34 +1592,34 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c("
       subtitle = "Cumulative change in employment for regional states and territories of Australia since March 2020",
       caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average.")
     )
-
 }
 
-viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
-                                                                   "A84599629X",
-                                                                   "A84599630J",
-                                                                   "A84600078W",
-                                                                   "A84600079X",
-                                                                   "A84600080J",
-                                                                   "A84599784X",
-                                                                   "A84599785A",
-                                                                   "A84599786C",
-                                                                   "A84599718A",
-                                                                   "A84599719C",
-                                                                   "A84599720L",
-                                                                   "A84600246W",
-                                                                   "A84600247X",
-                                                                   "A84600248A",
-                                                                   "A84599634T",
-                                                                   "A84599635V",
-                                                                   "A84599636W",
-                                                                   "A84599610X",
-                                                                   "A84599611A",
-                                                                   "A84599612C"),
-                                                             df = dash_data),
-                                     selected_indicator = "unemp_rate")
-{
-
+viz_reg_regionstates_dot <- function(data = filter_dash_data(c(
+                                       "A84599628W",
+                                       "A84599629X",
+                                       "A84599630J",
+                                       "A84600078W",
+                                       "A84600079X",
+                                       "A84600080J",
+                                       "A84599784X",
+                                       "A84599785A",
+                                       "A84599786C",
+                                       "A84599718A",
+                                       "A84599719C",
+                                       "A84599720L",
+                                       "A84600246W",
+                                       "A84600247X",
+                                       "A84600248A",
+                                       "A84599634T",
+                                       "A84599635V",
+                                       "A84599636W",
+                                       "A84599610X",
+                                       "A84599611A",
+                                       "A84599612C"
+                                     ),
+                                     df = dash_data
+                                     ),
+                                     selected_indicator = "unemp_rate") {
   df <- data %>%
     dplyr::select(.data$date, .data$value, .data$series, .data$indicator) %>%
     dplyr::mutate(indicator_short = dplyr::case_when(
@@ -1626,19 +1632,22 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     dplyr::filter(.data$indicator_short == selected_indicator)
 
   df <- df %>%
-    dplyr::mutate(series = gsub(";.*", "", .data$series),
-                  series = gsub(">> Rest of ", "Regional ", .data$series),
-                  series = dplyr::if_else(grepl("Northern Territory", .data$series),
-                                          "Regional NT",
-                                          .data$series),
-                  series = stringr::str_trim(.data$series)
+    dplyr::mutate(
+      series = gsub(";.*", "", .data$series),
+      series = gsub(">> Rest of ", "Regional ", .data$series),
+      series = dplyr::if_else(grepl("Northern Territory", .data$series),
+        "Regional NT",
+        .data$series
+      ),
+      series = stringr::str_trim(.data$series)
     )
 
   # 3 month average
   df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(
-      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+    ) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
@@ -1659,19 +1668,21 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
   # create min_date and max_date
   df_wide <- df %>%
     dplyr::mutate(data_type = dplyr::if_else(.data$date == min(.data$date),
-                                             "min_date",
-                                             "max_date"
-                                             )) %>%
+      "min_date",
+      "max_date"
+    )) %>%
     dplyr::select(.data$data_type, .data$value, .data$series, .data$rank) %>%
     tidyr::spread(key = .data$data_type, value = .data$value) %>%
     dplyr::mutate(arrow_end = dplyr::if_else(.data$max_date > .data$min_date,
-                                             .data$max_date - 0.08,
-                                             .data$max_date + 0.08
+      .data$max_date - 0.08,
+      .data$max_date + 0.08
     ))
 
   latest_values <- df %>%
-    dplyr::filter(.data$date == max(.data$date),
-                  .data$series == "Regional Vic.") %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      .data$series == "Regional Vic."
+    ) %>%
     dplyr::select(.data$series, .data$value, .data$date) %>%
     tidyr::pivot_wider(names_from = .data$series, values_from = .data$value)
 
@@ -1679,7 +1690,8 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
     selected_indicator == "emp_pop" ~ "Employment to population ratio",
-    TRUE ~ NA_character_)
+    TRUE ~ NA_character_
+  )
 
   title <- paste0(
     "The ", tolower(indic_long),
@@ -1740,78 +1752,82 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c("A84599628W",
       values = suppressWarnings(djpr_pal(10)[c(1, 8)])
     ) +
     theme_djpr(flipped = T) +
-    labs(title = title,
-         subtitle = paste0(indic_long, " in regional areas of Australia"),
-         caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average."),
-         y = paste0("", indic_long))
+    labs(
+      title = title,
+      subtitle = paste0(indic_long, " in regional areas of Australia"),
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 3 month rolling average."),
+      y = paste0("", indic_long)
+    )
 }
 
-viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_rest of nsw",
-                                                                "15-24_employed_rest of nt",
-                                                                "15-24_employed_rest of qld",
-                                                                "15-24_employed_rest of sa",
-                                                                "15-24_employed_rest of tas.",
-                                                                "15-24_employed_rest of vic.",
-                                                                "15-24_employed_rest of wa",
-                                                                "15-24_nilf_rest of nsw",
-                                                                "15-24_nilf_rest of nt",
-                                                                "15-24_nilf_rest of qld",
-                                                                "15-24_nilf_rest of sa",
-                                                                "15-24_nilf_rest of tas.",
-                                                                "15-24_nilf_rest of vic.",
-                                                                "15-24_nilf_rest of wa",
-                                                                "15-24_unemployed_rest of nsw",
-                                                                "15-24_unemployed_rest of nt",
-                                                                "15-24_unemployed_rest of qld",
-                                                                "15-24_unemployed_rest of sa",
-                                                                "15-24_unemployed_rest of tas.",
-                                                                "15-24_unemployed_rest of vic.",
-                                                                "15-24_unemployed_rest of wa",
-                                                                "25-54_employed_rest of nsw",
-                                                                "25-54_employed_rest of nt",
-                                                                "25-54_employed_rest of qld",
-                                                                "25-54_employed_rest of sa",
-                                                                "25-54_employed_rest of tas.",
-                                                                "25-54_employed_rest of vic.",
-                                                                "25-54_employed_rest of wa",
-                                                                "25-54_nilf_rest of nsw",
-                                                                "25-54_nilf_rest of nt",
-                                                                "25-54_nilf_rest of qld",
-                                                                "25-54_nilf_rest of sa",
-                                                                "25-54_nilf_rest of tas.",
-                                                                "25-54_nilf_rest of vic.",
-                                                                "25-54_nilf_rest of wa",
-                                                                "25-54_unemployed_rest of nsw",
-                                                                "25-54_unemployed_rest of nt",
-                                                                "25-54_unemployed_rest of qld",
-                                                                "25-54_unemployed_rest of sa",
-                                                                "25-54_unemployed_rest of tas.",
-                                                                "25-54_unemployed_rest of vic.",
-                                                                "25-54_unemployed_rest of wa",
-                                                                "55+_employed_rest of nsw",
-                                                                "55+_employed_rest of nt",
-                                                                "55+_employed_rest of qld",
-                                                                "55+_employed_rest of sa",
-                                                                "55+_employed_rest of tas.",
-                                                                "55+_employed_rest of vic.",
-                                                                "55+_employed_rest of wa",
-                                                                "55+_nilf_rest of nsw",
-                                                                "55+_nilf_rest of nt",
-                                                                "55+_nilf_rest of qld",
-                                                                "55+_nilf_rest of sa",
-                                                                "55+_nilf_rest of tas.",
-                                                                "55+_nilf_rest of vic.",
-                                                                "55+_nilf_rest of wa",
-                                                                "55+_unemployed_rest of nsw",
-                                                                "55+_unemployed_rest of nt",
-                                                                "55+_unemployed_rest of qld",
-                                                                "55+_unemployed_rest of sa",
-                                                                "55+_unemployed_rest of tas.",
-                                                                "55+_unemployed_rest of vic.",
-                                                                "55+_unemployed_rest of wa"),
-                                                             df = dash_data),
-                                     selected_indicator = "unemp_rate")
-{
+viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
+                                       "15-24_employed_rest of nsw",
+                                       "15-24_employed_rest of nt",
+                                       "15-24_employed_rest of qld",
+                                       "15-24_employed_rest of sa",
+                                       "15-24_employed_rest of tas.",
+                                       "15-24_employed_rest of vic.",
+                                       "15-24_employed_rest of wa",
+                                       "15-24_nilf_rest of nsw",
+                                       "15-24_nilf_rest of nt",
+                                       "15-24_nilf_rest of qld",
+                                       "15-24_nilf_rest of sa",
+                                       "15-24_nilf_rest of tas.",
+                                       "15-24_nilf_rest of vic.",
+                                       "15-24_nilf_rest of wa",
+                                       "15-24_unemployed_rest of nsw",
+                                       "15-24_unemployed_rest of nt",
+                                       "15-24_unemployed_rest of qld",
+                                       "15-24_unemployed_rest of sa",
+                                       "15-24_unemployed_rest of tas.",
+                                       "15-24_unemployed_rest of vic.",
+                                       "15-24_unemployed_rest of wa",
+                                       "25-54_employed_rest of nsw",
+                                       "25-54_employed_rest of nt",
+                                       "25-54_employed_rest of qld",
+                                       "25-54_employed_rest of sa",
+                                       "25-54_employed_rest of tas.",
+                                       "25-54_employed_rest of vic.",
+                                       "25-54_employed_rest of wa",
+                                       "25-54_nilf_rest of nsw",
+                                       "25-54_nilf_rest of nt",
+                                       "25-54_nilf_rest of qld",
+                                       "25-54_nilf_rest of sa",
+                                       "25-54_nilf_rest of tas.",
+                                       "25-54_nilf_rest of vic.",
+                                       "25-54_nilf_rest of wa",
+                                       "25-54_unemployed_rest of nsw",
+                                       "25-54_unemployed_rest of nt",
+                                       "25-54_unemployed_rest of qld",
+                                       "25-54_unemployed_rest of sa",
+                                       "25-54_unemployed_rest of tas.",
+                                       "25-54_unemployed_rest of vic.",
+                                       "25-54_unemployed_rest of wa",
+                                       "55+_employed_rest of nsw",
+                                       "55+_employed_rest of nt",
+                                       "55+_employed_rest of qld",
+                                       "55+_employed_rest of sa",
+                                       "55+_employed_rest of tas.",
+                                       "55+_employed_rest of vic.",
+                                       "55+_employed_rest of wa",
+                                       "55+_nilf_rest of nsw",
+                                       "55+_nilf_rest of nt",
+                                       "55+_nilf_rest of qld",
+                                       "55+_nilf_rest of sa",
+                                       "55+_nilf_rest of tas.",
+                                       "55+_nilf_rest of vic.",
+                                       "55+_nilf_rest of wa",
+                                       "55+_unemployed_rest of nsw",
+                                       "55+_unemployed_rest of nt",
+                                       "55+_unemployed_rest of qld",
+                                       "55+_unemployed_rest of sa",
+                                       "55+_unemployed_rest of tas.",
+                                       "55+_unemployed_rest of vic.",
+                                       "55+_unemployed_rest of wa"
+                                     ),
+                                     df = dash_data
+                                     ),
+                                     selected_indicator = "unemp_rate") {
   df <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
@@ -1819,30 +1835,38 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   df <- df %>%
     dplyr::select(.data$date, .data$series, .data$value) %>%
-    tidyr::separate(col = .data$series,
-                    into = c("age", "indic", "geog"),
-                    sep = " ; ")
+    tidyr::separate(
+      col = .data$series,
+      into = c("age", "indic", "geog"),
+      sep = " ; "
+    )
 
   df <- df %>%
     dplyr::filter(.data$date == max(.data$date))
 
   # calculate participation, unemployment rate and employment to pop ratio for each regional area
   df <- df %>%
-    tidyr::pivot_wider(names_from = .data$indic,
-                       values_from = .data$value)
+    tidyr::pivot_wider(
+      names_from = .data$indic,
+      values_from = .data$value
+    )
 
   df <- df %>%
     dplyr::group_by(.data$date, .data$age) %>%
-    dplyr::summarise(Employed = sum(.data$Employed),
-              NILF = sum(.data$NILF),
-              Unemployed = sum(.data$Unemployed)) %>%
+    dplyr::summarise(
+      Employed = sum(.data$Employed),
+      NILF = sum(.data$NILF),
+      Unemployed = sum(.data$Unemployed)
+    ) %>%
     dplyr::mutate(geog = "Rest of Aus.") %>%
     dplyr::bind_rows(df)
 
   df <- df %>%
-    dplyr::mutate(part_rate = 100 * ((.data$Employed + .data$Unemployed) / (.data$Employed + .data$Unemployed + .data$NILF)),
-                  unemp_rate = 100 * (.data$Unemployed / (.data$Employed + .data$Unemployed)),
-                  emp_pop = 100 * (.data$Employed / (.data$Employed + .data$Unemployed + .data$NILF)))
+    dplyr::mutate(
+      part_rate = 100 * ((.data$Employed + .data$Unemployed) / (.data$Employed + .data$Unemployed + .data$NILF)),
+      unemp_rate = 100 * (.data$Unemployed / (.data$Employed + .data$Unemployed)),
+      emp_pop = 100 * (.data$Employed / (.data$Employed + .data$Unemployed + .data$NILF))
+    )
 
   # depending on selected_indicator, chose measure to be calculated
   df <- df %>%
@@ -1853,7 +1877,8 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     selected_indicator == "unemp_rate" ~ "unemployment rate",
     selected_indicator == "part_rate" ~ "participation rate",
     selected_indicator == "emp_pop" ~ "employment to population ratio",
-    TRUE ~ NA_character_)
+    TRUE ~ NA_character_
+  )
 
   subtitle <- paste0(
     "The ", indic_long,
@@ -1866,8 +1891,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
     ))
 
   df <- df %>%
-    dplyr::mutate(geog = gsub(";.*", "", .data$geog),
-                  geog = gsub("Rest of ", "Regional ", .data$geog)
+    dplyr::mutate(
+      geog = gsub(";.*", "", .data$geog),
+      geog = gsub("Rest of ", "Regional ", .data$geog)
     )
 
   title_df <- df %>%
@@ -1879,98 +1905,137 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c("15-24_employed_r
 
   title <- dplyr::case_when(
     all(title_df$rank[title_df$geog == "Regional Vic."] == 1) ~
-      paste0("Regional Victoria had a lower ",
-             indic_long,
-             " than regional Australia across all age groups in ",
-             format(max(df$date), "%B %Y")),
+    paste0(
+      "Regional Victoria had a lower ",
+      indic_long,
+      " than regional Australia across all age groups in ",
+      format(max(df$date), "%B %Y")
+    ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 1 ~
-      paste0("Regional Victoria had a lower ",
-             indic_long,
-             " for young people than regional Australia in ",
-             format(max(df$date), "%B %Y")),
+    paste0(
+      "Regional Victoria had a lower ",
+      indic_long,
+      " for young people than regional Australia in ",
+      format(max(df$date), "%B %Y")
+    ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 2 ~
-      paste0("Regional Victoria had a higher ",
-             indic_long,
-             " for young people than regional Australia in ",
-             format(max(df$date), "%B %Y")),
+    paste0(
+      "Regional Victoria had a higher ",
+      indic_long,
+      " for young people than regional Australia in ",
+      format(max(df$date), "%B %Y")
+    ),
     TRUE ~
-      paste0("Regional ", indic_long, " by age by State and Territory, ",
-             format(max(df$date), "%B %Y"))
+    paste0(
+      "Regional ", indic_long, " by age by State and Territory, ",
+      format(max(df$date), "%B %Y")
+    )
   )
 
   max_value <- max(df$value)
 
   df <- df %>%
-    dplyr::mutate(tooltip = paste0(.data$geog, "\n",
-                            round2(.data$value, 1), "%"))
+    dplyr::mutate(tooltip = paste0(
+      .data$geog, "\n",
+      round2(.data$value, 1), "%"
+    ))
 
   # use patchwork to make three plots and tie them together
   patch_1 <- df %>%
     dplyr::filter(.data$age == "15-24") %>%
-    ggplot(aes(x = stats::reorder(.data$geog, .data$value),
-               y = .data$value,
-               fill = .data$state_group)) +
+    ggplot(aes(
+      x = stats::reorder(.data$geog, .data$value),
+      y = .data$value,
+      fill = .data$state_group
+    )) +
     ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(limits = c(0, max_value),
-                     breaks = scales::breaks_pretty(5)) +
+    djpr_y_continuous(
+      limits = c(0, max_value),
+      breaks = scales::breaks_pretty(5)
+    ) +
     scale_fill_manual(
-      values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of Aus." = djprtheme::djpr_green,
-                 "Other" = "grey75")
+      values = c(
+        "Rest of Vic." = djprtheme::djpr_royal_blue,
+        "Rest of Aus." = djprtheme::djpr_green,
+        "Other" = "grey75"
+      )
     ) +
     labs(subtitle = "Age 15-24") +
-    theme(plot.subtitle = element_text(hjust = 0.5,
-                                       colour = "black",
-                                       size = 14),
-          axis.title.x = element_blank(),
-          axis.text.x=element_blank())
+    theme(
+      plot.subtitle = element_text(
+        hjust = 0.5,
+        colour = "black",
+        size = 14
+      ),
+      axis.title.x = element_blank(),
+      axis.text.x = element_blank()
+    )
 
   patch_2 <- df %>%
     dplyr::filter(.data$age == "25-54") %>%
-    ggplot(aes(x = stats::reorder(.data$geog, .data$value),
-               y = .data$value,
-               fill = .data$state_group)) +
+    ggplot(aes(
+      x = stats::reorder(.data$geog, .data$value),
+      y = .data$value,
+      fill = .data$state_group
+    )) +
     ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(limits = c(0, max_value),
-                      breaks = scales::breaks_pretty(5)) +
+    djpr_y_continuous(
+      limits = c(0, max_value),
+      breaks = scales::breaks_pretty(5)
+    ) +
     scale_fill_manual(
-      values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of Aus." = djprtheme::djpr_green,
-                 "Other" = "grey70")
+      values = c(
+        "Rest of Vic." = djprtheme::djpr_royal_blue,
+        "Rest of Aus." = djprtheme::djpr_green,
+        "Other" = "grey70"
+      )
     ) +
     labs(subtitle = "Age 25-54") +
-    theme(plot.subtitle = element_text(hjust = 0.5,
-                                       colour = "black",
-                                       size = 14),
-          axis.title.x = element_blank(),
-          axis.text.x=element_blank())
+    theme(
+      plot.subtitle = element_text(
+        hjust = 0.5,
+        colour = "black",
+        size = 14
+      ),
+      axis.title.x = element_blank(),
+      axis.text.x = element_blank()
+    )
 
   patch_3 <- df %>%
     dplyr::filter(.data$age == "55+") %>%
-    ggplot(aes(x = stats::reorder(.data$geog, .data$value),
-               y = .data$value,
-               fill = .data$state_group)) +
+    ggplot(aes(
+      x = stats::reorder(.data$geog, .data$value),
+      y = .data$value,
+      fill = .data$state_group
+    )) +
     ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
     coord_flip() +
     theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(limits = c(0, max_value),
-                      breaks = scales::breaks_pretty(5),
-                      labels = function(x) paste0(x, "%")) +
+    djpr_y_continuous(
+      limits = c(0, max_value),
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
     scale_fill_manual(
-      values = c("Rest of Vic." = djprtheme::djpr_royal_blue,
-                 "Rest of Aus." = djprtheme::djpr_green,
-                 "Other" = "grey70")
+      values = c(
+        "Rest of Vic." = djprtheme::djpr_royal_blue,
+        "Rest of Aus." = djprtheme::djpr_green,
+        "Other" = "grey70"
+      )
     ) +
     labs(subtitle = "Age 55+") +
-    theme(plot.subtitle = element_text(hjust = 0.5,
-                                       colour = "black",
-                                       size = 14
-                                       ),
-          axis.title.x = element_blank())
+    theme(
+      plot.subtitle = element_text(
+        hjust = 0.5,
+        colour = "black",
+        size = 14
+      ),
+      axis.title.x = element_blank()
+    )
 
   patchwork::wrap_plots(
     patch_1, patch_2, patch_3,

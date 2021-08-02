@@ -9,6 +9,8 @@
 labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
+  Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
+
   myenv <- as.environment(1)
 
   assign("dash_data",
@@ -39,13 +41,16 @@ labour_server <- function(input, output, session) {
       y = .data$value,
       data_id = as.character(.data$date),
       fill = dplyr::if_else(.data$date == max(.data$date),
-                            "max",
-                            "other")
+        "max",
+        "other"
+      )
     )) +
     # ggiraph::geom_col_interactive(fill = "#A1BBD2") +
     scale_fill_manual(
-      values = c("max" = "#1F1547",
-                 "other" = "#A1BBD2")
+      values = c(
+        "max" = "#1F1547",
+        "other" = "#A1BBD2"
+      )
     ) +
     geom_col() +
     theme_void() +
@@ -225,9 +230,10 @@ labour_server <- function(input, output, session) {
     text_overview_summary(ts_summ)
   })
 
-  output$main_table <- reactable::renderReactable({
+  output$main_table <- renderUI({
     req(dash_data)
-    table_overview()
+    table_overview() %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 
@@ -320,8 +326,9 @@ labour_server <- function(input, output, session) {
   # })
 
   # Indicators: table of employment indicators
-  output$ind_emp_table <- reactable::renderReactable({
-    table_ind_employment()
+  output$ind_emp_table <- renderUI({
+    table_ind_employment() %>%
+      flextable::htmltools_value()
   })
 
   # Indicators: slopgraph of emp-pop ratios in states
@@ -353,9 +360,23 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: cumulative change in PT / FT since COVID
+  djpr_plot_server("ind_gen_full_part_line",
+                   plot_function = viz_ind_gen_full_part_line,
+                   data = filter_dash_data(c(
+                     "pt_emp_vic",
+                     "A84423357V"
+                   ),
+                   df = dash_data
+                   ) %>%
+                     dplyr::filter(date >= as.Date("2020-01-01")),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
   # Indicators: unemployment ------
-  output$ind_unemp_summary <- reactable::renderReactable({
-    table_ind_unemp_summary()
+  output$ind_unemp_summary <- renderUI({
+    table_ind_unemp_summary() %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 
@@ -482,16 +503,16 @@ labour_server <- function(input, output, session) {
 
   # Inclusion: women and men -----
   # Groups: line chart of emp-pop by sex
-  djpr_plot_server("gr_emppopratio_line",
-    viz_gr_emppopratio_line,
-    data = filter_dash_data(c(
-      "A84423356T",
-      "A84423244X",
-      "A84423468K"
-    )),
-    date_slider_value_min = Sys.Date() - (365.25 * 10),
-    plt_change = plt_change
-  )
+  djpr_plot_server("gr_gen_emppopratio_line",
+                   plot_function = viz_gr_gen_emppopratio_line,
+                   data = filter_dash_data(c(
+                     "A84423244X",
+                     "A84423468K"
+                   ),
+                   df = dash_data
+                   ),
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   plt_change = plt_change)
 
   # Bar chart: LF status by sex, latest month
 
@@ -675,13 +696,43 @@ labour_server <- function(input, output, session) {
     })
   )
 
-  # output$gr_ages_line <- renderPlot({
-  #   viz_gr_ages_line(selected_indicator = input$youth_focus)
-  # })
-  #
-  # output$gr_yth_melbvrest_line <- renderPlot({
-  #   viz_gr_yth_melbvrest_line(selected_indicator = input$youth_focus)
-  # })
+  djpr_plot_server("gr_youth_full_part_line",
+                   plot_function = viz_gr_youth_full_part_line,
+                   data = filter_dash_data(c(
+                     "A84424687C",
+                     "A84424695C",
+                     "A84424696F"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = TRUE)
+
+  djpr_plot_server("gr_youth_eduemp_waterfall",
+                   plot_function = viz_gr_youth_eduemp_waterfall,
+                   data = filter_dash_data(c(
+                     "A84424598A",
+                     "A84424778K",
+                     "A84424597X",
+                     "A84424777J",
+                     "A84424600A",
+                     "A84424780W",
+                     "A84424694A"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE)
+
+  djpr_plot_server("gr_yth_mostvuln_line",
+                   plot_function = viz_gr_yth_mostvuln_line,
+                   data = filter_dash_data(c("A84433475V",
+                                             "A84424781X"),
+                                           df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider_value_min = Sys.Date() - (365.25 * 10),
+                   date_slider = TRUE)
 
   # Inclusion: long term unemployment ------
 
@@ -924,8 +975,9 @@ labour_server <- function(input, output, session) {
       ts_summ
     )
 
-  output$table_region_focus <- reactable::renderReactable({
-    table_region_focus(sa4 = input$focus_region)
+  output$table_region_focus <- renderUI({
+    table_region_focus(sa4 = input$focus_region) %>%
+      flextable::htmltools_value()
   }) %>%
     bindCache(
       input$focus_region,
@@ -960,106 +1012,114 @@ labour_server <- function(input, output, session) {
 
   # Regions: National focus box -----
   djpr_plot_server("reg_regionstates_dot",
-                   plot_function = viz_reg_regionstates_dot,
-                   data = filter_dash_data(c("A84599628W",
-                                             "A84599629X",
-                                             "A84599630J",
-                                             "A84600078W",
-                                             "A84600079X",
-                                             "A84600080J",
-                                             "A84599784X",
-                                             "A84599785A",
-                                             "A84599786C",
-                                             "A84599718A",
-                                             "A84599719C",
-                                             "A84599720L",
-                                             "A84600246W",
-                                             "A84600247X",
-                                             "A84600248A",
-                                             "A84599634T",
-                                             "A84599635V",
-                                             "A84599636W",
-                                             "A84599610X",
-                                             "A84599611A",
-                                             "A84599612C"),
-                                           df = dash_data),
-                   selected_indicator = reactive(input$aus_regions_indicator),
-                   plt_change = plt_change,
-                   width_percent = 46,
-                   height_percent = 150,
-                   date_slider = FALSE)
+    plot_function = viz_reg_regionstates_dot,
+    data = filter_dash_data(c(
+      "A84599628W",
+      "A84599629X",
+      "A84599630J",
+      "A84600078W",
+      "A84600079X",
+      "A84600080J",
+      "A84599784X",
+      "A84599785A",
+      "A84599786C",
+      "A84599718A",
+      "A84599719C",
+      "A84599720L",
+      "A84600246W",
+      "A84600247X",
+      "A84600248A",
+      "A84599634T",
+      "A84599635V",
+      "A84599636W",
+      "A84599610X",
+      "A84599611A",
+      "A84599612C"
+    ),
+    df = dash_data
+    ),
+    selected_indicator = reactive(input$aus_regions_indicator),
+    plt_change = plt_change,
+    width_percent = 46,
+    height_percent = 150,
+    date_slider = FALSE
+  )
 
   djpr_plot_server("reg_regionstates_bar",
-                   viz_reg_regionstates_bar,
-                   data = filter_dash_data(c("15-24_employed_rest of nsw",
-                                             "15-24_employed_rest of nt",
-                                             "15-24_employed_rest of qld",
-                                             "15-24_employed_rest of sa",
-                                             "15-24_employed_rest of tas.",
-                                             "15-24_employed_rest of vic.",
-                                             "15-24_employed_rest of wa",
-                                             "15-24_nilf_rest of nsw",
-                                             "15-24_nilf_rest of nt",
-                                             "15-24_nilf_rest of qld",
-                                             "15-24_nilf_rest of sa",
-                                             "15-24_nilf_rest of tas.",
-                                             "15-24_nilf_rest of vic.",
-                                             "15-24_nilf_rest of wa",
-                                             "15-24_unemployed_rest of nsw",
-                                             "15-24_unemployed_rest of nt",
-                                             "15-24_unemployed_rest of qld",
-                                             "15-24_unemployed_rest of sa",
-                                             "15-24_unemployed_rest of tas.",
-                                             "15-24_unemployed_rest of vic.",
-                                             "15-24_unemployed_rest of wa",
-                                             "25-54_employed_rest of nsw",
-                                             "25-54_employed_rest of nt",
-                                             "25-54_employed_rest of qld",
-                                             "25-54_employed_rest of sa",
-                                             "25-54_employed_rest of tas.",
-                                             "25-54_employed_rest of vic.",
-                                             "25-54_employed_rest of wa",
-                                             "25-54_nilf_rest of nsw",
-                                             "25-54_nilf_rest of nt",
-                                             "25-54_nilf_rest of qld",
-                                             "25-54_nilf_rest of sa",
-                                             "25-54_nilf_rest of tas.",
-                                             "25-54_nilf_rest of vic.",
-                                             "25-54_nilf_rest of wa",
-                                             "25-54_unemployed_rest of nsw",
-                                             "25-54_unemployed_rest of nt",
-                                             "25-54_unemployed_rest of qld",
-                                             "25-54_unemployed_rest of sa",
-                                             "25-54_unemployed_rest of tas.",
-                                             "25-54_unemployed_rest of vic.",
-                                             "25-54_unemployed_rest of wa",
-                                             "55+_employed_rest of nsw",
-                                             "55+_employed_rest of nt",
-                                             "55+_employed_rest of qld",
-                                             "55+_employed_rest of sa",
-                                             "55+_employed_rest of tas.",
-                                             "55+_employed_rest of vic.",
-                                             "55+_employed_rest of wa",
-                                             "55+_nilf_rest of nsw",
-                                             "55+_nilf_rest of nt",
-                                             "55+_nilf_rest of qld",
-                                             "55+_nilf_rest of sa",
-                                             "55+_nilf_rest of tas.",
-                                             "55+_nilf_rest of vic.",
-                                             "55+_nilf_rest of wa",
-                                             "55+_unemployed_rest of nsw",
-                                             "55+_unemployed_rest of nt",
-                                             "55+_unemployed_rest of qld",
-                                             "55+_unemployed_rest of sa",
-                                             "55+_unemployed_rest of tas.",
-                                             "55+_unemployed_rest of vic.",
-                                             "55+_unemployed_rest of wa"),
-                                           df = dash_data),
-                   selected_indicator = reactive(input$aus_regions_indicator),
-                   plt_change = plt_change,
-                   height_percent = 150,
-                   width_percent = 46,
-                   date_slider = FALSE)
+    viz_reg_regionstates_bar,
+    data = filter_dash_data(c(
+      "15-24_employed_rest of nsw",
+      "15-24_employed_rest of nt",
+      "15-24_employed_rest of qld",
+      "15-24_employed_rest of sa",
+      "15-24_employed_rest of tas.",
+      "15-24_employed_rest of vic.",
+      "15-24_employed_rest of wa",
+      "15-24_nilf_rest of nsw",
+      "15-24_nilf_rest of nt",
+      "15-24_nilf_rest of qld",
+      "15-24_nilf_rest of sa",
+      "15-24_nilf_rest of tas.",
+      "15-24_nilf_rest of vic.",
+      "15-24_nilf_rest of wa",
+      "15-24_unemployed_rest of nsw",
+      "15-24_unemployed_rest of nt",
+      "15-24_unemployed_rest of qld",
+      "15-24_unemployed_rest of sa",
+      "15-24_unemployed_rest of tas.",
+      "15-24_unemployed_rest of vic.",
+      "15-24_unemployed_rest of wa",
+      "25-54_employed_rest of nsw",
+      "25-54_employed_rest of nt",
+      "25-54_employed_rest of qld",
+      "25-54_employed_rest of sa",
+      "25-54_employed_rest of tas.",
+      "25-54_employed_rest of vic.",
+      "25-54_employed_rest of wa",
+      "25-54_nilf_rest of nsw",
+      "25-54_nilf_rest of nt",
+      "25-54_nilf_rest of qld",
+      "25-54_nilf_rest of sa",
+      "25-54_nilf_rest of tas.",
+      "25-54_nilf_rest of vic.",
+      "25-54_nilf_rest of wa",
+      "25-54_unemployed_rest of nsw",
+      "25-54_unemployed_rest of nt",
+      "25-54_unemployed_rest of qld",
+      "25-54_unemployed_rest of sa",
+      "25-54_unemployed_rest of tas.",
+      "25-54_unemployed_rest of vic.",
+      "25-54_unemployed_rest of wa",
+      "55+_employed_rest of nsw",
+      "55+_employed_rest of nt",
+      "55+_employed_rest of qld",
+      "55+_employed_rest of sa",
+      "55+_employed_rest of tas.",
+      "55+_employed_rest of vic.",
+      "55+_employed_rest of wa",
+      "55+_nilf_rest of nsw",
+      "55+_nilf_rest of nt",
+      "55+_nilf_rest of qld",
+      "55+_nilf_rest of sa",
+      "55+_nilf_rest of tas.",
+      "55+_nilf_rest of vic.",
+      "55+_nilf_rest of wa",
+      "55+_unemployed_rest of nsw",
+      "55+_unemployed_rest of nt",
+      "55+_unemployed_rest of qld",
+      "55+_unemployed_rest of sa",
+      "55+_unemployed_rest of tas.",
+      "55+_unemployed_rest of vic.",
+      "55+_unemployed_rest of wa"
+    ),
+    df = dash_data
+    ),
+    selected_indicator = reactive(input$aus_regions_indicator),
+    plt_change = plt_change,
+    height_percent = 150,
+    width_percent = 46,
+    date_slider = FALSE
+  )
 
   djpr_plot_server(
     "reg_emp_regionstates_sincecovid_line",
@@ -1320,8 +1380,9 @@ labour_server <- function(input, output, session) {
     width_percent = 100
   )
 
-  output$industries_employment <- reactable::renderReactable({
-    table_industries_employment(chosen_industry = input$chosen_industry)
+  output$industries_employment <- renderUI({
+    table_industries_employment(chosen_industry = input$chosen_industry) %>%
+      flextable::htmltools_value()
   })
 
   # Links to pages -----
