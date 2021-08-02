@@ -784,16 +784,20 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     dplyr::select(date, value, indicator, sa4, indicator_short, geog)
 
   # Reduce df depending on selected_indicator
-  df1 <- df %>%
-    dplyr::filter(case_when(selected_indicator == "metro" ~
-                dplyr::filter(.$geog == "Melbourne"),
-              selected_indicator == "regional" ~
-                dplyr::filter(!.$geog == "Melbourne"))
+  if(selected_indicator == "metro") {
+    df <- df %>%
+      dplyr::filter(.data$geog %in% c("Melbourne", "Victoria"))
+  } else if(selected_indicator == "regional") {
+      df <- df %>%
+        dplyr::filter(!.data$geog %in% c("Melbourne"))
+    }
 
   # 3 months smoothing
   df <- df %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE))
+    dplyr::group_by(.data$sa4) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup()
 
   df <- df %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
@@ -803,7 +807,6 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   df_summ <- df %>%
     dplyr::filter(!is.na(.data$value)) %>%
-#    dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(
       vic = .data$value[.data$sa4 == "Victoria"],
