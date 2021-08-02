@@ -951,7 +951,8 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
   plot_title <- paste0(
     "There was a ", current_range,
     " percentage point gap between the highest and lowest ",
-    "unemployment rates in Victorian regions in ",
+    "unemployment rates in ",
+    selected_indicator, " Victorian regions in ",
     format(max(df_tidy$date), "%B %Y")
   )
 
