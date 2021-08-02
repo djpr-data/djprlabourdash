@@ -1752,7 +1752,12 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     scale_y_continuous(labels = function(x) paste0(x, "%"),
                        breaks = scales::breaks_pretty(5)) +
     theme(axis.title.x = element_blank()) +
-    coord_cartesian(clip = "off")
+    coord_cartesian(clip = "off") +
+    labs(
+      subtitle = "Employment to population ratio by sex for Victoria ",
+      caption = caption_lfs(),
+      title = title
+    )
 }
 
 viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
