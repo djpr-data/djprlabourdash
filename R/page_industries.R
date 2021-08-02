@@ -39,7 +39,7 @@ page_industries <- function(...) {
       ),
       column(
         6,
-        reactable::reactableOutput("industries_employment")
+        uiOutput("industries_employment")
       ),
       br(),
       djpr_plot_ui("industries_emp_bysex_bar")

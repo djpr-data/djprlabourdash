@@ -1380,8 +1380,9 @@ labour_server <- function(input, output, session) {
     width_percent = 100
   )
 
-  output$industries_employment <- reactable::renderReactable({
-    table_industries_employment(chosen_industry = input$chosen_industry)
+  output$industries_employment <- renderUI({
+    table_industries_employment(chosen_industry = input$chosen_industry) %>%
+      flextable::htmltools_value()
   })
 
   # Links to pages -----
