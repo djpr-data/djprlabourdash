@@ -1422,7 +1422,8 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     dplyr::filter(.data$date == max(.data$date))
 
   df <- df %>%
-    dplyr::mutate(perc = 100 * (value / value[indicator == "civ_pop"]))
+    dplyr::mutate(perc = 100 * (.data$value /
+                                  .data$value[.data$indicator == "civ_pop"]))
 
 
   # data for title &label
@@ -1430,7 +1431,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     dplyr::select(.data$indicator, .data$perc, .data$date) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$perc) %>%
     dplyr::mutate(
-      vulnerable = (nafte_un + nafte_nilf)
+      vulnerable = (.data$nafte_un + .data$nafte_nilf)
     ) %>%
     dplyr::select(.data$date, .data$vulnerable)
 
@@ -1483,37 +1484,37 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::mutate(
-      y_start = cumsum(value) - value,
-      y_end = cumsum(value),
+      y_start = cumsum(.data$value) - .data$value,
+      y_end = cumsum(.data$value),
       id = row_number(),
-      label = stringr::str_wrap(label, 10)
+      label = stringr::str_wrap(.data$label, 10)
     )
 
   df <- df %>%
     dplyr::mutate(
-      y_start = dplyr::if_else(indicator == "civ_pop", 0, y_start),
-      y_end = dplyr::if_else(indicator == "civ_pop", value, y_end)
+      y_start = dplyr::if_else(.data$indicator == "civ_pop", 0, .data$y_start),
+      y_end = dplyr::if_else(.data$indicator == "civ_pop", .data$value, .data$y_end)
     )
 
   df <- df %>%
     mutate(bar_label = dplyr::if_else(
-      indicator == "civ_pop",
-      as.character(round2(value, 1)),
-      paste0(round2(value, 1), "\n(", round2(perc, 1), "%)")
+      .data$indicator == "civ_pop",
+      as.character(round2(.data$value, 1)),
+      paste0(round2(.data$value, 1), "\n(", round2(.data$perc, 1), "%)")
     ))
 
   df %>%
     ggplot(aes(
-      x = reorder(label, id),
-      xend = reorder(label, id),
-      y = y_start,
-      yend = y_end,
-      colour = indicator_group
+      x = stats::reorder(.data$label, .data$id),
+      xend = stats::reorder(.data$label, .data$id),
+      y = .data$y_start,
+      yend = .data$y_end,
+      colour = .data$indicator_group
     )) +
     geom_segment(size = 25) +
     geom_text(aes(
-      y = y_end,
-      label = bar_label
+      y = .data$y_end,
+      label = .data$bar_label
     ),
     nudge_y = 35,
     lineheight = 0.9,
@@ -1521,7 +1522,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     ) +
     geom_label(
       data = data.frame(x = 1.55, y = 230, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
-      mapping = aes(x = x, y = y, label = label),
+      mapping = aes(x = .data$x, y = .data$y, label = .data$label),
       size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE,
       label.size = 0
     ) +
@@ -1649,13 +1650,13 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     dplyr::group_by(.data$sex) %>%
     dplyr::summarise(latest_value = .data$value[.data$date == max(.data$date)]) %>%
     dplyr::left_join(ave_df, by = "sex") %>%
-    dplyr::mutate(diff = latest_value - ave,
+    dplyr::mutate(diff = .data$latest_value - .data$ave,
                   diff_desc = dplyr::case_when(
-                    diff > 1 ~ "well above",
-                    diff < -1 ~ "well below",
-                    diff > 0  ~ "slightly above",
-                    diff < 0 ~ "slightly below",
-                    diff == 0 ~ "equal to"
+                    .data$diff > 1 ~ "well above",
+                    .data$diff < -1 ~ "well below",
+                    .data$diff > 0  ~ "slightly above",
+                    .data$diff < 0 ~ "slightly below",
+                    .data$diff == 0 ~ "equal to"
                   ))
 
   title <- paste0("The proportion of Victorian women in work was ",
@@ -1667,39 +1668,91 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
          " its long-run average")
 
 
-  df %>%
+  df <- df %>%
+    group_by(.data$sex) %>%
+    mutate(value = mean(.data$value)) %>%
+    mutate(indicator = "Average") %>%
+    bind_rows(df) %>%
     dplyr::mutate(tooltip =
+                    dplyr::if_else(
+                      .data$indicator == "Average",
+                      paste0("Average\n", round2(.data$value, 1), "%"),
                     paste0(
                       .data$sex, "\n",
                       format(.data$date, "%b %Y"), "\n",
                       round2(.data$value, 1), "%"
-                    )) %>%
-    djpr_ts_linechart(
-      col_var = .data$sex,
-      label_num = paste0(round2(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%"),
-      x_expand_mult = c(0, 0.22)
-    ) +
-    geom_segment(data = ave_df,
-                 aes(x = min_date,
-                     xend = max_date,
-                     y = ave,
-                     yend = ave),
-                 size = 1,
-                 linetype  = 2) +
-    geom_text(data = ave_df,
-              aes(x = max_date,
-                  y = ave,
-                  label = paste0("Average\n", round2(.data$ave, 1), "%")),
-              hjust = 1,
-              nudge_y = -0.5,
-              size = 12 / .pt,
-              vjust = 1) +
-    labs(
-      subtitle = "Employment to population ratio by sex for Victoria ",
-      caption = caption_lfs(),
-      title = title
+                    )),
+                  series = paste0(.data$indicator, " ", .data$sex))
+
+  max_date <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(label =
+      dplyr::if_else(.data$indicator == "Average",
+                     paste0("Average\n", round2(.data$value, 1), "%"),
+                     paste0(format(.data$date, "%b %Y"), "\n",
+                            round2(.data$value, 1), "%"))
     )
+
+  days_in_data <- as.numeric(max(df$date) - min(df$date))
+
+  df %>%
+    ggplot(aes(x = .data$date,
+               y = .data$value,
+               col = .data$sex,
+               group = .data$series)) +
+    geom_line(aes(linetype = .data$indicator)) +
+    geom_point(data = max_date %>%
+                 dplyr::filter(.data$indicator != "Average"),
+               fill = "white",
+               stroke = 1.5,
+               size = 2.5,
+               shape = 21
+               ) +
+    geom_text(data = df %>%
+                dplyr::group_by(.data$sex) %>%
+                dplyr::summarise(date = stats::median(.data$date),
+                                 value = max(.data$value)),
+              aes(label = .data$sex,
+                  x = .data$date,
+                  y = .data$value,
+                  col = .data$sex),
+              vjust = 0,
+              inherit.aes = F) +
+    ggrepel::geom_label_repel(
+      data = max_date,
+      aes(label = .data$label),
+      hjust = 0,
+      nudge_x = days_in_data * 0.033,
+      label.padding = 0.01,
+      label.size = NA,
+      lineheight = 0.9,
+      point.padding = unit(0, "lines"),
+      direction = "y",
+      seed = 123,
+      show.legend = FALSE,
+      min.segment.length = unit(5, "lines"),
+      size = 14 / .pt
+    ) +
+    ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
+                                    size = 3,
+                                    colour = "white",
+                                    alpha = 0.01
+    ) +
+    theme_djpr() +
+    scale_linetype_manual(values = c("Average" = 2,
+                                     "Employment to population ratio" = 1)) +
+    djpr_colour_manual(2) +
+    scale_x_date(expand = expansion(mult = c(0, 0.2)),
+                 breaks = djprtheme::breaks_right(
+                   limits = c(min(df$date),
+                              max(df$date)),
+                   n_breaks = 5
+                 ),
+                 date_labels = "%b\n%Y") +
+    scale_y_continuous(labels = function(x) paste0(x, "%"),
+                       breaks = scales::breaks_pretty(5)) +
+    theme(axis.title.x = element_blank()) +
+    coord_cartesian(clip = "off")
 }
 
 viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
@@ -1733,7 +1786,7 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
   # calculate proportion of youth employment by type
 
   df <- df %>%
-    dplyr::mutate(perc = 100 * (value / value[indicator == "Employed total"])) %>%
+    dplyr::mutate(perc = 100 * (.data$value / .data$value[.data$indicator == "Employed total"])) %>%
     dplyr::select(.data$date, .data$perc, .data$indicator)
 
   df <- df %>%
