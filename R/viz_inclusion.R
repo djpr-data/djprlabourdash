@@ -889,7 +889,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::group_by(.data$date) %>%
-    summarise(Australia = .data$value[series == "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;"] /
+    summarise(Australia = .data$value[.data$series == "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;"] /
                 .data$value[.data$series == "Labour force total ;  Persons ;  Australia ;"],
               Victoria = (.data$value[.data$series == "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)"] +
                             .data$value[.data$series == "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)"]) /
