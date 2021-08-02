@@ -1845,12 +1845,16 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
     dplyr::ungroup()
 
   df <- df %>%
-    dplyr::select(.data$date, .data$series, .data$value) %>%
-    tidyr::separate(
-      col = .data$series,
-      into = c("age", "indic", "geog"),
-      sep = " ; "
-    )
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  # Note that this is substantially faster than tidyr::separate()
+  split_series <- stringr::str_split_fixed(df$series, " ; ", 3)
+
+  df <- df %>%
+    dplyr::mutate(age = split_series[, 1],
+           indic = split_series[, 2],
+           geog = split_series[, 3]) %>%
+    dplyr::select(-.data$series)
 
   df <- df %>%
     dplyr::filter(.data$date == max(.data$date))
@@ -1879,7 +1883,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
       emp_pop = 100 * (.data$Employed / (.data$Employed + .data$Unemployed + .data$NILF))
     )
 
-  # depending on selected_indicator, chose measure to be calculated
+  # depending on selected_indicator, choose measure to be calculated
   df <- df %>%
     dplyr::rename(value = .env$selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$geog, .data$value)
@@ -1903,8 +1907,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::mutate(
-      geog = gsub(";.*", "", .data$geog),
-      geog = gsub("Rest of ", "Regional ", .data$geog)
+      geog = gsub("Rest of ", "Regional ", .data$geog, fixed = TRUE)
     )
 
   title_df <- df %>%

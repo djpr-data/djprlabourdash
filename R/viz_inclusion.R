@@ -884,75 +884,39 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
                                 df = dash_data
                                 )) {
 
-  # selecting data for Victoria and rename data
-  data_vic <- data %>%
-    dplyr::filter(grepl("Victoria", .data$series)) %>%
-    dplyr::select(.data$series, .data$value, .data$date, .data$state)
+  df <- data %>%
+    dplyr::select(.data$series, .data$value, .data$date)
 
-  data_vic <- data_vic %>%
-    dplyr::group_by(.data$series) %>%
+  df <- df %>%
+    dplyr::group_by(.data$date) %>%
+    summarise(Australia = .data$value[series == "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;"] /
+                .data$value[.data$series == "Labour force total ;  Persons ;  Australia ;"],
+              Victoria = (.data$value[.data$series == "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)"] +
+                            .data$value[.data$series == "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)"]) /
+                .data$value[.data$series == "Labour force total ;  Persons ;  > Victoria ;"]
+                          ) %>%
+    dplyr::ungroup() %>%
+    tidyr::pivot_longer(cols = !date,
+                        names_to = "state")
+
+  df <- df %>%
+    dplyr::group_by(.data$state) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 2,
-      complete = TRUE
-    )) %>%
-    dplyr::ungroup()
-
-  data_vic <- data_vic %>%
-    tidyr::pivot_wider(
-      names_from = .data$series,
-      values_from = .data$value
-    ) %>%
-    dplyr::rename(
-      Un_2years_over = "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)",
-      Un_1_2years = "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)",
-      labour_force = "Labour force total ;  Persons ;  > Victoria ;"
-    ) %>%
-    dplyr::filter(!is.na(.data$Un_2years_over)) %>%
-    dplyr::mutate(lt_unemp = .data$Un_2years_over + .data$Un_1_2years) %>%
-    dplyr::select(.data$date, .data$state, .data$labour_force, .data$lt_unemp)
-
-  # create data frame for Australia
-  data_Aus <- data %>%
-    dplyr::filter(!grepl("Victoria", .data$series)) %>%
-    dplyr::mutate(state = "Australia") %>%
-    dplyr::select(.data$series, .data$value, .data$date, .data$state) %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 2,
-      complete = TRUE
+                                             before = 2,
+                                             complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
-    tidyr::pivot_wider(
-      names_from = .data$series,
-      values_from = .data$value
-    ) %>%
-    dplyr::select(
-      .data$date,
-      .data$state,
-      .data$`Labour force total ;  Persons ;  Australia ;`,
-      .data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;`
-    ) %>%
-    dplyr::rename(
-      lt_unemp = "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;",
-      labour_force = "Labour force total ;  Persons ;  Australia ;"
-    ) %>%
-    dplyr::filter(!is.na(.data$lt_unemp))
+    dplyr::filter(!is.na(.data$value))
 
-  data_lr_un <- dplyr::bind_rows(
-    data_vic, data_Aus
-  )
+  df <- df %>%
+    dplyr::mutate(value = 100 * .data$value)
 
-  data_lr_un <- data_lr_un %>%
-    dplyr::mutate(value = 100 * (.data$lt_unemp) / .data$labour_force) %>%
-    dplyr::select(.data$date, .data$state, .data$value)
-
-  latest_values <- data_lr_un %>%
+  latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
     dplyr::mutate(
       value = round2(.data$value, 1),
       date = format(.data$date, "%B %Y")
     ) %>%
-    dplyr::select(.data$state, .data$value, .data$date) %>%
     tidyr::pivot_wider(names_from = .data$state, values_from = .data$value)
 
   title <- dplyr::case_when(
@@ -965,7 +929,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     TRUE ~ "Long-term unemployment rate in Victoria and Australia"
   )
 
-  data_lr_un %>%
+  df %>%
     djpr_ts_linechart(
       col_var = .data$state,
       label_num = paste0(round2(.data$value, 1), "%")
