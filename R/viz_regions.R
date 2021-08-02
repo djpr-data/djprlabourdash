@@ -766,7 +766,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                            "A84600121T",
                                            "A84600037A"),
                                          df = dash_data),
-                                         selected_indicator = "all")  #all, metro or regional
+                                         selected_indicator = "all")  #all, metropolitan or regional
 {
   df <- data %>%
     dplyr::mutate(
@@ -778,7 +778,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::mutate(indicator_short = dplyr::case_when(
       .data$geog == "Victoria" ~ "vic",
-      .data$geog == "Melbourne" ~ "metro",
+      .data$geog == "Melbourne" ~ "metropolitan",
       TRUE ~ "regional"
     )) %>%
     dplyr::select(date, value, indicator, sa4, indicator_short, geog)
@@ -790,7 +790,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     ))
 
   # Reduce df depending on selected_indicator
-  if(selected_indicator == "metro") {
+  if(selected_indicator == "metropolitan") {
     df <- df %>%
       dplyr::filter(.data$geog %in% c("Melbourne", "Victoria"))
   } else if(selected_indicator == "regional") {
@@ -834,6 +834,9 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     )
 
   days_in_data <- as.numeric(max(data$date) - min(data$date))
+
+  subtitle_1 <- paste0("Highest and lowest unemployment rates\nin ",
+  selected_indicator, " Victorian SA4s")
 
   # First plot: Show highest / lowest / state-wide unemp rates----
   plot_high_low <- df_tidy %>%
@@ -903,8 +906,10 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       axis.text = element_text(size = 12),
       plot.subtitle = element_text(size = 14)
     ) +
-    labs(subtitle = "Highest and lowest unemployment rates\nin Victorian regions (SA4s)")
+    labs(subtitle = subtitle_1)
 
+  subtitle_2 <- paste0("Range between highest and lowest\n(percentage points), ",
+                       selected_indicator, " SA4s")
 
   # Second plot: Range between high and low -----
   plot_range <- df_summ %>%
@@ -934,7 +939,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
       axis.text = element_text(size = 12),
       plot.subtitle = element_text(size = 14)
     ) +
-    labs(subtitle = "Range between highest and lowest\n(percentage points)")
+    labs(subtitle = subtitle_2)
 
   # Create title -----
 
@@ -950,6 +955,9 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     format(max(df_tidy$date), "%B %Y")
   )
 
+  subtitle <- paste0("Gap between unemployment rates across Victorian regions: ",
+    selected_indicator, " SA4s")
+
   # Combine plots -----
   plots_combined <- patchwork::wrap_plots(plot_high_low,
     plot_range,
@@ -960,7 +968,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     patchwork::plot_layout(heights = c(0.99, 0.01)) +
     patchwork::plot_annotation(
       title = plot_title,
-      subtitle = "Gap between unemployment rates across Victorian regions (SA4s), including metropolitan SA4s",
+      subtitle = subtitle,
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."),
       theme = theme_djpr()
     )
