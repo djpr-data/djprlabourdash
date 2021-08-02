@@ -1217,7 +1217,7 @@ table_region_focus <- function(data = filter_dash_data(
   table_df <- table_df %>%
     dplyr::select(.data$indicator, .data$series, {{ sa4 }}, dplyr::everything())
 
-  table_df %>%
+  out <- table_df %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(indicator = dplyr::if_else(
       dplyr::row_number() != 1,
@@ -1253,6 +1253,32 @@ table_region_focus <- function(data = filter_dash_data(
     flextable::font(part = "header", fontname = "Roboto") %>%
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
+
+  table_caption <- caption_auto(data = data,
+                                notes = "Data not seasonally adjusted; smoothed using a 3 month rolling average.")
+  # Add caption
+  out <- out %>%
+    flextable::add_footer(` ` = table_caption) %>%
+    flextable::merge_at(
+      j = 1:flextable::ncol_keys(out),
+      part = "footer"
+    ) %>%
+    flextable::italic(part = "footer") %>%
+    flextable::font(fontname = "Roboto") %>%
+    flextable::fontsize(
+      size = 9 * 0.85,
+      part = "footer"
+    ) %>%
+    flextable::color(
+      part = "footer",
+      color = "#343a40"
+    ) %>%
+    flextable::line_spacing(
+      part = "footer",
+      space = 0.8
+    )
+
+  out
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(

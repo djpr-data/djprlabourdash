@@ -206,6 +206,8 @@ table_industries_employment <- function(data = filter_dash_data(c(
                                         ),
                                         chosen_industry = "Agriculture, Forestry and Fishing") {
 
+  latest_date <- format(max(data$date), "%b %Y")
+
   # add entry for data$industry for "Victoria, all industries" where ""
   df <- data %>%
     dplyr::mutate(
@@ -282,7 +284,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
   table_df <- table_df %>%
     dplyr::select(.data$indicator, .data$series, .env$chosen_industry, .data$`Victoria, all industries`)
 
-  table_df %>%
+  out <- table_df %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(indicator = dplyr::if_else(
       dplyr::row_number() != 1,
@@ -317,6 +319,32 @@ table_industries_employment <- function(data = filter_dash_data(c(
     flextable::font(part = "header", fontname = "Roboto") %>%
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
+
+  table_caption <- caption_auto(data = data,
+                                notes = "Data not seasonally adjusted.")
+  # Add caption
+  out <- out %>%
+    flextable::add_footer(` ` = table_caption) %>%
+    flextable::merge_at(
+      j = 1:flextable::ncol_keys(out),
+      part = "footer"
+    ) %>%
+    flextable::italic(part = "footer") %>%
+    flextable::font(fontname = "Roboto") %>%
+    flextable::fontsize(
+      size = 9 * 0.85,
+      part = "footer"
+    ) %>%
+    flextable::color(
+      part = "footer",
+      color = "#343a40"
+    ) %>%
+    flextable::line_spacing(
+      part = "footer",
+      space = 0.8
+    )
+
+  out
 }
 
 viz_industries_emp_line <- function(data = filter_dash_data(c(
