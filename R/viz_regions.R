@@ -783,6 +783,12 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::select(date, value, indicator, sa4, indicator_short, geog)
 
+  df <- df %>%
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+                                       "Warrnambool & S. West",
+                                       .data$sa4
+    ))
+
   # Reduce df depending on selected_indicator
   if(selected_indicator == "metro") {
     df <- df %>%
@@ -798,12 +804,6 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
-
-  df <- df %>%
-    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
-                                       "Warrnambool & S. West",
-                                       .data$sa4
-    ))
 
   df_summ <- df %>%
     dplyr::filter(!is.na(.data$value)) %>%
