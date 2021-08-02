@@ -54,8 +54,11 @@ page_regions <- function(...) {
     ),
     br(),
     br(),
-    "The graphs below explore the level of dispersion (i.e. the ",
-    "difference between minimum and maximum) of unemployment rates ", "
+    "The unemployment rate always varies substantially across Victoria. The amount of ",
+    "variation across the regions of Victoria changes over time - the gap between the ",
+    "highest and lowest unemployment rate in the state grows and shrinks. ",
+    "The graphs below explore the level of that dispersion (i.e. the ",
+    "difference between minimum and maximum) of unemployment rates over time", "
     in different regions in Victoria. The breakdown of regions is by ",
     shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4"),
     br(),
