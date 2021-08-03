@@ -52,39 +52,34 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
                                  "A84423462W",
                                  "A84423238C"
                                ), df = dash_data) %>%
-                                 dplyr::group_by(.data$series) %>%
-                                 dplyr::filter(.data$date == max(.data$date))) {
+                                 dplyr::filter(.data$date == max(.data$date))
+                               ) {
+
   df <- data %>%
-    dplyr::ungroup() %>%
-    dplyr::select(.data$sex, .data$indicator, .data$value) %>%
-    tidyr::spread(key = .data$indicator, value = .data$value) %>%
-    dplyr::mutate(
-      `Not in the labour force` = .data$`Civilian population aged 15 years and over` -
-        .data$`Labour force total`,
-      `Employed part-time` = .data$`Employed total` - .data$`Employed full-time`
-    ) %>%
-    dplyr::select(
-      -.data$`Civilian population aged 15 years and over`,
-      -.data$`Employed total`,
-      -.data$`Labour force total`
-    ) %>%
-    dplyr::rename(Unemployed = .data$`Unemployed total`) %>%
-    tidyr::gather(
-      key = "indicator", value = "value",
-      -.data$sex
+    dplyr::group_by(.data$sex) %>%
+    dplyr::summarise(`Unemployed` = sum(.data$value[.data$indicator == "Unemployed total"]),
+                     `Employed part-time` = sum(.data$value[.data$indicator == "Employed total"]) -
+                       sum(.data$value[.data$indicator == "Employed full-time"]),
+                     `Employed full-time` = sum(.data$value[.data$indicator == "Employed full-time"]),
+                     `Not in the labour force` = sum(.data$value[.data$indicator == "Civilian population aged 15 years and over"]) -
+                       sum(.data$value[.data$indicator == "Labour force total"])
+                     ) %>%
+    tidyr::pivot_longer(
+      names_to = "indicator", values_to = "value",
+      cols = -.data$sex
     ) %>%
     dplyr::mutate(indicator = factor(.data$indicator,
-      levels = c(
-        "Not in the labour force",
-        "Unemployed",
-        "Employed part-time",
-        "Employed full-time"
-      )
+                                     levels = c(
+                                       "Not in the labour force",
+                                       "Unemployed",
+                                       "Employed part-time",
+                                       "Employed full-time"
+                                     )
     ))
 
   df <- df %>%
-    dplyr::arrange(.data$sex, desc(.data$indicator)) %>%
     dplyr::group_by(.data$sex) %>%
+    dplyr::arrange(desc(.data$indicator)) %>%
     dplyr::mutate(
       perc = .data$value / sum(.data$value),
       label_y = cumsum(.data$perc) - (.data$perc / 2)
@@ -102,10 +97,10 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     ))
 
   emp_tot <- df %>%
-    dplyr::filter(grepl("Employed", .data$indicator)) %>%
+    dplyr::filter(grepl("Employed", .data$indicator, fixed = TRUE)) %>%
     dplyr::group_by(.data$sex) %>%
     dplyr::summarise(emp_tot = sum(.data$perc)) %>%
-    tidyr::spread(key = .data$sex, value = .data$emp_tot)
+    tidyr::pivot_wider(names_from = .data$sex, values_from = .data$emp_tot)
 
   title <- paste0(
     round2(emp_tot$Males * 100, 0), " per cent of Victorian men are in paid work, but only ",
@@ -124,7 +119,6 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
       size = 16 / .pt,
       colour = "white"
     ) +
-    # ggrepel::geom_text_repel(
     geom_text(
       data = label_df,
       aes(
@@ -145,7 +139,8 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
       axis.text.x = element_blank(),
       axis.title = element_blank(),
       panel.grid = element_blank(),
-      axis.line = element_blank()
+      axis.line = element_blank(),
+      axis.ticks = element_blank()
     ) +
     labs(
       subtitle = paste0(
@@ -1681,6 +1676,7 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
                   y = .data$value,
                   col = .data$sex),
               vjust = 0,
+              size = 14 / .pt,
               inherit.aes = F) +
     ggrepel::geom_label_repel(
       data = max_date,
@@ -1759,7 +1755,7 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$date, .data$perc, .data$indicator)
 
   df <- df %>%
-    dplyr::filter(!grepl("Employed total", .data$indicator)) %>%
+    dplyr::filter(!grepl("Employed total", .data$indicator, fixed = TRUE)) %>%
     dplyr::mutate(value = .data$perc)
 
 
