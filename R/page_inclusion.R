@@ -14,6 +14,7 @@ page_inclusion <- function(...) {
     # ),
     br(),
     h2(br(), "Women and men"),
+    uiOutput("table_gr_sex"),
     djpr_plot_ui("gr_gen_emp_bar"),
     djpr_plot_ui("gr_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),

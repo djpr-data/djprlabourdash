@@ -1,6 +1,6 @@
 ---
 title: "DJPR Labour Force Summary"
-author: "DJPR SPP Data + Analytics"
+# author: "DJPR SPP Data + Analytics"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   officedown::rdocx_document:
@@ -10,8 +10,8 @@ output:
       height: 11.7
       orient: "portrait"
     page_margins:
-      bottom: 0.5
-      top: 0.5
+      bottom: 0.1
+      top: 0.1
       left: 0.5
       right: 0.5
     tables:
@@ -43,21 +43,14 @@ dash_data <- load_dash_data()
 Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
 
-# Victorian labour force summary
-
 ## Whole of Victoria
-Foobar 
 
 ```{r}
-flextable::flextable(mtcars) %>%
-  flextable::autofit()
+table_overview() 
 ```
-Text
-```{r}
-table_overview() %>%
-  flextable::autofit()
-```
+
 
 ```{r}
 table_gr_sex()
 ```
+

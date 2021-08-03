@@ -205,14 +205,20 @@ make_table <- function(data,
     flextable::line_spacing(space = 1)
 
   # Add sparklines
+  if (destination == "dashboard") {
+    spark_height <- 0.36
+  } else {
+    spark_height <- 0.29
+  }
+
   flex <- flex %>%
     flextable::compose(
       j = 2,
       value = flextable::as_paragraph(
         flextable::gg_chunk(
           value = .,
-          height = 0.38#,
-          # width = 1
+          height = spark_height,
+          width = 1
         )
       ),
       use_dot = TRUE
@@ -344,10 +350,14 @@ make_table <- function(data,
       space = 0.8
     )
 
-  # Add title to briefing tables
+  # Add title to briefing tables and resize columns
   if (destination == "briefing") {
     flex <- flex %>%
       flextable::set_caption(caption = title)
+
+    flex <- flex %>%
+      flextable::width(j = c(3:flextable::ncol_keys(flex)),
+                       width = 0.75)
   }
 
   flex

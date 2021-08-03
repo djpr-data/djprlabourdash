@@ -489,6 +489,11 @@ labour_server <- function(input, output, session) {
 
 
   # Inclusion: women and men -----
+  output$table_gr_sex <- renderUI({
+    table_gr_sex() %>%
+      flextable::htmltools_value()
+  })
+
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_emppopratio_line",
     viz_gr_emppopratio_line,

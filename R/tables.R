@@ -98,7 +98,9 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
 }
 
 table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                  unset = "dashboard")) {
+                                                  unset = "dashboard"),
+                         title = paste0("Victorian employment summary by sex, ",
+                                        format(max(data$date), "%B %Y"))) {
   data <- filter_dash_data(c("A84423237A",
                               "A84423461V",
                               "A84423238C",
@@ -118,14 +120,7 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                             "A84423466F",
                             "A84423243W",
                             "A84423467J"),
-             highlight_rows = c("A84423237A",
-                                            "A84423461V",
-                                            "A84423238C",
-                                            "A84423462W",
-                                            "A84423242V",
-                                            "A84423466F",
-                                            "A84423243W",
-                                            "A84423467J")
+             title = title
 )
 }
 
