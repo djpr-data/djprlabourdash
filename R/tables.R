@@ -5,8 +5,10 @@
 #' @noRd
 
 table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                             unset = "dashboard"
-                           )) {
+                             unset = "dashboard"),
+                           title = paste0("Victorian employment summary, ",
+                                          format(max(data$date), "%B %Y"))
+                           ) {
   data <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
@@ -59,6 +61,7 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
   make_table(
     data = data,
     destination = destination,
+    title = title,
     row_order = c(
       "A84423354L",
       "A84423242V",
@@ -94,7 +97,41 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
   )
 }
 
-table_ind_employment <- function(destination = "dashboard") {
+table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                  unset = "dashboard")) {
+  data <- filter_dash_data(c("A84423237A",
+                              "A84423461V",
+                              "A84423238C",
+                              "A84423462W",
+                              "A84423242V",
+                              "A84423466F",
+                              "A84423243W",
+                              "A84423467J")
+)
+
+  make_table(data,
+             row_order = c("A84423237A",
+                            "A84423461V",
+                            "A84423238C",
+                            "A84423462W",
+                            "A84423242V",
+                            "A84423466F",
+                            "A84423243W",
+                            "A84423467J"),
+             highlight_rows = c("A84423237A",
+                                            "A84423461V",
+                                            "A84423238C",
+                                            "A84423462W",
+                                            "A84423242V",
+                                            "A84423466F",
+                                            "A84423243W",
+                                            "A84423467J")
+)
+}
+
+table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                          unset = "dashboard"
+)) {
   data <- filter_dash_data(c(
     "A84423349V",
     "A84423357V",
@@ -115,7 +152,9 @@ table_ind_employment <- function(destination = "dashboard") {
   )
 }
 
-table_ind_unemp_summary <- function(destination = "dashboard") {
+table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                             unset = "dashboard"
+)) {
   data <- filter_dash_data(c(
     "A84423354L", # Unemp rate
     "A84423350C", # Unemp total
@@ -146,7 +185,9 @@ table_ind_unemp_summary <- function(destination = "dashboard") {
   )
 }
 
-table_ind_hours_summary <- function(destination = "dashboard") {
+table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                             unset = "dashboard"
+)) {
   data <- filter_dash_data(c(
     "A84426256L" # , # Total hours
   ))

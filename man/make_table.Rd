@@ -24,7 +24,8 @@ charts.}
 \item{row_order}{Vector of series IDs, in the order in which you wish the
 corresponding rows to be included in the output table}
 
-\item{highlight_rows}{Numeric vector of rows in the table to highlight.
+\item{highlight_rows}{Vector of series IDs, corresponding to rows
+in the table to highlight.
 Highlighted rows are bolded and have a top border; non-highlighted rows
 are indented. If \code{NULL} then all rows are non-bold, non-indented.}
 

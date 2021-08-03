@@ -5,7 +5,8 @@
 #' charts.
 #' @param row_order Vector of series IDs, in the order in which you wish the
 #' corresponding rows to be included in the output table
-#' @param highlight_rows Numeric vector of rows in the table to highlight.
+#' @param highlight_rows Vector of series IDs, corresponding to rows
+#' in the table to highlight.
 #' Highlighted rows are bolded and have a top border; non-highlighted rows
 #' are indented. If `NULL` then all rows are non-bold, non-indented.
 #' @param notes Optional notes to add to caption. Source will be inferred
@@ -68,7 +69,8 @@ make_table <- function(data,
                        years_in_sparklines = 3,
                        row_order = NULL,
                        highlight_rows = NULL,
-                       notes = NULL) {
+                       notes = NULL,
+                       title = "") {
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
@@ -209,8 +211,8 @@ make_table <- function(data,
       value = flextable::as_paragraph(
         flextable::gg_chunk(
           value = .,
-          height = 0.38,
-          width = 1
+          height = 0.38#,
+          # width = 1
         )
       ),
       use_dot = TRUE
@@ -218,7 +220,7 @@ make_table <- function(data,
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
-    flextable::autofit(add_w = 0, add_h = 0)
+    flextable::autofit(add_w = 0, add_h = 0, part = "all")
 
   # Centre content
   flex <- flex %>%
@@ -258,7 +260,6 @@ make_table <- function(data,
       i = 1,
       border.top = flextable::fp_border_default()
     ) %>%
-    # flextable::border(i = 1, part = "header", border.top = flextable::fp_border_default()) %>%
     flextable::border(i = nrow(summary_df), border.bottom = flextable::fp_border_default())
 
   # Ensure font, font size, and bolding is correct
@@ -321,6 +322,7 @@ make_table <- function(data,
     notes = caption_notes
   )
 
+  # Add footer caption
   flex <- flex %>%
     flextable::add_footer(` ` = table_caption) %>%
     flextable::merge_at(
@@ -341,6 +343,12 @@ make_table <- function(data,
       part = "footer",
       space = 0.8
     )
+
+  # Add title to briefing tables
+  if (destination == "briefing") {
+    flex <- flex %>%
+      flextable::set_caption(caption = title)
+  }
 
   flex
 }

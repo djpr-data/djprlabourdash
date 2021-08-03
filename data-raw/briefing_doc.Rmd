@@ -17,7 +17,7 @@ output:
     tables:
       layout: autofit
       caption:
-        style: Table Caption
+        style: 'Heading 3'
         pre: 'Table '
         sep: ': '
 editor_options: 
@@ -45,12 +45,19 @@ Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 
 # Victorian labour force summary
 
-## Heading
+## Whole of Victoria
+Foobar 
 
-Some text goes here. Regular text. 
-
-Table description goes here
 ```{r}
-table_overview()
+flextable::flextable(mtcars) %>%
+  flextable::autofit()
+```
+Text
+```{r}
+table_overview() %>%
+  flextable::autofit()
 ```
 
+```{r}
+table_gr_sex()
+```
