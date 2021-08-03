@@ -12,6 +12,8 @@ page_inclusion <- function(...) {
     #   ". For information about how employment and unemployment varies across Victoria, see the ",
     #   actionLink("link_regions", "regions page"), "."
     # ),
+    "Victoria has a diverse community. Below we explore specific key groups and their historical ",
+    "and current labour force status.",
     br(),
     h2(br(), "Women and men"),
     djpr_plot_ui("gr_gen_emp_bar"),
