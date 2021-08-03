@@ -124,6 +124,36 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
 )
 }
 
+table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                           unset = "dashboard"),
+                                  title = paste0("Unemployment rate by state, ",
+                                                 format(max(data$date), "%B %Y"))) {
+  data <- filter_dash_data(
+    c("A84423270C",
+      "A84423354L",
+      "A84423284T",
+      "A84423368A",
+      "A84423326C",
+      "A84423298F",
+      "A84423050A")
+  )
+
+  data <- data %>%
+    dplyr::mutate(indicator = dplyr::if_else(.data$state == "", "Australia", .data$state))# %>%
+    # dplyr::mutate(indicator = paste0(.data$indicator, " unemployment rate"))
+
+  make_table(data = data,
+             row_order = c("A84423050A",
+                           "A84423354L",
+                           "A84423270C",
+                           "A84423284T",
+                           "A84423326C",
+                           "A84423368A",
+                           "A84423298F"),
+             title = title,
+             rename_indicators = F)
+}
+
 table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                           unset = "dashboard"
 )) {

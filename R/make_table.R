@@ -11,6 +11,10 @@
 #' are indented. If `NULL` then all rows are non-bold, non-indented.
 #' @param notes Optional notes to add to caption. Source will be inferred
 #' automatically based on the data using `caption_auto()`.
+#' @param title Character vector to use as the table title. Will only be used
+#' when `destination` is "briefing".
+#' @param rename_indicators logical; default is `TRUE`. If `TRUE`, the
+#' `rename_indicators()` function will be used to rename certain indicators.
 #' @examples
 #' dash_data <- load_dash_data()
 #' \dontrun{
@@ -70,13 +74,18 @@ make_table <- function(data,
                        row_order = NULL,
                        highlight_rows = NULL,
                        notes = NULL,
-                       title = "") {
+                       title = "",
+                       rename_indicators = TRUE) {
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
 
   # Change value of indicator column for specific series IDs
-  df <- rename_indicators(data)
+  if (rename_indicators) {
+    df <- rename_indicators(data)
+  } else {
+    df <- data
+  }
 
   # Create a summary dataframe with one row per unique indicator
   summary_df <- create_summary_df(df,

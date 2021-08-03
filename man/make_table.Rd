@@ -10,7 +10,9 @@ make_table(
   years_in_sparklines = 3,
   row_order = NULL,
   highlight_rows = NULL,
-  notes = NULL
+  notes = NULL,
+  title = "",
+  rename_indicators = TRUE
 )
 }
 \arguments{
@@ -31,6 +33,12 @@ are indented. If \code{NULL} then all rows are non-bold, non-indented.}
 
 \item{notes}{Optional notes to add to caption. Source will be inferred
 automatically based on the data using \code{caption_auto()}.}
+
+\item{title}{Character vector to use as the table title. Will only be used
+when \code{destination} is "briefing".}
+
+\item{rename_indicators}{logical; default is \code{TRUE}. If \code{TRUE}, the
+\code{rename_indicators()} function will be used to rename certain indicators.}
 }
 \description{
 Create a table for the dashboard or a briefing document

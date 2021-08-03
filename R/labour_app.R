@@ -379,6 +379,12 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: table of unemployment rates by state
+  output$table_ind_unemp_state <- renderUI({
+    table_ind_unemp_state() %>%
+      flextable::htmltools_value()
+  })
+
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
     viz_ind_unemp_states_dot,
