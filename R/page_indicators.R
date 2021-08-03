@@ -3,7 +3,7 @@ page_indicators <- function(...) {
     title = "Indicators",
     h1("Key indicators"),
     # tagList(
-    #   "This page contains key labour force indicators, focusing on Victoria as a whole. ",
+    "This page contains key labour force indicators, focusing on Victoria as a whole. ",
     #   shiny::tags$b("More information will be included with future releases. "),
     #   "For more information about particular sub-groups of Victorians - like young people, or women - ",
     #   "see the ",
