@@ -1989,3 +1989,37 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("99
     labs(title = "")
 }
 
+viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
+                                                                "A84433602X",
+                                                                "A84433603A",
+                                                                "A84433505W",
+                                                                "A84433503T",
+                                                                "A84433504V",
+                                                                "A84433519K",
+                                                                "A84433517F",
+                                                                "A84433518J",
+                                                                "A84433533F",
+                                                                "A84433531A",
+                                                                "A84433532C",
+                                                                "A84433617R",
+                                                                "A84433615K",
+                                                                "A84433616L",
+                                                                "A84433575C",
+                                                                "A84433573X",
+                                                                "A84433574A",
+                                                                "A84433547V",
+                                                                "A84433545R",
+                                                                "A84433546T",
+                                                                "A84433589T",
+                                                                "A84433587L",
+                                                                "A84433588R",
+                                                                "A84433561R",
+                                                                "A84433559C",
+                                                                "A84433560L"),
+                                              df = dash_data),
+                                              selected_indicator = "unemp_rate")
+{
+
+
+}
+
