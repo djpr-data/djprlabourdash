@@ -124,6 +124,29 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
 )
 }
 
+table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                    unset = "dashboard"),
+                           title = paste0("Victorian youth (15-24) labour force status summary, ",
+                                          format(max(data$date), "%B %Y"),
+                                          " (12 month average)")
+                           ) {
+
+  data <- filter_dash_data(
+    c("A84433594K",
+      "A84433597T",
+      "A84433601W",
+      "A84424692W",
+      "A84433476W",
+      "15-24_males_employed",
+      "15-24_males_unemployed",
+      "15-24_males_nilf",
+      "15-24_females_employed",
+      "15-24_females_unemployed",
+      "15-24_females_nilf")
+  )
+
+}
+
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                            unset = "dashboard"),
                                   title = paste0("Unemployment rate by state, ",
