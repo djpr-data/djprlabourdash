@@ -590,6 +590,12 @@ labour_server <- function(input, output, session) {
   )
 
   # Inclusion: age ----
+
+  output$table_gr_youth_summary <- renderUI({
+    table_gr_youth_summary() %>%
+      flextable::htmltools_value()
+  })
+
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
     viz_gr_yth_emp_sincecovid_line,

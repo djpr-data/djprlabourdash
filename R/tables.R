@@ -126,7 +126,7 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
 
 table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                     unset = "dashboard"),
-                           title = paste0("Victorian youth (15-24) labour force status summary, ",
+                                   title = paste0("Victorian youth (15-24) labour force status summary, ",
                                           format(max(data$date), "%B %Y"),
                                           " (12 month average)")
                            ) {
@@ -137,24 +137,30 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
       "A84433601W",
       "A84424692W",
       "A84433476W",
-      "15-24_males_employed",
-      "15-24_males_unemployed",
-      "15-24_males_nilf",
-      "15-24_females_employed",
-      "15-24_females_unemployed",
-      "15-24_females_nilf")
+      "15-24_females_unemployment rate",
+      "15-24_males_unemployment rate")
   )
 
-  df_ts <- data %>%
-    dplyr::filter(substr(series_id, 1, 5) != "15-24")
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
 
-  # Calc unemp rates by sex
-  df_pivot <- data %>%
-    dplyr::filter(substr(series_id, 1, 5) == "15-24")
-
-  df_pivot %>%
-    dplyr::select(.data$series )
-
+  data %>%
+    make_table(row_order = c("A84433594K",
+                             "A84433601W",
+                             "15-24_males_unemployment rate",
+                             "15-24_females_unemployment rate",
+                             "A84433597T",
+                             "A84424692W",
+                             "A84433476W"),
+               highlight_rows = c("A84433594K",
+                                  "A84433601W",
+                                  "A84433597T",
+                                  "A84424692W"),
+               title = title,
+               notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average.")
 }
 
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",

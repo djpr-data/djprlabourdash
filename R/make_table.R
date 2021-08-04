@@ -366,7 +366,9 @@ make_table <- function(data,
 
     flex <- flex %>%
       flextable::width(j = c(3:flextable::ncol_keys(flex)),
-                       width = 0.75)
+                       width = 0.88) %>%
+      flextable::width(j = 1,
+                       width = 2)
   }
 
   flex

@@ -21,6 +21,7 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_gen_partrate_line"),
     djpr_plot_ui("gr_full_part_line"),
     h2(br(), "Young people"),
+    uiOutput("table_gr_youth_summary"),
     fluidRow(
       column(
         6,
