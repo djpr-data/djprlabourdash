@@ -1792,3 +1792,139 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
       caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 }
+
+map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("999999999"),  # place holder
+                                                df = dash_data),
+                                                selected_indicator = "unemp_rate",
+                                                zoom = 6)
+{
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
+  df <- data %>%
+    mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  # Reduce to selected_indicator
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  # 12 month smoothing
+  df <- df %>%
+    group_by(.data$series_id) %>%
+    mutate(value = slider::slide_mean(.data$value,
+                                      before = 11,
+                                      complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
+  sa4_shp <- sa42016 %>%
+    dplyr::filter(.data$state_name_2016 == "Victoria") %>%
+    dplyr::filter(.data$sa4_code_2016 < 297)
+
+  # Fix issue with different naming for North West region in Victoria
+  df <- df %>%
+    dplyr::mutate(
+      sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
+                           "North West",
+                           .data$sa4
+      )
+    )
+
+  # Join shape file with data to create mapdata ----
+  mapdata <- sa4_shp %>%
+    dplyr::left_join(df, by = c("sa4_name_2016" = "sa4"))
+
+  # Create colour palette
+  # Switched here from binned to continuous colours
+  # pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
+  pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
+
+  # Create metro boundary (Greater Melbourne) ----
+  metro_boundary_sa4 <- c(
+    "Melbourne - Inner", "Melbourne - Inner East", "Melbourne - Inner South", "Melbourne - North East",
+    "Melbourne - North West", "Melbourne - Outer East", "Melbourne - South East", "Melbourne - West",
+    "Mornington Peninsula"
+  )
+
+  mapdata <- mapdata %>%
+    sf::st_transform("+proj=longlat +datum=WGS84")
+
+  metro_outline <- mapdata %>%
+    dplyr::filter(.data$sa4_name_2016 %in% metro_boundary_sa4) %>%
+    dplyr::summarise(areasqkm_2016 = sum(.data$areasqkm_2016))
+
+  label_title <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ paste0("Unemployment<br/> rate (per cent)"),
+    selected_indicator == "part_rate" ~ paste0("Participation<br/> rate (per cent)"),
+    selected_indicator == "emp_pop" ~ paste0("Employment to<br/> population ratio<br/> (per cent)"),
+    TRUE ~ NA_character_
+  )
+
+  # Produce dynamic map, all of Victoria ----
+  map <- mapdata %>%
+    leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
+    leaflet::setView(
+      lng = 145.4657, lat = -36.41472, # coordinates of map at first view
+      zoom = zoom
+    ) %>%
+    # size of map at first view
+    leaflet::addPolygons(
+      color = "grey", # colour of boundary lines, 'transparent' for no lines
+      weight = 1, # thickness of boundary lines
+      fillColor = ~ pal(mapdata$value), # pre-defined above
+      fillOpacity = 1.0, # strength of fill colour
+      smoothFactor = 0.5, # smoothing between region
+      stroke = T,
+      highlightOptions = leaflet::highlightOptions( # to highlight regions as you hover over them
+        color = "black", # boundary colour of region you hover over
+        weight = 2, # thickness of region boundary
+        bringToFront = FALSE
+      ), # FALSE = metro outline remains
+      label = sprintf(
+        "<strong>%s</strong><br/>%s: %.1f",
+        mapdata$sa4_name_2016, # region name displayed in label
+        indic_long,
+        mapdata$value
+      ) %>% # eco data displayed in label
+        lapply(shiny::HTML),
+      labelOptions = leaflet::labelOptions( # label options
+        style = list(
+          "font-weight" = "normal", # "bold" makes it so
+          padding = "3px 8px"
+        ),
+        textsize = "12px", # text size of label
+        noHide = FALSE, # TRUE makes labels permanently visible (messy)
+        direction = "auto"
+      ) # text box flips from side to side as needed
+    ) %>%
+    leaflet::addLegend(
+      position = "topright", # options: topright, bottomleft etc.
+      pal = pal, # colour palette as defined
+      values = mapdata$value, # fill data
+      bins = 3,
+      labFormat = leaflet::labelFormat(transform = identity),
+      title = label_title,
+      opacity = 1,
+    ) %>%
+    # label opacity
+    leaflet::addPolygons(
+      data = metro_outline, #
+      fill = F,
+      stroke = T,
+      opacity = 1,
+      color = "black",
+      weight = 1
+    )
+
+  map
+}
