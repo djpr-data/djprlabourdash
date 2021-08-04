@@ -5,8 +5,10 @@
 #' @noRd
 
 table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                             unset = "dashboard"
-                           )) {
+                             unset = "dashboard"),
+                           title = paste0("Victorian employment summary, ",
+                                          format(max(data$date), "%B %Y"))
+                           ) {
   data <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
@@ -59,6 +61,7 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
   make_table(
     data = data,
     destination = destination,
+    title = title,
     row_order = c(
       "A84423354L",
       "A84423242V",
@@ -94,7 +97,98 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
   )
 }
 
-table_ind_employment <- function(destination = "dashboard") {
+table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                  unset = "dashboard"),
+                         title = paste0("Victorian employment summary by sex, ",
+                                        format(max(data$date), "%B %Y"))) {
+  data <- filter_dash_data(c("A84423237A",
+                              "A84423461V",
+                              "A84423238C",
+                              "A84423462W",
+                              "A84423242V",
+                              "A84423466F",
+                              "A84423243W",
+                              "A84423467J")
+)
+
+  make_table(data,
+             row_order = c("A84423237A",
+                            "A84423461V",
+                            "A84423238C",
+                            "A84423462W",
+                            "A84423242V",
+                            "A84423466F",
+                            "A84423243W",
+                            "A84423467J"),
+             title = title
+)
+}
+
+table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                    unset = "dashboard"),
+                           title = paste0("Victorian youth (15-24) labour force status summary, ",
+                                          format(max(data$date), "%B %Y"),
+                                          " (12 month average)")
+                           ) {
+
+  data <- filter_dash_data(
+    c("A84433594K",
+      "A84433597T",
+      "A84433601W",
+      "A84424692W",
+      "A84433476W",
+      "15-24_males_employed",
+      "15-24_males_unemployed",
+      "15-24_males_nilf",
+      "15-24_females_employed",
+      "15-24_females_unemployed",
+      "15-24_females_nilf")
+  )
+
+  df_ts <- data %>%
+    dplyr::filter(substr(series_id, 1, 5) != "15-24")
+
+  # Calc unemp rates by sex
+  df_pivot <- data %>%
+    dplyr::filter(substr(series_id, 1, 5) == "15-24")
+
+  df_pivot %>%
+    dplyr::select(.data$series, )
+}
+
+table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                           unset = "dashboard"),
+                                  title = paste0("Unemployment rate by state, ",
+                                                 format(max(data$date), "%B %Y"))) {
+  data <- filter_dash_data(
+    c("A84423270C",
+      "A84423354L",
+      "A84423284T",
+      "A84423368A",
+      "A84423326C",
+      "A84423298F",
+      "A84423050A")
+  )
+
+  data <- data %>%
+    dplyr::mutate(indicator = dplyr::if_else(.data$state == "", "Australia", .data$state))# %>%
+    # dplyr::mutate(indicator = paste0(.data$indicator, " unemployment rate"))
+
+  make_table(data = data,
+             row_order = c("A84423050A",
+                           "A84423354L",
+                           "A84423270C",
+                           "A84423284T",
+                           "A84423326C",
+                           "A84423368A",
+                           "A84423298F"),
+             title = title,
+             rename_indicators = F)
+}
+
+table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                          unset = "dashboard"
+)) {
   data <- filter_dash_data(c(
     "A84423349V",
     "A84423357V",
@@ -115,7 +209,9 @@ table_ind_employment <- function(destination = "dashboard") {
   )
 }
 
-table_ind_unemp_summary <- function(destination = "dashboard") {
+table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                             unset = "dashboard"
+)) {
   data <- filter_dash_data(c(
     "A84423354L", # Unemp rate
     "A84423350C", # Unemp total
@@ -146,7 +242,9 @@ table_ind_unemp_summary <- function(destination = "dashboard") {
   )
 }
 
-table_ind_hours_summary <- function(destination = "dashboard") {
+table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                             unset = "dashboard"
+)) {
   data <- filter_dash_data(c(
     "A84426256L" # , # Total hours
   ))
