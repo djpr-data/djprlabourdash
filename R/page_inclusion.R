@@ -16,7 +16,7 @@ page_inclusion <- function(...) {
     h2(br(), "Women and men"),
     uiOutput("table_gr_sex"),
     djpr_plot_ui("gr_gen_emp_bar"),
-    djpr_plot_ui("gr_emppopratio_line"),
+    djpr_plot_ui("gr_gen_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
     djpr_plot_ui("gr_full_part_line"),
@@ -58,6 +58,10 @@ page_inclusion <- function(...) {
         )
       )
     ),
+    br(),
+    djpr_plot_ui("gr_youth_full_part_line"),
+    djpr_plot_ui("gr_youth_eduemp_waterfall"),
+    djpr_plot_ui("gr_yth_mostvuln_line"),
     br(),
     h2(br(), "Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),

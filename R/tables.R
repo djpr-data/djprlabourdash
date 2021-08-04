@@ -145,6 +145,16 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
       "15-24_females_nilf")
   )
 
+  df_ts <- data %>%
+    dplyr::filter(substr(series_id, 1, 5) != "15-24")
+
+  # Calc unemp rates by sex
+  df_pivot <- data %>%
+    dplyr::filter(substr(series_id, 1, 5) == "15-24")
+
+  df_pivot %>%
+    dplyr::select(.data$series )
+
 }
 
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",

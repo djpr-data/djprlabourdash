@@ -29,9 +29,8 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
-    dataui (>= 0.0.1),
     djprdashdata (>= 0.0.2.9002),
-    djprshiny (>= 0.0.3.910),
+    djprshiny (>= 0.0.3.911),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
@@ -52,7 +51,6 @@ Remotes:
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
-    timelyportfolio/dataui,
     mattcowgill/strayr
 Depends: 
     R (>= 3.50)
@@ -60,5 +58,6 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload
+    pkgload,
+    cachem
 Config/testthat/edition: 3

@@ -9,8 +9,8 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_emp_sincecovid_line"),
     djpr_plot_ui("ind_emppop_state_slope"),
     djpr_plot_ui("ind_empgro_line"),
-    # htmlOutput("ind_emp_dotpoints"),
-    # djpr_plot_ui("ind_empgro_line"),
+    djpr_plot_ui("ind_gen_full_part_line"),
+
     h2(br(), "Unemployment & underemployment"),
     uiOutput(
       "ind_unemp_summary"
