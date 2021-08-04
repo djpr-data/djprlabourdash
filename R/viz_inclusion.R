@@ -1928,3 +1928,63 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("99999
 
   map
 }
+
+viz_gr_yth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("9999999999"), # place holder
+                                                 df = dash_data),
+                                                 selected_indicator = "unemp_rate")
+{
+  df <- data %>%
+    mutate(indicator_short = dplyr::case_when(
+      .data$indicator == "Unemployment rate" ~ "unemp_rate",
+      .data$indicator == "Participation rate" ~ "part_rate",
+      .data$indicator == "Employment to population ratio" ~ "emp_pop"
+    ))
+
+  # Reduce to selected_indicator
+  df <- df %>%
+    dplyr::filter(.data$indicator_short == selected_indicator)
+
+  # 12 month smoothing
+  df <- df %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  df <- df %>%
+    dplyr::filter(.data$sa4 != "") %>%
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+                                       "Warrnambool & S. West",
+                                       .data$sa4
+    ))
+
+  df %>%
+    ggplot(aes(
+      x = stats::reorder(.data$sa4, .data$value),
+      y = .data$value
+    )) +
+    geom_col(
+      col = "grey85",
+      aes(fill = -.data$value)
+    ) +
+    geom_text(
+      nudge_y = 0.1,
+      aes(label = paste0(round2(.data$value, 1), "%")),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+    coord_flip(clip = "off") +
+    scale_fill_distiller(palette = "Blues") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(title = "")
+}
