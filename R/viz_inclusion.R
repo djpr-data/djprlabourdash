@@ -1929,7 +1929,7 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("99999
   map
 }
 
-viz_gr_yth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("9999999999"), # place holder
+viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("9999999999"), # place holder
                                                  df = dash_data),
                                                  selected_indicator = "unemp_rate")
 {
@@ -1988,3 +1988,4 @@ viz_gr_yth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("9999
     ) +
     labs(title = "")
 }
+
