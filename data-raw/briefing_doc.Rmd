@@ -48,6 +48,7 @@ Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 table_overview() 
 ```
 
+<br>
 
 ```{r}
 table_gr_sex()
@@ -69,3 +70,13 @@ less apparent.
 table_gr_youth_summary()
 ```
 
+\newpage
+
+```{r}
+table_gr_youth_unemp_region()
+```
+
+\newpage
+
+## Regional Victoria
+Regional labour force data is volatile, therefore DJPR and other VPS agencies smooth the data by using 3-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions less apparent. 

@@ -233,7 +233,7 @@ labour_server <- function(input, output, session) {
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value( )
   }) %>%
     bindCache(ts_summ)
 
@@ -750,6 +750,11 @@ labour_server <- function(input, output, session) {
                    plt_change = plt_change,
                    date_slider_value_min = Sys.Date() - (365.25 * 10),
                    date_slider = TRUE)
+
+  output$table_gr_youth_unemp_region <- renderUI({
+    table_gr_youth_unemp_region() %>%
+      flextable::htmltools_value()
+  })
 
   # Inclusion: long term unemployment ------
 

@@ -72,8 +72,8 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
       "A84423349V",
       "A84423357V",
       "pt_emp_vic",
-      "A84423461V",
       "A84423237A",
+      "A84423461V",
       "A84424687C",
       "A84423355R",
       "A84423243W",
@@ -93,7 +93,7 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
       "A85223451R",
       "A84423356T"
     ),
-    notes = " All data seasonally adjusted, other than youth figures, which are smoothed using a 12 month rolling average, and regional figures, which are smoothed using a 3 month rolling average."
+    notes = " All data seasonally adjusted, other than youth figures, which are smoothed using a 12-month rolling average, and regional figures, which are smoothed using a 3-month rolling average."
   )
 }
 
@@ -128,7 +128,7 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                                     unset = "dashboard"),
                                    title = paste0("Victorian youth (15-24) labour force status summary, ",
                                           format(max(data$date), "%B %Y"),
-                                          " (12 month average)")
+                                          " (12-month average)")
                            ) {
 
   data <- filter_dash_data(
@@ -161,6 +161,113 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                   "A84424692W"),
                title = title,
                notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average.")
+}
+
+table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                                 unset = "dashboard"),
+                                        title = paste0("Youth (15-24) unemployment rate across Victoria, ",
+                                                       format(max(data$date), "%B %Y"),
+                                                       " (12-month average)")) {
+  data <- filter_dash_data(
+    c("15-24_employed_ballarat",
+      "15-24_employed_bendigo",
+      "15-24_employed_geelong",
+      "15-24_employed_hume",
+      "15-24_employed_latrobe - gippsland",
+      "15-24_employed_shepparton",
+      "15-24_employed_victoria - north west",
+      "15-24_employed_warrnambool and south west",
+      "15-24_employed_rest of vic.",
+      "15-24_unemployed_ballarat",
+      "15-24_unemployed_bendigo",
+      "15-24_unemployed_geelong",
+      "15-24_unemployed_hume",
+      "15-24_unemployed_latrobe - gippsland",
+      "15-24_unemployed_shepparton",
+      "15-24_unemployed_victoria - north west",
+      "15-24_unemployed_warrnambool and south west",
+      "15-24_unemployed_rest of vic.",
+      "15-24_employed_melbourne - inner",
+      "15-24_employed_melbourne - inner east",
+      "15-24_employed_melbourne - inner south",
+      "15-24_employed_melbourne - north east",
+      "15-24_employed_melbourne - north west",
+      "15-24_employed_melbourne - outer east",
+      "15-24_employed_melbourne - south east",
+      "15-24_employed_melbourne - west",
+      "15-24_employed_mornington peninsula",
+      "15-24_employed_greater melbourne",
+      "15-24_unemployed_melbourne - inner",
+      "15-24_unemployed_melbourne - inner east",
+      "15-24_unemployed_melbourne - inner south",
+      "15-24_unemployed_melbourne - north east",
+      "15-24_unemployed_melbourne - north west",
+      "15-24_unemployed_melbourne - outer east",
+      "15-24_unemployed_melbourne - south east",
+      "15-24_unemployed_melbourne - west",
+      "15-24_unemployed_mornington peninsula",
+      "15-24_unemployed_greater melbourne")
+  )
+
+  data <- data %>%
+    dplyr::select(.data$date, .data$series, .data$table_no,
+                  .data$frequency, .data$value) %>%
+    tidyr::separate(col = .data$series,
+                    into = c("age", "indicator", "sa4"),
+                    sep = " ; ") %>%
+    dplyr::group_by(.data$sa4, .data$date, .data$age, .data$table_no, .data$frequency) %>%
+    dplyr::summarise(value = 100 * (sum(value[indicator == "Unemployed"]) /
+                       (sum(value[indicator == "Employed"]) +
+                          sum(value[indicator == "Unemployed"])) )
+                     ) %>%
+    dplyr::group_by(.data$sa4, .data$age) %>%
+    dplyr::mutate(indicator = "Unemployment rate",
+                  value = slider::slide_mean(.data$value,
+                                             before = 11L,
+                                             complete = TRUE),
+                  unit = "Percent",
+                  series_id = paste(age, indicator, sa4, sep = "_"),
+                  series = gsub("_", " ; ", .data$series_id, fixed = T)
+    ) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup()
+
+  data <- data %>%
+    dplyr::mutate(sa4 = dplyr::if_else(.data$sa4 == "Rest of Vic.",
+                                       "Regional Victoria",
+                                       .data$sa4),
+                  indicator = dplyr::if_else(
+                    .data$sa4 %in% c("Greater Melbourne",
+                                     "Regional Victoria"),
+                    paste0(.data$sa4, " youth unemployment rate"),
+                    .data$sa4
+      ))
+
+  data %>%
+    make_table(rename_indicators = F,
+               row_order = c("15-24_Unemployment rate_Rest of Vic.",
+                              "15-24_Unemployment rate_Ballarat",
+                              "15-24_Unemployment rate_Bendigo",
+                              "15-24_Unemployment rate_Geelong",
+                              "15-24_Unemployment rate_Hume",
+                              "15-24_Unemployment rate_Latrobe - Gippsland",
+                              "15-24_Unemployment rate_Shepparton",
+                              "15-24_Unemployment rate_Victoria - North West",
+                              "15-24_Unemployment rate_Warrnambool and South West",
+                              "15-24_Unemployment rate_Greater Melbourne",
+                              "15-24_Unemployment rate_Melbourne - Inner",
+                              "15-24_Unemployment rate_Melbourne - Inner East",
+                              "15-24_Unemployment rate_Melbourne - Inner South",
+                              "15-24_Unemployment rate_Melbourne - North East",
+                              "15-24_Unemployment rate_Melbourne - North West",
+                              "15-24_Unemployment rate_Melbourne - Outer East",
+                              "15-24_Unemployment rate_Melbourne - South East",
+                              "15-24_Unemployment rate_Melbourne - West",
+                              "15-24_Unemployment rate_Mornington Peninsula"),
+               highlight_rows = c("15-24_Unemployment rate_Rest of Vic.",
+                                  "15-24_Unemployment rate_Greater Melbourne"),
+               title = title
+)
 }
 
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
