@@ -79,4 +79,23 @@ table_gr_youth_unemp_region()
 \newpage
 
 ## Regional Victoria
-Regional labour force data is volatile, therefore DJPR and other VPS agencies smooth the data by using 3-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions less apparent. 
+
+```{r}
+table_reg_nonmetro_emp()
+
+```
+
+
+```{r}
+table_reg_nonmetro_unemp()
+```
+
+
+```{r}
+table_reg_nonmetro_unemprate()
+```
+
+```{r}
+table_reg_nonmetro_partrate()
+```
+

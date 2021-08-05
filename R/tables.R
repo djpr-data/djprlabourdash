@@ -270,6 +270,191 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
 )
 }
 
+table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                                 unset = "dashboard"),
+                                        title = paste0("Employment across regional Victoria, ",
+                                                       format(max(data$date), "%B %Y"),
+                                                       " (3-month average)")) {
+  data <- filter_dash_data(
+    c("A84600075R",
+      "A84599661X",
+      "A84600027W",
+      "A84599667L",
+      "A84599673J",
+      "A84599679W",
+      "A84599925T",
+      "A84600117A",
+      "A84600033T")
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Regional Victoria employed persons",
+                                 .data$sa4)
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE))
+
+  data %>%
+    make_table(row_order = c("A84600075R",
+                              "A84599661X",
+                              "A84600027W",
+                              "A84599667L",
+                              "A84599673J",
+                              "A84599679W",
+                              "A84599925T",
+                              "A84600117A",
+                              "A84600033T"),
+               highlight_rows = c("A84600075R"),
+               rename_indicators = FALSE,
+               title = title
+)
+}
+
+table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                            unset = "dashboard"),
+                                   title = paste0("Unemployment across regional Victoria, ",
+                                                  format(max(data$date), "%B %Y"),
+                                                  " (3-month average)")) {
+  data <- filter_dash_data(
+    c("A84600076T",
+      "A84599662A",
+      "A84600028X",
+      "A84599668R",
+      "A84599674K",
+      "A84599680F",
+      "A84599926V",
+      "A84600118C",
+      "A84600034V")
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Regional Victoria unemployed persons",
+                                 .data$sa4)
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE))
+
+  data %>%
+    make_table(row_order = c("A84600076T",
+                             "A84599662A",
+                             "A84600028X",
+                             "A84599668R",
+                             "A84599674K",
+                             "A84599680F",
+                             "A84599926V",
+                             "A84600118C",
+                             "A84600034V"),
+               highlight_rows = c("A84600076T"),
+               rename_indicators = FALSE,
+               title = title
+    )
+}
+
+table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                              unset = "dashboard"),
+                                     title = paste0("Unemployment rate across regional Victoria, ",
+                                                    format(max(data$date), "%B %Y"),
+                                                    " (3-month average)")) {
+  data <- filter_dash_data(
+    c("A84595471L",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A")
+
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Regional Victoria unemployment rate",
+                                 .data$sa4)
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE))
+
+  data %>%
+    make_table(row_order = c("A84595471L",
+                             "A84599665J",
+                             "A84600031L",
+                             "A84599671C",
+                             "A84599677T",
+                             "A84599683L",
+                             "A84599929A",
+                             "A84600121T",
+                             "A84600037A"),
+               highlight_rows = c("A84595471L"),
+               rename_indicators = FALSE,
+               title = title
+    )
+}
+
+table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                                  unset = "dashboard"),
+                                         title = paste0("Participation rate across regional Victoria, ",
+                                                        format(max(data$date), "%B %Y"),
+                                                        " (3-month average)")) {
+  data <- filter_dash_data(
+    c("A84599666K",
+      "A84600032R",
+      "A84599672F",
+      "A84599678V",
+      "A84599684R",
+      "A84599930K",
+      "A84600122V",
+      "A84600038C",
+      "A84600080J")
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Regional Victoria participation rate",
+                                 .data$sa4)
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE))
+
+  data %>%
+    make_table(row_order = c("A84600080J",
+                             "A84599666K",
+                             "A84600032R",
+                             "A84599672F",
+                             "A84599678V",
+                             "A84599684R",
+                             "A84599930K",
+                             "A84600122V",
+                             "A84600038C"),
+               highlight_rows = c("A84600080J"),
+               rename_indicators = FALSE,
+               title = title
+    )
+}
+
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                            unset = "dashboard"),
                                   title = paste0("Unemployment rate by state, ",

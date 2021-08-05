@@ -217,7 +217,7 @@ make_table <- function(data,
   if (destination == "dashboard") {
     spark_height <- 0.36
   } else {
-    spark_height <- 0.29
+    spark_height <- 0.26
   }
 
   flex <- flex %>%
