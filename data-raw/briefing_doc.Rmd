@@ -81,21 +81,39 @@ table_gr_youth_unemp_region()
 ## Regional Victoria
 
 ```{r}
+table_reg_nonmetro_states_unemprate()
+```
+<br>
+```{r}
 table_reg_nonmetro_emp()
 
 ```
 
+\newpage
 
 ```{r}
 table_reg_nonmetro_unemp()
 ```
-
+<br>
 
 ```{r}
 table_reg_nonmetro_unemprate()
 ```
 
+
 ```{r}
 table_reg_nonmetro_partrate()
 ```
 
+\newpage
+## Metropolitan Melbourne
+```{r}
+table_reg_metro_states_unemprate()
+```
+
+\newpage
+## Industries
+
+```{r}
+table_industries_summary()
+```

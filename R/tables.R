@@ -120,7 +120,8 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                             "A84423466F",
                             "A84423243W",
                             "A84423467J"),
-             title = title
+             title = title,
+             destination = destination,
 )
 }
 
@@ -160,6 +161,7 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                   "A84433597T",
                                   "A84424692W"),
                title = title,
+               destination = destination,
                notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average.")
 }
 
@@ -216,9 +218,9 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
                     into = c("age", "indicator", "sa4"),
                     sep = " ; ") %>%
     dplyr::group_by(.data$sa4, .data$date, .data$age, .data$table_no, .data$frequency) %>%
-    dplyr::summarise(value = 100 * (sum(value[indicator == "Unemployed"]) /
-                       (sum(value[indicator == "Employed"]) +
-                          sum(value[indicator == "Unemployed"])) )
+    dplyr::summarise(value = 100 * (sum(.data$value[.data$indicator == "Unemployed"]) /
+                       (sum(.data$value[.data$indicator == "Employed"]) +
+                          sum(.data$value[.data$indicator == "Unemployed"])) )
                      ) %>%
     dplyr::group_by(.data$sa4, .data$age) %>%
     dplyr::mutate(indicator = "Unemployment rate",
@@ -226,7 +228,7 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
                                              before = 11L,
                                              complete = TRUE),
                   unit = "Percent",
-                  series_id = paste(age, indicator, sa4, sep = "_"),
+                  series_id = paste(.data$age, .data$indicator, .data$sa4, sep = "_"),
                   series = gsub("_", " ; ", .data$series_id, fixed = T)
     ) %>%
     dplyr::filter(!is.na(.data$value)) %>%
@@ -266,8 +268,46 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
                               "15-24_Unemployment rate_Mornington Peninsula"),
                highlight_rows = c("15-24_Unemployment rate_Rest of Vic.",
                                   "15-24_Unemployment rate_Greater Melbourne"),
+               destination = destination,
                title = title
 )
+}
+
+table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                                         unset = "dashboard"),
+                                                title = paste0("Regional unemployment rates by state, ",
+                                                               format(max(data$date), "%B %Y"),
+                                                               " (3-month average)")
+                                                ) {
+  data <- filter_dash_data(
+    c("A84599629X",
+      "A84600079X",
+      "A84599785A",
+      "A84599719C",
+      "A84600247X",
+      "A84599635V")
+  )
+
+  data <- data %>%
+    dplyr::mutate(indicator = gsub("Rest of ", "Regional ", .data$gcc_restofstate, fixed = T)) %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE)) %>%
+    dplyr::ungroup()
+
+  make_table(data,
+             row_order = c(
+               "A84600079X",
+               "A84599629X",
+               "A84599785A",
+               "A84600247X",
+               "A84599719C",
+               "A84599635V"
+             ),
+             rename_indicators = FALSE,
+             destination = destination,
+             title = title)
 }
 
 table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
@@ -312,6 +352,7 @@ table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                               "A84600033T"),
                highlight_rows = c("A84600075R"),
                rename_indicators = FALSE,
+               destination = destination,
                title = title
 )
 }
@@ -358,6 +399,7 @@ table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
                              "A84600034V"),
                highlight_rows = c("A84600076T"),
                rename_indicators = FALSE,
+               destination = destination,
                title = title
     )
 }
@@ -405,7 +447,8 @@ table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURD
                              "A84600037A"),
                highlight_rows = c("A84595471L"),
                rename_indicators = FALSE,
-               title = title
+               title = title,
+               destination = destination
     )
 }
 
@@ -451,8 +494,44 @@ table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDA
                              "A84600038C"),
                highlight_rows = c("A84600080J"),
                rename_indicators = FALSE,
+               destination = destination,
                title = title
     )
+}
+
+table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                                      unset = "dashboard"),
+                                             title = paste0("Unemployment rate in metropolitan areas by State, ",
+                                                            format(max(data$date), "%B %Y"))) {
+  data <- filter_dash_data(
+    c("A84599623K",
+      "A84600145K",
+      "A84600151F",
+      "A84600157V",
+      "A84600241K",
+      "A84599791W")
+  )
+
+  data <- data %>%
+    dplyr::mutate(indicator = gsub("Greater ", "", .data$gcc_restofstate,
+                                   fixed = T)) %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE)) %>%
+    dplyr::filter(!is.na(.data$value))
+
+  make_table(data,
+             title = title,
+             destination = destination,
+             row_order = c(
+               "A84600145K",
+               "A84599623K",
+               "A84600151F",
+               "A84600241K",
+               "A84600157V",
+               "A84599791W"
+             ))
 }
 
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
@@ -470,8 +549,7 @@ table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
   )
 
   data <- data %>%
-    dplyr::mutate(indicator = dplyr::if_else(.data$state == "", "Australia", .data$state))# %>%
-    # dplyr::mutate(indicator = paste0(.data$indicator, " unemployment rate"))
+    dplyr::mutate(indicator = dplyr::if_else(.data$state == "", "Australia", .data$state))
 
   make_table(data = data,
              row_order = c("A84423050A",
@@ -482,6 +560,7 @@ table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
                            "A84423368A",
                            "A84423298F"),
              title = title,
+             destination = destination,
              rename_indicators = F)
 }
 
@@ -557,4 +636,66 @@ table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   make_table(table_data,
     destination = destination
   )
+}
+
+table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                              unset = "dashboard"),
+                                     title = paste0("Victorian employment by industry, ",
+                                                    format(max(data$date), "%B %Y"),
+                                                    " quarter (not seasonally adjusted)")) {
+  data <- filter_dash_data(
+    c("A84601662A",
+      "A84601680F",
+      "A84601683L",
+      "A84601686V",
+      "A84601665J",
+      "A84601704L",
+      "A84601707V",
+      "A84601710J",
+      "A84601638A",
+      "A84601653X",
+      "A84601689A",
+      "A84601656F",
+      "A84601713R",
+      "A84601668R",
+      "A84601695W",
+      "A84601698C",
+      "A84601650T",
+      "A84601671C",
+      "A84601641R",
+      "A84601716W")
+  )
+
+  data <- data %>%
+    dplyr::mutate(indicator = dplyr::if_else(.data$industry != "",
+                                             .data$industry,
+                                             "Victoria - all industries")
+    )
+
+  make_table(data,
+             row_order = c("A84601662A",
+                           "A84601680F",
+                           "A84601683L",
+                           "A84601686V",
+                           "A84601665J",
+                           "A84601704L",
+                           "A84601707V",
+                           "A84601710J",
+                           "A84601638A",
+                           "A84601653X",
+                           "A84601689A",
+                           "A84601656F",
+                           "A84601713R",
+                           "A84601668R",
+                           "A84601695W",
+                           "A84601698C",
+                           "A84601650T",
+                           "A84601671C",
+                           "A84601641R",
+                           "A84601716W"),
+             highlight_rows = "A84601662A",
+             title = title,
+             notes = "All data are original (not seasonally adjusted).",
+             destination = destination,
+             rename_indicators = FALSE)
 }

@@ -1196,6 +1196,11 @@ labour_server <- function(input, output, session) {
 
   # Industries ------
 
+  output$table_industries_summary <- renderUI({
+    table_industries_summary() %>%
+      flextable::htmltools_value()
+  })
+
   djpr_plot_server("industries_empchange_sincecovid_bar",
     plot_function = viz_industries_empchange_sincecovid_bar,
     data = filter_dash_data(c(
