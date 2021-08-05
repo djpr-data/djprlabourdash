@@ -357,7 +357,7 @@ df = dash_data
     geom_text(
       data = lab_df,
       aes(y = lab_y,
-        label = paste0(round(ind_contri, 1), "%")
+        label = paste0(round2(ind_contri, 1), "%")
       ),
       hjust = lab_df$lab_hjust,
       colour = "black",
@@ -460,7 +460,7 @@ df = dash_data
     geom_text(
       data = lab_df,
       aes(y = lab_y,
-          label = paste0(round(ind_contri, 1), "%")
+          label = paste0(round2(ind_contri, 1), "%")
       ),
       hjust = lab_df$lab_hjust,
       colour = "black",
@@ -566,7 +566,7 @@ viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
       aes(
         y = lab_y,
         hjust = lab_hjust,
-        label = paste0(round(value, 1), "%")
+        label = paste0(round2(value, 1), "%")
       ),
       colour = "black",
       size = 11 / .pt
@@ -847,7 +847,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(value)) %>%
     djpr_ts_linechart(
       col_var = .data$industry,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
