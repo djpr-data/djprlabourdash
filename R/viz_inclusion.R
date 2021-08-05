@@ -2058,25 +2058,51 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("15
                                                  df = dash_data),
                                                  selected_indicator = "unemp_rate")
 {
+  # 12 month smoothing and only latest date
   df <- data %>%
-    mutate(indicator_short = dplyr::case_when(
-      .data$indicator == "Unemployment rate" ~ "unemp_rate",
-      .data$indicator == "Participation rate" ~ "part_rate",
-      .data$indicator == "Employment to population ratio" ~ "emp_pop"
-    ))
+    group_by(.data$series_id) %>%
+    mutate(value = slider::slide_mean(.data$value,
+                                      before = 11,
+                                      complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
+  # combining value for each date, sa4 and indicator
+  df <- df %>%
+    dplyr::group_by(.data$date, .data$sa4, .data$indicator) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::ungroup()
+
+  # Go from long to wide
+  df <- df %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    )
+
+  # Calculate ratios
+  df <- df %>%
+    dplyr::mutate(
+      emp_pop = 100 * .data$Employed /
+        (.data$Employed + .data$NILF + .data$Unemployed),
+      unemp_rate = 100 * .data$Unemployed /
+        (.data$Employed + .data$Unemployed),
+      part_rate = 100 * (.data$Employed + .data$Unemployed) /
+        (.data$Employed + .data$Unemployed + .data$NILF)
+    )
+
+  # Go from wide to long again
+  df <- df %>%
+    dplyr::select(.data$date, .data$sa4, .data$emp_pop, .data$unemp_rate, .data$part_rate) %>%
+    tidyr::pivot_longer(
+      cols = !c(.data$date, .data$sa4),
+      names_to = "indicator",
+      values_to = "value"
+    )
 
   # Reduce to selected_indicator
   df <- df %>%
-    dplyr::filter(.data$indicator_short == selected_indicator)
-
-  # 12 month smoothing
-  df <- df %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
+    dplyr::filter(.data$indicator == selected_indicator)
 
   df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
