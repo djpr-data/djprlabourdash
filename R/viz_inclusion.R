@@ -522,7 +522,6 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
     " the rate for people aged 25-54"
   )
 
-
   df %>%
     dplyr::mutate(
       tooltip = paste0(
@@ -1980,6 +1979,13 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("15-24
                                                                           selected_indicator = "unemp_rate",
                                                                           zoom = 6)
 {
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
   # 12 month smoothing and only latest date
   df <- data %>%
     group_by(.data$series_id) %>%
