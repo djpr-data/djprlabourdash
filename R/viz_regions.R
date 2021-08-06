@@ -1,59 +1,61 @@
 #' @importFrom rlang `:=`
 
-title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84599659L",
-                                                                      "A84600019W",
-                                                                      "A84600187J",
-                                                                      "A84599557X",
-                                                                      "A84600115W",
-                                                                      "A84599851L",
-                                                                      "A84599923L",
-                                                                      "A84600025T",
-                                                                      "A84600193C",
-                                                                      "A84599665J",
-                                                                      "A84600031L",
-                                                                      "A84599671C",
-                                                                      "A84599677T",
-                                                                      "A84599683L",
-                                                                      "A84599929A",
-                                                                      "A84600121T",
-                                                                      "A84600037A",
-                                                                      "A84599658K",
-                                                                      "A84599660W",
-                                                                      "A84600018V",
-                                                                      "A84600020F",
-                                                                      "A84600186F",
-                                                                      "A84600188K",
-                                                                      "A84599556W",
-                                                                      "A84599558A",
-                                                                      "A84600114V",
-                                                                      "A84600116X",
-                                                                      "A84599850K",
-                                                                      "A84599852R",
-                                                                      "A84599922K",
-                                                                      "A84599924R",
-                                                                      "A84600024R",
-                                                                      "A84600026V",
-                                                                      "A84600192A",
-                                                                      "A84600194F",
-                                                                      "A84599664F",
-                                                                      "A84599666K",
-                                                                      "A84600030K",
-                                                                      "A84600032R",
-                                                                      "A84599670A",
-                                                                      "A84599672F",
-                                                                      "A84599676R",
-                                                                      "A84599678V",
-                                                                      "A84599682K",
-                                                                      "A84599684R",
-                                                                      "A84599928X",
-                                                                      "A84599930K",
-                                                                      "A84600120R",
-                                                                      "A84600122V",
-                                                                      "A84600036X",
-                                                                      "A84600038C"),
-                                                                    df = dash_data),
-                                            selected_indicator = "unemp_rate")
-{
+title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
+                                              "A84599659L",
+                                              "A84600019W",
+                                              "A84600187J",
+                                              "A84599557X",
+                                              "A84600115W",
+                                              "A84599851L",
+                                              "A84599923L",
+                                              "A84600025T",
+                                              "A84600193C",
+                                              "A84599665J",
+                                              "A84600031L",
+                                              "A84599671C",
+                                              "A84599677T",
+                                              "A84599683L",
+                                              "A84599929A",
+                                              "A84600121T",
+                                              "A84600037A",
+                                              "A84599658K",
+                                              "A84599660W",
+                                              "A84600018V",
+                                              "A84600020F",
+                                              "A84600186F",
+                                              "A84600188K",
+                                              "A84599556W",
+                                              "A84599558A",
+                                              "A84600114V",
+                                              "A84600116X",
+                                              "A84599850K",
+                                              "A84599852R",
+                                              "A84599922K",
+                                              "A84599924R",
+                                              "A84600024R",
+                                              "A84600026V",
+                                              "A84600192A",
+                                              "A84600194F",
+                                              "A84599664F",
+                                              "A84599666K",
+                                              "A84600030K",
+                                              "A84600032R",
+                                              "A84599670A",
+                                              "A84599672F",
+                                              "A84599676R",
+                                              "A84599678V",
+                                              "A84599682K",
+                                              "A84599684R",
+                                              "A84599928X",
+                                              "A84599930K",
+                                              "A84600120R",
+                                              "A84600122V",
+                                              "A84600036X",
+                                              "A84600038C"
+                                            ),
+                                            df = dash_data
+                                            ),
+                                            selected_indicator = "unemp_rate") {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -76,8 +78,8 @@ title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84599659
   df <- df %>%
     group_by(.data$series_id) %>%
     mutate(value = slider::slide_mean(.data$value,
-                                      before = 2,
-                                      complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
@@ -107,62 +109,62 @@ title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("A84599659
 }
 
 map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
-                                                                  "A84599659L",
-                                                                  "A84600019W",
-                                                                  "A84600187J",
-                                                                  "A84599557X",
-                                                                  "A84600115W",
-                                                                  "A84599851L",
-                                                                  "A84599923L",
-                                                                  "A84600025T",
-                                                                  "A84600193C",
-                                                                  "A84599665J",
-                                                                  "A84600031L",
-                                                                  "A84599671C",
-                                                                  "A84599677T",
-                                                                  "A84599683L",
-                                                                  "A84599929A",
-                                                                  "A84600121T",
-                                                                  "A84600037A",
-                                                                  "A84599658K",
-                                                                  "A84599660W",
-                                                                  "A84600018V",
-                                                                  "A84600020F",
-                                                                  "A84600186F",
-                                                                  "A84600188K",
-                                                                  "A84599556W",
-                                                                  "A84599558A",
-                                                                  "A84600114V",
-                                                                  "A84600116X",
-                                                                  "A84599850K",
-                                                                  "A84599852R",
-                                                                  "A84599922K",
-                                                                  "A84599924R",
-                                                                  "A84600024R",
-                                                                  "A84600026V",
-                                                                  "A84600192A",
-                                                                  "A84600194F",
-                                                                  "A84599664F",
-                                                                  "A84599666K",
-                                                                  "A84600030K",
-                                                                  "A84600032R",
-                                                                  "A84599670A",
-                                                                  "A84599672F",
-                                                                  "A84599676R",
-                                                                  "A84599678V",
-                                                                  "A84599682K",
-                                                                  "A84599684R",
-                                                                  "A84599928X",
-                                                                  "A84599930K",
-                                                                  "A84600120R",
-                                                                  "A84600122V",
-                                                                  "A84600036X",
-                                                                  "A84600038C"),
-                                                               df = dash_data),
-                                       selected_indicator = "unemp_rate",
-                                       zoom = 6)
-{
-
+                                            "A84599659L",
+                                            "A84600019W",
+                                            "A84600187J",
+                                            "A84599557X",
+                                            "A84600115W",
+                                            "A84599851L",
+                                            "A84599923L",
+                                            "A84600025T",
+                                            "A84600193C",
+                                            "A84599665J",
+                                            "A84600031L",
+                                            "A84599671C",
+                                            "A84599677T",
+                                            "A84599683L",
+                                            "A84599929A",
+                                            "A84600121T",
+                                            "A84600037A",
+                                            "A84599658K",
+                                            "A84599660W",
+                                            "A84600018V",
+                                            "A84600020F",
+                                            "A84600186F",
+                                            "A84600188K",
+                                            "A84599556W",
+                                            "A84599558A",
+                                            "A84600114V",
+                                            "A84600116X",
+                                            "A84599850K",
+                                            "A84599852R",
+                                            "A84599922K",
+                                            "A84599924R",
+                                            "A84600024R",
+                                            "A84600026V",
+                                            "A84600192A",
+                                            "A84600194F",
+                                            "A84599664F",
+                                            "A84599666K",
+                                            "A84600030K",
+                                            "A84600032R",
+                                            "A84599670A",
+                                            "A84599672F",
+                                            "A84599676R",
+                                            "A84599678V",
+                                            "A84599682K",
+                                            "A84599684R",
+                                            "A84599928X",
+                                            "A84599930K",
+                                            "A84600120R",
+                                            "A84600122V",
+                                            "A84600036X",
+                                            "A84600038C"
+                                          ),
+                                          df = dash_data
+                                          ),
+                                          selected_indicator = "unemp_rate",
+                                          zoom = 6) {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -185,9 +187,9 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   df <- df %>%
     group_by(.data$series_id) %>%
     mutate(value = slider::slide_mean(.data$value,
-                                      before = 2,
-                                      complete = TRUE
-                                    )) %>%
+      before = 2,
+      complete = TRUE
+    )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
@@ -232,7 +234,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     selected_indicator == "part_rate" ~ paste0("Participation<br/> rate (per cent)"),
     selected_indicator == "emp_pop" ~ paste0("Employment to<br/> population ratio<br/> (per cent)"),
     TRUE ~ NA_character_
-    )
+  )
 
   # Produce dynamic map, all of Victoria ----
   map <- mapdata %>%
@@ -344,63 +346,65 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A84600253V",
-                                                                              "A84599659L",
-                                                                              "A84600019W",
-                                                                              "A84600187J",
-                                                                              "A84599557X",
-                                                                              "A84600115W",
-                                                                              "A84599851L",
-                                                                              "A84599923L",
-                                                                              "A84600025T",
-                                                                              "A84600193C",
-                                                                              "A84599665J",
-                                                                              "A84600031L",
-                                                                              "A84599671C",
-                                                                              "A84599677T",
-                                                                              "A84599683L",
-                                                                              "A84599929A",
-                                                                              "A84600121T",
-                                                                              "A84600037A",
-                                                                              "A84599658K",
-                                                                              "A84599660W",
-                                                                              "A84600018V",
-                                                                              "A84600020F",
-                                                                              "A84600186F",
-                                                                              "A84600188K",
-                                                                              "A84599556W",
-                                                                              "A84599558A",
-                                                                              "A84600114V",
-                                                                              "A84600116X",
-                                                                              "A84599850K",
-                                                                              "A84599852R",
-                                                                              "A84599922K",
-                                                                              "A84599924R",
-                                                                              "A84600024R",
-                                                                              "A84600026V",
-                                                                              "A84600192A",
-                                                                              "A84600194F",
-                                                                              "A84599664F",
-                                                                              "A84599666K",
-                                                                              "A84600030K",
-                                                                              "A84600032R",
-                                                                              "A84599670A",
-                                                                              "A84599672F",
-                                                                              "A84599676R",
-                                                                              "A84599678V",
-                                                                              "A84599682K",
-                                                                              "A84599684R",
-                                                                              "A84599928X",
-                                                                              "A84599930K",
-                                                                              "A84600120R",
-                                                                              "A84600122V",
-                                                                              "A84600036X",
-                                                                              "A84600038C",
-                                                                              "A84600252T",
-                                                                              "A84600254W"),
-                                                                            df = dash_data),
-                                                    selected_indicator = "unemp_rate")
-{
+viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
+                                                      "A84600253V",
+                                                      "A84599659L",
+                                                      "A84600019W",
+                                                      "A84600187J",
+                                                      "A84599557X",
+                                                      "A84600115W",
+                                                      "A84599851L",
+                                                      "A84599923L",
+                                                      "A84600025T",
+                                                      "A84600193C",
+                                                      "A84599665J",
+                                                      "A84600031L",
+                                                      "A84599671C",
+                                                      "A84599677T",
+                                                      "A84599683L",
+                                                      "A84599929A",
+                                                      "A84600121T",
+                                                      "A84600037A",
+                                                      "A84599658K",
+                                                      "A84599660W",
+                                                      "A84600018V",
+                                                      "A84600020F",
+                                                      "A84600186F",
+                                                      "A84600188K",
+                                                      "A84599556W",
+                                                      "A84599558A",
+                                                      "A84600114V",
+                                                      "A84600116X",
+                                                      "A84599850K",
+                                                      "A84599852R",
+                                                      "A84599922K",
+                                                      "A84599924R",
+                                                      "A84600024R",
+                                                      "A84600026V",
+                                                      "A84600192A",
+                                                      "A84600194F",
+                                                      "A84599664F",
+                                                      "A84599666K",
+                                                      "A84600030K",
+                                                      "A84600032R",
+                                                      "A84599670A",
+                                                      "A84599672F",
+                                                      "A84599676R",
+                                                      "A84599678V",
+                                                      "A84599682K",
+                                                      "A84599684R",
+                                                      "A84599928X",
+                                                      "A84599930K",
+                                                      "A84600120R",
+                                                      "A84600122V",
+                                                      "A84600036X",
+                                                      "A84600038C",
+                                                      "A84600252T",
+                                                      "A84600254W"
+                                                    ),
+                                                    df = dash_data
+                                                    ),
+                                                    selected_indicator = "unemp_rate") {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -423,8 +427,8 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
   df <- df %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::filter(!is.na(.data$value))
 
@@ -544,61 +548,62 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c("A
     )
 }
 
-viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("A84599659L",
-                                                            "A84600019W",
-                                                            "A84600187J",
-                                                            "A84599557X",
-                                                            "A84600115W",
-                                                            "A84599851L",
-                                                            "A84599923L",
-                                                            "A84600025T",
-                                                            "A84600193C",
-                                                            "A84599665J",
-                                                            "A84600031L",
-                                                            "A84599671C",
-                                                            "A84599677T",
-                                                            "A84599683L",
-                                                            "A84599929A",
-                                                            "A84600121T",
-                                                            "A84600037A",
-                                                            "A84599658K",
-                                                            "A84599660W",
-                                                            "A84600018V",
-                                                            "A84600020F",
-                                                            "A84600186F",
-                                                            "A84600188K",
-                                                            "A84599556W",
-                                                            "A84599558A",
-                                                            "A84600114V",
-                                                            "A84600116X",
-                                                            "A84599850K",
-                                                            "A84599852R",
-                                                            "A84599922K",
-                                                            "A84599924R",
-                                                            "A84600024R",
-                                                            "A84600026V",
-                                                            "A84600192A",
-                                                            "A84600194F",
-                                                            "A84599664F",
-                                                            "A84599666K",
-                                                            "A84600030K",
-                                                            "A84600032R",
-                                                            "A84599670A",
-                                                            "A84599672F",
-                                                            "A84599676R",
-                                                            "A84599678V",
-                                                            "A84599682K",
-                                                            "A84599684R",
-                                                            "A84599928X",
-                                                            "A84599930K",
-                                                            "A84600120R",
-                                                            "A84600122V",
-                                                            "A84600036X",
-                                                            "A84600038C"),
-                                  df = dash_data),
-                                  selected_indicator = "unemp_rate")
-{
-
+viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
+                                                "A84599659L",
+                                                "A84600019W",
+                                                "A84600187J",
+                                                "A84599557X",
+                                                "A84600115W",
+                                                "A84599851L",
+                                                "A84599923L",
+                                                "A84600025T",
+                                                "A84600193C",
+                                                "A84599665J",
+                                                "A84600031L",
+                                                "A84599671C",
+                                                "A84599677T",
+                                                "A84599683L",
+                                                "A84599929A",
+                                                "A84600121T",
+                                                "A84600037A",
+                                                "A84599658K",
+                                                "A84599660W",
+                                                "A84600018V",
+                                                "A84600020F",
+                                                "A84600186F",
+                                                "A84600188K",
+                                                "A84599556W",
+                                                "A84599558A",
+                                                "A84600114V",
+                                                "A84600116X",
+                                                "A84599850K",
+                                                "A84599852R",
+                                                "A84599922K",
+                                                "A84599924R",
+                                                "A84600024R",
+                                                "A84600026V",
+                                                "A84600192A",
+                                                "A84600194F",
+                                                "A84599664F",
+                                                "A84599666K",
+                                                "A84600030K",
+                                                "A84600032R",
+                                                "A84599670A",
+                                                "A84599672F",
+                                                "A84599676R",
+                                                "A84599678V",
+                                                "A84599682K",
+                                                "A84599684R",
+                                                "A84599928X",
+                                                "A84599930K",
+                                                "A84600120R",
+                                                "A84600122V",
+                                                "A84600036X",
+                                                "A84600038C"
+                                              ),
+                                              df = dash_data
+                                              ),
+                                              selected_indicator = "unemp_rate") {
   df <- data %>%
     mutate(indicator_short = dplyr::case_when(
       .data$indicator == "Unemployment rate" ~ "unemp_rate",
@@ -614,8 +619,8 @@ viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("A845996
   df <- df %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
@@ -764,44 +769,50 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
                                            "A84599683L",
                                            "A84599929A",
                                            "A84600121T",
-                                           "A84600037A"),
-                                         df = dash_data),
-                                         selected_indicator = "all")  #all, metropolitan or regional
+                                           "A84600037A"
+                                         ),
+                                         df = dash_data
+                                         ),
+                                         selected_indicator = "all") # all, metropolitan or regional
 {
   df <- data %>%
     dplyr::mutate(
-      sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)) %>%
+      sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)
+    ) %>%
     dplyr::mutate(
       geog = dplyr::if_else(grepl("Melbourne|Mornington", .data$sa4),
-                            "Melbourne",
-                            .data$sa4)
+        "Melbourne",
+        .data$sa4
+      )
     ) %>%
     dplyr::mutate(indicator_short = dplyr::case_when(
       .data$geog == "Victoria" ~ "vic",
       .data$geog == "Melbourne" ~ "metropolitan",
       TRUE ~ "regional"
     )) %>%
-    dplyr::select(.data$date,
-                  .data$value,
-                  .data$indicator,
-                  .data$sa4,
-                  .data$indicator_short,
-                  .data$geog)
+    dplyr::select(
+      .data$date,
+      .data$value,
+      .data$indicator,
+      .data$sa4,
+      .data$indicator_short,
+      .data$geog
+    )
 
   df <- df %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
-                                       "Warrnambool & S. West",
-                                       .data$sa4
+      "Warrnambool & S. West",
+      .data$sa4
     ))
 
   # Reduce df depending on selected_indicator
-  if(selected_indicator == "metropolitan") {
+  if (selected_indicator == "metropolitan") {
     df <- df %>%
       dplyr::filter(.data$geog %in% c("Melbourne", "Victoria"))
-  } else if(selected_indicator == "regional") {
-      df <- df %>%
-        dplyr::filter(!.data$geog %in% c("Melbourne"))
-    }
+  } else if (selected_indicator == "regional") {
+    df <- df %>%
+      dplyr::filter(!.data$geog %in% c("Melbourne"))
+  }
 
   # 3 months smoothing
   df <- df %>%
@@ -846,8 +857,10 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   days_in_data <- as.numeric(max(data$date) - min(data$date))
 
-  subtitle_1 <- paste0("Highest and lowest unemployment rates\nin ",
-                       selected_indicator, " Victorian SA4s")
+  subtitle_1 <- paste0(
+    "Highest and lowest unemployment rates\nin ",
+    selected_indicator, " Victorian SA4s"
+  )
 
   # First plot: Show highest / lowest / state-wide unemp rates----
   plot_high_low <- df_tidy %>%
@@ -901,10 +914,12 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
         add = c(0, days_in_data * 0.2)
       ),
       breaks = djprtheme::breaks_right(
-        limits = c(min(df_tidy$date),
-                   max(df_tidy$date)),
-        n_breaks = 4
+        limits = c(
+          min(df_tidy$date),
+          max(df_tidy$date)
         ),
+        n_breaks = 4
+      ),
       date_labels = "%b\n%Y"
     ) +
     scale_colour_manual(values = c(
@@ -919,8 +934,10 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     ) +
     labs(subtitle = subtitle_1)
 
-  subtitle_2 <- paste0("Range between highest and lowest\n(percentage points), ",
-                       selected_indicator, " SA4s")
+  subtitle_2 <- paste0(
+    "Range between highest and lowest\n(percentage points), ",
+    selected_indicator, " SA4s"
+  )
 
   # Second plot: Range between high and low -----
   plot_range <- df_summ %>%
@@ -937,9 +954,12 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     theme_djpr() +
     scale_x_date(
       date_labels = "%b\n%Y",
-      breaks = djprtheme::breaks_right(c(min(df_summ$date),
-                                         max(df_summ$date)),
-      n_breaks = 4)
+      breaks = djprtheme::breaks_right(c(
+        min(df_summ$date),
+        max(df_summ$date)
+      ),
+      n_breaks = 4
+      )
     ) +
     djpr_y_continuous(
       limits = function(x) c(0, max(x)) # ,
@@ -967,8 +987,10 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     format(max(df_tidy$date), "%B %Y")
   )
 
-  subtitle <- paste0("Gap between unemployment rates across Victorian regions: ",
-    selected_indicator, " SA4s")
+  subtitle <- paste0(
+    "Gap between unemployment rates across Victorian regions: ",
+    selected_indicator, " SA4s"
+  )
 
   # Combine plots -----
   plots_combined <- patchwork::wrap_plots(plot_high_low,
@@ -1135,11 +1157,15 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
     sa4_df
   )
 
-  colours <- c(djprtheme::djpr_royal_blue,
-               djprtheme::djpr_green)
+  colours <- c(
+    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_green
+  )
 
-  names(colours) <- c("Regional Victoria",
-                      sa4)
+  names(colours) <- c(
+    "Regional Victoria",
+    sa4
+  )
 
   comb %>%
     djpr_ts_linechart(
@@ -1174,7 +1200,8 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
 }
 
 table_region_focus <- function(data = filter_dash_data(
-                                 c("A84600141A",
+                                 c(
+                                   "A84600141A",
                                    "A84600144J",
                                    "A84600145K",
                                    "A84599655C",
@@ -1249,12 +1276,12 @@ table_region_focus <- function(data = filter_dash_data(
                                    "A84600122V",
                                    "A84600038C",
                                    "A84600080J",
-                                   "A84600146L")
+                                   "A84600146L"
+                                 )
                                ) %>%
                                  dplyr::group_by(.data$series_id) %>%
                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)),
-                               sa4 = "Geelong")
-{
+                               sa4 = "Geelong") {
   in_melb <- grepl("Melbourne|Mornington", sa4)
 
   broad_region <- dplyr::if_else(in_melb,
@@ -1388,8 +1415,10 @@ table_region_focus <- function(data = filter_dash_data(
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
 
-  table_caption <- caption_auto(data = data,
-                                notes = "Data not seasonally adjusted; smoothed using a 3 month rolling average.")
+  table_caption <- caption_auto(
+    data = data,
+    notes = "Data not seasonally adjusted; smoothed using a 3 month rolling average."
+  )
   # Add caption
   out <- out %>%
     flextable::add_footer(` ` = table_caption) %>%
@@ -1471,7 +1500,8 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     djpr_ts_linechart(
       col_var = .data$gcc_restofstate,
       label_num = paste0(round(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")) +
+      y_labels = function(x) paste0(x, "%")
+    ) +
     facet_wrap(~indicator, scales = "free_y") +
     theme(
       axis.title = element_blank(),
@@ -1548,16 +1578,22 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
   covid_date_pretty <- format(as.Date("2020-03-01"), "%B %Y")
 
   title_part_1 <- dplyr::case_when(
-    sign(vic_level_raw) == 1 ~ paste0("rose by ", vic_level,
-                                      " between ", covid_date_pretty,
-                                      " and ", latest_date_pretty),
-    sign(vic_level_raw) == -1 ~ paste0("fell by ", vic_level,
-                                       " between ", covid_date_pretty,
-                                       " and ", latest_date_pretty),
-    sign(vic_level_raw) == 0 ~ paste0("was the same in",
-                                      latest_date_pretty,
-                                      "as it was in ",
-                                      covid_date_pretty)
+    sign(vic_level_raw) == 1 ~ paste0(
+      "rose by ", vic_level,
+      " between ", covid_date_pretty,
+      " and ", latest_date_pretty
+    ),
+    sign(vic_level_raw) == -1 ~ paste0(
+      "fell by ", vic_level,
+      " between ", covid_date_pretty,
+      " and ", latest_date_pretty
+    ),
+    sign(vic_level_raw) == 0 ~ paste0(
+      "was the same in",
+      latest_date_pretty,
+      "as it was in ",
+      covid_date_pretty
+    )
   )
 
   title_part_2 <- dplyr::case_when(
@@ -1571,11 +1607,13 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
     vic_rank == 8 ~ "eighth"
   )
 
-  title <- paste0("Employment in regional Victoria ",
-         title_part_1,
-         " and has risen the ",
-         title_part_2,
-         " fastest of any Australian regional area")
+  title <- paste0(
+    "Employment in regional Victoria ",
+    title_part_1,
+    " and has risen the ",
+    title_part_2,
+    " fastest of any Australian regional area"
+  )
 
   other_colour <- "grey70"
 
@@ -1851,9 +1889,11 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
   split_series <- stringr::str_split_fixed(df$series, " ; ", 3)
 
   df <- df %>%
-    dplyr::mutate(age = split_series[, 1],
-           indic = split_series[, 2],
-           geog = split_series[, 3]) %>%
+    dplyr::mutate(
+      age = split_series[, 1],
+      indic = split_series[, 2],
+      geog = split_series[, 3]
+    ) %>%
     dplyr::select(-.data$series)
 
   df <- df %>%

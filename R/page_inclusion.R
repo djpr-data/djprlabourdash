@@ -14,12 +14,14 @@ page_inclusion <- function(...) {
     # ),
     br(),
     h2(br(), "Women and men"),
+    uiOutput("table_gr_sex"),
     djpr_plot_ui("gr_gen_emp_bar"),
     djpr_plot_ui("gr_gen_emppopratio_line"),
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
     djpr_plot_ui("gr_full_part_line"),
     h2(br(), "Young people"),
+    uiOutput("table_gr_youth_summary"),
     fluidRow(
       column(
         6,
@@ -32,6 +34,7 @@ page_inclusion <- function(...) {
     ),
     br(),
     focus_box(
+      h3("Labour force status of Victorian youth"),
       shiny::selectInput("youth_focus",
         "Select an indicator",
         choices = c(
@@ -58,9 +61,12 @@ page_inclusion <- function(...) {
       )
     ),
     br(),
+    h3(br(), "Detailed labour force status of Victorian youth"),
     djpr_plot_ui("gr_youth_full_part_line"),
     djpr_plot_ui("gr_youth_eduemp_waterfall"),
     djpr_plot_ui("gr_yth_mostvuln_line"),
+    h3(br(), "Youth unemployment rate by region"),
+    uiOutput("table_gr_youth_unemp_region"),
     br(),
     h2(br(), "Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),

@@ -900,12 +900,12 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
 }
 
 viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
-                                        "pt_emp_vic",
-                                        "A84423357V"
-                                      ),
-                                      df = dash_data
-                                      ) %>%
-                                        dplyr::filter(date >= as.Date("2020-01-01"))) {
+                                         "pt_emp_vic",
+                                         "A84423357V"
+                                       ),
+                                       df = dash_data
+                                       ) %>%
+                                         dplyr::filter(date >= as.Date("2020-01-01"))) {
 
 
   # preparing data to calculate indexed value
