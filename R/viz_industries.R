@@ -205,7 +205,6 @@ table_industries_employment <- function(data = filter_dash_data(c(
                                         df = dash_data
                                         ),
                                         chosen_industry = "Agriculture, Forestry and Fishing") {
-
   latest_date <- format(max(data$date), "%b %Y")
 
   # add entry for data$industry for "Victoria, all industries" where ""
@@ -320,8 +319,10 @@ table_industries_employment <- function(data = filter_dash_data(c(
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
 
-  table_caption <- caption_auto(data = data,
-                                notes = "Data not seasonally adjusted.")
+  table_caption <- caption_auto(
+    data = data,
+    notes = "Data not seasonally adjusted."
+  )
   # Add caption
   out <- out %>%
     flextable::add_footer(` ` = table_caption) %>%
@@ -392,11 +393,15 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-  colours <- c(djprtheme::djpr_royal_blue,
-               djprtheme::djpr_green)
+  colours <- c(
+    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_green
+  )
 
-  names(colours) <- c("Victoria, all industries",
-                      chosen_industry)
+  names(colours) <- c(
+    "Victoria, all industries",
+    chosen_industry
+  )
 
   df %>%
     djpr_ts_linechart(
