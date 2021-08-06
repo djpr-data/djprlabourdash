@@ -308,7 +308,8 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
         "15-24_Unemployment rate_Greater Melbourne"
       ),
       destination = destination,
-      title = title
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average."
     )
 }
 
@@ -351,7 +352,8 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
     ),
     rename_indicators = FALSE,
     destination = destination,
-    title = title
+    title = title,
+    notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
   )
 }
 
@@ -408,7 +410,8 @@ table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
       highlight_rows = c("A84600075R"),
       rename_indicators = FALSE,
       destination = destination,
-      title = title
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
     )
 }
 
@@ -465,7 +468,8 @@ table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
       highlight_rows = c("A84600076T"),
       rename_indicators = FALSE,
       destination = destination,
-      title = title
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
     )
 }
 
@@ -522,7 +526,8 @@ table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURD
       highlight_rows = c("A84595471L"),
       rename_indicators = FALSE,
       title = title,
-      destination = destination
+      destination = destination,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
     )
 }
 
@@ -579,7 +584,8 @@ table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDA
       highlight_rows = c("A84600080J"),
       rename_indicators = FALSE,
       destination = destination,
-      title = title
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
     )
 }
 
@@ -622,8 +628,237 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
       "A84600241K",
       "A84600157V",
       "A84599791W"
-    )
+    ),
+    notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
   )
+}
+
+table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                            unset = "dashboard"
+),
+title = paste0(
+  "Employment across greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
+  data <- filter_dash_data(
+    c("A84600141A",
+      "A84599655C",
+      "A84600015L",
+      "A84600183X",
+      "A84599553R",
+      "A84600111L",
+      "A84599847W",
+      "A84599919W",
+      "A84600021J",
+      "A84600189L")
+
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Greater Melbourne employed persons",
+                                 .data$sa4
+      )
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE
+    ))
+
+  data %>%
+    make_table(
+      row_order = c("A84600141A",
+                    "A84599655C",
+                    "A84600015L",
+                    "A84600183X",
+                    "A84599553R",
+                    "A84600111L",
+                    "A84599847W",
+                    "A84599919W",
+                    "A84600021J",
+                    "A84600189L"),
+      highlight_rows = c("A84600141A"),
+      rename_indicators = FALSE,
+      destination = destination,
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
+    )
+}
+
+table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                         unset = "dashboard"
+),
+title = paste0(
+  "Unemployed persons across greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
+  data <- filter_dash_data(
+    c("A84600142C",
+      "A84599656F",
+      "A84600016R",
+      "A84600184A",
+      "A84599554T",
+      "A84600112R",
+      "A84599848X",
+      "A84599920F",
+      "A84600022K",
+      "A84600190W")
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Greater Melbourne unemployed persons",
+                                 .data$sa4
+      )
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE
+    ))
+
+  data %>%
+    make_table(
+      row_order = c("A84600142C",
+                    "A84599656F",
+                    "A84600016R",
+                    "A84600184A",
+                    "A84599554T",
+                    "A84600112R",
+                    "A84599848X",
+                    "A84599920F",
+                    "A84600022K",
+                    "A84600190W"),
+      highlight_rows = c("A84600142C"),
+      rename_indicators = FALSE,
+      destination = destination,
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
+    )
+}
+
+table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                           unset = "dashboard"
+),
+title = paste0(
+  "Unemployment rate across greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
+  data <- filter_dash_data(
+    c("A84600145K",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C")
+
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Greater Melbourne unemployment rate",
+                                 .data$sa4
+      )
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE
+    ))
+
+  data %>%
+    make_table(
+      row_order = c("A84600145K",
+                    "A84599659L",
+                    "A84600019W",
+                    "A84600187J",
+                    "A84599557X",
+                    "A84600115W",
+                    "A84599851L",
+                    "A84599923L",
+                    "A84600025T",
+                    "A84600193C"),
+      highlight_rows = c("A84600145K"),
+      rename_indicators = FALSE,
+      destination = destination,
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
+    )
+}
+
+table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                               unset = "dashboard"
+),
+title = paste0(
+  "Participation rate across greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
+  data <- filter_dash_data(
+    c("A84600146L",
+      "A84599660W",
+      "A84600020F",
+      "A84600188K",
+      "A84599558A",
+      "A84600116X",
+      "A84599852R",
+      "A84599924R",
+      "A84600026V",
+      "A84600194F")
+
+
+  )
+
+  data <- data %>%
+    dplyr::mutate(
+      indicator = dplyr::if_else(.data$sa4 == "",
+                                 "Greater Melbourne participation rate",
+                                 .data$sa4
+      )
+    )
+
+  data <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 2L,
+                                             complete = TRUE
+    ))
+
+  data %>%
+    make_table(
+      row_order = c("A84600146L",
+                     "A84599660W",
+                     "A84600020F",
+                     "A84600188K",
+                     "A84599558A",
+                     "A84600116X",
+                     "A84599852R",
+                     "A84599924R",
+                     "A84600026V",
+                     "A84600194F"),
+      highlight_rows = c("A84600146L"),
+      rename_indicators = FALSE,
+      destination = destination,
+      title = title,
+      notes = "Data not seasonally adjusted; smoothed using a 3-month rolling average."
+    )
 }
 
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
@@ -684,7 +919,8 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
     ))
 
   make_table(table_data,
-    destination = destination
+    destination = destination,
+    notes = "Data not seasonally adjusted."
   )
 }
 
@@ -717,7 +953,8 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     ))
 
   make_table(table_data,
-    destination = destination
+    destination = destination,
+    notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average."
   )
 }
 

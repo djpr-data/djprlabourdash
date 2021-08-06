@@ -112,6 +112,30 @@ table_reg_nonmetro_partrate()
 table_reg_metro_states_unemprate()
 ```
 
+<br>
+
+```{r}
+table_reg_metro_emp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_partrate()
+```
+
 \newpage
 ## Industries
 
