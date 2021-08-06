@@ -1,6 +1,6 @@
 Package: djprlabourdash
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9001
+Title: DJPR Jobs Dashboard
+Version: 0.0.1.900
 Authors@R: 
     c(
     person(given = "Annett",
@@ -23,7 +23,7 @@ Authors@R:
     person(given = "Department of Jobs, Precincts and Regions (Victoria)",
            role = c("cph", "fnd"))
            )
-Description: What the package does (one paragraph).
+Description: Shiny app to visualise Victorian labour force data
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
