@@ -16,54 +16,20 @@
 #' @param rename_indicators logical; default is `TRUE`. If `TRUE`, the
 #' `rename_indicators()` function will be used to rename certain indicators.
 #' @examples
-#' dash_data <- load_dash_data()
+#' # dash_data <- load_dash_data()
 #' \dontrun{
 #' make_table(
 #'   data = filter_dash_data(series_ids = c(
 #'     "A84423354L",
 #'     "A84423242V",
 #'     "A84423466F",
-#'     "A84433601W",
-#'     "A84600079X",
-#'     "A84423350C",
-#'     "A84423349V",
-#'     "A84423357V",
-#'     "pt_emp_vic",
-#'     "A84423461V",
-#'     "A84423237A",
-#'     "A84424687C",
-#'     "A84423355R",
-#'     "A84423243W",
-#'     "A84423467J",
-#'     "A84433602X",
-#'     "A84426256L",
-#'     "A85223450L",
-#'     "A85223451R",
-#'     "A84423356T"
 #'   )),
 #'   row_order = c(
 #'     "A84423354L",
 #'     "A84423242V",
-#'     "A84423466F",
-#'     "A84433601W",
-#'     "A84600079X",
-#'     "A84423350C",
-#'     "A84423349V",
-#'     "A84423357V",
-#'     "pt_emp_vic",
-#'     "A84423461V",
-#'     "A84423237A",
-#'     "A84424687C",
-#'     "A84423355R",
-#'     "A84423243W",
-#'     "A84423467J",
-#'     "A84433602X",
-#'     "A84426256L",
-#'     "A85223450L",
-#'     "A85223451R",
-#'     "A84423356T"
+#'     "A84423466F"
 #'   ),
-#'   highlight_rows = c("A84426256L", "A85223450L", "A84423242V")
+#'   highlight_rows = c("A84426256L")
 #' )
 #' }
 make_table <- function(data,
@@ -365,10 +331,14 @@ make_table <- function(data,
       flextable::set_caption(caption = title)
 
     flex <- flex %>%
-      flextable::width(j = c(3:flextable::ncol_keys(flex)),
-                       width = 0.88) %>%
-      flextable::width(j = 1,
-                       width = 2)
+      flextable::width(
+        j = c(3:flextable::ncol_keys(flex)),
+        width = 0.88
+      ) %>%
+      flextable::width(
+        j = 1,
+        width = 2
+      )
   }
 
   flex

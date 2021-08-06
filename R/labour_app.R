@@ -233,7 +233,7 @@ labour_server <- function(input, output, session) {
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
-      flextable::htmltools_value( )
+      flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
 
@@ -362,16 +362,17 @@ labour_server <- function(input, output, session) {
 
   # Indicators: cumulative change in PT / FT since COVID
   djpr_plot_server("ind_gen_full_part_line",
-                   plot_function = viz_ind_gen_full_part_line,
-                   data = filter_dash_data(c(
-                     "pt_emp_vic",
-                     "A84423357V"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::filter(date >= as.Date("2020-01-01")),
-                   plt_change = plt_change,
-                   date_slider = FALSE)
+    plot_function = viz_ind_gen_full_part_line,
+    data = filter_dash_data(c(
+      "pt_emp_vic",
+      "A84423357V"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2020-01-01")),
+    plt_change = plt_change,
+    date_slider = FALSE
+  )
 
   # Indicators: unemployment ------
   output$ind_unemp_summary <- renderUI({
@@ -515,15 +516,16 @@ labour_server <- function(input, output, session) {
 
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_gen_emppopratio_line",
-                   plot_function = viz_gr_gen_emppopratio_line,
-                   data = filter_dash_data(c(
-                     "A84423244X",
-                     "A84423468K"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = Sys.Date() - (365.25 * 10),
-                   plt_change = plt_change)
+    plot_function = viz_gr_gen_emppopratio_line,
+    data = filter_dash_data(c(
+      "A84423244X",
+      "A84423468K"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (365.25 * 10),
+    plt_change = plt_change
+  )
 
   # Bar chart: LF status by sex, latest month
 
@@ -714,42 +716,47 @@ labour_server <- function(input, output, session) {
   )
 
   djpr_plot_server("gr_youth_full_part_line",
-                   plot_function = viz_gr_youth_full_part_line,
-                   data = filter_dash_data(c(
-                     "A84424687C",
-                     "A84424695C",
-                     "A84424696F"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider = TRUE)
+    plot_function = viz_gr_youth_full_part_line,
+    data = filter_dash_data(c(
+      "A84424687C",
+      "A84424695C",
+      "A84424696F"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = TRUE
+  )
 
   djpr_plot_server("gr_youth_eduemp_waterfall",
-                   plot_function = viz_gr_youth_eduemp_waterfall,
-                   data = filter_dash_data(c(
-                     "A84424598A",
-                     "A84424778K",
-                     "A84424597X",
-                     "A84424777J",
-                     "A84424600A",
-                     "A84424780W",
-                     "A84424694A"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider = FALSE)
+    plot_function = viz_gr_youth_eduemp_waterfall,
+    data = filter_dash_data(c(
+      "A84424598A",
+      "A84424778K",
+      "A84424597X",
+      "A84424777J",
+      "A84424600A",
+      "A84424780W",
+      "A84424694A"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE
+  )
 
   djpr_plot_server("gr_yth_mostvuln_line",
-                   plot_function = viz_gr_yth_mostvuln_line,
-                   data = filter_dash_data(c("A84433475V",
-                                             "A84424781X"),
-                                           df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider_value_min = Sys.Date() - (365.25 * 10),
-                   date_slider = TRUE)
+    plot_function = viz_gr_yth_mostvuln_line,
+    data = filter_dash_data(c(
+      "A84433475V",
+      "A84424781X"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = Sys.Date() - (365.25 * 10),
+    date_slider = TRUE
+  )
 
   output$table_gr_youth_unemp_region <- renderUI({
     table_gr_youth_unemp_region() %>%
@@ -833,13 +840,14 @@ labour_server <- function(input, output, session) {
   })
 
   output$subtitle_unemp_emppop_partrate_vic <- renderText({
-
-    indic_long <- dplyr::case_when(input$lf_status_region == "unemp_rate" ~
-                              "Unemployment rate",
-                            input$lf_status_region == "part_rate" ~
-                              "Participation rate",
-                            input$lf_status_region == "emp_pop" ~
-                              "Employment to population")
+    indic_long <- dplyr::case_when(
+      input$lf_status_region == "unemp_rate" ~
+      "Unemployment rate",
+      input$lf_status_region == "part_rate" ~
+      "Participation rate",
+      input$lf_status_region == "emp_pop" ~
+      "Employment to population"
+    )
 
     paste0(indic_long, " by region (SA4), per cent")
   })
@@ -850,122 +858,128 @@ labour_server <- function(input, output, session) {
     })
 
   output$reg_unemp_emppop_partrate_bar <- renderPlot({
-    df <- filter_dash_data(c("A84599659L",
-                             "A84600019W",
-                             "A84600187J",
-                             "A84599557X",
-                             "A84600115W",
-                             "A84599851L",
-                             "A84599923L",
-                             "A84600025T",
-                             "A84600193C",
-                             "A84599665J",
-                             "A84600031L",
-                             "A84599671C",
-                             "A84599677T",
-                             "A84599683L",
-                             "A84599929A",
-                             "A84600121T",
-                             "A84600037A",
-                             "A84599658K",
-                             "A84599660W",
-                             "A84600018V",
-                             "A84600020F",
-                             "A84600186F",
-                             "A84600188K",
-                             "A84599556W",
-                             "A84599558A",
-                             "A84600114V",
-                             "A84600116X",
-                             "A84599850K",
-                             "A84599852R",
-                             "A84599922K",
-                             "A84599924R",
-                             "A84600024R",
-                             "A84600026V",
-                             "A84600192A",
-                             "A84600194F",
-                             "A84599664F",
-                             "A84599666K",
-                             "A84600030K",
-                             "A84600032R",
-                             "A84599670A",
-                             "A84599672F",
-                             "A84599676R",
-                             "A84599678V",
-                             "A84599682K",
-                             "A84599684R",
-                             "A84599928X",
-                             "A84599930K",
-                             "A84600120R",
-                             "A84600122V",
-                             "A84600036X",
-                             "A84600038C"),
-                           df = dash_data)
+    df <- filter_dash_data(c(
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A",
+      "A84599658K",
+      "A84599660W",
+      "A84600018V",
+      "A84600020F",
+      "A84600186F",
+      "A84600188K",
+      "A84599556W",
+      "A84599558A",
+      "A84600114V",
+      "A84600116X",
+      "A84599850K",
+      "A84599852R",
+      "A84599922K",
+      "A84599924R",
+      "A84600024R",
+      "A84600026V",
+      "A84600192A",
+      "A84600194F",
+      "A84599664F",
+      "A84599666K",
+      "A84600030K",
+      "A84600032R",
+      "A84599670A",
+      "A84599672F",
+      "A84599676R",
+      "A84599678V",
+      "A84599682K",
+      "A84599684R",
+      "A84599928X",
+      "A84599930K",
+      "A84600120R",
+      "A84600122V",
+      "A84600036X",
+      "A84600038C"
+    ),
+    df = dash_data
+    )
 
     df %>%
       viz_reg_unemp_emppop_partrate_bar(selected_indicator = input$lf_status_region)
   })
 
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",
-                   viz_reg_unemp_emppop_partrate_multiline,
+    viz_reg_unemp_emppop_partrate_multiline,
     date_slider = TRUE,
     height_percent = 125,
-    data = filter_dash_data(c("A84600253V",
-                              "A84599659L",
-                              "A84600019W",
-                              "A84600187J",
-                              "A84599557X",
-                              "A84600115W",
-                              "A84599851L",
-                              "A84599923L",
-                              "A84600025T",
-                              "A84600193C",
-                              "A84599665J",
-                              "A84600031L",
-                              "A84599671C",
-                              "A84599677T",
-                              "A84599683L",
-                              "A84599929A",
-                              "A84600121T",
-                              "A84600037A",
-                              "A84599658K",
-                              "A84599660W",
-                              "A84600018V",
-                              "A84600020F",
-                              "A84600186F",
-                              "A84600188K",
-                              "A84599556W",
-                              "A84599558A",
-                              "A84600114V",
-                              "A84600116X",
-                              "A84599850K",
-                              "A84599852R",
-                              "A84599922K",
-                              "A84599924R",
-                              "A84600024R",
-                              "A84600026V",
-                              "A84600192A",
-                              "A84600194F",
-                              "A84599664F",
-                              "A84599666K",
-                              "A84600030K",
-                              "A84600032R",
-                              "A84599670A",
-                              "A84599672F",
-                              "A84599676R",
-                              "A84599678V",
-                              "A84599682K",
-                              "A84599684R",
-                              "A84599928X",
-                              "A84599930K",
-                              "A84600120R",
-                              "A84600122V",
-                              "A84600036X",
-                              "A84600038C",
-                              "A84600252T",
-                              "A84600254W"),
-                            df = dash_data),
+    data = filter_dash_data(c(
+      "A84600253V",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A",
+      "A84599658K",
+      "A84599660W",
+      "A84600018V",
+      "A84600020F",
+      "A84600186F",
+      "A84600188K",
+      "A84599556W",
+      "A84599558A",
+      "A84600114V",
+      "A84600116X",
+      "A84599850K",
+      "A84599852R",
+      "A84599922K",
+      "A84599924R",
+      "A84600024R",
+      "A84600026V",
+      "A84600192A",
+      "A84600194F",
+      "A84599664F",
+      "A84599666K",
+      "A84600030K",
+      "A84600032R",
+      "A84599670A",
+      "A84599672F",
+      "A84599676R",
+      "A84599678V",
+      "A84599682K",
+      "A84599684R",
+      "A84599928X",
+      "A84599930K",
+      "A84600120R",
+      "A84600122V",
+      "A84600036X",
+      "A84600038C",
+      "A84600252T",
+      "A84600254W"
+    ),
+    df = dash_data
+    ),
     selected_indicator = reactive(input$lf_status_multiline),
     date_slider_value_min = as.Date("2018-01-01"),
     plt_change = plt_change
@@ -1008,8 +1022,10 @@ labour_server <- function(input, output, session) {
       "A84599683L",
       "A84599929A",
       "A84600121T",
-      "A84600037A"),
-      df = dash_data),
+      "A84600037A"
+    ),
+    df = dash_data
+    ),
     date_slider_value_min = as.Date("2014-11-01"),
     plt_change = plt_change,
     selected_indicator = reactive(input$sa4_type_dispersion)
@@ -1061,6 +1077,16 @@ labour_server <- function(input, output, session) {
       input$focus_region,
       ts_summ
     )
+
+  output$table_reg_nonmetro_states_unemprate <- renderUI({
+    table_reg_nonmetro_states_unemprate() %>%
+      flextable::htmltools_value()
+  })
+
+  output$table_reg_metro_states_unemprate <- renderUI({
+    table_reg_metro_states_unemprate() %>%
+      flextable::htmltools_value()
+  })
 
   # Regions: National focus box -----
   djpr_plot_server("reg_regionstates_dot",
@@ -1176,19 +1202,21 @@ labour_server <- function(input, output, session) {
   djpr_plot_server(
     "reg_emp_regionstates_sincecovid_line",
     viz_reg_emp_regionstates_sincecovid_line,
-    data = filter_dash_data(c("A84600075R",
-                              "A84599625R",
-                              "A84599781T",
-                              "A84599607K",
-                              "A84600243R",
-                              "A84599715V",
-                              "A84599631K"
+    data = filter_dash_data(c(
+      "A84600075R",
+      "A84599625R",
+      "A84599781T",
+      "A84599607K",
+      "A84600243R",
+      "A84599715V",
+      "A84599631K"
     ),
     df = dash_data
     ) %>%
       dplyr::group_by(.data$series_id) %>%
       dplyr::mutate(
-        value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+        value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+      ) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
     date_slider = FALSE,
     plt_change = plt_change
