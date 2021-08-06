@@ -1988,8 +1988,8 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("15-24
 
   # 12 month smoothing and only latest date
   df <- data %>%
-    group_by(.data$series_id) %>%
-    mutate(value = slider::slide_mean(.data$value,
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
                                       before = 11,
                                       complete = TRUE
     )) %>%
@@ -2191,8 +2191,8 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("15
 {
   # 12 month smoothing and only latest date
   df <- data %>%
-    group_by(.data$series_id) %>%
-    mutate(value = slider::slide_mean(.data$value,
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
                                       before = 11,
                                       complete = TRUE
     )) %>%
@@ -2302,6 +2302,66 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
                                               selected_indicator = "unemp_rate")
 {
 
+  # 12 month smoothing, remove NAs and drop not needed columns
+  df <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                      before = 11,
+                                      complete = TRUE
+    )) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::select(.data$date, .data$value, .data$series, .data$indicator, .data$state) %>%
+    dplyr::ungroup()
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
+
+  # Reduce to selected_indicator
+  df <- df %>%
+    dplyr::filter(.data$indicator == indic_long)
+
+  # name Australia
+  df <- df %>%
+    dplyr::mutate(
+      state = dplyr::if_else(.data$state == "",
+                             "Australia",
+                             .data$state
+      ),
+      state = strayr::clean_state(.data$state)
+    )
+
+  # select the latest date
+  latest_date <- df %>%
+    dplyr::group_by(.data$state) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
+  # line colour
+  df <- df %>%
+    dplyr::mutate(line_col = dplyr::if_else(
+      .data$state %in% c("Vic", "Aus"), .data$state, "Other"
+    ))
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$series,
+      y_labels = function(x) paste0(x, "%"),
+      label_num = paste0(round2(.data$value, 1), "%")
+    ) +
+    scale_colour_manual(values = c(
+      "Vic" = djprtheme::djpr_royal_blue,
+      "NSW" = djprtheme::djpr_green,
+      "Other" = "grey70"
+    )) +
+    labs(
+      title = "title",
+      subtitle = "subtitle",
+      caption = caption_lfs()
+    )
 
 }
 
