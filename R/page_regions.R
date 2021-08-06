@@ -2,16 +2,6 @@ page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
     h1("Regions of Victoria"),
-    # tagList(
-    #   "This page contains information about employment and unemployment across",
-    #   "the different regions of Victoria.",
-    #   shiny::tags$b("More information will be included with future releases. "),
-    #   "For more information about overall labour force indicators ",
-    #   "see the ",
-    #   actionLink("link_indicators", "indicators page"),
-    #   ". For information about the labour force status of key groups of Victorians, see the ",
-    #   actionLink("link_inclusion", "inclusion page"), "."
-    # ),
     # Unemployment by region -----
     br(),
     "Victoria's regions vary by population density and other factors that influence labour force ",
