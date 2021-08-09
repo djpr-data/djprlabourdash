@@ -1892,9 +1892,9 @@ title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("15-
                                             selected_indicator = "unemp_rate")
 {
   indic_long <- dplyr::case_when(
-    selected_indicator == "unemp_rate" ~ "Unemployment rate",
-    selected_indicator == "part_rate" ~ "Participation rate",
-    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    selected_indicator == "unemp_rate" ~ "The youth unemployment rate",
+    selected_indicator == "part_rate" ~ "The youth participation rate",
+    selected_indicator == "emp_pop" ~ "The youth employment to population ratio",
     TRUE ~ NA_character_
   )
 
@@ -1948,20 +1948,20 @@ title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c("15-
     dplyr::ungroup() %>%
     summarise(
       min_sa4 = .data$sa4[.data$value == min(.data$value)],
-      min_ur = .data$value[.data$value == min(.data$value)],
+      min_val = .data$value[.data$value == min(.data$value)],
       max_sa4 = .data$sa4[.data$value == max(.data$value)],
-      max_ur = .data$value[.data$value == max(.data$value)],
+      max_val = .data$value[.data$value == max(.data$value)],
       date = unique(.data$date)
     )
 
   paste0(
     indic_long,
     " across Victoria ranged from ",
-    round2(high_low$min_ur, 1),
+    round2(high_low$min_val, 1),
     " per cent in ",
     high_low$min_sa4,
     " to ",
-    round2(high_low$max_ur, 1),
+    round2(high_low$max_val, 1),
     " per cent in ",
     high_low$max_sa4,
     " as at ",
@@ -2241,13 +2241,11 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("15
                                       before = 11,
                                       complete = TRUE
     )) %>%
-    dplyr::filter(.data$date == max(.data$date))
-
-  # combining value for each date, sa4 and indicator
-  df <- df %>%
-    dplyr::group_by(.data$date, .data$sa4, .data$indicator) %>%
-    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup()
+
+  df <- df %>%
+    dplyr::select(.data$date, .data$sa4, .data$indicator, .data$value)
 
   # Go from long to wide
   df <- df %>%
@@ -2282,7 +2280,7 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c("15
 
   df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
-    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
                                        "Warrnambool & S. West",
                                        .data$sa4
     ))
