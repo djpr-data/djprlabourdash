@@ -10,7 +10,13 @@ caption_auto <- function(data,
       cat_no = stringr::str_sub(.data$table_no, 1L, 4L),
       release = dplyr::case_when(
         cat_no == "6202" ~ "ABS Labour Force monthly",
-        cat_no == "6291" &
+        cat_no %in% c(
+          "6291",
+          "EQ03",
+          "LM1",
+          "RM1",
+          "UM2"
+        ) &
           frequency == "Month" ~ "ABS Labour Force detailed monthly",
         cat_no == "6291" &
           frequency != "Month" ~ "ABS Labour Force detailed quarterly",

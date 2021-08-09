@@ -11,13 +11,14 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_emppop_state_slope"),
     djpr_plot_ui("ind_empgro_line"),
     djpr_plot_ui("ind_gen_full_part_line"),
-
     h2(br(), "Unemployment & underemployment"),
     uiOutput(
       "ind_unemp_summary"
     ) %>%
       djpr_with_spinner(hide.ui = TRUE),
     djpr_plot_ui("ind_unemprate_line"),
+    h4(br(), "Unemployment rates by state"),
+    uiOutput("table_ind_unemp_state"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
     djpr_plot_ui("ind_underut_area"),

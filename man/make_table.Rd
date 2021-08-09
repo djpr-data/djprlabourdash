@@ -10,7 +10,9 @@ make_table(
   years_in_sparklines = 3,
   row_order = NULL,
   highlight_rows = NULL,
-  notes = NULL
+  notes = NULL,
+  title = "",
+  rename_indicators = TRUE
 )
 }
 \arguments{
@@ -24,65 +26,38 @@ charts.}
 \item{row_order}{Vector of series IDs, in the order in which you wish the
 corresponding rows to be included in the output table}
 
-\item{highlight_rows}{Numeric vector of rows in the table to highlight.
+\item{highlight_rows}{Vector of series IDs, corresponding to rows
+in the table to highlight.
 Highlighted rows are bolded and have a top border; non-highlighted rows
 are indented. If \code{NULL} then all rows are non-bold, non-indented.}
 
 \item{notes}{Optional notes to add to caption. Source will be inferred
 automatically based on the data using \code{caption_auto()}.}
+
+\item{title}{Character vector to use as the table title. Will only be used
+when \code{destination} is "briefing".}
+
+\item{rename_indicators}{logical; default is \code{TRUE}. If \code{TRUE}, the
+\code{rename_indicators()} function will be used to rename certain indicators.}
 }
 \description{
 Create a table for the dashboard or a briefing document
 }
 \examples{
-dash_data <- load_dash_data()
+# dash_data <- load_dash_data()
 \dontrun{
 make_table(
   data = filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
     "A84423466F",
-    "A84433601W",
-    "A84600079X",
-    "A84423350C",
-    "A84423349V",
-    "A84423357V",
-    "pt_emp_vic",
-    "A84423461V",
-    "A84423237A",
-    "A84424687C",
-    "A84423355R",
-    "A84423243W",
-    "A84423467J",
-    "A84433602X",
-    "A84426256L",
-    "A85223450L",
-    "A85223451R",
-    "A84423356T"
   )),
   row_order = c(
     "A84423354L",
     "A84423242V",
-    "A84423466F",
-    "A84433601W",
-    "A84600079X",
-    "A84423350C",
-    "A84423349V",
-    "A84423357V",
-    "pt_emp_vic",
-    "A84423461V",
-    "A84423237A",
-    "A84424687C",
-    "A84423355R",
-    "A84423243W",
-    "A84423467J",
-    "A84433602X",
-    "A84426256L",
-    "A85223450L",
-    "A85223451R",
-    "A84423356T"
+    "A84423466F"
   ),
-  highlight_rows = c("A84426256L", "A85223450L", "A84423242V")
+  highlight_rows = c("A84426256L")
 )
 }
 }
