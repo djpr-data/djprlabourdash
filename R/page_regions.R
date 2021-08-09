@@ -15,14 +15,14 @@ page_regions <- function(...) {
     # Unemployment by region -----
     h2(br(), "Labour force status by region"),
     selectInput("lf_status_region",
-                label = "Choose an indicator",
-                choices = c(
-                  "Unemployment rate" = "unemp_rate",
-                  "Participation rate" = "part_rate",
-                  "Employment to population ratio" = "emp_pop"
-                ),
-                selected = "unemp_rate"
-                ),
+      label = "Choose an indicator",
+      choices = c(
+        "Unemployment rate" = "unemp_rate",
+        "Participation rate" = "part_rate",
+        "Employment to population ratio" = "emp_pop"
+      ),
+      selected = "unemp_rate"
+    ),
     djpr_plot_title(textOutput("title_unemp_emppop_partrate_vic")),
     djpr_plot_subtitle(textOutput("subtitle_unemp_emppop_partrate_vic")),
     fluidRow(
@@ -39,8 +39,30 @@ page_regions <- function(...) {
     ),
     djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
-    djpr_plot_ui("reg_unemprate_multiline",
+    br(),
+    selectInput("lf_status_multiline",
+      label = "Choose an indicator",
+      choices = c(
+        "Unemployment rate" = "unemp_rate",
+        "Participation rate" = "part_rate",
+        "Employment to population ratio" = "emp_pop"
+      ),
+      selected = "unemp_rate"
+    ),
+    djpr_plot_ui("reg_unemp_emppop_partrate_multiline",
       height = "500px"
+    ),
+    br(),
+    br(),
+    selectInput(
+      "sa4_type_dispersion",
+      label = "Choose regions",
+      choices = c(
+        "All Victorian SA4s" = "all",
+        "Metropolitan Melbourne SA4s" = "metropolitan",
+        "Rural and regional SA4s" = "regional"
+      ),
+      selected = "all"
     ),
     djpr_plot_ui("reg_unemprate_dispersion"),
     br(),
@@ -55,6 +77,7 @@ page_regions <- function(...) {
     h2(br(), "Victorian regions"),
     # Box for regional focus
     focus_box(
+      h4("Compare regions of Victoria"),
       selectInput("focus_region",
         label = "Choose a region of Victoria",
         selected = "Ballarat",
@@ -98,7 +121,10 @@ page_regions <- function(...) {
     ),
     br(),
     h2(br(), "Australian regions"),
+    h4("Unemployment rate in Australian regional areas"),
+    uiOutput("table_reg_nonmetro_states_unemprate"),
     focus_box(
+      h4("Compare regional areas of Australian states"),
       selectInput(
         inputId = "aus_regions_indicator",
         label = "Select indicator",
@@ -122,6 +148,9 @@ page_regions <- function(...) {
     br(),
     djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),
+    h2(br(),"Australian metropolitan areas"),
+    h4("Unemployment rates in Australian major cities"),
+    uiOutput("table_reg_metro_states_unemprate"),
     htmlOutput("regions_footnote"),
     br()
   )

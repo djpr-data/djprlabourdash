@@ -2,15 +2,6 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Key indicators"),
-    # tagList(
-    #   "This page contains key labour force indicators, focusing on Victoria as a whole. ",
-    #   shiny::tags$b("More information will be included with future releases. "),
-    #   "For more information about particular sub-groups of Victorians - like young people, or women - ",
-    #   "see the ",
-    #   actionLink("link_inclusion", "inclusion page"),
-    #   ". For information about how employment and unemployment varies across Victoria, see the ",
-    #   actionLink("link_regions", "regions page"), "."
-    # ),
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
@@ -19,13 +10,14 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_emppop_state_slope"),
     djpr_plot_ui("ind_empgro_line"),
     djpr_plot_ui("ind_gen_full_part_line"),
-
     h2(br(), "Unemployment & underemployment"),
     uiOutput(
       "ind_unemp_summary"
     ) %>%
       djpr_with_spinner(hide.ui = TRUE),
     djpr_plot_ui("ind_unemprate_line"),
+    h4(br(), "Unemployment rates by state"),
+    uiOutput("table_ind_unemp_state"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
     djpr_plot_ui("ind_underut_area"),
