@@ -23,7 +23,7 @@ Authors@R:
     person(given = "Department of Jobs, Precincts and Regions (Victoria)",
            role = c("cph", "fnd"))
            )
-Description: Shiny app to visualise Victorian labour force data
+Description: Shiny app to visualise Victorian labour force data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
