@@ -2404,13 +2404,15 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
   vic_level <- paste0(round2(latest$value[latest$state == "Vic"], 1), "%")
 
   title <- dplyr::case_when(
-    vic_rank > aus_rank ~ ", which was higher than the Australian average",
+    vic_rank > aus_rank ~ ", which was lower than the Australian average",
     vic_rank == aus_rank ~ ", which was the same as the Australian average",
-    vic_rank < aus_rank ~ ", which was lower than the Australian average",
+    vic_rank < aus_rank ~ ", which was higher than the Australian average",
     TRUE ~ paste0("Victoria's ", indic_long, "compared to other states and territories and the Australian average")
   )
 
-  title <- paste0("Victoria's youth ", indic_long, " in ", format(latest_date$date[1], "%B %Y"), " was ", vic_level, title)
+  title <- paste0("Victoria's youth ", tolower(indic_long), " in ", format(latest_date$date[1], "%B %Y"), " was ", vic_level, title)
+
+  subtitle <- paste0("Youth (aged 15 to 24) ", tolower(indic_long), " by state")
 
   other_colour <- "grey70"
 
@@ -2437,7 +2439,7 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
     )) +
     labs(
       title = title,
-      subtitle = "subtitle",
+      subtitle = subtitle,
       caption = caption_lfs()
     )
 
