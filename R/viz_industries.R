@@ -150,6 +150,114 @@ df = dash_data)){
 
 }
 
+viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
+  "A84601680F",
+  "A84601683L",
+  "A84601686V",
+  "A84601665J",
+  "A84601704L",
+  "A84601707V",
+  "A84601710J",
+  "A84601638A",
+  "A84601653X",
+  "A84601689A",
+  "A84601656F",
+  "A84601713R",
+  "A84601668R",
+  "A84601695W",
+  "A84601698C",
+  "A84601650T",
+  "A84601671C",
+  "A84601641R",
+  "A84601716W",
+  "A84601662A"
+),
+df = dash_data
+)) {
+  data <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-02-01")]) - 1))
+
+  # reduce to only latest month (indexing already done above in data input into function)                                {
+  data <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
+  # add entry for data$industry for Victoria; employed total
+  data <- data %>%
+    dplyr::mutate(
+      industry = dplyr::if_else(.data$industry == "",
+                                "Victoria, all industries",
+                                .data$industry
+      )
+    )
+
+  lab_df <- data %>%
+    dplyr::select(industry, value) %>%
+    dplyr::mutate(
+      lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
+      lab_hjust = dplyr::if_else(value >= 0, 0, 1)
+    )
+
+  title <- paste0(
+    "Employment in ",
+    data$industry[data$value == max(data$value)],
+    dplyr::if_else(max(data$value) > 0, " grew", " shrank"),
+    " by ",
+    round2(max(data$value), 1),
+    " per cent between February 2020 and ",
+    format(max(data$date), "%B %Y"),
+    ", while employment in ",
+    data$industry[data$value == min(data$value)],
+    dplyr::if_else(min(data$value) > 0, " grew", " shrank"),
+    " by ",
+    round2(abs(min(data$value)), 1),
+    " per cent"
+  )
+
+  # draw bar chart for all 19 industries plus Vic total
+  data %>%
+    ggplot(aes(
+      x = stats::reorder(industry, value),
+      y = value
+    )) +
+    geom_col(
+      aes(fill = -value)
+    ) +
+    geom_text(
+      data = lab_df,
+      aes(
+        y = lab_y,
+        hjust = lab_hjust,
+        label = paste0(round2(value, 1), "%")
+      ),
+      colour = "black",
+      size = 11 / .pt
+    ) +
+    geom_hline(
+      yintercept = 0
+    ) +
+    coord_flip(clip = "off") +
+    scale_y_continuous(expand = expansion(mult = c(0.2, 0.15))) +
+    scale_fill_distiller(palette = "Blues") +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(
+      title = title,
+      subtitle = paste0(
+        "Growth in employment by industry between February 2020 and ",
+        format(max(data$date), "%B %Y")
+      ),
+      caption = caption_lfs_det_q()
+    )
+}
+
 viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
   "A84601680F",
   "A84601683L",
@@ -294,109 +402,6 @@ df = dash_data
     )
 }
 
-
-viz_industries_emp_sincecovid_bar_contri <- function(data = filter_dash_data(c(  "A84601680F",
-                                                                                 "A84601683L",
-                                                                                 "A84601686V",
-                                                                                 "A84601665J",
-                                                                                 "A84601704L",
-                                                                                 "A84601707V",
-                                                                                 "A84601710J",
-                                                                                 "A84601638A",
-                                                                                 "A84601653X",
-                                                                                 "A84601689A",
-                                                                                 "A84601656F",
-                                                                                 "A84601713R",
-                                                                                 "A84601668R",
-                                                                                 "A84601695W",
-                                                                                 "A84601698C",
-                                                                                 "A84601650T",
-                                                                                 "A84601671C",
-                                                                                 "A84601641R",
-                                                                                 "A84601716W",
-                                                                                 "A84601662A"
-),
-df = dash_data
-)) {
-  df <- data %>%
-    dplyr::group_by(.data$industry,.data$date) %>%
-    dplyr::summarise(emp = sum(value)) %>%
-    dplyr::mutate(change = emp - lag(emp),
-                  growth = 100 * ((emp / lag(emp) - 1))) %>%
-    dplyr::filter(date == max(.data$date))
-
-  df_total <- data %>%
-    dplyr::group_by(.data$date) %>%
-    dplyr:: summarise(emp = sum(value)) %>%
-    dplyr::mutate(total_lag = lag(emp))
-
-
-  df_all <- df %>%
-    merge(df_total, by = "date") %>%
-    dplyr::mutate(ind_contri = change/total_lag*100) %>%
-    select(industry, date, ind_contri)%>%
-    filter(df$industry != "")%>%
-    arrange(ind_contri)
-
-  title <- paste0(
-    "Total employment across industries",
-    dplyr::if_else(sum(df_all$ind_contri) > 0, " grew", " shrank"),
-    " by ",
-    round2(sum(df_all$ind_contri), 1),
-    " per cent between February 2020 and ",
-    format(df_all$date, "%B %Y"),
-    ", with ",
-    df_all$industry[df_all$ind_contri == max(df_all$ind_contri)],
-    " contributing the most with ",
-    round2(max(df_all$ind_contri), 1),
-    " per cent",
-    " while ",
-    df_all$industry[df_all$ind_contri == min(df_all$ind_contri)],
-    " contributed",
-    round2(abs(min(df_all$ind_contri)), 1),
-    " per cent"
-  )
-
-  lab_df <- df_all %>%
-    dplyr::mutate(
-      lab_y = dplyr::if_else(ind_contri >= 0, ind_contri + 0.02, ind_contri - 0.02),
-      lab_hjust = dplyr::if_else(ind_contri >= 0, 0, 1)
-    )
-
-  df_all %>%
-    ggplot(aes(
-      x = stats::reorder(industry, ind_contri),
-      y = ind_contri
-    )) +
-    geom_col(aes(fill=-ind_contri)) +
-    geom_text(
-      data = lab_df,
-      aes(y = lab_y,
-          label = paste0(round2(ind_contri, 1), "%")
-      ),
-      hjust = lab_df$lab_hjust,
-      colour = "black",
-      size = 11 / .pt
-    ) +
-    coord_flip(clip = "off") +
-    #   scale_y_continuous(expand = expansion(mult = c(0.2, 0.15))) +
-    scale_fill_distiller(palette = djprtheme::djpr_green) +
-    djprtheme::theme_djpr(flipped = TRUE) +
-    theme(
-      axis.title.x = element_blank(),
-      panel.grid = element_blank(),
-      axis.text.y = element_text(size = 12),
-      axis.text.x = element_blank()
-    ) +
-    labs(
-      title = title,
-      subtitle = paste0(
-        "Growth in hours worked by industry between February 2020 and ",
-        format(max(data$date), "%B %Y")
-      ),
-      caption = caption_lfs_det_q()
-    )
-}
 
 viz_industries_average_hours_worked_bar <- function(data = filter_dash_data(c("females_greater melbourne_accommodation and food services_number of hours actually worked in all jobs (employed full-time)",
                                                                               "females_greater melbourne_administrative and support services_number of hours actually worked in all jobs (employed full-time)",
@@ -696,113 +701,6 @@ df = dash_data
     )
 }
 
-viz_industries_empchange_sincecovid_bar <- function(data = filter_dash_data(c(
-                                                      "A84601680F",
-                                                      "A84601683L",
-                                                      "A84601686V",
-                                                      "A84601665J",
-                                                      "A84601704L",
-                                                      "A84601707V",
-                                                      "A84601710J",
-                                                      "A84601638A",
-                                                      "A84601653X",
-                                                      "A84601689A",
-                                                      "A84601656F",
-                                                      "A84601713R",
-                                                      "A84601668R",
-                                                      "A84601695W",
-                                                      "A84601698C",
-                                                      "A84601650T",
-                                                      "A84601671C",
-                                                      "A84601641R",
-                                                      "A84601716W",
-                                                      "A84601662A"
-                                                    ),
-                                                    df = dash_data
-                                                    )) {
-  data <- data %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-02-01")]) - 1))
-
-  # reduce to only latest month (indexing already done above in data input into function)                                {
-  data <- data %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
-
-  # add entry for data$industry for Victoria; employed total
-  data <- data %>%
-    dplyr::mutate(
-      industry = dplyr::if_else(.data$industry == "",
-        "Victoria, all industries",
-        .data$industry
-      )
-    )
-
-  lab_df <- data %>%
-    dplyr::select(industry, value) %>%
-    dplyr::mutate(
-      lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
-      lab_hjust = dplyr::if_else(value >= 0, 0, 1)
-    )
-
-  title <- paste0(
-    "Employment in ",
-    data$industry[data$value == max(data$value)],
-    dplyr::if_else(max(data$value) > 0, " grew", " shrank"),
-    " by ",
-    round2(max(data$value), 1),
-    " per cent between February 2020 and ",
-    format(max(data$date), "%B %Y"),
-    ", while employment in ",
-    data$industry[data$value == min(data$value)],
-    dplyr::if_else(min(data$value) > 0, " grew", " shrank"),
-    " by ",
-    round2(abs(min(data$value)), 1),
-    " per cent"
-  )
-
-  # draw bar chart for all 19 industries plus Vic total
-  data %>%
-    ggplot(aes(
-      x = stats::reorder(industry, value),
-      y = value
-    )) +
-    geom_col(
-      aes(fill = -value)
-    ) +
-    geom_text(
-      data = lab_df,
-      aes(
-        y = lab_y,
-        hjust = lab_hjust,
-        label = paste0(round2(value, 1), "%")
-      ),
-      colour = "black",
-      size = 11 / .pt
-    ) +
-    geom_hline(
-      yintercept = 0
-    ) +
-    coord_flip(clip = "off") +
-    scale_y_continuous(expand = expansion(mult = c(0.2, 0.15))) +
-    scale_fill_distiller(palette = "Blues") +
-    djprtheme::theme_djpr(flipped = TRUE) +
-    theme(
-      axis.title.x = element_blank(),
-      panel.grid = element_blank(),
-      axis.text.y = element_text(size = 12),
-      axis.text.x = element_blank()
-    ) +
-    labs(
-      title = title,
-      subtitle = paste0(
-        "Growth in employment by industry between February 2020 and ",
-        format(max(data$date), "%B %Y")
-      ),
-      caption = caption_lfs_det_q()
-    )
-}
 
 table_industries_employment <- function(data = filter_dash_data(c(
                                           "A84601680F",
