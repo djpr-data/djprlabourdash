@@ -53,7 +53,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Cumulative change in employment since March 2020, per cent",
+      subtitle = "Cumulative change in employment since March 2020",
       caption = caption_lfs()
     )
 }
@@ -92,10 +92,10 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
     djpr_ts_linechart(
       col_var = .data$state,
       y_labels = function(x) paste0(x, "%"),
-      label_num = paste0(round(.data$value, 1), "%")
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
-      subtitle = "Annual employment growth in Victoria and Australia, per cent",
+      subtitle = "Annual employment growth in Victoria and Australia",
       caption = caption_lfs(),
       title = title
     )
@@ -166,8 +166,10 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
   title <- paste0("Victoria's unemployment rate ", title)
 
   df %>%
-    ggplot(aes(x = stats::reorder(.data$state, .data$value),
-               y = .data$value, col = format(.data$date, "%b %Y"))) +
+    ggplot(aes(
+      x = stats::reorder(.data$state, .data$value),
+      y = .data$value, col = format(.data$date, "%b %Y")
+    )) +
     geom_segment(
       data = df_wide,
       aes(
@@ -357,22 +359,24 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     dplyr::filter(.data$state == "Vic") %>%
     dplyr::pull(.data$rank)
 
-  title <- dplyr::case_when(
-    vic_rank == 8 ~ "was the lowest in Australia",
-    vic_rank == 7 ~ "was the second lowest in Australia",
-    vic_rank == 6 ~ "was the third lowest in Australia",
-    vic_rank == 5 ~ "was the fourth lowest in Australia",
-    vic_rank == 4 ~ "was the fourth highest in Australia",
-    vic_rank == 3 ~ "was the third highest in Australia",
-    vic_rank == 2 ~ "was the second highest in Australia",
-    vic_rank == 1 ~ "was the highest in Australia",
-    TRUE ~ "compared to to other states and territories"
-  )
+  # title <- dplyr::case_when(
+  #   vic_rank == 8 ~ "was the lowest in Australia",
+  #   vic_rank == 7 ~ "was the second lowest in Australia",
+  #   vic_rank == 6 ~ "was the third lowest in Australia",
+  #   vic_rank == 5 ~ "was the fourth lowest in Australia",
+  #   vic_rank == 4 ~ "was the fourth highest in Australia",
+  #   vic_rank == 3 ~ "was the third highest in Australia",
+  #   vic_rank == 2 ~ "was the second highest in Australia",
+  #   vic_rank == 1 ~ "was the highest in Australia",
+  #   TRUE ~ "compared to to other states and territories"
+  # )
+  #
+  # title <- paste0(
+  #   "Victoria's participation rate ", title,
+  #   " in ", format(max(data$date), "%B %Y")
+  # )
 
-  title <- paste0(
-    "Victoria's participation rate ", title,
-    " in ", format(max(data$date), "%B %Y")
-  )
+  title <- "Victoria's participation rate compared to other states and territories"
 
   data <- data %>%
     mutate(fill_col = dplyr::if_else(
@@ -391,7 +395,7 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = paste0(round(.data$value, 1), "%")),
+      aes(label = paste0(round2(.data$value, 1), "%")),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -426,16 +430,16 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
                                    df = dash_data
                                    )) {
   data <- data %>%
-    mutate(geog = if_else(state == "", "Australia", state))
+    mutate(geog = if_else(.data$state == "", "Australia", .data$state))
 
   latest_values <- data %>%
-    filter(date == max(date)) %>%
-    mutate(
-      value = round(value, 1),
-      date = format(date, "%B %Y")
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
     ) %>%
-    select(geog, value, date) %>%
-    tidyr::spread(key = geog, value = value)
+    dplyr::select(.data$geog, .data$value, .data$date) %>%
+    tidyr::spread(key = .data$geog, value = .data$value)
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
@@ -449,8 +453,8 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
 
   data %>%
     djpr_ts_linechart(
-      col_var = geog,
-      label_num = paste0(round(.data$value, 1), "%")
+      col_var = .data$geog,
+      label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
       subtitle = "Unemployment rate in Victoria and Australia",
@@ -467,16 +471,16 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
 
 
 viz_ind_underut_area <- function(data = filter_dash_data(c(
-  "A85223450L",
-  "A85223451R",
-  "A84423354L"
-),
-df = dash_data
-)) {
+                                   "A85223450L",
+                                   "A85223451R",
+                                   "A84423354L"
+                                 ),
+                                 df = dash_data
+                                 )) {
   data <- data %>%
     dplyr::mutate(under = if_else(.data$indicator == "Underemployment rate (proportion of labour force)",
-                                  "Underemployment rate",
-                                  .data$indicator
+      "Underemployment rate",
+      .data$indicator
     ))
 
   label_df <- data %>%
@@ -492,20 +496,20 @@ df = dash_data
     dplyr::mutate(
       label = paste0(
         if_else(.data$under == "Underemployment rate",
-                "Underemp. rate",
-                .data$under
+          "Underemp. rate",
+          .data$under
         ),
         " ", round2(.data$value, 1), "%"
       ),
       label_y = if_else(.data$under == "Underutilisation rate",
-                        .data$value,
-                        (cumsum(.data$value) - .data$value) + (.data$value / 2)
+        .data$value,
+        (cumsum(.data$value) - .data$value) + (.data$value / 2)
       )
     )
 
   title <- paste0(
     "In ", format(unique(label_df$date), "%B %Y"), ", ",
-    round(label_df$value[label_df$under == "Underutilisation rate"], 1),
+    round2(label_df$value[label_df$under == "Underutilisation rate"], 1),
     " per cent of the Victorian labour force was either unemployed",
     " or underemployed"
   )
@@ -636,6 +640,224 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
     )
 }
 
+# comparing participation and unemployment visualisation
+
+viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
+                                       "A84423355R",
+                                       "A84423354L"
+                                     ),
+                                     df = dash_data
+                                     )) {
+  df <- data %>%
+    dplyr::select(.data$date, .data$value, .data$indicator) %>%
+    dplyr::mutate(series = .data$indicator)
+
+  min_year <- format(min(df$date), "%Y")
+  max_year <- format(max(df$date), "%Y")
+
+  # Add average for each indicator
+  df <- df %>%
+    dplyr::mutate(indicator = paste0("Average ", min_year, "-", max_year)) %>%
+    dplyr::group_by(.data$series, .data$indicator) %>%
+    dplyr::mutate(value = mean(.data$value)) %>%
+    dplyr::ungroup() %>%
+    dplyr::bind_rows(df)
+
+  # Create title
+  latest_change <- df %>%
+    dplyr::filter(!grepl("Average", .data$indicator)) %>%
+    dplyr::select(.data$date, .data$value, .data$indicator) %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::mutate(value = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1)) %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::ungroup() %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    ) %>%
+    dplyr::mutate(
+      date = format(.data$date, "%B %Y")
+    )
+
+
+  title <- dplyr::case_when(
+    latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` > 0 ~
+    paste0("Both the participation rate and the unemployment rate increased in ", latest_change$date),
+    latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` < 0 ~
+    paste0("While the participation rate increased, the unemployment rate declined in ", latest_change$date),
+    latest_change$`Participation rate` < 0 & latest_change$`Unemployment rate` > 0 ~
+    paste0("While the participation rate declined, the unemployment rate increased in ", latest_change$date),
+    TRUE ~ "Unemployment and participation rates, Victoria"
+  )
+
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%"),
+      x_expand_mult = c(0, 0.22)
+    ) +
+    scale_colour_manual(values = rev(c(
+      djpr_pal(2),
+      "grey60"
+    ))) +
+    labs(
+      subtitle = "Participation rate and unemployment rate for Victoria ",
+      caption = caption_lfs(),
+      title = title
+    ) +
+    facet_wrap(~series, ncol = 1, scales = "free_y")
+}
+
+viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
+                                          "A84423355R",
+                                          "A84423354L"
+                                        ),
+                                        df = dash_data
+                                        ),
+                                        selected_period = c("month", "year")) {
+  selected_period <- match.arg(selected_period)
+
+  df <- data %>%
+    dplyr::select(.data$date, .data$value, .data$indicator)
+
+  df <- df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(change = .data$value - lag(
+      .data$value,
+      dplyr::if_else(
+        selected_period == "month",
+        1,
+        12
+      )
+    )) %>%
+    dplyr::select(.data$date, .data$indicator, .data$change) %>%
+    tidyr::spread(key = .data$indicator, value = .data$change) %>%
+    dplyr::mutate(focus_date = if_else(.data$date == max(.data$date), TRUE, FALSE)) %>%
+    dplyr::filter(!is.na(.data$`Unemployment rate`))
+
+
+  quadrants <- tibble(
+    x = c(-0.5, 0.75, -0.5, 0.75),
+    y = c(1.75, 1.75, -1.75, -1.75),
+    label = c(
+      "Unemployment \U2193\nParticipation \U2191",
+      "Unemployment \U2191\nParticipation \U2191",
+      "Unemployment \U2193\nParticipation \U2193",
+      "Unemployment \U2191\nParticipation \U2193"
+    )
+  )
+
+  if (selected_period == "year") {
+    quadrants <- quadrants %>%
+      dplyr::mutate(
+        x = .data$x * 4,
+        y = .data$y * 2.3
+      )
+  }
+
+  latest_month <- df %>%
+    filter(.data$date == max(.data$date))
+
+  title <- case_when(
+    latest_month$`Participation rate` > 0 &
+      latest_month$`Unemployment rate` > 0 ~
+    "Unemployment and participation both rose in ",
+    latest_month$`Participation rate` < 0 &
+      latest_month$`Unemployment rate` < 0 ~
+    "Unemployment and participation both fell in ",
+    latest_month$`Participation rate` > 0 &
+      latest_month$`Unemployment rate` < 0 ~
+    "Unemployment fell even as participation rose in ",
+    latest_month$`Participation rate` < 0 &
+      latest_month$`Unemployment rate` > 0 ~
+    "Unemployment rose despite a fall in participation in "
+  )
+
+  title <- paste0(
+    title,
+    dplyr::if_else(selected_period == "month",
+      "",
+      "the year to "
+    ),
+    format(latest_month$date, "%B %Y")
+  )
+
+  df <- df %>%
+    dplyr::mutate(
+      tooltip =
+        paste0(
+          format(.data$date, "%b %Y"), "\n",
+          "Unemployment: ",
+          dplyr::if_else(.data$`Unemployment rate` >= 0,
+            "\U2191",
+            "\U2193"
+          ),
+          abs(round2(.data$`Unemployment rate`, 1)), " ppts.\n",
+          "Participation: ",
+          dplyr::if_else(.data$`Participation rate` >= 0,
+            "\U2191",
+            "\U2193"
+          ),
+          abs(round2(.data$`Participation rate`, 1)), " ppts."
+        )
+    )
+
+  change_desc <- dplyr::if_else(selected_period == "month",
+    "Monthly change",
+    "Annual change"
+  )
+
+  df %>%
+    ggplot(aes(
+      x = .data$`Unemployment rate`,
+      y = .data$`Participation rate`,
+      col = .data$focus_date,
+      alpha = .data$focus_date
+    )) +
+    geom_hline(yintercept = 0) +
+    geom_vline(xintercept = 0) +
+    geom_text(
+      data = quadrants,
+      inherit.aes = FALSE,
+      size = 14 / .pt,
+      lineheight = 0.9,
+      colour = djprtheme::djpr_cool_grey_11,
+      aes(x = .data$x, y = .data$y, label = .data$label)
+    ) +
+    ggiraph::geom_point_interactive(
+      size = 2.5,
+      aes(tooltip = .data$tooltip)
+    ) +
+    geom_text(
+      data = ~ filter(., .data$date == max(.data$date)),
+      aes(label = format(.data$date, "%b %Y")),
+      size = 14 / .pt,
+      nudge_y = dplyr::if_else(selected_period == "month", 0.15, 0.3)
+    ) +
+    djpr_colour_manual(2) +
+    scale_x_continuous(labels = function(x) paste0(x, " ppts")) +
+    scale_y_continuous(labels = function(x) paste0(x, " ppts")) +
+    suppressWarnings(scale_alpha_discrete(range = c(0.25, 1))) +
+    theme_djpr() +
+    labs(
+      y = paste0(change_desc, " in participation rate\n"),
+      x = paste0(change_desc, " in unemployment rate"),
+      caption = caption_lfs(),
+      title = title,
+      subtitle = paste0(
+        change_desc,
+        " in participation rate by ",
+        tolower(change_desc),
+        " in unemployment rate, March 1978 to ",
+        max(df$date) %>% format("%B %Y")
+      )
+    ) +
+    theme(axis.title.y = element_text(angle = 90))
+}
+
 viz_ind_partrate_line <- function(data = filter_dash_data(c(
                                     "A84423355R",
                                     "A84423051C"
@@ -643,16 +865,16 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
                                   df = dash_data
                                   )) {
   data <- data %>%
-    mutate(geog = if_else(state == "", "Australia", state))
+    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state))
 
   latest_values <- data %>%
-    filter(date == max(date)) %>%
-    mutate(
-      value = round(value, 1),
-      date = format(date, "%B %Y")
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
     ) %>%
-    select(geog, value, date) %>%
-    tidyr::spread(key = geog, value = value)
+    dplyr::select(.data$geog, .data$value, .data$date) %>%
+    tidyr::spread(key = .data$geog, value = .data$value)
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
@@ -666,13 +888,69 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
 
   data %>%
     djpr_ts_linechart(
-      col_var = geog,
-      label_num = paste0(round(.data$value, 1), "%"),
+      col_var = .data$geog,
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
       subtitle = "Participation rate in Victoria and Australia",
       caption = caption_lfs(),
       title = title
+    )
+}
+
+viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
+                                         "pt_emp_vic",
+                                         "A84423357V"
+                                       ),
+                                       df = dash_data
+                                       ) %>%
+                                         dplyr::filter(date >= as.Date("2020-01-01"))) {
+
+
+  # preparing data to calculate indexed value
+
+  df <- data %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+
+  latest_full_time <- df %>%
+    dplyr::filter(
+      .data$indicator == "Employed full-time",
+      .data$date == max(.data$date)
+    ) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  latest_part_time <- df %>%
+    dplyr::filter(
+      .data$indicator == "Employed part-time",
+      .data$date == max(.data$date)
+    ) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  title <- paste0(
+    "The number of Victorians employed full-time is ",
+    dplyr::case_when(
+      latest_full_time > 0 ~ paste0(latest_full_time, " per cent higher than "),
+      latest_full_time == 0 ~ "the same as ",
+      latest_full_time < 0 ~ paste0(latest_full_time, " per cent lower than ")
+    ),
+    "it was in March 2020"
+  )
+
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Cumulative change in full-time and part-time employment since March 2020 for Victorian workers",
+      caption = caption_lfs()
     )
 }

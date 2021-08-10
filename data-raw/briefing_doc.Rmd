@@ -1,0 +1,144 @@
+---
+title: "DJPR Jobs Summary"
+author: "DJPR SPP Data + Analytics"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  officedown::rdocx_document:
+    reference_docx: !expr system.file('djpr_word_template.docx', package = 'djprshiny')
+    toc: FALSE
+    page_size:
+      width: 8.3
+      height: 11.7
+      orient: "portrait"
+    page_margins:
+      bottom: 0.3
+      top: 0.5
+      left: 0.5
+      right: 0.5
+    tables:
+      layout: autofit
+      caption:
+        style: 'Heading 3'
+        pre: 'Table '
+        sep: ': '
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(officedown)
+library(flextable)
+pkgload::load_all()
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  error = FALSE,
+  warning = FALSE
+  )
+```
+```{r load-data}
+
+dash_data <- load_dash_data()
+
+Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
+```
+
+
+```{r}
+table_overview() 
+```
+
+<br>
+
+```{r}
+table_gr_sex()
+```
+
+<br>
+
+```{r}
+table_ind_unemp_state()
+```
+
+\newpage
+
+## Youth
+Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions 
+less apparent. 
+
+```{r}
+table_gr_youth_summary()
+```
+
+\newpage
+
+```{r}
+table_gr_youth_unemp_region()
+```
+
+\newpage
+
+## Regional Victoria
+
+```{r}
+table_reg_nonmetro_states_unemprate()
+```
+<br>
+```{r}
+table_reg_nonmetro_emp()
+
+```
+
+\newpage
+
+```{r}
+table_reg_nonmetro_unemp()
+```
+<br>
+
+```{r}
+table_reg_nonmetro_unemprate()
+```
+
+
+```{r}
+table_reg_nonmetro_partrate()
+```
+
+\newpage
+## Metropolitan Melbourne
+```{r}
+table_reg_metro_states_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_emp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_partrate()
+```
+
+\newpage
+## Industries
+
+```{r}
+table_industries_summary()
+```

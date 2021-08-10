@@ -194,10 +194,10 @@ df = dash_data
     )
 
   lab_df <- data %>%
-    dplyr::select(industry, value) %>%
+    dplyr::select(.data$industry, .data$value) %>%
     dplyr::mutate(
-      lab_y = dplyr::if_else(value >= 0, value + 0.1, value - 0.75),
-      lab_hjust = dplyr::if_else(value >= 0, 0, 1)
+      lab_y = dplyr::if_else(.data$value >= 0, .data$value + 0.1, .data$value - 0.75),
+      lab_hjust = dplyr::if_else(.data$value >= 0, 0, 1)
     )
 
   title <- paste0(
@@ -219,18 +219,18 @@ df = dash_data
   # draw bar chart for all 19 industries plus Vic total
   data %>%
     ggplot(aes(
-      x = stats::reorder(industry, value),
-      y = value
+      x = stats::reorder(.data$industry, .data$value),
+      y = .data$value
     )) +
     geom_col(
-      aes(fill = -value)
+      aes(fill = -.data$value)
     ) +
     geom_text(
       data = lab_df,
       aes(
-        y = lab_y,
-        hjust = lab_hjust,
-        label = paste0(round2(value, 1), "%")
+        y = .data$lab_y,
+        hjust = .data$lab_hjust,
+        label = paste0(round2(.data$value, 1), "%")
       ),
       colour = "black",
       size = 11 / .pt
@@ -254,7 +254,7 @@ df = dash_data
         "Growth in employment by industry between February 2020 and ",
         format(max(data$date), "%B %Y")
       ),
-      caption = caption_lfs_det_q()
+      caption = paste0(caption_lfs_det_q(), " Data not seasonally adjusted. ")
     )
 }
 
@@ -796,7 +796,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
   latest_date <- format(max(data$date), "%b %Y")
 
   # add entry for data$industry for "Victoria, all industries" where ""
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -805,12 +805,12 @@ table_industries_employment <- function(data = filter_dash_data(c(
     )
 
   # filter out the chosen industry and vic_total
-  data <- data %>%
+  df <- df %>%
     group_by(.data$indicator) %>%
     dplyr::filter(.data$industry %in%
       c("Victoria, all industries", .env$chosen_industry))
 
-  table_df <- data %>%
+  table_df <- df %>%
     dplyr::group_by(.data$industry, .data$indicator) %>%
     dplyr::mutate(
       d_quarter = 100 * ((.data$value / dplyr::lag(.data$value, 1)) - 1),
@@ -853,8 +853,6 @@ table_industries_employment <- function(data = filter_dash_data(c(
     ) %>%
     tidyr::spread(key = .data$industry, value = .data$value)
 
-
-
   table_df <- table_df %>%
     dplyr::mutate(indic_order = dplyr::case_when(
       indicator == "Employed total" ~ 1,
@@ -869,68 +867,73 @@ table_industries_employment <- function(data = filter_dash_data(c(
     dplyr::arrange(.data$indic_order, .data$series_order) %>%
     dplyr::select(-ends_with("order"))
 
-  col_names <- names(table_df)
+  # Fix to ensure that Victoria, all industries is always the last column
+  table_df <- table_df %>%
+    dplyr::select(.data$indicator, .data$series, .env$chosen_industry, .data$`Victoria, all industries`)
 
-  col_header_style <- list(
-    `font-weight` = "600"
-  )
-
-  my_table <- table_df %>%
-    rename(
-      industry = 3,
-      aggregate = 4
+  out <- table_df %>%
+    dplyr::group_by(.data$indicator) %>%
+    dplyr::mutate(indicator = dplyr::if_else(
+      dplyr::row_number() != 1,
+      "",
+      .data$indicator
+    )) %>%
+    dplyr::rename(
+      ` ` = .data$indicator,
+      `  ` = .data$series
     ) %>%
-    reactable::reactable(
-      columns = list(
-        indicator = reactable::colDef(
-          name = "",
-          minWidth = 65,
-          style = reactable::JS("function(rowInfo, colInfo, state) {
-        var firstSorted = state.sorted[0]
-        // Merge cells if unsorted
-        if (!firstSorted || firstSorted.id === 'indicator') {
-          var prevRow = state.pageRows[rowInfo.viewIndex - 1]
-          if (prevRow && rowInfo.row['indicator'] === prevRow['indicator']) {
-            return { visibility: 'hidden' }
-          }
-        }
-      }")
-        ),
-        series = reactable::colDef(
-          name = "",
-          minWidth = 45
-        ),
-        industry = reactable::colDef(
-          name = col_names[3],
-          headerStyle = col_header_style
-        ),
-        aggregate = reactable::colDef(
-          name = col_names[4],
-          headerStyle = col_header_style
-        )
-      ),
-      defaultColDef = reactable::colDef(
-        minWidth = 50
-      ),
-      highlight = TRUE,
-      resizable = TRUE,
-      sortable = FALSE,
-      theme = reactable::reactableTheme(
-        borderColor = "#dfe2e5",
-        stripedColor = "#f6f8fa",
-        highlightColor = "#f0f5f9",
-        cellPadding = "7px 1px 1px 1px",
-        tableStyle = list(`border-bottom` = "1px solid #000"),
-        headerStyle = list(
-          fontWeight = "normal",
-          `border-bottom` = "1px solid #000"
-        ),
-        groupHeaderStyle = list(fontWeight = "normal"),
-        style = list(fontFamily = "Roboto, sans-serif, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial")
-      )
+    flextable::flextable() %>%
+    flextable::bold(part = "header") %>%
+    flextable::border_remove() %>%
+    flextable::border(
+      part = "body",
+      j = 2:4,
+      i = 2:nrow(table_df),
+      border.top = flextable::fp_border_default(color = "grey90", width = 0.25)
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = c(1, 4, 7),
+      border.top = flextable::fp_border_default()
+    ) %>%
+    flextable::border(
+      part = "body",
+      i = nrow(table_df),
+      border.bottom = flextable::fp_border_default()
+    ) %>%
+    flextable::set_table_properties("autofit", width = 1) %>%
+    flextable::font(part = "body", fontname = "Roboto") %>%
+    flextable::font(part = "header", fontname = "Roboto") %>%
+    flextable::fontsize(size = 9) %>%
+    flextable::fontsize(size = 9, part = "header")
+
+  table_caption <- caption_auto(
+    data = data,
+    notes = "Data not seasonally adjusted."
+  )
+  # Add caption
+  out <- out %>%
+    flextable::add_footer(` ` = table_caption) %>%
+    flextable::merge_at(
+      j = 1:flextable::ncol_keys(out),
+      part = "footer"
+    ) %>%
+    flextable::italic(part = "footer") %>%
+    flextable::font(fontname = "Roboto") %>%
+    flextable::fontsize(
+      size = 9 * 0.85,
+      part = "footer"
+    ) %>%
+    flextable::color(
+      part = "footer",
+      color = "#343a40"
+    ) %>%
+    flextable::line_spacing(
+      part = "footer",
+      space = 0.8
     )
 
-  my_table
+  out
 }
 
 viz_industries_emp_line <- function(data = filter_dash_data(c(
@@ -958,7 +961,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
                                     df = dash_data
                                     ),
                                     chosen_industry = "Agriculture, Forestry and Fishing") {
-  data <- data %>%
+  df <- data %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -966,26 +969,37 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
       )
     )
 
-  data <- data %>%
+  df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry))
 
-  data <- data %>%
-    dplyr::group_by(industry) %>%
+  df <- df %>%
+    dplyr::group_by(.data$industry) %>%
     dplyr::mutate(
-      value = 100 * ((value / dplyr::lag(value, 4)) - 1)
+      value = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1)
     ) %>%
-    select(date, industry, value) %>%
-    dplyr::ungroup()
+    dplyr::select(.data$date, .data$industry, .data$value) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
 
-  data %>%
-    dplyr::filter(!is.na(value)) %>%
+  colours <- c(
+    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_green
+  )
+
+  names(colours) <- c(
+    "Victoria, all industries",
+    chosen_industry
+  )
+
+  df %>%
     djpr_ts_linechart(
       col_var = .data$industry,
       label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
+    scale_colour_manual(values = colours) +
     labs(
-      subtitle = "Change in total employment",
+      subtitle = "Annual change in total employment",
       caption = caption_lfs_det_q(),
       title = paste0(
         "Annual employment growth in ",
@@ -1163,30 +1177,34 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
       )
     )
 
+
   df <- df %>%
     dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
-    dplyr::select(date, value, series, indicator, sex, industry, gcc_restofstate)
+    dplyr::select(
+      .data$date, .data$value, .data$series,
+      .data$indicator, .data$sex, .data$industry, .data$gcc_restofstate
+    )
 
   df <- df %>%
     dplyr::group_by(.data$sex, .data$industry) %>%
     dplyr::summarise(
-      value = sum(value),
-      date = max(date)
+      value = sum(.data$value),
+      date = max(.data$date)
     ) %>%
     dplyr::ungroup()
 
   df <- df %>%
-    dplyr::group_by(industry) %>%
-    dplyr::mutate(perc = value / sum(value)) %>%
+    dplyr::group_by(.data$industry) %>%
+    dplyr::mutate(perc = .data$value / sum(.data$value)) %>%
     dplyr::ungroup()
 
   df <- df %>%
-    dplyr::mutate(order = if_else(industry == "Victoria, all industries", 2, 1))
+    dplyr::mutate(order = if_else(.data$industry == "Victoria, all industries", 2, 1))
 
   label_df <- df %>%
-    dplyr::group_by(industry) %>%
-    dplyr::arrange(desc(sex)) %>%
-    dplyr::mutate(label_y = cumsum(perc) - perc + (perc / 2))
+    dplyr::group_by(.data$industry) %>%
+    dplyr::arrange(desc(.data$sex)) %>%
+    dplyr::mutate(label_y = cumsum(.data$perc) - .data$perc + (.data$perc / 2))
 
   legend_df <- label_df %>%
     dplyr::filter(.data$industry != "Victoria, all industries")
@@ -1213,8 +1231,8 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
 
   df %>%
     ggplot(aes(
-      x = stats::reorder(stringr::str_wrap(industry, 15), -order),
-      y = value, fill = sex
+      x = stats::reorder(stringr::str_wrap(.data$industry, 15), -.data$order),
+      y = .data$value, fill = .data$sex
     )) +
     geom_col(
       position = "fill",
@@ -1237,7 +1255,6 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     theme_djpr() +
     djpr_fill_manual(2) +
     djpr_colour_manual(2) +
-    # scale_x_discrete(expand = expansion(add = c(0.25, 0.85))) +
     theme(
       axis.text.x = element_blank(),
       axis.ticks = element_blank(),
@@ -1250,7 +1267,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
         "Percentage share of men and women employed in industries in ",
         format(max(df$date), "%B %Y"), "."
       ),
-      caption = caption_lfs_det_q(),
+      caption = paste0(caption_lfs_det_q(), " Data not seasonally adjusted."),
       title = title
     )
 }
