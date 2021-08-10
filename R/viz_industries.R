@@ -283,30 +283,30 @@ viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
 df = dash_data
 )) {
 
-  df_emp <- data %>%
-    #dplyr::filter(.data$industry != "") %>%
-    dplyr::group_by(.data$industry,.data$date) %>%
-    dplyr::summarise(emp = sum(.data$value)) %>%
-    dplyr::mutate(change_emp = emp - lag(emp),
-                  lag_emp = lag(emp),
-                  growth = 100 * ((emp / lag(emp) - 1))) %>%
-    dplyr::filter(date == max(.data$date)) %>%
+  data <- data %>%
     dplyr::mutate(industry = dplyr::if_else(.data$industry == "",
                                             "Victoria, all industries",
                                             .data$industry))
 
+  df_emp <- data %>%
+    dplyr::select(.data$industry,
+                  .data$date,
+                  emp = .data$value) %>%
+    dplyr::group_by(.data$industry) %>%
+    dplyr::mutate(change_emp = .data$emp - lag(.data$emp),
+                  lag_emp = lag(.data$emp),
+                  growth = 100 * ((.data$emp / lag(.data$emp) - 1))) %>%
+    dplyr::filter(date == max(.data$date))  %>%
+    dplyr::ungroup()
+
   df_emp_total <- data %>%
-    dplyr::mutate(industry = dplyr::if_else(.data$industry == "",
-                                            "Victoria, all industries",
-                                            .data$industry)) %>%
     dplyr::filter(.data$industry == "Victoria, all industries") %>%
     dplyr::mutate(total_lag_emp = lag(.data$value)) %>%
-    dplyr::select(date, total_lag_emp)
-
+    dplyr::select(.data$date, .data$total_lag_emp)
 
   df_emp_all <- df_emp %>%
-    merge(df_emp_total, by = "date") %>%
-    dplyr::mutate(ind_contri_emp = change_emp/total_lag_emp*100) %>%
+    dplyr::left_join(df_emp_total, by = "date") %>%
+    dplyr::mutate(ind_contri_emp = change_emp / total_lag_emp * 100) %>%
     dplyr::select(date,industry, emp, change_emp, lag_emp, ind_contri_emp,total_lag_emp) %>%
     dplyr::mutate(indicator = dplyr::if_else(
       .data$ind_contri_emp >=0,
@@ -320,12 +320,12 @@ df = dash_data
     ))
 
   df_emp_all_vic <- df_emp_all %>%
-    dplyr::filter(indicator == "Total")
+    dplyr::filter(.data$indicator == "Total")
 
   df_emp_all <-  df_emp_all %>%
-    dplyr::filter(indicator != "Total") %>%
+    dplyr::filter(.data$indicator != "Total") %>%
     dplyr::arrange(desc(.data$ind_contri_emp)) %>%
-    rbind(df_emp_all_vic) %>%
+    dplyr::bind_rows(df_emp_all_vic) %>%
     dplyr::mutate(
       y_start = cumsum(.data$ind_contri_emp) - .data$ind_contri_emp,
       y_end = cumsum(.data$ind_contri_emp),
@@ -337,28 +337,59 @@ df = dash_data
       y_end = dplyr::if_else(.data$industry == "Victoria, all industries", .data$ind_contri_emp, .data$y_end))%>%
     dplyr::mutate(bar_label = paste0(round2(.data$change_emp, 1), "\n(", round2(.data$ind_contri_emp, 1), "%)"))
 
-
   df_emp_all_t <- df_emp_all[df_emp_all$industry != "Victoria, all industries",]
+
+  last_two_dates <- data %>%
+    pull(.data$date) %>%
+    unique() %>%
+    sort() %>%
+    tail(2)
 
 
   title <- paste0(
     "Victorian employment has grown by ",
     round2(df_emp_all$ind_contri_emp[df_emp_all$industry == "Victoria, all industries"],1),
     " per cent, adding ",
-    round2(df_emp_all$change_emp[df_emp_all$industry == "Victoria, all industries"],1)*1000,
-    " jobs in total between February 2020 and ",
-    format(max(data$date), "%B %Y"),
+    scales::comma(round2(df_emp_all$change_emp[df_emp_all$industry == "Victoria, all industries"],1)*1000),
+    " jobs between ",
+    format(last_two_dates[1], "%B %Y"),
+    " and ",
+    format(last_two_dates[2], "%B %Y"),
     ". ",
-    df_emp_all_t$industry[df_emp_all_t$ind_contri_emp == max(df_emp_all_t$ind_contri_emp)],
-    dplyr::if_else(max(df_emp_all$ind_contri_emp) > 0, " added ", " lost "),
-    round2(max(df_emp_all$ind_contri_emp), 1)*1000,
+    df_emp_all_t$industry[df_emp_all_t$change_emp == max(df_emp_all_t$change_emp)],
+    dplyr::if_else(max(df_emp_all_t$change_emp) > 0, " added ", " lost "),
+    scales::comma(round2(max(df_emp_all_t$change_emp), 1)*1000),
     " jobs",
     ", while ",
-    df_emp_all_t$industry[df_emp_all_t$ind_contri_emp == min(df_emp_all_t$ind_contri_emp)],
-    dplyr::if_else(min(df_emp_all$ind_contri_emp) > 0, " added ", " lost "),
-    round2(abs(min(df_emp_all$ind_contri_emp)), 1)*1000,
+    df_emp_all_t$industry[df_emp_all_t$change_emp == min(df_emp_all_t$change_emp)],
+    dplyr::if_else(min(df_emp_all_t$change_emp) > 0, " added ", " lost "),
+    scales::comma(round2(abs(min(df_emp_all_t$change_emp)), 1)*1000),
     " jobs."
   )
+
+
+  df_emp_all <- df_emp_all %>%
+    dplyr::mutate(industry = dplyr::if_else(
+      .data$industry == "Other Services",
+      .data$industry,
+      gsub("Services", "", .data$industry)),
+      industry = gsub("Accommodation", "Accomm.", .data$industry, fixed = T),
+      industry = gsub("Administrative", "Admin.", .data$industry, fixed = T),
+      industry = gsub("Administration", "Admin.", .data$industry, fixed = T),
+      industry = gsub("Telecommunications", "Telecomms.", .data$industry, fixed = T),
+      industry = gsub("Assistance", "Asst.", .data$industry, fixed = T),
+      industry = gsub("Manufacturing", "Manuf.", .data$industry, fixed = T),
+      industry = gsub("Agriculture", "Ag.", .data$industry, fixed = T),
+      industry = gsub("Warehousing", "Ware.", .data$industry, fixed = T),
+      industry = gsub("Victoria, all industries", "All industries", .data$industry, fixed = T),
+      industry = gsub("Electricity, Gas, Water and Waste", "Utilities", .data$industry, fixed = T),
+      industry = gsub("Professional", "Prof.", .data$industry, fixed = T)) %>%
+    dplyr::mutate(industry = stringr::str_wrap(.data$industry, 8))
+
+  df_emp_all <- df_emp_all %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(label_y = max(y_start, y_end)) %>%
+    dplyr::ungroup()
 
   df_emp_all %>%
     ggplot(aes(
@@ -370,19 +401,13 @@ df = dash_data
     )) +
     geom_segment(size = 15) +
     geom_text(aes(
-      y = .data$y_end,
+      y = .data$label_y,
       label = .data$bar_label
     ),
-    nudge_y = 1.5,
+    nudge_y = 0.2,
     lineheight = 0.9,
-    size = 12 / .pt
+    size = 10 / .pt
     ) +
-    # geom_label(
-    #   data = data.frame(x = 1.55, y = 230, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
-    #   mapping = aes(x = .data$x, y = .data$y, label = .data$label),
-    #   size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE,
-    #   label.size = 0
-    # ) +
     theme_djpr() +
     scale_colour_manual(values = c(
       "Negative" = djprtheme::djpr_navy_blue,
@@ -393,11 +418,12 @@ df = dash_data
     theme(
       axis.title = element_blank(),
       axis.text.y = element_blank(),
-      axis.text.x = element_text(angle = 90)
+      axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10)
     ) +
+    guides(x = guide_axis(n.dodge = 2)) +
     labs(
       title = title,
-      subtitle = "Contribution to employment growth by industry (,000)",
+      subtitle = "Contribution to employment growth by industry ('000s)",
       caption = paste0(caption_lfs_det_q(), " Data not seasonally adjusted.")
     )
 }
