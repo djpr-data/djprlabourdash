@@ -2410,23 +2410,31 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
     TRUE ~ paste0("Victoria's ", indic_long, "compared to other states and territories and the Australian average")
   )
 
-  title <- paste0("Victoria's ", indic_long, " in ", format(latest_date$date[1], "%B %Y"), " was ", vic_level, title)
+  title <- paste0("Victoria's youth ", indic_long, " in ", format(latest_date$date[1], "%B %Y"), " was ", vic_level, title)
 
-
-
-
+  other_colour <- "grey70"
 
   df %>%
     djpr_ts_linechart(
-      col_var = .data$line_col,
+      col_var = .data$state,
       y_labels = function(x) paste0(x, "%"),
       label_num = paste0(round2(.data$value, 1), "%")
     ) +
-    # scale_colour_manual(values = c(
-    #   "Vic" = djprtheme::djpr_royal_blue,
-    #   "NSW" = djprtheme::djpr_green,
-    #   "Other" = "grey70"
-    # )) +
+    scale_y_continuous(
+      breaks = scales::breaks_pretty(5),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_colour_manual(values = c(
+      "Vic" = djprtheme::djpr_royal_blue,
+      "Aus" = djprtheme::djpr_green,
+      "NSW" = other_colour,
+      "NT" = other_colour,
+      "Tas" = other_colour,
+      "SA" = other_colour,
+      "Qld" = other_colour,
+      "ACT" = other_colour,
+      "WA" = other_colour
+    )) +
     labs(
       title = title,
       subtitle = "subtitle",
