@@ -2367,14 +2367,22 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
   df <- df %>%
     dplyr::filter(.data$indicator == indic_long)
 
-  # name Australia
+  # name Australia and create state_group
   df <- df %>%
     dplyr::mutate(
       state = dplyr::if_else(.data$state == "",
-                             "Australia",
+                             "Aus",
                              .data$state
       ),
       state = strayr::clean_state(.data$state)
+    ) %>%
+    dplyr::mutate(
+      line_col = dplyr::if_else(.data$state %in% c(
+        "Vic", "Aus"
+      ),
+      .data$state,
+      "Other"
+      )
     )
 
   # select the latest date
@@ -2383,25 +2391,44 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c("A84433601W",
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup()
 
-  # line colour
-  df <- df %>%
-    dplyr::mutate(line_col = dplyr::if_else(
-      .data$state %in% c("Vic", "Aus"), .data$state, "Other"
-    ))
+  latest <- df %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      !.data$state %in% c("ACT", "NT")
+    ) %>%
+    dplyr::select(.data$state, .data$value) %>%
+    dplyr::mutate(rank = dplyr::min_rank(-.data$value))
+
+  vic_rank <- latest$rank[latest$state == "Vic"]
+  aus_rank <- latest$rank[latest$state == "Aus"]
+  vic_level <- paste0(round2(latest$value[latest$state == "Vic"], 1), "%")
+
+  title <- dplyr::case_when(
+    vic_rank > aus_rank ~ ", which was higher than the Australian average",
+    vic_rank == aus_rank ~ ", which was the same as the Australian average",
+    vic_rank < aus_rank ~ ", which was lower than the Australian average",
+    TRUE ~ paste0("Victoria's ", indic_long, "compared to other states and territories and the Australian average")
+  )
+
+  title <- paste0("Victoria's ", indic_long, " in ", format(latest_date$date[1], "%B %Y"), " was ", vic_level, title)
+
+
+
+
 
   df %>%
     djpr_ts_linechart(
-      col_var = .data$series,
+      col_var = .data$line_col,
       y_labels = function(x) paste0(x, "%"),
       label_num = paste0(round2(.data$value, 1), "%")
     ) +
-    scale_colour_manual(values = c(
-      "Vic" = djprtheme::djpr_royal_blue,
-      "NSW" = djprtheme::djpr_green,
-      "Other" = "grey70"
-    )) +
+    # scale_colour_manual(values = c(
+    #   "Vic" = djprtheme::djpr_royal_blue,
+    #   "NSW" = djprtheme::djpr_green,
+    #   "Other" = "grey70"
+    # )) +
     labs(
-      title = "title",
+      title = title,
       subtitle = "subtitle",
       caption = caption_lfs()
     )
