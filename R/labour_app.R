@@ -35,6 +35,7 @@ labour_server <- function(input, output, session) {
 
   # Static bar chart of unemp rate over past 12 months
   ur_bar_data <- filter_dash_data("A84423354L")
+  ur_bar_latest <- max(ur_bar_data$date)
 
   ur_bar_static <- ur_bar_data %>%
     dplyr::slice_tail(n = 12) %>%
@@ -47,7 +48,6 @@ labour_server <- function(input, output, session) {
         "other"
       )
     )) +
-    # ggiraph::geom_col_interactive(fill = "#A1BBD2") +
     scale_fill_manual(
       values = c(
         "max" = "#1F1547",
@@ -74,19 +74,19 @@ labour_server <- function(input, output, session) {
 
   output$ur_bar_static <- renderPlot({
     ur_bar_static
-  })
+  }) %>%
+    bindCache(ur_bar_latest)
 
   output$overview_ur_text <- renderUI({
-    req(hovered$last)
 
-    selected_date <- as.Date(hovered$last)
+    selected_date <- ur_bar_latest
     prev_date <- seq.Date(
       from = selected_date,
       length.out = 2,
       by = "-1 month"
     )[2]
 
-    selected_val <- round2(ur_bar_data$value[ur_bar_data$date == hovered$last], 1)
+    selected_val <- round2(ur_bar_data$value[ur_bar_data$date == ur_bar_latest], 1)
     prev_val <- round2(ur_bar_data$value[ur_bar_data$date == prev_date], 1)
     change <- round2(selected_val - prev_val, 1)
     dir_change <- sign(change)
@@ -129,44 +129,8 @@ labour_server <- function(input, output, session) {
       ),
       br()
     )
-  })
-
-  hovered <- reactiveValues(
-    last = as.character(max(ur_bar_data$date)),
-    ever = FALSE
-  )
-
-
-  session$onFlushed(function() {
-    if (isFALSE(isolate(hovered$ever))) {
-      session$sendCustomMessage(
-        type = "overview_ur_bar_hovered_set",
-        message = isolate(hovered$last)
-      )
-    }
-  },
-  once = F
-  )
-
-  observeEvent(input$overview_ur_bar_hovered,
-    {
-      if (!is.null(input$overview_ur_bar_hovered)) {
-        hovered$last <<- input$overview_ur_bar_hovered
-        hovered$ever <<- TRUE
-      } else {
-        session$sendCustomMessage(
-          type = "overview_ur_bar_hovered_set",
-          message = hovered$last
-        )
-      }
-    },
-    ignoreNULL = F
-  )
-
-  output$hover_ur <- renderText({
-    ur_bar_data$value[ur_bar_data$date == hovered$last]
-  })
-
+  }) %>%
+    bindCache(ur_bar_latest)
 
 
   # Overview: footnote and main table ----

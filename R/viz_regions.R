@@ -799,7 +799,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     )
 
   df <- df %>%
-    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
       "Warrnambool & S. West",
       .data$sa4
     ))
@@ -832,8 +832,8 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   df_tidy <- df_summ %>%
     dplyr::select(-.data$range) %>%
-    tidyr::gather(
-      key = "series", value = "value",
+    tidyr::pivot_longer(
+      names_to = "series", values_to = "value",
       -.data$date
     )
 

@@ -1,12 +1,20 @@
 .onLoad <- function(libname, pkgname) {
+
+  jobs_dash_cache <- cachem::cache_disk(
+    dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache")
+  )
+
   shinyOptions(
-    cache = cachem::cache_disk(
-      dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache")
-    )
+    cache = jobs_dash_cache
   )
 
   if (requireNamespace("memoise", quietly = TRUE)) {
-    make_table_mem <<- memoise::memoise(make_table)
+
+    table_cache <- cachem::cache_disk(
+      dir = file.path(dirname(tempdir()), "djpr-table-cache")
+    )
+    make_table_mem <<- memoise::memoise(make_table,
+                                        cache = table_cache)
   } else {
     make_table_mem <<- make_table
   }
