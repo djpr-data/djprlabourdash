@@ -283,15 +283,6 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
     make_table_mem(
       rename_indicators = F,
       row_order = c(
-        "15-24_Unemployment rate_Rest of Vic.",
-        "15-24_Unemployment rate_Ballarat",
-        "15-24_Unemployment rate_Bendigo",
-        "15-24_Unemployment rate_Geelong",
-        "15-24_Unemployment rate_Hume",
-        "15-24_Unemployment rate_Latrobe - Gippsland",
-        "15-24_Unemployment rate_Shepparton",
-        "15-24_Unemployment rate_Victoria - North West",
-        "15-24_Unemployment rate_Warrnambool and South West",
         "15-24_Unemployment rate_Greater Melbourne",
         "15-24_Unemployment rate_Melbourne - Inner",
         "15-24_Unemployment rate_Melbourne - Inner East",
@@ -301,7 +292,16 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
         "15-24_Unemployment rate_Melbourne - Outer East",
         "15-24_Unemployment rate_Melbourne - South East",
         "15-24_Unemployment rate_Melbourne - West",
-        "15-24_Unemployment rate_Mornington Peninsula"
+        "15-24_Unemployment rate_Mornington Peninsula",
+        "15-24_Unemployment rate_Rest of Vic.",
+        "15-24_Unemployment rate_Ballarat",
+        "15-24_Unemployment rate_Bendigo",
+        "15-24_Unemployment rate_Geelong",
+        "15-24_Unemployment rate_Hume",
+        "15-24_Unemployment rate_Latrobe - Gippsland",
+        "15-24_Unemployment rate_Shepparton",
+        "15-24_Unemployment rate_Victoria - North West",
+        "15-24_Unemployment rate_Warrnambool and South West"
       ),
       highlight_rows = c(
         "15-24_Unemployment rate_Rest of Vic.",
