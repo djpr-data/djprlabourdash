@@ -259,7 +259,8 @@ labour_server <- function(input, output, session) {
   output$ind_emp_table <- renderUI({
     table_ind_employment() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   # Indicators: slopgraph of emp-pop ratios in states
   djpr_plot_server("ind_emppop_state_slope",
@@ -327,7 +328,8 @@ labour_server <- function(input, output, session) {
   output$table_ind_unemp_state <- renderUI({
     table_ind_unemp_state() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
@@ -442,7 +444,8 @@ labour_server <- function(input, output, session) {
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_gen_emppopratio_line",
@@ -526,7 +529,8 @@ labour_server <- function(input, output, session) {
   output$table_gr_youth_summary <- renderUI({
     table_gr_youth_summary() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
@@ -691,7 +695,8 @@ labour_server <- function(input, output, session) {
   output$table_gr_youth_unemp_region <- renderUI({
     table_gr_youth_unemp_region() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   # Inclusion: long term unemployment ------
 
@@ -1011,12 +1016,14 @@ labour_server <- function(input, output, session) {
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   output$table_reg_metro_states_unemprate <- renderUI({
     table_reg_metro_states_unemprate() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   # Regions: National focus box -----
   djpr_plot_server("reg_regionstates_dot",
@@ -1157,7 +1164,8 @@ labour_server <- function(input, output, session) {
   output$table_industries_summary <- renderUI({
     table_industries_summary() %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ)
 
   djpr_plot_server("industries_empchange_sincecovid_bar",
     plot_function = viz_industries_empchange_sincecovid_bar,
@@ -1398,7 +1406,9 @@ labour_server <- function(input, output, session) {
   output$industries_employment <- renderUI({
     table_industries_employment(chosen_industry = input$chosen_industry) %>%
       flextable::htmltools_value()
-  })
+  }) %>%
+    bindCache(ts_summ,
+              input$chosen_industry)
 
   # Links to pages -----
   observeEvent(input$link_indicators, {

@@ -10,11 +10,7 @@
 
   if (requireNamespace("memoise", quietly = TRUE)) {
 
-    table_cache <- cachem::cache_disk(
-      dir = file.path(dirname(tempdir()), "djpr-table-cache")
-    )
-    make_table_mem <<- memoise::memoise(make_table,
-                                        cache = table_cache)
+    make_table_mem <<- memoise::memoise(make_table)
   } else {
     make_table_mem <<- make_table
   }
