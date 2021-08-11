@@ -13,10 +13,12 @@ labour_server <- function(input, output, session) {
 
   myenv <- as.environment(1)
 
-  assign("dash_data",
-    load_and_hide(),
-    envir = myenv
-  )
+  if (!exists("dash_data", where = myenv)) {
+    assign("dash_data",
+           load_and_hide(),
+           envir = myenv
+    )
+  }
 
   assign("ts_summ",
     dash_data %>%
@@ -72,42 +74,6 @@ labour_server <- function(input, output, session) {
 
   output$ur_bar_static <- renderPlot({
     ur_bar_static
-  })
-
-  # ggiraph interactive bar chart of unemp rate
-  ur_bar_width <- reactive({
-    width_percent <- (3.8 / 8) * 100
-
-    if (plt_change()$width == plt_change()$browser_width) {
-      width_percent <- 90
-    }
-
-    calc_girafe_width(
-      width_percent = width_percent,
-      window_width = plt_change()$width,
-      dpi = plt_change()$dpi
-    )
-  })
-
-  output$overview_ur_bar <- ggiraph::renderGirafe({
-    req(plt_change(), ur_bar_static, ur_bar_width())
-
-    ggiraph::girafe(
-      ggobj = ur_bar_static,
-      width_svg = ur_bar_width(),
-      height_svg = 1.62,
-      options = list(
-        ggiraph::opts_hover(
-          reactive = TRUE,
-          css = ggiraph::girafe_css(
-            css = "fill: #1F1547; transition: 0.6s;"
-          )
-        ),
-        ggiraph::opts_toolbar(saveaspng = FALSE),
-        ggiraph::opts_selection(type = "none"),
-        ggiraph::opts_sizing(rescale = F)
-      )
-    )
   })
 
   output$overview_ur_text <- renderUI({
