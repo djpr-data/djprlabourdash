@@ -46,7 +46,8 @@ Imports:
     patchwork,
     strayr (>= 0.0.1),
     slider,
-    flextable
+    flextable,
+    cachem
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
@@ -58,6 +59,5 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload,
-    cachem
+    pkgload
 Config/testthat/edition: 3
