@@ -282,8 +282,14 @@ viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
 
   df_emp_all <- df_emp %>%
     dplyr::left_join(df_emp_total, by = "date") %>%
-    dplyr::mutate(ind_contri_emp = change_emp / total_lag_emp * 100) %>%
-    dplyr::select(date, industry, emp, change_emp, lag_emp, ind_contri_emp, total_lag_emp) %>%
+    dplyr::mutate(ind_contri_emp = .data$change_emp / .data$total_lag_emp * 100) %>%
+    dplyr::select(.data$date,
+                  .data$industry,
+                  .data$emp,
+                  .data$change_emp,
+                  .data$lag_emp,
+                  .data$ind_contri_emp,
+                  .data$total_lag_emp) %>%
     dplyr::mutate(
       indicator = dplyr::if_else(
         .data$ind_contri_emp >= 0,
@@ -293,7 +299,7 @@ viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
       indicator = dplyr::if_else(
         .data$industry == "Victoria, all industries",
         "Total",
-        indicator
+        .data$indicator
       )
     )
 
@@ -370,7 +376,7 @@ viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
 
   df_emp_all <- df_emp_all %>%
     dplyr::rowwise() %>%
-    dplyr::mutate(label_y = max(y_start, y_end)) %>%
+    dplyr::mutate(label_y = max(.data$y_start, .data$y_end)) %>%
     dplyr::ungroup()
 
   df_emp_all %>%
@@ -596,9 +602,9 @@ viz_industries_average_hours_worked_bar <- function(data = filter_dash_data(c(
     dplyr::group_by(.data$industry, .data$date) %>%
     dplyr::summarise(hour = sum(.data$value)) %>%
     dplyr::mutate(
-      change_hour = hour - lag(hour),
-      lag_hour = lag(hour),
-      growth = 100 * ((hour / lag(hour) - 1))
+      change_hour = .data$hour - lag(.data$hour),
+      lag_hour = lag(.data$hour),
+      growth = 100 * ((.data$hour / lag(.data$hour) - 1))
     ) %>%
     dplyr::filter(.data$date == max(.data$date))
 
@@ -606,13 +612,19 @@ viz_industries_average_hours_worked_bar <- function(data = filter_dash_data(c(
     dplyr::filter(.data$indicator != "Employed total") %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(hour = sum(.data$value)) %>%
-    dplyr::mutate(total_lag_hour = lag(hour)) %>%
-    dplyr::select(-hour)
+    dplyr::mutate(total_lag_hour = lag(.data$hour)) %>%
+    dplyr::select(-.data$hour)
 
   df_hour_all <- df_hour %>%
     merge(df_hour_total, by = "date") %>%
-    dplyr::mutate(ind_contri_hour = change_hour / total_lag_hour * 100) %>%
-    dplyr::select(date, industry, hour, change_hour, lag_hour, ind_contri_hour, total_lag_hour)
+    dplyr::mutate(ind_contri_hour = .data$change_hour / .data$total_lag_hour * 100) %>%
+    dplyr::select(.data$date,
+                  .data$industry,
+                  .data$hour,
+                  .data$change_hour,
+                  .data$lag_hour,
+                  .data$ind_contri_hour,
+                  .data$total_lag_hour)
 
   # This is to process the employment data
 
@@ -622,9 +634,9 @@ viz_industries_average_hours_worked_bar <- function(data = filter_dash_data(c(
     dplyr::group_by(.data$industry, .data$date) %>%
     dplyr::summarise(emp = sum(.data$value)) %>%
     dplyr::mutate(
-      change_emp = emp - lag(emp),
-      lag_emp = lag(emp),
-      growth = 100 * ((emp / lag(emp) - 1))
+      change_emp = .data$emp - lag(.data$emp),
+      lag_emp = lag(.data$emp),
+      growth = 100 * ((.data$emp / lag(.data$emp) - 1))
     ) %>%
     dplyr::filter(date == max(.data$date))
 
@@ -633,26 +645,31 @@ viz_industries_average_hours_worked_bar <- function(data = filter_dash_data(c(
     dplyr::filter(.data$industry != "") %>%
     dplyr::group_by(.data$date) %>%
     dplyr::summarise(emp = sum(.data$value)) %>%
-    dplyr::mutate(total_lag_emp = lag(emp)) %>%
-    dplyr::select(-emp)
+    dplyr::mutate(total_lag_emp = lag(.data$emp)) %>%
+    dplyr::select(-.data$emp)
 
   df_emp_all <- df_emp %>%
     merge(df_emp_total, by = "date") %>%
-    dplyr::mutate(ind_contri_emp = change_emp / total_lag_emp * 100) %>%
-    dplyr::select(date, industry, emp, change_emp, lag_emp, ind_contri_emp, total_lag_emp)
-
+    dplyr::mutate(ind_contri_emp = .data$change_emp / .data$total_lag_emp * 100) %>%
+    dplyr::select(.data$date,
+                  .data$industry,
+                  .data$emp,
+                  .data$change_emp,
+                  .data$lag_emp,
+                  .data$ind_contri_emp,
+                  .data$total_lag_emp)
 
   # Merge hours and employemtn together
 
   df_all <- df_hour_all %>%
     merge(df_emp_all, on = c("date", "industry")) %>%
     dplyr::mutate(
-      change_ahw = hour / emp - lag_hour / lag_emp,
-      ahw_growth = change_ahw / (lag_hour / lag_emp) * 100
+      change_ahw = .data$hour / .data$emp - .data$lag_hour / .data$lag_emp,
+      ahw_growth = .data$change_ahw / (.data$lag_hour / .data$lag_emp) * 100
     ) %>%
     mutate(
-      total_hour = sum(ind_contri_hour),
-      total_emp = sum(ind_contri_emp)
+      total_hour = sum(.data$ind_contri_hour),
+      total_emp = sum(.data$ind_contri_emp)
     )
 
   title <- paste0(
@@ -672,26 +689,30 @@ viz_industries_average_hours_worked_bar <- function(data = filter_dash_data(c(
   )
 
   lab_df <- df_all %>%
-    dplyr::select(industry, ahw_growth) %>%
+    dplyr::select(.data$industry, .data$ahw_growth) %>%
     dplyr::mutate(
-      lab_y = dplyr::if_else(ahw_growth >= 0, ahw_growth + 0.1, ahw_growth - 0.75),
-      lab_hjust = dplyr::if_else(ahw_growth >= 0, 0, 1)
+      lab_y = dplyr::if_else(.data$ahw_growth >= 0,
+                             .data$ahw_growth + 0.1,
+                             .data$ahw_growth - 0.75),
+      lab_hjust = dplyr::if_else(.data$ahw_growth >= 0,
+                                 0,
+                                 1)
     )
 
   df_all %>%
     ggplot(aes(
-      x = stats::reorder(industry, ahw_growth),
-      y = ahw_growth
+      x = stats::reorder(.data$industry, .data$ahw_growth),
+      y = .data$ahw_growth
     )) +
     geom_col(
-      aes(fill = -ahw_growth)
+      aes(fill = -.data$ahw_growth)
     ) +
     geom_text(
       data = lab_df,
       aes(
-        y = lab_y,
-        hjust = lab_hjust,
-        label = paste0(round2(ahw_growth, 1), "%")
+        y = .data$lab_y,
+        hjust = .data$lab_hjust,
+        label = paste0(round2(.data$ahw_growth, 1), "%")
       ),
       colour = "black",
       size = 11 / .pt
