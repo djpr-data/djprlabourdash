@@ -15,8 +15,8 @@ labour_server <- function(input, output, session) {
 
   if (!exists("dash_data", where = myenv)) {
     assign("dash_data",
-           load_and_hide(),
-           envir = myenv
+      load_and_hide(),
+      envir = myenv
     )
   }
 
@@ -78,7 +78,6 @@ labour_server <- function(input, output, session) {
     bindCache(ur_bar_latest)
 
   output$overview_ur_text <- renderUI({
-
     selected_date <- ur_bar_latest
     prev_date <- seq.Date(
       from = selected_date,
@@ -1407,8 +1406,10 @@ labour_server <- function(input, output, session) {
     table_industries_employment(chosen_industry = input$chosen_industry) %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ,
-              input$chosen_industry)
+    bindCache(
+      ts_summ,
+      input$chosen_industry
+    )
 
   # Links to pages -----
   observeEvent(input$link_indicators, {
