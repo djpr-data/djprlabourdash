@@ -46,7 +46,8 @@ Imports:
     patchwork,
     strayr (>= 0.0.1),
     slider,
-    flextable
+    flextable,
+    treemapify
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
