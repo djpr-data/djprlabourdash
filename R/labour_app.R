@@ -18,6 +18,9 @@ labour_server <- function(input, output, session) {
            load_and_hide(),
            envir = myenv
     )
+  } else {
+    shinyjs::hide("loading_page")
+    shinyjs::show("main_content")
   }
 
   assign("ts_summ",

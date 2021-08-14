@@ -2,11 +2,12 @@
 load_and_hide <- function(branch = "main") {
   df <- load_dash_data(branch = branch)
 
-  # if (shiny::isRunning()) {
-  #   shinyjs::hide("loading_page")
-  #   shinyjs::show("main_content")
-  # }
+  if (shiny::isRunning()) {
+    shinyjs::hide("loading_page")
+    shinyjs::show("main_content")
+  }
   df
+
 }
 
 #' Load data for the DJPR Labour Dashboard
