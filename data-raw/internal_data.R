@@ -2,7 +2,12 @@
 pkgload::load_all()
 
 # Load absmapsdata object(s) to avoid dependency
-sa42016 <- absmapsdata::sa42016
+if (requireNamespace("absmapsdata", quietly = TRUE)) {
+  sa42016 <- absmapsdata::sa42016
+} else {
+  sa42016 <- sa42016
+}
+
 
 # Load data from djprdashdata if it has been updated
 temp_loc <- tempfile(fileext = ".rds")
@@ -16,6 +21,8 @@ dash_data_updated <- dash_data_updated
 
 if (dash_data_updated != remote_updated) {
   dash_data <- load_dash_data()
+  stopifnot(inherits(dash_data, "tbl_df"))
+  stopifnot(nrow(dash_data) > 800)
   dash_data_updated <- remote_updated
 }
 
