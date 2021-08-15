@@ -60,5 +60,6 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload
+    pkgload,
+    usethis
 Config/testthat/edition: 3
