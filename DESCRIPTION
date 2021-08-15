@@ -47,7 +47,8 @@ Imports:
     strayr (>= 0.0.1),
     slider,
     flextable,
-    cachem
+    cachem,
+    shinyjs
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

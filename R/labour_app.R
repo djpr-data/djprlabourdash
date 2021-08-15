@@ -13,15 +13,10 @@ labour_server <- function(input, output, session) {
 
   myenv <- as.environment(1)
 
-  if (!exists("dash_data", where = myenv)) {
-    assign("dash_data",
+  assign("dash_data",
            load_and_hide(),
            envir = myenv
     )
-  } else {
-    shinyjs::hide("loading_page")
-    shinyjs::show("main_content")
-  }
 
   assign("ts_summ",
     dash_data %>%

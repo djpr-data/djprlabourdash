@@ -14,7 +14,7 @@ remote_updated <- as.POSIXct(remote_updated)
 
 dash_data_updated <- dash_data_updated
 
-if (dash_data_updated < remote_updated) {
+if (dash_data_updated != remote_updated) {
   dash_data <- load_dash_data()
   dash_data_updated <- remote_updated
 }
