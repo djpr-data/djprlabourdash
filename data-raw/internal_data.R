@@ -11,7 +11,7 @@ if (requireNamespace("absmapsdata", quietly = TRUE)) {
 
 # Load data from djprdashdata if it has been updated
 temp_loc <- tempfile(fileext = ".rds")
-download.file(url = "https://github.com/djpr-data/djprdashdata/blob/main/data-raw/last_updated.rds?raw=true",
+utils::download.file(url = "https://github.com/djpr-data/djprdashdata/blob/main/data-raw/last_updated.rds?raw=true",
               destfile = temp_loc)
 
 remote_updated <- readRDS(temp_loc)
