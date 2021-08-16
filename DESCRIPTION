@@ -30,7 +30,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     djprdashdata (>= 0.0.2.9004),
-    djprshiny (>= 0.0.3.916),
+    djprshiny (>= 0.0.4.904),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
@@ -47,7 +47,8 @@ Imports:
     strayr (>= 0.0.1),
     slider,
     flextable,
-    treemapify
+    treemapify,
+    cachem
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
@@ -59,6 +60,5 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload,
-    cachem
+    pkgload
 Config/testthat/edition: 3

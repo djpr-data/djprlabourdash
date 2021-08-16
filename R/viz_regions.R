@@ -421,7 +421,8 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
 
   # Reduce to selected_indicator
   df <- df %>%
-    dplyr::filter(.data$indicator_short == selected_indicator)
+    dplyr::filter(.data$indicator_short == selected_indicator) %>%
+    dplyr::select(.data$series_id, .data$value, .data$date, .data$sa4)
 
   # 3 month smoothing
   df <- df %>%
@@ -518,7 +519,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
       breaks = scales::breaks_pretty(n = 3),
       expand = expansion(mult = c(lower_padding, 0.1))
     ) +
-    geom_label(
+    geom_text(
       data = facet_labels,
       aes(
         label = stringr::str_wrap(.data$sa4, 11),
@@ -526,8 +527,6 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
         x = .data$x
       ),
       lineheight = 0.85,
-      label.padding = unit(0.02, "lines"),
-      label.size = 0,
       size = 12 / .pt
     ) +
     geom_line(data = vic) +
@@ -800,7 +799,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     )
 
   df <- df %>%
-    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
       "Warrnambool & S. West",
       .data$sa4
     ))
@@ -833,8 +832,8 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
 
   df_tidy <- df_summ %>%
     dplyr::select(-.data$range) %>%
-    tidyr::gather(
-      key = "series", value = "value",
+    tidyr::pivot_longer(
+      names_to = "series", values_to = "value",
       -.data$date
     )
 

@@ -62,7 +62,7 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
     )) %>%
     dplyr::ungroup()
 
-  make_table(
+  make_table_mem(
     data = data,
     destination = destination,
     title = title,
@@ -119,7 +119,7 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
     "A84423467J"
   ))
 
-  make_table(data,
+  make_table_mem(data,
     row_order = c(
       "A84423237A",
       "A84423461V",
@@ -162,7 +162,7 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     dplyr::filter(!is.na(.data$value))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84433594K",
         "A84433601W",
@@ -280,18 +280,9 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
     )
 
   data %>%
-    make_table(
+    make_table_mem(
       rename_indicators = F,
       row_order = c(
-        "15-24_Unemployment rate_Rest of Vic.",
-        "15-24_Unemployment rate_Ballarat",
-        "15-24_Unemployment rate_Bendigo",
-        "15-24_Unemployment rate_Geelong",
-        "15-24_Unemployment rate_Hume",
-        "15-24_Unemployment rate_Latrobe - Gippsland",
-        "15-24_Unemployment rate_Shepparton",
-        "15-24_Unemployment rate_Victoria - North West",
-        "15-24_Unemployment rate_Warrnambool and South West",
         "15-24_Unemployment rate_Greater Melbourne",
         "15-24_Unemployment rate_Melbourne - Inner",
         "15-24_Unemployment rate_Melbourne - Inner East",
@@ -301,7 +292,16 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
         "15-24_Unemployment rate_Melbourne - Outer East",
         "15-24_Unemployment rate_Melbourne - South East",
         "15-24_Unemployment rate_Melbourne - West",
-        "15-24_Unemployment rate_Mornington Peninsula"
+        "15-24_Unemployment rate_Mornington Peninsula",
+        "15-24_Unemployment rate_Rest of Vic.",
+        "15-24_Unemployment rate_Ballarat",
+        "15-24_Unemployment rate_Bendigo",
+        "15-24_Unemployment rate_Geelong",
+        "15-24_Unemployment rate_Hume",
+        "15-24_Unemployment rate_Latrobe - Gippsland",
+        "15-24_Unemployment rate_Shepparton",
+        "15-24_Unemployment rate_Victoria - North West",
+        "15-24_Unemployment rate_Warrnambool and South West"
       ),
       highlight_rows = c(
         "15-24_Unemployment rate_Rest of Vic.",
@@ -341,7 +341,7 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
     )) %>%
     dplyr::ungroup()
 
-  make_table(data,
+  make_table_mem(data,
     row_order = c(
       "A84600079X",
       "A84599629X",
@@ -395,7 +395,7 @@ table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600075R",
         "A84599661X",
@@ -453,7 +453,7 @@ table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600076T",
         "A84599662A",
@@ -511,7 +511,7 @@ table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURD
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84595471L",
         "A84599665J",
@@ -569,7 +569,7 @@ table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDA
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600080J",
         "A84599666K",
@@ -618,7 +618,7 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
     )) %>%
     dplyr::filter(!is.na(.data$value))
 
-  make_table(data,
+  make_table_mem(data,
     title = title,
     destination = destination,
     row_order = c(
@@ -672,7 +672,7 @@ table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600141A",
         "A84599655C",
@@ -732,7 +732,7 @@ table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600142C",
         "A84599656F",
@@ -792,7 +792,7 @@ table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600145K",
         "A84599659L",
@@ -852,7 +852,7 @@ table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600146L",
         "A84599660W",
@@ -895,7 +895,7 @@ table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
   data <- data %>%
     dplyr::mutate(indicator = dplyr::if_else(.data$state == "", "Australia", .data$state))
 
-  make_table(
+  make_table_mem(
     data = data,
     row_order = c(
       "A84423050A",
@@ -930,7 +930,7 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
       .data$indicator
     ))
 
-  make_table(table_data,
+  make_table_mem(table_data,
     destination = destination,
     notes = "Data not seasonally adjusted."
   )
@@ -964,7 +964,7 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       .data$indicator
     ))
 
-  make_table(table_data,
+  make_table_mem(table_data,
     destination = destination,
     notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average."
   )
@@ -983,7 +983,7 @@ table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       .data$indicator
     ))
 
-  make_table(table_data,
+  make_table_mem(table_data,
     destination = destination
   )
 }
@@ -1027,7 +1027,7 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
       "Victoria - all industries"
     ))
 
-  make_table(data,
+  make_table_mem(data,
     row_order = c(
       "A84601662A",
       "A84601680F",

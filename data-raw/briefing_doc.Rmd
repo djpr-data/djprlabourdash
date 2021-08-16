@@ -39,7 +39,9 @@ knitr::opts_chunk$set(
 ```
 ```{r load-data}
 
-dash_data <- load_dash_data()
+if (!exists("dash_data")) {
+  dash_data <- load_dash_data()
+}
 
 Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
@@ -79,6 +81,34 @@ table_gr_youth_unemp_region()
 
 \newpage
 
+
+## Metropolitan Melbourne
+```{r}
+table_reg_metro_states_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_emp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemp()
+```
+
+```{r}
+table_reg_metro_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_partrate()
+```
+
 ## Regional Victoria
 
 ```{r}
@@ -107,36 +137,7 @@ table_reg_nonmetro_partrate()
 ```
 
 \newpage
-## Metropolitan Melbourne
-```{r}
-table_reg_metro_states_unemprate()
-```
 
-<br>
-
-```{r}
-table_reg_metro_emp()
-```
-
-<br>
-
-```{r}
-table_reg_metro_unemp()
-```
-
-<br>
-
-```{r}
-table_reg_metro_unemprate()
-```
-
-<br>
-
-```{r}
-table_reg_metro_partrate()
-```
-
-\newpage
 ## Industries
 
 ```{r}
