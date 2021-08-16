@@ -1,9 +1,17 @@
 page_overview <- function(...) {
-  tabPanel(
-    title = "Overview",
-    ggiraph_js(),
-    HTML(""),
-    value = "tab-overview",
+
+  loading_content <- div(
+    id = "loading_page",
+    br(),
+    br(),
+    br(),
+    br(),
+    centred_row(h4(" Loading data, please wait..."))
+  )
+
+  main_content <- shinyjs::hidden(
+  div(
+    id = "main_content",
     br(),
     br(),
     br(),
@@ -12,7 +20,6 @@ page_overview <- function(...) {
       column(
         4,
         plotOutput("ur_bar_static", height = "125px")
-        # ggiraph::girafeOutput("overview_ur_bar", height = "125px", width = "100%")
       ),
       column(
         4,
@@ -40,5 +47,16 @@ page_overview <- function(...) {
       HTML("Note: this dashboard is a prototype in active development. The content is not yet complete. <a href='mailto:matt.cowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard'>Feedback is welcome</a>."),
     ),
     br()
+  )
+  )
+
+  tabPanel(
+    title = "Overview",
+    ggiraph_js(),
+    HTML(""),
+    value = "tab-overview",
+    shinyjs::useShinyjs(),
+    loading_content,
+    main_content
   )
 }

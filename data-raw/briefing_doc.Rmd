@@ -37,6 +37,7 @@ knitr::opts_chunk$set(
   warning = FALSE
   )
 ```
+
 ```{r load-data}
 
 if (!exists("dash_data")) {
@@ -45,7 +46,6 @@ if (!exists("dash_data")) {
 
 Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
-
 
 ```{r}
 table_overview() 
@@ -65,9 +65,9 @@ table_ind_unemp_state()
 
 \newpage
 
-## Youth
-Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions 
-less apparent. 
+## [Youth]{.ul}
+
+Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions less apparent.
 
 ```{r}
 table_gr_youth_summary()
@@ -81,8 +81,8 @@ table_gr_youth_unemp_region()
 
 \newpage
 
+## [Metropolitan Melbourne]{.ul}
 
-## Metropolitan Melbourne
 ```{r}
 table_reg_metro_states_unemprate()
 ```
@@ -109,12 +109,14 @@ table_reg_metro_unemprate()
 table_reg_metro_partrate()
 ```
 
-## Regional Victoria
+## [Regional Victoria]{.ul}
 
 ```{r}
 table_reg_nonmetro_states_unemprate()
 ```
+
 <br>
+
 ```{r}
 table_reg_nonmetro_emp()
 
@@ -125,12 +127,12 @@ table_reg_nonmetro_emp()
 ```{r}
 table_reg_nonmetro_unemp()
 ```
+
 <br>
 
 ```{r}
 table_reg_nonmetro_unemprate()
 ```
-
 
 ```{r}
 table_reg_nonmetro_partrate()
@@ -138,7 +140,7 @@ table_reg_nonmetro_partrate()
 
 \newpage
 
-## Industries
+## [Industries]{.ul}
 
 ```{r}
 table_industries_summary()
