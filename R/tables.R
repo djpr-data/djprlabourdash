@@ -634,13 +634,13 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
 }
 
 table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                            unset = "dashboard"
-),
-title = paste0(
-  "Employment across Greater Melbourne, ",
-  format(max(data$date), "%B %Y"),
-  " (3-month average)"
-)) {
+                                  unset = "dashboard"
+                                ),
+                                title = paste0(
+                                  "Employment across Greater Melbourne, ",
+                                  format(max(data$date), "%B %Y"),
+                                  " (3-month average)"
+                                )) {
   data <- filter_dash_data(
     c(
       "A84600141A",
