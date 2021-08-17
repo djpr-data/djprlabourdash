@@ -148,7 +148,7 @@ page_regions <- function(...) {
     br(),
     djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),
-    h2(br(),"Australian metropolitan areas"),
+    h2(br(), "Australian metropolitan areas"),
     h4("Unemployment rates in Australian major cities"),
     uiOutput("table_reg_metro_states_unemprate"),
     htmlOutput("regions_footnote"),

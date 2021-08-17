@@ -3,10 +3,6 @@ name: refresh-data
 on:
   schedule:
     - cron: '*/45 00-02 * * *'
-  push:
-    branches:
-      - main
-      - dev
   pull_request:
     branches:
       - main
