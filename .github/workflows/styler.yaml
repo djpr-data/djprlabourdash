@@ -20,8 +20,7 @@ jobs:
       - uses: r-lib/actions/setup-r@master
       - name: install-packages
         run: |
-         Rscript -e "install.packages(c('pkgload', 'styler'), type = 'binary', dependencies = TRUE)"
+         Rscript -e "install.packages(c('styler'), type = 'binary', dependencies = TRUE)"
       - name: run-styler
         run: |
-         Rscript -e "pkgload::load_all()"
          Rscript -e "stopifnot(isFALSE(any(styler::style_pkg(dry = 'on', include_roxygen_examples = FALSE)$changed)))"
