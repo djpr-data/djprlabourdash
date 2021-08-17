@@ -59,5 +59,6 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload
+    pkgload,
+    styler
 Config/testthat/edition: 3
