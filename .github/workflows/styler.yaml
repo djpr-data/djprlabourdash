@@ -25,4 +25,5 @@ jobs:
       - name: run-styler
         run: |
          Rscript -e "pkgload::load_all()"
-         Rscript -e "stopifnot(isFALSE(any(styler::style_pkg(dry = "on")$changed)))"
+         Rscript -e "styler::style_pkg(dry = 'on')"
+         Rscript -e "stopifnot(isFALSE(any(style_results$changed)))"
