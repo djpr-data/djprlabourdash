@@ -317,7 +317,7 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
                                                   unset = "dashboard"
                                                 ),
                                                 title = paste0(
-                                                  "Regional unemployment rates by state, ",
+                                                  "Regional unemployment rate by state, ",
                                                   format(max(data$date), "%B %Y"),
                                                   " (3-month average)"
                                                 )) {
@@ -634,13 +634,14 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
 }
 
 table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                  unset = "dashboard"
-                                ),
-                                title = paste0(
-                                  "Employment across greater Melbourne, ",
-                                  format(max(data$date), "%B %Y"),
-                                  " (3-month average)"
-                                )) {
+                                                            unset = "dashboard"
+),
+title = paste0(
+  "Employment across Greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
+
   data <- filter_dash_data(
     c(
       "A84600141A",
@@ -694,13 +695,13 @@ table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
 }
 
 table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                    unset = "dashboard"
-                                  ),
-                                  title = paste0(
-                                    "Unemployed persons across greater Melbourne, ",
-                                    format(max(data$date), "%B %Y"),
-                                    " (3-month average)"
-                                  )) {
+                                                         unset = "dashboard"
+),
+title = paste0(
+  "Unemployed persons across Greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
   data <- filter_dash_data(
     c(
       "A84600142C",
@@ -754,13 +755,13 @@ table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
 }
 
 table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                        unset = "dashboard"
-                                      ),
-                                      title = paste0(
-                                        "Unemployment rate across greater Melbourne, ",
-                                        format(max(data$date), "%B %Y"),
-                                        " (3-month average)"
-                                      )) {
+                                                           unset = "dashboard"
+),
+title = paste0(
+  "Unemployment rate across Greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
   data <- filter_dash_data(
     c(
       "A84600145K",
@@ -814,13 +815,13 @@ table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH
 }
 
 table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                       unset = "dashboard"
-                                     ),
-                                     title = paste0(
-                                       "Participation rate across greater Melbourne, ",
-                                       format(max(data$date), "%B %Y"),
-                                       " (3-month average)"
-                                     )) {
+                                                               unset = "dashboard"
+),
+title = paste0(
+  "Participation rate across Greater Melbourne, ",
+  format(max(data$date), "%B %Y"),
+  " (3-month average)"
+)) {
   data <- filter_dash_data(
     c(
       "A84600146L",
@@ -1052,7 +1053,7 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ),
     highlight_rows = "A84601662A",
     title = title,
-    notes = "All data are original (not seasonally adjusted).",
+    notes = "Data is original (not seasonally adjusted).",
     destination = destination,
     rename_indicators = FALSE
   )
