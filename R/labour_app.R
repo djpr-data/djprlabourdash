@@ -1099,6 +1099,7 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change,
     height_percent = 150,
     width_percent = 46,
+    interactive = FALSE,
     date_slider = FALSE
   )
 

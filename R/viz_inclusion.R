@@ -1530,21 +1530,18 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
       .data$series == "15-24 years ;  > Victoria ;  Not attending full-time education ;  Unemployment rate ;" ~ "Youth not in education",
       .data$series == "> Victoria ;  Attending full-time education ;  Unemployment rate ;" ~ "Youth in education"
     )) %>%
-    dplyr::select(!.data$series)
-
-  level_df <- df
+    dplyr::select(-.data$series)
 
   # calculate annual growth
-  df <- df %>%
+  change_df <- df %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator) %>%
-    dplyr::mutate(value = (.data$value / lag(.data$value, 12) - 1)) %>%
+    dplyr::mutate(value = (.data$value - lag(.data$value, 12) - 1)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
-
   # create title
-  title_df <- level_df %>%
+  title_df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::mutate(value = round2(.data$value, 1)) %>%
     tidyr::pivot_wider(
@@ -1561,7 +1558,6 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
     "the same as"
   )
 
-
   title <- paste0(
     "The unemployment rate for Victorian youth not in education was ",
     title_change,
@@ -1569,7 +1565,7 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
     format(title_df$date, "%B %Y")
   )
 
-  level_plot <- level_df %>%
+  level_plot <- df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
       label_num = paste0(round2(.data$value, 1), "%"),
@@ -1577,7 +1573,7 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
     ) +
     labs(subtitle = "Unemployment rate for Victorian youth (aged 15-24)")
 
-  change_plot <- df %>%
+  change_plot <- change_df %>%
     djpr_ts_linechart(
       hline = 0,
       col_var = .data$indicator,
@@ -1771,11 +1767,11 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
                                         df = dash_data
                                         )) {
   df <- data %>%
-    dplyr::select(.data$date, .data$series, .data$value)
+    dplyr::select(.data$date, .data$value, .data$indicator)
 
   # 12 month moving average
   df <- df %>%
-    dplyr::group_by(.data$series) %>%
+    dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
       before = 11,
       complete = TRUE
@@ -1783,19 +1779,12 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-  df <- df %>%
-    dplyr::mutate(indicator = dplyr::case_when(
-      .data$series == "> Victoria ;  Employed total ;" ~ "Employed total",
-      .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
-      .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
-    ))
-
-
   # calculate proportion of youth employment by type
-
   df <- df %>%
+    dplyr::group_by(.data$date) %>%
     dplyr::mutate(perc = 100 * (.data$value / .data$value[.data$indicator == "Employed total"])) %>%
-    dplyr::select(.data$date, .data$perc, .data$indicator)
+    dplyr::select(.data$date, .data$perc, .data$indicator) %>%
+    dplyr::ungroup()
 
   df <- df %>%
     dplyr::filter(!grepl("Employed total", .data$indicator, fixed = TRUE)) %>%
