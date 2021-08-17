@@ -1,6 +1,6 @@
 Package: djprlabourdash
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9001
+Title: DJPR Jobs Dashboard
+Version: 0.0.1.900
 Authors@R: 
     c(
     person(given = "Annett",
@@ -23,14 +23,14 @@ Authors@R:
     person(given = "Department of Jobs, Precincts and Regions (Victoria)",
            role = c("cph", "fnd"))
            )
-Description: What the package does (one paragraph).
+Description: Shiny app to visualise Victorian labour force data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     djprdashdata (>= 0.0.2.9004),
-    djprshiny (>= 0.0.3.913),
+    djprshiny (>= 0.0.4.904),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
@@ -46,7 +46,8 @@ Imports:
     patchwork,
     strayr (>= 0.0.1),
     slider,
-    flextable
+    flextable,
+    cachem
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
@@ -58,6 +59,5 @@ Suggests:
     testthat (>= 3.0.0),
     vdiffr,
     memoise,
-    pkgload,
-    cachem
+    pkgload
 Config/testthat/edition: 3
