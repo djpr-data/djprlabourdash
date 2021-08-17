@@ -1909,3 +1909,76 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_femal
     )
 
 }
+
+
+viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A84424695C",
+                                                                        "A84424696F"),
+                                                                  df = dash_data)){
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  # 12 month moving average
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+    )) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(!is.na(.data$value))
+
+  #Calculate growth for each type of employment
+  df <- df %>%
+    dplyr::arrange(.data$date) %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12) - 1))) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::ungroup()
+
+  df <- df %>%
+    dplyr::mutate(indicator = dplyr::case_when(
+      .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
+      .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
+    ))
+
+  latest_month <- format(max(df$date), "%B %Y")
+
+  # create latest data by gender
+  fUll_time_latest <- df %>%
+    dplyr::filter(.data$indicator == "Employed full-time" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  part_time_latest <- df %>%
+    dplyr::filter(.data$indicator == "Employed part-time" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+
+  title <- dplyr::case_when(
+    fUll_time_latest > part_time_latest ~
+      paste0("Full-time employment grew faster than part-time for Victorian youth in the year to ", latest_month),
+    fUll_time_latest < part_time_latest ~
+      paste0("Full-time employment grew slower than part-time for Victorian youth in the year to ", latest_month),
+    fUll_time_latest== part_time_latest ~
+      paste0("Full-time employment grew at around the same pace as part-time employment for Victorian youth  in the year to ", latest_month),
+    TRUE ~ paste0("Full-time and part-time annual employment growth for Victorian  youth")
+  )
+
+
+  # create chart
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%"),
+      hline = 0
+    ) +
+    labs(
+      title = title,
+      subtitle = "Full-time and part-time employment for Victorian youth",
+      caption = paste0(caption_lfs()," Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
+    )
+  }
