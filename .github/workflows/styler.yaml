@@ -20,9 +20,8 @@ jobs:
       - uses: r-lib/actions/setup-r@master
       - name: install-packages
         run: |
-         Rscript -e "install.packages(c('remotes'), type = 'binary', dependencies = TRUE)"
-         Rscript -e "remotes::install_deps(type = 'binary', force = FALSE, dependencies = TRUE)"
+         Rscript -e "install.packages(c('pkgload', 'styler'), type = 'binary', dependencies = TRUE)"
       - name: run-styler
         run: |
          Rscript -e "pkgload::load_all()"
-         Rscript -e "stopifnot(isFALSE(any(styler::style_pkg(dry = 'on')$changed)))"
+         Rscript -e "stopifnot(isFALSE(any(styler::style_pkg(dry = 'on', include_roxygen_examples = FALSE)$changed)))"
