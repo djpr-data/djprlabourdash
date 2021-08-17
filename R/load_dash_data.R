@@ -23,10 +23,12 @@ data_is_current <- function() {
   # Load a file that tells us when the data on GitHub was last updated
   temp_loc <- tempfile(fileext = ".rds")
   remote_url <- "https://github.com/djpr-data/djprdashdata/blob/main/data-raw/last_updated.rds?raw=true"
-  download.file(url = remote_url,
-                destfile = temp_loc,
-                mode = "wb",
-                quiet = TRUE)
+  download.file(
+    url = remote_url,
+    destfile = temp_loc,
+    mode = "wb",
+    quiet = TRUE
+  )
   remote_updated <- readRDS(temp_loc) %>%
     as.POSIXct()
 

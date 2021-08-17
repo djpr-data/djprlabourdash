@@ -14,9 +14,9 @@ labour_server <- function(input, output, session) {
   myenv <- as.environment(1)
 
   assign("dash_data",
-           load_and_hide(),
-           envir = myenv
-    )
+    load_and_hide(),
+    envir = myenv
+  )
 
   assign("ts_summ",
     dash_data %>%
@@ -76,7 +76,6 @@ labour_server <- function(input, output, session) {
     bindCache(ur_bar_latest)
 
   output$overview_ur_text <- renderUI({
-
     selected_date <- ur_bar_latest
     prev_date <- seq.Date(
       from = selected_date,
@@ -854,6 +853,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",
     viz_reg_unemp_emppop_partrate_multiline,
     date_slider = TRUE,
+    interactive = FALSE,
     height_percent = 125,
     data = filter_dash_data(c(
       "A84600253V",
@@ -1405,8 +1405,10 @@ labour_server <- function(input, output, session) {
     table_industries_employment(chosen_industry = input$chosen_industry) %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ,
-              input$chosen_industry)
+    bindCache(
+      ts_summ,
+      input$chosen_industry
+    )
 
   # Links to pages -----
   observeEvent(input$link_indicators, {
