@@ -20,7 +20,9 @@ page_indicators <- function(...) {
     uiOutput("table_ind_unemp_state"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
-    djpr_plot_ui("ind_underut_area"),
+    djpr_plot_ui("ind_underut_area",
+      interactive = FALSE
+    ),
     br(),
     h2(br(), "Hours worked"),
     djpr_plot_ui("ind_hoursworked_line"),
@@ -28,7 +30,9 @@ page_indicators <- function(...) {
     h2(br(), "Participation"),
     br(),
     djpr_plot_ui("ind_partrate_line"),
-    djpr_plot_ui("ind_partrate_bar"),
+    djpr_plot_ui("ind_partrate_bar",
+      interactive = FALSE
+    ),
     djpr_plot_ui("ind_partrate_un_line"),
     br(),
     paste0(

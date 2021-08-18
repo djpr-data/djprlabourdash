@@ -50,7 +50,8 @@ page_regions <- function(...) {
       selected = "unemp_rate"
     ),
     djpr_plot_ui("reg_unemp_emppop_partrate_multiline",
-      height = "500px"
+      height = "500px",
+      interactive = FALSE
     ),
     br(),
     br(),
@@ -64,7 +65,9 @@ page_regions <- function(...) {
       ),
       selected = "all"
     ),
-    djpr_plot_ui("reg_unemprate_dispersion"),
+    djpr_plot_ui("reg_unemprate_dispersion",
+      interactive = FALSE
+    ),
     br(),
 
     # Regional Vic vs Greater Melb -----
@@ -142,7 +145,10 @@ page_regions <- function(...) {
       ),
       column(
         6,
-        djpr_plot_ui("reg_regionstates_bar", height = "600px")
+        djpr_plot_ui("reg_regionstates_bar",
+          height = "600px",
+          interactive = FALSE
+        )
       )
     ),
     br(),
