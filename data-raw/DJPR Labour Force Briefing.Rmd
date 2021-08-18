@@ -49,19 +49,29 @@ Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 
 ```{r, summary-data}
 
-summ_data <- ts_summarise(filter_dash_data(
-    c("A84423354L",
-      "A84423349V",
-      "A84423357V",
-      "pt_emp_vic",
-      "A84423350C",
-      "A84423355R",
-      "A84426256L",
-      "A85223450L",
-      "A85223451R",
-      "A84424691V",
-      "A84433597T")
-  ))
+df <- filter_dash_data(
+  c("A84423354L",
+    "A84423349V",
+    "A84423357V",
+    "pt_emp_vic",
+    "A84423350C",
+    "A84423355R",
+    "A84426256L",
+    "A85223450L",
+    "A85223451R",
+    "A84424691V")
+)
+
+df <- df %>%
+  dplyr::filter(.data$series_id == "A84424691V") %>%
+  dplyr::mutate(value = slider::slide_mean(.data$value,
+                                           before = 11L,
+                                           complete = TRUE),
+                series_id = "smoothed_youth_unemp") %>%
+  dplyr::filter(!is.na(.data$value)) %>%
+  dplyr::bind_rows(df)
+
+summ_data <- ts_summarise(df)
 
 ```
 
@@ -129,7 +139,8 @@ summ_dot_point <- function(series_id) {
 
 ```{r ft-emp-dot-points}
 ftemp_raw_diff <- get_summ("A84423357V", d_period_abs, summ_data)
-ftemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data)
+ftemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data) %>%
+  round2(1)
 ftemp_sign <- sign(ftemp_raw_diff)
 ftemp_pretty_diff <- ftemp_raw_diff %>% abs() %>% pretty_round()
 ftemp_text <- dplyr::case_when(
@@ -141,15 +152,16 @@ ftemp_text <- dplyr::case_when(
 )
 
 ptemp_raw_diff <- get_summ("pt_emp_vic", d_period_abs, summ_data)
-ptemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data)
+ptemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data) %>%
+  round2(1)
 ptemp_sign <- sign(ptemp_raw_diff)
 ptemp_pretty_diff <- ptemp_raw_diff %>% abs() %>% pretty_round()
 ptemp_text <- dplyr::case_when(
   ptemp_sign == 0 ~ " remained unchanged",
   ptemp_sign == -1 ~ paste0(" fell by ", ptemp_pretty_diff, " workers (",
-                            ftemp_perc_diff, "%)"),
+                            ptemp_perc_diff, "%)"),
   ptemp_sign == 1 ~ paste0(" rose by ", ptemp_pretty_diff, " workers (",
-                            ftemp_perc_diff, "%)")
+                            ptemp_perc_diff, "%)")
 )
 ```
 
@@ -163,14 +175,14 @@ hours_change <- get_summ("A84426256L", d_period_perc, summ_data) %>%
 hours_sign <- sign(hours_change)
 hours_text <- dplyr::case_when(
   hours_sign == 0 ~ " didn't change",
-  hours_sign == -1 ~ paste0(" fell by ", hours_change, "%"),
-  hours_change == 1 ~ paste0(" rose by ", hours_change, "%")
+  hours_sign == -1 ~ paste0(" fell by ", abs(hours_change), "%"),
+  hours_change == 1 ~ paste0(" rose by ", abs(hours_change), "%")
 )
 ```
 -   The total number of hours worked in Victoria `r hours_text`;
 -   Victoria's underemployment rate `r summ_dot_point("A85223450L")`;
--   The youth unemployment rate in Victoria `r summ_dot_point("A84424691V")` (smoothed using a 12-month rolling average);
--   The unsmoothed, original youth unemployment rate is `r get_summ("A84424691V", latest_value, summ_data)` per cent, compared to `r get_summ("A84424691V", prev_value, summ_data)` per cent a month earlier.
+-   The youth unemployment rate in Victoria `r summ_dot_point("smoothed_youth_unemp")` (smoothed using a 12-month rolling average);
+-   The unsmoothed, original youth unemployment rate is `r get_summ("A84424691V", latest_value, summ_data) %>% round2(1)` per cent, compared to `r get_summ("A84424691V", prev_value, summ_data) %>% round2(1)` per cent a month earlier.
 
 \newpage
 

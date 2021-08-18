@@ -64,29 +64,36 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
                                 ))) {
   df <- data %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
-    dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$state) %>%
     dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12)) - 1)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
-  vic_latest <- df %>%
-    dplyr::filter(.data$state == "Victoria" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)
+  df_latest <- df %>%
+    dplyr::filter(.data$date == max(.data$date))
 
-  aus_latest <- df %>%
-    dplyr::filter(.data$state == "Australia" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value)
+  vic_latest <- df_latest %>%
+    dplyr::filter(.data$state == "Victoria") %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
-  latest_month <- format(max(df$date), "%B %Y")
+  aus_latest <- df_latest %>%
+    dplyr::filter(.data$state == "Australia") %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
-  title <- dplyr::if_else(
-    vic_latest > aus_latest,
-    paste0("Employment growth in Victoria outpaced Australia as a whole in the 12 months to ", latest_month),
-    paste0("Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ", latest_month)
+  latest_month <- format(unique(df_latest$date), "%B %Y")
+
+  title <- dplyr::case_when(
+    vic_latest > aus_latest ~
+      "Employment growth in Victoria outpaced Australia as a whole in the 12 months to ",
+    vic_latest < aus_latest ~
+      "Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ",
+    vic_latest == aus_latest ~
+      "Employment in Victoria grew at the same pace as the Australian total in the 12 months to"
   )
+
+  title <- paste0(title, latest_month)
 
   df %>%
     djpr_ts_linechart(
