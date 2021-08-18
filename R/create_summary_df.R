@@ -23,9 +23,11 @@ create_summary_df <- function(data,
     stop("Cannot make a table with mixed frequency data (eg. montly + quarterly")
   }
 
-  num_in_year <- dplyr::case_when(freq == "Month" ~ 12,
-                                  freq == "Quarter" ~ 4,
-                                  TRUE ~ NA_real_)
+  num_in_year <- dplyr::case_when(
+    freq == "Month" ~ 12,
+    freq == "Quarter" ~ 4,
+    TRUE ~ NA_real_
+  )
 
   if (is.na(num_in_year)) {
     stop("Cannot make a table with data that is neither monthly or quarterly")
