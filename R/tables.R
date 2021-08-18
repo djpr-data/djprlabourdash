@@ -62,7 +62,7 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
     )) %>%
     dplyr::ungroup()
 
-  make_table(
+  make_table_mem(
     data = data,
     destination = destination,
     title = title,
@@ -119,7 +119,7 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
     "A84423467J"
   ))
 
-  make_table(data,
+  make_table_mem(data,
     row_order = c(
       "A84423237A",
       "A84423461V",
@@ -162,7 +162,7 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     dplyr::filter(!is.na(.data$value))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84433594K",
         "A84433601W",
@@ -280,7 +280,7 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
     )
 
   data %>%
-    make_table(
+    make_table_mem(
       rename_indicators = F,
       row_order = c(
         "15-24_Unemployment rate_Greater Melbourne",
@@ -317,7 +317,7 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
                                                   unset = "dashboard"
                                                 ),
                                                 title = paste0(
-                                                  "Regional unemployment rates by state, ",
+                                                  "Regional unemployment rate by state, ",
                                                   format(max(data$date), "%B %Y"),
                                                   " (3-month average)"
                                                 )) {
@@ -341,7 +341,7 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
     )) %>%
     dplyr::ungroup()
 
-  make_table(data,
+  make_table_mem(data,
     row_order = c(
       "A84600079X",
       "A84599629X",
@@ -395,7 +395,7 @@ table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600075R",
         "A84599661X",
@@ -453,7 +453,7 @@ table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600076T",
         "A84599662A",
@@ -511,7 +511,7 @@ table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURD
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84595471L",
         "A84599665J",
@@ -569,7 +569,7 @@ table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDA
     ))
 
   data %>%
-    make_table(
+    make_table_mem(
       row_order = c(
         "A84600080J",
         "A84599666K",
@@ -618,7 +618,7 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
     )) %>%
     dplyr::filter(!is.na(.data$value))
 
-  make_table(data,
+  make_table_mem(data,
     title = title,
     destination = destination,
     row_order = c(
@@ -634,15 +634,16 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
 }
 
 table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                            unset = "dashboard"
-),
-title = paste0(
-  "Employment across greater Melbourne, ",
-  format(max(data$date), "%B %Y"),
-  " (3-month average)"
-)) {
+                                  unset = "dashboard"
+                                ),
+                                title = paste0(
+                                  "Employment across Greater Melbourne, ",
+                                  format(max(data$date), "%B %Y"),
+                                  " (3-month average)"
+                                )) {
   data <- filter_dash_data(
-    c("A84600141A",
+    c(
+      "A84600141A",
       "A84599655C",
       "A84600015L",
       "A84600183X",
@@ -651,37 +652,39 @@ title = paste0(
       "A84599847W",
       "A84599919W",
       "A84600021J",
-      "A84600189L")
-
+      "A84600189L"
+    )
   )
 
   data <- data %>%
     dplyr::mutate(
       indicator = dplyr::if_else(.data$sa4 == "",
-                                 "Greater Melbourne employed persons",
-                                 .data$sa4
+        "Greater Melbourne employed persons",
+        .data$sa4
       )
     )
 
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2L,
-                                             complete = TRUE
+      before = 2L,
+      complete = TRUE
     ))
 
   data %>%
-    make_table(
-      row_order = c("A84600141A",
-                    "A84599655C",
-                    "A84600015L",
-                    "A84600183X",
-                    "A84599553R",
-                    "A84600111L",
-                    "A84599847W",
-                    "A84599919W",
-                    "A84600021J",
-                    "A84600189L"),
+    make_table_mem(
+      row_order = c(
+        "A84600141A",
+        "A84599655C",
+        "A84600015L",
+        "A84600183X",
+        "A84599553R",
+        "A84600111L",
+        "A84599847W",
+        "A84599919W",
+        "A84600021J",
+        "A84600189L"
+      ),
       highlight_rows = c("A84600141A"),
       rename_indicators = FALSE,
       destination = destination,
@@ -691,15 +694,16 @@ title = paste0(
 }
 
 table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                         unset = "dashboard"
-),
-title = paste0(
-  "Unemployed persons across greater Melbourne, ",
-  format(max(data$date), "%B %Y"),
-  " (3-month average)"
-)) {
+                                    unset = "dashboard"
+                                  ),
+                                  title = paste0(
+                                    "Unemployed persons across Greater Melbourne, ",
+                                    format(max(data$date), "%B %Y"),
+                                    " (3-month average)"
+                                  )) {
   data <- filter_dash_data(
-    c("A84600142C",
+    c(
+      "A84600142C",
       "A84599656F",
       "A84600016R",
       "A84600184A",
@@ -708,36 +712,39 @@ title = paste0(
       "A84599848X",
       "A84599920F",
       "A84600022K",
-      "A84600190W")
+      "A84600190W"
+    )
   )
 
   data <- data %>%
     dplyr::mutate(
       indicator = dplyr::if_else(.data$sa4 == "",
-                                 "Greater Melbourne unemployed persons",
-                                 .data$sa4
+        "Greater Melbourne unemployed persons",
+        .data$sa4
       )
     )
 
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2L,
-                                             complete = TRUE
+      before = 2L,
+      complete = TRUE
     ))
 
   data %>%
-    make_table(
-      row_order = c("A84600142C",
-                    "A84599656F",
-                    "A84600016R",
-                    "A84600184A",
-                    "A84599554T",
-                    "A84600112R",
-                    "A84599848X",
-                    "A84599920F",
-                    "A84600022K",
-                    "A84600190W"),
+    make_table_mem(
+      row_order = c(
+        "A84600142C",
+        "A84599656F",
+        "A84600016R",
+        "A84600184A",
+        "A84599554T",
+        "A84600112R",
+        "A84599848X",
+        "A84599920F",
+        "A84600022K",
+        "A84600190W"
+      ),
       highlight_rows = c("A84600142C"),
       rename_indicators = FALSE,
       destination = destination,
@@ -747,15 +754,16 @@ title = paste0(
 }
 
 table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                           unset = "dashboard"
-),
-title = paste0(
-  "Unemployment rate across greater Melbourne, ",
-  format(max(data$date), "%B %Y"),
-  " (3-month average)"
-)) {
+                                        unset = "dashboard"
+                                      ),
+                                      title = paste0(
+                                        "Unemployment rate across Greater Melbourne, ",
+                                        format(max(data$date), "%B %Y"),
+                                        " (3-month average)"
+                                      )) {
   data <- filter_dash_data(
-    c("A84600145K",
+    c(
+      "A84600145K",
       "A84599659L",
       "A84600019W",
       "A84600187J",
@@ -764,37 +772,39 @@ title = paste0(
       "A84599851L",
       "A84599923L",
       "A84600025T",
-      "A84600193C")
-
+      "A84600193C"
+    )
   )
 
   data <- data %>%
     dplyr::mutate(
       indicator = dplyr::if_else(.data$sa4 == "",
-                                 "Greater Melbourne unemployment rate",
-                                 .data$sa4
+        "Greater Melbourne unemployment rate",
+        .data$sa4
       )
     )
 
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2L,
-                                             complete = TRUE
+      before = 2L,
+      complete = TRUE
     ))
 
   data %>%
-    make_table(
-      row_order = c("A84600145K",
-                    "A84599659L",
-                    "A84600019W",
-                    "A84600187J",
-                    "A84599557X",
-                    "A84600115W",
-                    "A84599851L",
-                    "A84599923L",
-                    "A84600025T",
-                    "A84600193C"),
+    make_table_mem(
+      row_order = c(
+        "A84600145K",
+        "A84599659L",
+        "A84600019W",
+        "A84600187J",
+        "A84599557X",
+        "A84600115W",
+        "A84599851L",
+        "A84599923L",
+        "A84600025T",
+        "A84600193C"
+      ),
       highlight_rows = c("A84600145K"),
       rename_indicators = FALSE,
       destination = destination,
@@ -804,15 +814,16 @@ title = paste0(
 }
 
 table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                               unset = "dashboard"
-),
-title = paste0(
-  "Participation rate across greater Melbourne, ",
-  format(max(data$date), "%B %Y"),
-  " (3-month average)"
-)) {
+                                       unset = "dashboard"
+                                     ),
+                                     title = paste0(
+                                       "Participation rate across Greater Melbourne, ",
+                                       format(max(data$date), "%B %Y"),
+                                       " (3-month average)"
+                                     )) {
   data <- filter_dash_data(
-    c("A84600146L",
+    c(
+      "A84600146L",
       "A84599660W",
       "A84600020F",
       "A84600188K",
@@ -821,38 +832,39 @@ title = paste0(
       "A84599852R",
       "A84599924R",
       "A84600026V",
-      "A84600194F")
-
-
+      "A84600194F"
+    )
   )
 
   data <- data %>%
     dplyr::mutate(
       indicator = dplyr::if_else(.data$sa4 == "",
-                                 "Greater Melbourne participation rate",
-                                 .data$sa4
+        "Greater Melbourne participation rate",
+        .data$sa4
       )
     )
 
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2L,
-                                             complete = TRUE
+      before = 2L,
+      complete = TRUE
     ))
 
   data %>%
-    make_table(
-      row_order = c("A84600146L",
-                     "A84599660W",
-                     "A84600020F",
-                     "A84600188K",
-                     "A84599558A",
-                     "A84600116X",
-                     "A84599852R",
-                     "A84599924R",
-                     "A84600026V",
-                     "A84600194F"),
+    make_table_mem(
+      row_order = c(
+        "A84600146L",
+        "A84599660W",
+        "A84600020F",
+        "A84600188K",
+        "A84599558A",
+        "A84600116X",
+        "A84599852R",
+        "A84599924R",
+        "A84600026V",
+        "A84600194F"
+      ),
       highlight_rows = c("A84600146L"),
       rename_indicators = FALSE,
       destination = destination,
@@ -883,7 +895,7 @@ table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
   data <- data %>%
     dplyr::mutate(indicator = dplyr::if_else(.data$state == "", "Australia", .data$state))
 
-  make_table(
+  make_table_mem(
     data = data,
     row_order = c(
       "A84423050A",
@@ -918,7 +930,7 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
       .data$indicator
     ))
 
-  make_table(table_data,
+  make_table_mem(table_data,
     destination = destination,
     notes = "Data not seasonally adjusted."
   )
@@ -952,7 +964,7 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       .data$indicator
     ))
 
-  make_table(table_data,
+  make_table_mem(table_data,
     destination = destination,
     notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average."
   )
@@ -971,7 +983,7 @@ table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       .data$indicator
     ))
 
-  make_table(table_data,
+  make_table_mem(table_data,
     destination = destination
   )
 }
@@ -1015,7 +1027,7 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
       "Victoria - all industries"
     ))
 
-  make_table(data,
+  make_table_mem(data,
     row_order = c(
       "A84601662A",
       "A84601680F",
@@ -1040,7 +1052,7 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ),
     highlight_rows = "A84601662A",
     title = title,
-    notes = "All data are original (not seasonally adjusted).",
+    notes = "Data is original (not seasonally adjusted).",
     destination = destination,
     rename_indicators = FALSE
   )
