@@ -5,7 +5,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
   officedown::rdocx_document:
     reference_docx: !expr system.file('djpr_word_template.docx', package = 'djprshiny')
-    toc: FALSE
+    toc: T
     page_size:
       width: 8.3
       height: 11.7
@@ -37,15 +37,75 @@ knitr::opts_chunk$set(
   warning = FALSE
   )
 ```
+
 ```{r load-data}
 
-if (!exists("dash_data")) {
-  dash_data <- load_dash_data()
-}
+dash_data <- load_and_hide()
 
 Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
 
+```{r, summary-data}
+
+summ_data <- ts_summarise(filter_dash_data(
+    c("A84423354L",
+      "A84423349V",
+      "A84423350C",
+      "A84423355R",
+      "A84426256L",
+      "A85223450L",
+      "A85223451R",
+      "A84424691V",
+      "A84433597T")
+  ))
+
+```
+```{r, summar-dot-point-fn}
+summ_dot_point <- function(series_id) {
+  prev <- get_summ(series_id, prev_value, summ_data) %>% 
+    round2(1)
+  curr <- get_summ(series_id, latest_value, summ_data) %>%
+    round2(1)
+  unit <- get_summ(series_id, unit, summ_data)
+  raw_diff <- get_summ(series_id, d_period_abs, summ_data)
+  diff_sign <- raw_diff %>%
+    round2(1) %>%
+    sign()
+  
+  diff <- dplyr::if_else(unit == "000",
+                         pretty_round(abs(raw_diff)),
+                         as.character(round2(abs(raw_diff), 1)))
+  perc_diff <- get_summ(series_id, d_period_perc, summ_data) %>%
+    abs() %>%
+    round2(1)
+  
+  # dplyr::case_when(
+  #   diff_sign == 0 ~ paste0()
+  # )
+}
+
+```
+```{r, summary-ur}
+prev_ur <- get_summ("A84423354L", prev_value, summ_data) %>% 
+  round2(1)
+current_ur <- get_summ("A84423354L", latest_value, summ_data) %>%
+  round2(1)
+change_ur <- round2(current_ur - prev_ur, 1)
+
+ur_text <- dplyr::case_when(
+  change_ur < 0 ~ paste0("decreased from ", prev_ur, " per cent to ", current_ur, " per cent"),
+  change_ur > 0 ~ paste0("rose from ", prev_ur, " per cent to ", current_ur, " per cent"),
+  change_ur == 0 ~ paste0("remained the same at ", current_ur, " per cent")
+)
+```
+
+-   Victoria's unemployment rate `r ur_text`;
+```{r, summary-emp}
+
+```
+-   There were
+
+\newpage
 
 ```{r}
 table_overview() 
@@ -66,8 +126,8 @@ table_ind_unemp_state()
 \newpage
 
 ## Youth
-Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions 
-less apparent. 
+
+Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions less apparent.
 
 ```{r}
 table_gr_youth_summary()
@@ -81,8 +141,8 @@ table_gr_youth_unemp_region()
 
 \newpage
 
-
 ## Metropolitan Melbourne
+
 ```{r}
 table_reg_metro_states_unemprate()
 ```
@@ -114,7 +174,9 @@ table_reg_metro_partrate()
 ```{r}
 table_reg_nonmetro_states_unemprate()
 ```
+
 <br>
+
 ```{r}
 table_reg_nonmetro_emp()
 
@@ -125,12 +187,12 @@ table_reg_nonmetro_emp()
 ```{r}
 table_reg_nonmetro_unemp()
 ```
+
 <br>
 
 ```{r}
 table_reg_nonmetro_unemprate()
 ```
-
 
 ```{r}
 table_reg_nonmetro_partrate()
