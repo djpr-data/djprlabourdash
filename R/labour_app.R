@@ -83,10 +83,12 @@ labour_server <- function(input, output, session) {
       by = "-1 month"
     )[2]
 
-    selected_val <- round2(ur_bar_data$value[ur_bar_data$date == ur_bar_latest], 1)
-    prev_val <- round2(ur_bar_data$value[ur_bar_data$date == prev_date], 1)
+    selected_val <- ur_bar_data$value[ur_bar_data$date == ur_bar_latest]
+    prev_val <- ur_bar_data$value[ur_bar_data$date == prev_date]
     change <- round2(selected_val - prev_val, 1)
     dir_change <- sign(change)
+    selected_val <- round2(selected_val, 1)
+    prev_val <- round2(selected_val, 1)
 
     change_arrow <- dplyr::case_when(
       dir_change == 1 ~
