@@ -11,4 +11,5 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_gen_unemp_line"),
     djpr_plot_ui("gr_gen_partrate_line"),
     djpr_plot_ui("gr_full_part_line")
+  )
 }

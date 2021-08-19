@@ -51,4 +51,5 @@ page_inclusion <- function(...) {
     # djpr_plot_ui("gr_yth_mostvuln_line"),
     h2(br(), "Youth unemployment rate by region"),
     uiOutput("table_gr_youth_unemp_region")
+  )
 }
