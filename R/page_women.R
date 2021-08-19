@@ -1,4 +1,4 @@
-page_inclusion <- function(...) {
+page_women <- function(...) {
   djpr_tab_panel(
     title = "Women and men",
     h2("Overview table"),

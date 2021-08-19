@@ -1,4 +1,4 @@
-page_inclusion <- function(...) {
+page_youth <- function(...) {
   djpr_tab_panel(
     title = "Young people",
     br(),

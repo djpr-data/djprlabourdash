@@ -1,4 +1,4 @@
-page_inclusion <- function(...) {
+page_ltunemp <- function(...) {
   djpr_tab_panel(
     title = "Long-term unemployed",
     br(),
