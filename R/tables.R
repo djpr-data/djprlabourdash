@@ -144,15 +144,13 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                      " (12-month average)"
                                    )) {
   data <- filter_dash_data(
-    c(
-      "A84433594K",
-      "A84433597T",
-      "A84433601W",
+    c("A84424687C",
+      "A84424688F",
+      "A84424691V",
       "A84424692W",
-      "A84433476W",
+      "A84424602F",
       "15-24_females_unemployment rate",
-      "15-24_males_unemployment rate"
-    )
+      "15-24_males_unemployment rate")
   )
 
   data <- data %>%
@@ -164,18 +162,18 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
   data %>%
     make_table_mem(
       row_order = c(
-        "A84433594K",
-        "A84433601W",
+        "A84424687C",
+        "A84424691V",
         "15-24_males_unemployment rate",
         "15-24_females_unemployment rate",
-        "A84433597T",
+        "A84424688F",
         "A84424692W",
-        "A84433476W"
+        "A84424602F"
       ),
       highlight_rows = c(
-        "A84433594K",
-        "A84433601W",
-        "A84433597T",
+        "A84424687C",
+        "A84424691V",
+        "A84424688F",
         "A84424692W"
       ),
       title = title,
