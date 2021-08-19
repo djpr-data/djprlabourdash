@@ -943,7 +943,7 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     "A84423354L", # Unemp rate
     "A84423350C", # Unemp total
     "A85223451R", # Underut rate
-    "A84433601W", # Youth unemp,
+    "A84424691V", # Youth unemp,
     "A84423242V", # Male unemp
     "A84423466F" # Female unemp
   ))
@@ -952,7 +952,7 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
-    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
+    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84424691V",
       slider::slide_mean(.data$value, before = 11, complete = TRUE),
       .data$value
     )) %>%
