@@ -68,7 +68,7 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_youth_eduemp_waterfall",
       interactive = FALSE
     ),
-    djpr_plot_ui("gr_yth_mostvuln_line"),
+    # djpr_plot_ui("gr_yth_mostvuln_line"),
     h3(br(), "Youth unemployment rate by region"),
     uiOutput("table_gr_youth_unemp_region"),
     br(),
