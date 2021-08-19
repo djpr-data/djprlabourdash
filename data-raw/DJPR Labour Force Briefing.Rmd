@@ -59,7 +59,8 @@ df <- filter_dash_data(
     "A84426256L",
     "A85223450L",
     "A85223451R",
-    "A84424691V")
+    "A84424691V"),
+  df = dash_data
 )
 
 df <- df %>%
