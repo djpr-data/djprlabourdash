@@ -177,7 +177,7 @@ hours_sign <- sign(hours_change)
 hours_text <- dplyr::case_when(
   hours_sign == 0 ~ " didn't change",
   hours_sign == -1 ~ paste0(" fell by ", abs(hours_change), "%"),
-  hours_change == 1 ~ paste0(" rose by ", abs(hours_change), "%")
+  hours_sign == 1 ~ paste0(" rose by ", abs(hours_change), "%")
 )
 ```
 -   The total number of hours worked in Victoria `r hours_text`;
