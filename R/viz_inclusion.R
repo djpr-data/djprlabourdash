@@ -2350,7 +2350,14 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
                                        "A84433560L"
                                      ),
                                      df = dash_data
-                                     ),
+                                     ) %>%
+                                       dplyr::mutate(
+                                         state = dplyr::if_else(.data$state == "",
+                                                                "Aus",
+                                                                .data$state
+                                         ),
+                                         state = strayr::clean_state(.data$state)
+                                       ) ,
                                      selected_indicator = "unemp_rate") {
 
   # 12 month smoothing, remove NAs and drop not needed columns
@@ -2375,15 +2382,8 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::filter(.data$indicator == indic_long)
 
-  # name Australia and create state_group
+  # create state_group
   df <- df %>%
-    dplyr::mutate(
-      state = dplyr::if_else(.data$state == "",
-        "Aus",
-        .data$state
-      ),
-      state = strayr::clean_state(.data$state)
-    ) %>%
     dplyr::mutate(
       line_col = dplyr::if_else(.data$state %in% c(
         "Vic", "Aus"

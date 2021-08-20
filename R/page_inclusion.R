@@ -58,6 +58,10 @@ page_inclusion <- function(...) {
         djpr_plot_ui("gr_yth_melbvrest_line",
           height = "300px"
         )
+      ),
+      column(
+        12,
+        djpr_plot_ui("gr_youth_vicaus_line")
       )
     ),
     br(),

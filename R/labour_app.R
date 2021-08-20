@@ -648,6 +648,61 @@ labour_server <- function(input, output, session) {
     })
   )
 
+  djpr_plot_server("gr_youth_vicaus_line",
+                   viz_gr_youth_vicaus_line,
+                   data = filter_dash_data(c(
+                     "A84433601W",
+                     "A84433602X",
+                     "A84433603A",
+                     "A84433505W",
+                     "A84433503T",
+                     "A84433504V",
+                     "A84433519K",
+                     "A84433517F",
+                     "A84433518J",
+                     "A84433533F",
+                     "A84433531A",
+                     "A84433532C",
+                     "A84433617R",
+                     "A84433615K",
+                     "A84433616L",
+                     "A84433575C",
+                     "A84433573X",
+                     "A84433574A",
+                     "A84433547V",
+                     "A84433545R",
+                     "A84433546T",
+                     "A84433589T",
+                     "A84433587L",
+                     "A84433588R",
+                     "A84433561R",
+                     "A84433559C",
+                     "A84433560L"
+                   ),
+                   df = dash_data
+                   ) %>%
+                     dplyr::mutate(
+                       state = dplyr::if_else(.data$state == "",
+                                              "Aus",
+                                              .data$state
+                       ),
+                       state = strayr::clean_state(.data$state)
+                     ),
+                   check_box_options = c("Aus",
+                                          "NSW",
+                                          "Qld",
+                                          "Tas",
+                                          "ACT",
+                                          "WA",
+                                          "NT",
+                                          "Vic",
+                                          "SA"),
+                   check_box_var = .data$state,
+                   check_box_selected = c("Aus", "Vic"),
+                   selected_indicator = reactive(input$youth_focus),
+                   plt_change = plt_change)
+
+
   djpr_plot_server("gr_youth_full_part_line",
     plot_function = viz_gr_youth_full_part_line,
     data = filter_dash_data(c(
