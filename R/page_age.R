@@ -1,6 +1,6 @@
-page_youth <- function(...) {
+page_age <- function(...) {
   djpr_tab_panel(
-    title = "Young people",
+    title = "Age",
     br(),
     h2(br(), "Overview table"),
     uiOutput("table_gr_youth_summary"),

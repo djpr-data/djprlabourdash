@@ -399,7 +399,7 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  # Women and men -----
+  # Sex -----
 
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
@@ -485,7 +485,7 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 5)
   )
 
-  # Young people ----
+  # Age ----
 
   output$table_gr_youth_summary <- renderUI({
     table_gr_youth_summary() %>%
@@ -528,8 +528,7 @@ labour_server <- function(input, output, session) {
     width_percent = 45
   )
 
-  # Young people: youth focus box -----
-
+  # Age: youth focus box -----
 
   djpr_plot_server("gr_youth_states_dot",
     viz_gr_youth_states_dot,
@@ -1391,12 +1390,12 @@ labour_server <- function(input, output, session) {
     updateNavbarPage(session, "navbarpage", "tab-regions")
   })
 
-  observeEvent(input$link_women, {
-    updateNavbarPage(session, "navbarpage", "tab-women")
+  observeEvent(input$link_sex, {
+    updateNavbarPage(session, "navbarpage", "tab-sex")
   })
 
-  observeEvent(input$link_youth, {
-    updateNavbarPage(session, "navbarpage", "tab-youth")
+  observeEvent(input$link_age, {
+    updateNavbarPage(session, "navbarpage", "tab-age")
   })
 
   observeEvent(input$link_ltunemp, {

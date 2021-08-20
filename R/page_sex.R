@@ -1,6 +1,6 @@
-page_women <- function(...) {
+page_sex <- function(...) {
   djpr_tab_panel(
-    title = "Women and men",
+    title = "Sex",
     h2("Overview table"),
     br(),
     uiOutput("table_gr_sex"),
