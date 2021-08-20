@@ -1,4 +1,4 @@
-#' Function to create the graphs for the 'Young people' subpage on the dashboard.
+#' Function to create the graphs for the 'Age' subpage on the dashboard.
 #' @param data the dataframe containing data to visualise
 #' @examples
 #' \dontrun{

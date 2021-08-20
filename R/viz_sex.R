@@ -1,4 +1,4 @@
-#' Function to create the graphs for the 'Women and Men' subpage on the dashboard.
+#' Function to create the graphs for the 'Sex' subpage on the dashboard.
 #' @param data the dataframe containing data to visualise
 #' @examples
 #' \dontrun{
