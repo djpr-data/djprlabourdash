@@ -78,20 +78,24 @@ page_inclusion <- function(...) {
     br(),
     focus_box(
       selectInput("youth_region_focus",
-                  "Select an indicator",
-                  choices = c(
-                    "Unemployment rate" = "unemp_rate",
-                    "Participation rate" = "part_rate",
-                    "Employment-to-population ratio" = "emp_pop"
-                  ),
-                  width = "100%"
+        "Select an indicator",
+        choices = c(
+          "Unemployment rate" = "unemp_rate",
+          "Participation rate" = "part_rate",
+          "Employment-to-population ratio" = "emp_pop"
+        ),
+        width = "100%"
       ),
       uiOutput("title_youth_unemp_emppop_partrate_vic"),
-      column(6,
-             leaflet::leafletOutput("map_youth_unemp_emppop_partrate_vic") %>%
-               djpr_with_spinner()),
-      column(6,
-             djpr_plot_ui("gr_youth_unemp_emppop_partrate_bar"))
+      column(
+        6,
+        leaflet::leafletOutput("map_youth_unemp_emppop_partrate_vic") %>%
+          djpr_with_spinner()
+      ),
+      column(
+        6,
+        djpr_plot_ui("gr_youth_unemp_emppop_partrate_bar")
+      )
     ),
     h2(br(), "Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),
