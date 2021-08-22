@@ -49,16 +49,16 @@ page_inclusion <- function(...) {
       column(
         6,
         djpr_plot_ui("gr_youth_states_dot",
-          height = "600px"
+          height = "640px"
         )
       ),
       column(
         6,
         djpr_plot_ui("gr_ages_line",
-          height = "300px"
+          height = "200px"
         ),
         djpr_plot_ui("gr_yth_melbvrest_line",
-          height = "300px"
+          height = "200px"
         )
       ),
       column(
