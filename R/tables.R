@@ -144,13 +144,15 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                      " (12-month average)"
                                    )) {
   data <- filter_dash_data(
-    c("A84424687C",
+    c(
+      "A84424687C",
       "A84424688F",
       "A84424691V",
       "A84424692W",
       "A84424602F",
       "15-24_females_unemployment rate",
-      "15-24_males_unemployment rate")
+      "15-24_males_unemployment rate"
+    )
   )
 
   data <- data %>%

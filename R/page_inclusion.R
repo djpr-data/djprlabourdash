@@ -49,17 +49,21 @@ page_inclusion <- function(...) {
       column(
         6,
         djpr_plot_ui("gr_youth_states_dot",
-          height = "600px"
+          height = "640px"
         )
       ),
       column(
         6,
         djpr_plot_ui("gr_ages_line",
-          height = "300px"
+          height = "200px"
         ),
         djpr_plot_ui("gr_yth_melbvrest_line",
-          height = "300px"
+          height = "200px"
         )
+      ),
+      column(
+        12,
+        djpr_plot_ui("gr_youth_vicaus_line")
       )
     ),
     br(),
@@ -72,6 +76,27 @@ page_inclusion <- function(...) {
     h3(br(), "Youth unemployment rate by region"),
     uiOutput("table_gr_youth_unemp_region"),
     br(),
+    focus_box(
+      selectInput("youth_region_focus",
+        "Select an indicator",
+        choices = c(
+          "Unemployment rate" = "unemp_rate",
+          "Participation rate" = "part_rate",
+          "Employment-to-population ratio" = "emp_pop"
+        ),
+        width = "100%"
+      ),
+      uiOutput("title_youth_unemp_emppop_partrate_vic"),
+      column(
+        6,
+        leaflet::leafletOutput("map_youth_unemp_emppop_partrate_vic") %>%
+          djpr_with_spinner()
+      ),
+      column(
+        6,
+        djpr_plot_ui("gr_youth_unemp_emppop_partrate_bar")
+      )
+    ),
     h2(br(), "Long-term unemployed"),
     djpr_plot_ui("gr_ltunemp_line"),
     djpr_plot_ui("gr_ltunvic_bar",
