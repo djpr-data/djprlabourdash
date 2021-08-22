@@ -2386,10 +2386,13 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::mutate(
       line_col = dplyr::if_else(.data$state %in% c(
-        "Vic", "Aus"
-      ),
+        "Vic", "Aus"),
       .data$state,
-      "Other"
+      "Other"),
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
       )
     )
 
