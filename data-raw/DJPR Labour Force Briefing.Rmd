@@ -1,0 +1,289 @@
+---
+title: "DJPR Jobs Summary"
+author: "DJPR SPP Data + Analytics"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  officedown::rdocx_document:
+    reference_docx: !expr system.file('djpr_word_template.docx', package = 'djprshiny')
+    toc: T
+    page_size:
+      width: 8.3
+      height: 11.7
+      orient: "portrait"
+    page_margins:
+      bottom: 0.3
+      top: 0.5
+      left: 0.5
+      right: 0.5
+    tables:
+      layout: autofit
+      caption:
+        style: 'Heading 3'
+        pre: 'Table '
+        sep: ': '
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(officedown)
+library(flextable)
+pkgload::load_all()
+
+knitr::opts_chunk$set(
+  echo = FALSE,
+  message = FALSE,
+  error = FALSE,
+  warning = FALSE
+  )
+```
+
+```{r load-data}
+
+dash_data <- load_and_hide()
+
+Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
+```
+
+## [Overview]{.ul}
+
+```{r, summary-data}
+
+df <- filter_dash_data(
+  c("A84423354L",
+    "A84423349V",
+    "A84423357V",
+    "pt_emp_vic",
+    "A84423350C",
+    "A84423355R",
+    "A84426256L",
+    "A85223450L",
+    "A85223451R",
+    "A84424691V"),
+  df = dash_data
+)
+
+df <- df %>%
+  dplyr::filter(.data$series_id == "A84424691V") %>%
+  dplyr::mutate(value = slider::slide_mean(.data$value,
+                                           before = 11L,
+                                           complete = TRUE),
+                series_id = "smoothed_youth_unemp") %>%
+  dplyr::filter(!is.na(.data$value)) %>%
+  dplyr::bind_rows(df)
+
+summ_data <- ts_summarise(df)
+
+```
+
+```{r, summar-dot-point-fn}
+# Function to return dot point text for a given series ID
+summ_dot_point <- function(series_id) {
+  prev <- get_summ(series_id, prev_value, summ_data) %>% 
+    round2(1)
+  curr <- get_summ(series_id, latest_value, summ_data) %>%
+    round2(1)
+  
+  
+  curr_date <- get_summ(series_id, latest_date, summ_data) %>%
+    format("%B %Y")
+  unit <- get_summ(series_id, unit, summ_data)
+  
+  if (unit != "Percent") {
+    prev <- pretty_round(prev)
+    curr <- pretty_round(curr)
+  }
+  
+  raw_diff <- get_summ(series_id, d_period_abs, summ_data)
+  diff_sign <- raw_diff %>%
+    round2(1) %>%
+    sign()
+  
+  diff <- dplyr::if_else(unit == "000",
+                         pretty_round(abs(raw_diff)),
+                         as.character(round2(abs(raw_diff), 1)))
+  perc_diff <- get_summ(series_id, d_period_perc, summ_data) %>%
+    abs() %>%
+    round2(1)
+  
+  out <- dplyr::case_when(
+    diff_sign == 0 ~ paste0(" remained at ", curr),
+    diff_sign == -1 ~ paste0(" fell from ", prev, 
+                            " to ", curr),
+    diff_sign == 1 ~ paste0(" rose from ", prev,
+                            " to ", curr)
+  )
+  
+  if (unit == "Percent") {
+    out <- paste0(out, " per cent")
+  }
+  
+  out <- dplyr::case_when(
+    diff_sign == 0 ~ out,
+    diff_sign == -1 ~ paste0(out, ", a fall of ", diff),
+    diff_sign == 1 ~ paste0(out, ", a rise of ", diff)
+  )
+  
+    if (unit == "Percent") {
+    out <- paste0(out, " percentage points")
+    } else {
+    out <- paste0(out, " workers")
+  }
+  
+  out
+}
+
+```
+
+-   Victoria's unemployment rate `r summ_dot_point("A84423354L")`;
+-   The number of people employed in Victoria `r summ_dot_point("A84423349V")`;
+
+```{r ft-emp-dot-points}
+ftemp_raw_diff <- get_summ("A84423357V", d_period_abs, summ_data)
+ftemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data) %>%
+  round2(1)
+ftemp_sign <- sign(ftemp_raw_diff)
+ftemp_pretty_diff <- ftemp_raw_diff %>% abs() %>% pretty_round()
+ftemp_text <- dplyr::case_when(
+  ftemp_sign == 0 ~ " remained unchanged",
+  ftemp_sign == -1 ~ paste0(" fell by ", ftemp_pretty_diff, " workers (",
+                            ftemp_perc_diff, "%)"),
+  ftemp_sign == 1 ~ paste0(" rose by ", ftemp_pretty_diff, " workers (",
+                            ftemp_perc_diff, "%)")
+)
+
+ptemp_raw_diff <- get_summ("pt_emp_vic", d_period_abs, summ_data)
+ptemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data) %>%
+  round2(1)
+ptemp_sign <- sign(ptemp_raw_diff)
+ptemp_pretty_diff <- ptemp_raw_diff %>% abs() %>% pretty_round()
+ptemp_text <- dplyr::case_when(
+  ptemp_sign == 0 ~ " remained unchanged",
+  ptemp_sign == -1 ~ paste0(" fell by ", ptemp_pretty_diff, " workers (",
+                            ptemp_perc_diff, "%)"),
+  ptemp_sign == 1 ~ paste0(" rose by ", ptemp_pretty_diff, " workers (",
+                            ptemp_perc_diff, "%)")
+)
+```
+
+    -   Full-time employment `r ftemp_text`;
+    -   Part-time employment `r ptemp_text`;
+-   The number of unemployed people in Victoria `r summ_dot_point("A84423350C") %>% gsub("workers", "people", .)`;
+-   Victoria's participation rate `r summ_dot_point("A84423355R")`;
+```{r hours-worked}
+hours_change <- get_summ("A84426256L", d_period_perc, summ_data) %>%
+  round2(1)
+hours_sign <- sign(hours_change)
+hours_text <- dplyr::case_when(
+  hours_sign == 0 ~ " didn't change",
+  hours_sign == -1 ~ paste0(" fell by ", abs(hours_change), "%"),
+  hours_sign == 1 ~ paste0(" rose by ", abs(hours_change), "%")
+)
+```
+-   The total number of hours worked in Victoria `r hours_text`;
+-   Victoria's underemployment rate `r summ_dot_point("A85223450L")`;
+-   The youth unemployment rate in Victoria `r summ_dot_point("smoothed_youth_unemp")` (smoothed using a 12-month rolling average);
+-   The unsmoothed, original youth unemployment rate is `r get_summ("A84424691V", latest_value, summ_data) %>% round2(1)` per cent, compared to `r get_summ("A84424691V", prev_value, summ_data) %>% round2(1)` per cent a month earlier.
+
+\newpage
+
+```{r}
+table_overview() 
+```
+
+<br>
+
+```{r}
+table_gr_sex()
+```
+
+<br>
+
+```{r}
+table_ind_unemp_state()
+```
+
+\newpage
+
+## [Youth]{.ul}
+
+Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions less apparent.
+
+```{r}
+table_gr_youth_summary()
+```
+
+\newpage
+
+```{r}
+table_gr_youth_unemp_region()
+```
+
+\newpage
+
+## [Metropolitan Melbourne]{.ul}
+
+```{r}
+table_reg_metro_states_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_emp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemp()
+```
+
+<br>
+
+```{r}
+table_reg_metro_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_metro_partrate()
+```
+
+## [Regional Victoria]{.ul}
+
+```{r}
+table_reg_nonmetro_states_unemprate()
+```
+
+<br>
+
+```{r}
+table_reg_nonmetro_emp()
+
+```
+
+\newpage
+
+```{r}
+table_reg_nonmetro_unemp()
+```
+
+<br>
+
+```{r}
+table_reg_nonmetro_unemprate()
+```
+
+```{r}
+table_reg_nonmetro_partrate()
+```
+
+\newpage
+
+## [Industries]{.ul}
+
+```{r}
+table_industries_summary()
+```

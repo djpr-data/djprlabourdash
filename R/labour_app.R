@@ -13,12 +13,10 @@ labour_server <- function(input, output, session) {
 
   myenv <- as.environment(1)
 
-  if (!exists("dash_data", where = myenv)) {
-    assign("dash_data",
-      load_and_hide(),
-      envir = myenv
-    )
-  }
+  assign("dash_data",
+    load_and_hide(),
+    envir = myenv
+  )
 
   assign("ts_summ",
     dash_data %>%
@@ -85,10 +83,12 @@ labour_server <- function(input, output, session) {
       by = "-1 month"
     )[2]
 
-    selected_val <- round2(ur_bar_data$value[ur_bar_data$date == ur_bar_latest], 1)
-    prev_val <- round2(ur_bar_data$value[ur_bar_data$date == prev_date], 1)
+    selected_val <- ur_bar_data$value[ur_bar_data$date == ur_bar_latest]
+    prev_val <- ur_bar_data$value[ur_bar_data$date == prev_date]
     change <- round2(selected_val - prev_val, 1)
     dir_change <- sign(change)
+    selected_val <- round2(selected_val, 1)
+    prev_val <- round2(selected_val, 1)
 
     change_arrow <- dplyr::case_when(
       dir_change == 1 ~
@@ -214,45 +214,6 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  # Indicators: dot point text of employment figures
-  # output$ind_emp_dotpoints <- renderUI({
-  #   dp1 <- text_active(
-  #     paste(
-  #       "There were XX Victorians employed,",
-  #       "of whom XX were in full-time work."
-  #     ),
-  #     c(
-  #       scales::comma(get_summ("A84423349V", latest_value)),
-  #       scales::comma(get_summ("A84423357V", latest_value))
-  #     )
-  #   )
-  #
-  #   dp2 <- text_active(
-  #     paste(
-  #       "Employment ",
-  #       dplyr::if_else(get_summ("A84423349V", d_period_abs) > 0,
-  #         "rose",
-  #         "fell"
-  #       ),
-  #       "by XX people (XX per cent) in the month to XX",
-  #       "and by XX people (XX per cent) over the year."
-  #     ),
-  #     c(
-  #       scales::comma(get_summ("A84423349V", d_period_abs)),
-  #       get_summ("A84423349V", d_period_perc),
-  #       get_summ("A84423349V", latest_period),
-  #       scales::comma(get_summ("A84423349V", d_year_abs)),
-  #       get_summ("A84423349V", d_period_perc)
-  #     )
-  #   )
-  #
-  #   tags$div(
-  #     tags$ul(
-  #       tags$li(dp1),
-  #       tags$li(dp2)
-  #     )
-  #   )
-  # })
 
   # Indicators: table of employment indicators
   output$ind_emp_table <- renderUI({
@@ -261,7 +222,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(ts_summ)
 
-  # Indicators: slopgraph of emp-pop ratios in states
+  # Indicators: slopegraph of emp-pop ratios in states
   djpr_plot_server("ind_emppop_state_slope",
     viz_ind_emppop_state_slope,
     date_slider = FALSE,
@@ -360,7 +321,8 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ),
     date_slider_value_min = Sys.Date() - (10 * 365),
-    plt_change = plt_change
+    plt_change = plt_change,
+    interactive = FALSE
   )
 
   # Indicators: hours worked ----
@@ -397,7 +359,8 @@ labour_server <- function(input, output, session) {
     ),
     height_percent = 75,
     plt_change = plt_change,
-    date_slider = FALSE
+    date_slider = FALSE,
+    interactive = FALSE
   )
 
   djpr_plot_server("ind_partrate_un_line",
@@ -465,6 +428,7 @@ labour_server <- function(input, output, session) {
     viz_gr_gen_emp_bar,
     date_slider = F,
     plt_change = plt_change,
+    interactive = FALSE,
     data = filter_dash_data(c(
       "A84423469L",
       "A84423245A",
@@ -730,21 +694,22 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ),
     plt_change = plt_change,
+    interactive = FALSE,
     date_slider = FALSE
   )
 
-  djpr_plot_server("gr_yth_mostvuln_line",
-    plot_function = viz_gr_yth_mostvuln_line,
-    data = filter_dash_data(c(
-      "A84433475V",
-      "A84424781X"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider_value_min = Sys.Date() - (365.25 * 10),
-    date_slider = TRUE
-  )
+  # djpr_plot_server("gr_yth_mostvuln_line",
+  #   plot_function = viz_gr_yth_mostvuln_line,
+  #   data = filter_dash_data(c(
+  #     "A84433475V",
+  #     "A84424781X"
+  #   ),
+  #   df = dash_data
+  #   ),
+  #   plt_change = plt_change,
+  #   date_slider_value_min = Sys.Date() - (365.25 * 10),
+  #   date_slider = TRUE
+  # )
 
   output$table_gr_youth_unemp_region <- renderUI({
     table_gr_youth_unemp_region() %>%
@@ -855,6 +820,7 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ),
     plt_change = plt_change,
+    interactive = FALSE,
     date_slider = FALSE
   )
 
@@ -870,6 +836,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
+    interactive = FALSE,
     plt_change = plt_change
   )
 
@@ -983,6 +950,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",
     viz_reg_unemp_emppop_partrate_multiline,
     date_slider = TRUE,
+    interactive = FALSE,
     height_percent = 125,
     data = filter_dash_data(c(
       "A84600253V",
@@ -1066,6 +1034,7 @@ labour_server <- function(input, output, session) {
 
   djpr_plot_server("reg_unemprate_dispersion",
     viz_reg_unemprate_dispersion,
+    interactive = FALSE,
     data = filter_dash_data(c(
       "A84600253V",
       "A84599659L",
@@ -1260,6 +1229,7 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change,
     height_percent = 150,
     width_percent = 46,
+    interactive = FALSE,
     date_slider = FALSE
   )
 
@@ -1291,8 +1261,7 @@ labour_server <- function(input, output, session) {
   output$table_industries_summary <- renderUI({
     table_industries_summary() %>%
       flextable::htmltools_value()
-  }) %>%
-    bindCache(ts_summ)
+  })
 
   djpr_plot_server("industries_empchange_sincecovid_bar",
     plot_function = viz_industries_empchange_sincecovid_bar,

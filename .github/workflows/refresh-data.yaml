@@ -1,0 +1,32 @@
+name: refresh-data
+
+on:
+  schedule:
+    - cron: '*/45 00-02 * * *'
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  refresh-data:
+    runs-on: macOS-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@master
+      - name: install-packages
+        run: |
+         Rscript -e "install.packages(c('remotes', 'here'), type = 'binary', dependencies = TRUE)"
+         Rscript -e "remotes::install_deps(type = 'binary', force = FALSE, dependencies = TRUE)"
+      - name: refresh-data
+        run: |
+         Rscript -e "source(here::here('data-raw', 'internal_data.R'))"
+      - name: Commit
+        run: |
+          git config --global user.name 'Matt Cowgill'
+          git config --global user.email 'mattcowgill@github.com'
+          git add .
+          git commit -m 'refreshing data' || echo "No changes to commit"
+          git push || echo "No changes to commit"

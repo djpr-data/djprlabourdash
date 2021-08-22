@@ -144,15 +144,13 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                      " (12-month average)"
                                    )) {
   data <- filter_dash_data(
-    c(
-      "A84433594K",
-      "A84433597T",
-      "A84433601W",
+    c("A84424687C",
+      "A84424688F",
+      "A84424691V",
       "A84424692W",
-      "A84433476W",
+      "A84424602F",
       "15-24_females_unemployment rate",
-      "15-24_males_unemployment rate"
-    )
+      "15-24_males_unemployment rate")
   )
 
   data <- data %>%
@@ -164,18 +162,18 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
   data %>%
     make_table_mem(
       row_order = c(
-        "A84433594K",
-        "A84433601W",
+        "A84424687C",
+        "A84424691V",
         "15-24_males_unemployment rate",
         "15-24_females_unemployment rate",
-        "A84433597T",
+        "A84424688F",
         "A84424692W",
-        "A84433476W"
+        "A84424602F"
       ),
       highlight_rows = c(
-        "A84433594K",
-        "A84433601W",
-        "A84433597T",
+        "A84424687C",
+        "A84424691V",
+        "A84424688F",
         "A84424692W"
       ),
       title = title,
@@ -317,7 +315,7 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
                                                   unset = "dashboard"
                                                 ),
                                                 title = paste0(
-                                                  "Regional unemployment rates by state, ",
+                                                  "Regional unemployment rate by state, ",
                                                   format(max(data$date), "%B %Y"),
                                                   " (3-month average)"
                                                 )) {
@@ -637,7 +635,7 @@ table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
                                   unset = "dashboard"
                                 ),
                                 title = paste0(
-                                  "Employment across greater Melbourne, ",
+                                  "Employment across Greater Melbourne, ",
                                   format(max(data$date), "%B %Y"),
                                   " (3-month average)"
                                 )) {
@@ -699,7 +697,7 @@ table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
                                     unset = "dashboard"
                                   ),
                                   title = paste0(
-                                    "Unemployed persons across greater Melbourne, ",
+                                    "Unemployed persons across Greater Melbourne, ",
                                     format(max(data$date), "%B %Y"),
                                     " (3-month average)"
                                   )) {
@@ -759,7 +757,7 @@ table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH
                                         unset = "dashboard"
                                       ),
                                       title = paste0(
-                                        "Unemployment rate across greater Melbourne, ",
+                                        "Unemployment rate across Greater Melbourne, ",
                                         format(max(data$date), "%B %Y"),
                                         " (3-month average)"
                                       )) {
@@ -819,7 +817,7 @@ table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
                                        unset = "dashboard"
                                      ),
                                      title = paste0(
-                                       "Participation rate across greater Melbourne, ",
+                                       "Participation rate across Greater Melbourne, ",
                                        format(max(data$date), "%B %Y"),
                                        " (3-month average)"
                                      )) {
@@ -945,7 +943,7 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     "A84423354L", # Unemp rate
     "A84423350C", # Unemp total
     "A85223451R", # Underut rate
-    "A84433601W", # Youth unemp,
+    "A84424691V", # Youth unemp,
     "A84423242V", # Male unemp
     "A84423466F" # Female unemp
   ))
@@ -954,7 +952,7 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::arrange(.data$date) %>%
-    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84433601W",
+    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84424691V",
       slider::slide_mean(.data$value, before = 11, complete = TRUE),
       .data$value
     )) %>%
@@ -1054,7 +1052,7 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ),
     highlight_rows = "A84601662A",
     title = title,
-    notes = "All data are original (not seasonally adjusted).",
+    notes = "Data is original (not seasonally adjusted).",
     destination = destination,
     rename_indicators = FALSE
   )

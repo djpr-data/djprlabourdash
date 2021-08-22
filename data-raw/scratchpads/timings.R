@@ -1,6 +1,6 @@
 devtools::load_all()
 
-dash_data <<- load_dash_data()
+# dash_data <<- load_dash_data()
 
 # Evaluate each viz function -----
 viz_funcs <- ls("package:djprlabourdash", pattern = "viz_")
@@ -21,7 +21,7 @@ for (f in viz_funcs) {
 }
 
 plots %>%
-  arrange(median)
+  arrange(-median)
 
 
 View(plots)
