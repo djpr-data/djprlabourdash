@@ -21,7 +21,9 @@ df = dash_data
 ) %>%
   dplyr::group_by(.data$series_id) %>%
   dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-  dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
+  dplyr::filter(.data$date >= as.Date("2020-01-01")))
+
+{
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
@@ -30,7 +32,13 @@ df = dash_data
   data <- data %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+                  tooltip = paste0(
+                    .data$state, "\n",
+                    format(.data$date, "%b %Y"), "\n",
+                    round2(.data$value, 1), "%"
+                  )
+                )
 
   latest <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -69,7 +77,9 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
   ),
   df = dash_data
 ),
-selected_indicator = "unemp_rate") {
+selected_indicator = "unemp_rate")
+
+{
   df <- data %>%
     dplyr::filter(.data$age == "15-24") %>%
     dplyr::select(
@@ -475,7 +485,8 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
       .data$date == max(.data$date)
     ) %>%
     dplyr::select(.data$value, .data$series, ) %>%
-    dplyr::mutate(value = paste0(round2(.data$value, 1), " per cent")) %>%
+    dplyr::mutate(value = paste0(round2(.data$value, 1), " per cent"),
+                  ) %>%
     tidyr::spread(key = .data$series, value = .data$value)
 
   title <- paste0(
@@ -489,7 +500,12 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
 
   data %>%
     dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
+    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state),
+                  tooltip = paste0(
+                    .data$geog, "\n",
+                    format(.data$date, "%b %Y"), "\n",
+                    round2(.data$value, 1), "%"
+                  )) %>%
     djpr_ts_linechart(
       col_var = .data$geog,
       label_num = paste0(round2(.data$value, 1), "%"),
@@ -523,7 +539,12 @@ df = dash_data
   data <- data %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+                  tooltip = paste0(
+                    .data$age, "\n",
+                    format(.data$date, "%b %Y"), "\n",
+                    round2(.data$value, 1), "%"
+                  ))
 
   latest <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -830,9 +851,13 @@ df = dash_data
 
   df <- df %>%
     dplyr::filter(!grepl("Employed total", .data$indicator, fixed = TRUE)) %>%
-    dplyr::mutate(value = .data$perc)
-
-
+    dplyr::mutate(value = .data$perc,
+                  tooltip = paste0(
+                    .data$indicator, "\n",
+                    format(.data$date, "%b %Y"), "\n",
+                    round2(.data$value, 1), "%"
+                  )
+                )
 
   title_df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -842,8 +867,6 @@ df = dash_data
       names_from = .data$indicator,
       values_from = .data$value
     )
-
-
 
   title <- dplyr::case_when(
     title_df$`Employed part-time` > title_df$`Employed full-time` ~
