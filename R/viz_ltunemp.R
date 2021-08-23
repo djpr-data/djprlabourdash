@@ -48,7 +48,13 @@ df = dash_data
     dplyr::filter(!is.na(.data$value))
 
   df <- df %>%
-    dplyr::mutate(value = 100 * .data$value)
+    dplyr::mutate(value = 100 * .data$value,
+                  tooltip = paste0(
+                    .data$state, "\n",
+                    format(.data$date, "%b %Y"), "\n",
+                    round2(.data$value, 1), "%"
+                  )
+                )
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
