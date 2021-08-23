@@ -22,10 +22,18 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
       .data$state
     ))
 
+  #tooltip added
   df <- df %>%
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(value = 100 * ((.data$value
-      / .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+      / .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+       tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
+
 
   latest_vic <- df %>%
     dplyr::filter(
@@ -68,6 +76,16 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
     dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12)) - 1)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
+
+  #add tooltip
+  df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value * 100, 1), "%"
+      )
+    )
 
   df_latest <- df %>%
     dplyr::filter(.data$date == max(.data$date))
@@ -198,7 +216,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
       aes(tooltip = paste0(
         format(.data$date, "%b %Y"),
         "\n",
-        round2(.data$value, 1)
+        round2(.data$value, 1),"%"
       ))
     ) +
     ggrepel::geom_label_repel(
@@ -277,6 +295,16 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     vic_rank < nsw_rank ~ "Victoria's employment to population ratio is higher than the ratio in New South Wales",
     TRUE ~ "Victoria's employment to population ratio compared to other states and territories"
   )
+
+  #add tooltip
+  df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value * 100, 1), "%"
+      )
+    )
 
   df %>%
     ggplot(aes(
@@ -457,6 +485,17 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
     paste0("Victoria's unemployment rate in ", latest_values$date, " was the same as Australia's"),
     TRUE ~ "Unemployment rate in Victoria and Australia"
   )
+
+  #add tooltip
+  data %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$geog, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value * 100, 1), "%"
+      )
+    )
+
 
   data %>%
     djpr_ts_linechart(
@@ -697,6 +736,7 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
     paste0("While the participation rate declined, the unemployment rate increased in ", latest_change$date),
     TRUE ~ "Unemployment and participation rates, Victoria"
   )
+
 
 
   df %>%
@@ -948,6 +988,15 @@ viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
     "it was in March 2020"
   )
 
+  #add tooltip
+  df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value * 100, 1), "%"
+      )
+    )
 
   df %>%
     djpr_ts_linechart(
