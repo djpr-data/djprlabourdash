@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.0.1.900
+Version: 0.1.0.900
 Authors@R: 
     c(
     person(given = "Annett",
@@ -30,7 +30,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     djprdashdata (>= 0.0.2.9004),
-    djprshiny (>= 0.0.5.907),
+    djprshiny (>= 0.0.5.908),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
