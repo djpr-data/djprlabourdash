@@ -156,7 +156,14 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
 df = dash_data
 )) {
   df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex))
+    dplyr::mutate(
+      sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   change_by_sex <- df %>%
     dplyr::filter(.data$sex != "Persons") %>%
@@ -213,7 +220,14 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
 df = dash_data
 )) {
   df <- data %>%
-    dplyr::mutate(sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex))
+    dplyr::mutate(
+      sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
+      tooltip = paste0(
+        .data$sex, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   current_ur <- df %>%
     dplyr::filter(.data$sex != "Persons", date == max(.data$date)) %>%
@@ -282,7 +296,14 @@ df = dash_data
     ) %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$sex) %>%
-    dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12) - 1))) %>%
+    dplyr::mutate(
+      value = 100 * ((.data$value / lag(.data$value, 12) - 1)),
+      tooltip = paste0(
+        .data$sex, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    ) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
