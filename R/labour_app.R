@@ -579,7 +579,7 @@ labour_server <- function(input, output, session) {
     data = youth_focus_box_data(),
     plt_change = plt_change,
     width_percent = 47,
-    height_percent = 70,
+    height_percent = 50,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
     download_button = T,
@@ -603,7 +603,7 @@ labour_server <- function(input, output, session) {
     ),
     plt_change = plt_change,
     width_percent = 47,
-    height_percent = 70,
+    height_percent = 50,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
     download_button = T,
@@ -611,6 +611,64 @@ labour_server <- function(input, output, session) {
       input$youth_focus
     })
   )
+
+  djpr_plot_server("gr_youth_vicaus_line",
+    viz_gr_youth_vicaus_line,
+    data = filter_dash_data(c(
+      "A84433601W",
+      "A84433602X",
+      "A84433603A",
+      "A84433505W",
+      "A84433503T",
+      "A84433504V",
+      "A84433519K",
+      "A84433517F",
+      "A84433518J",
+      "A84433533F",
+      "A84433531A",
+      "A84433532C",
+      "A84433617R",
+      "A84433615K",
+      "A84433616L",
+      "A84433575C",
+      "A84433573X",
+      "A84433574A",
+      "A84433547V",
+      "A84433545R",
+      "A84433546T",
+      "A84433589T",
+      "A84433587L",
+      "A84433588R",
+      "A84433561R",
+      "A84433559C",
+      "A84433560L"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::mutate(
+        state = dplyr::if_else(.data$state == "",
+          "Aus",
+          .data$state
+        ),
+        state = strayr::clean_state(.data$state)
+      ),
+    check_box_options = c(
+      "Aus",
+      "NSW",
+      "Qld",
+      "Tas",
+      "ACT",
+      "WA",
+      "NT",
+      "Vic",
+      "SA"
+    ),
+    check_box_var = .data$state,
+    check_box_selected = c("Aus", "Vic"),
+    selected_indicator = reactive(input$youth_focus),
+    plt_change = plt_change
+  )
+
 
   djpr_plot_server("gr_youth_full_part_line",
     plot_function = viz_gr_youth_full_part_line,
@@ -661,6 +719,80 @@ labour_server <- function(input, output, session) {
       flextable::htmltools_value()
   }) %>%
     bindCache(ts_summ)
+
+  # Inclusion: youth LF status by region focus box ----
+  output$title_youth_unemp_emppop_partrate_vic <- renderUI({
+    title_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus) %>%
+      djpr_plot_title()
+  })
+
+  output$map_youth_unemp_emppop_partrate_vic <- leaflet::renderLeaflet({
+    map_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus)
+  })
+
+  djpr_plot_server("gr_youth_unemp_emppop_partrate_bar",
+    viz_gr_youth_unemp_emppop_partrate_bar,
+    data = filter_dash_data(c(
+      "15-24_unemployed_melbourne - inner",
+      "15-24_unemployed_melbourne - inner east",
+      "15-24_unemployed_melbourne - inner south",
+      "15-24_unemployed_melbourne - north east",
+      "15-24_unemployed_melbourne - north west",
+      "15-24_unemployed_melbourne - outer east",
+      "15-24_unemployed_melbourne - south east",
+      "15-24_unemployed_melbourne - west",
+      "15-24_unemployed_mornington peninsula",
+      "15-24_unemployed_ballarat",
+      "15-24_unemployed_bendigo",
+      "15-24_unemployed_geelong",
+      "15-24_unemployed_hume",
+      "15-24_unemployed_latrobe - gippsland",
+      "15-24_unemployed_victoria - north west",
+      "15-24_unemployed_shepparton",
+      "15-24_unemployed_warrnambool and south west",
+      "15-24_employed_melbourne - inner",
+      "15-24_employed_melbourne - inner east",
+      "15-24_employed_melbourne - inner south",
+      "15-24_employed_melbourne - north east",
+      "15-24_employed_melbourne - north west",
+      "15-24_employed_melbourne - outer east",
+      "15-24_employed_melbourne - south east",
+      "15-24_employed_melbourne - west",
+      "15-24_employed_mornington peninsula",
+      "15-24_employed_ballarat",
+      "15-24_employed_bendigo",
+      "15-24_employed_geelong",
+      "15-24_employed_hume",
+      "15-24_employed_latrobe - gippsland",
+      "15-24_employed_victoria - north west",
+      "15-24_employed_shepparton",
+      "15-24_employed_warrnambool and south west",
+      "15-24_nilf_melbourne - inner",
+      "15-24_nilf_melbourne - inner east",
+      "15-24_nilf_melbourne - inner south",
+      "15-24_nilf_melbourne - north east",
+      "15-24_nilf_melbourne - north west",
+      "15-24_nilf_melbourne - outer east",
+      "15-24_nilf_melbourne - south east",
+      "15-24_nilf_melbourne - west",
+      "15-24_nilf_mornington peninsula",
+      "15-24_nilf_ballarat",
+      "15-24_nilf_bendigo",
+      "15-24_nilf_geelong",
+      "15-24_nilf_hume",
+      "15-24_nilf_latrobe - gippsland",
+      "15-24_nilf_victoria - north west",
+      "15-24_nilf_shepparton",
+      "15-24_nilf_warrnambool and south west"
+    ),
+    df = dash_data
+    ),
+    date_slider = FALSE,
+    selected_indicator = reactive(input$youth_region_focus),
+    download_button = FALSE,
+    plt_change = plt_change,
+    width_percent = 45
+  )
 
   # Inclusion: long term unemployment ------
 

@@ -86,11 +86,11 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     vic_latest > aus_latest ~
-      "Employment growth in Victoria outpaced Australia as a whole in the 12 months to ",
+    "Employment growth in Victoria outpaced Australia as a whole in the 12 months to ",
     vic_latest < aus_latest ~
-      "Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ",
+    "Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ",
     vic_latest == aus_latest ~
-      "Employment in Victoria grew at the same pace as the Australian total in the 12 months to"
+    "Employment in Victoria grew at the same pace as the Australian total in the 12 months to"
   )
 
   title <- paste0(title, latest_month)
