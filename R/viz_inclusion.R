@@ -880,19 +880,17 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$series, .data$value, .data$date)
 
   df <- df %>%
-    dplyr::group_by(.data$date) %>%
-    summarise(
-      Australia = .data$value[.data$series == "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;"] /
-        .data$value[.data$series == "Labour force total ;  Persons ;  Australia ;"],
-      Victoria = (.data$value[.data$series == "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)"] +
-        .data$value[.data$series == "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)"]) /
-        .data$value[.data$series == "Labour force total ;  Persons ;  > Victoria ;"]
-    ) %>%
-    dplyr::ungroup() %>%
-    tidyr::pivot_longer(
-      cols = !date,
-      names_to = "state"
-    )
+    tidyr::pivot_wider(names_from = series,
+                       values_from = value) %>%
+    dplyr::mutate(Australia = `52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;` /
+                    `Labour force total ;  Persons ;  Australia ;`,
+                  Victoria = (`Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)` +
+                                `Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
+                    `Labour force total ;  Persons ;  > Victoria ;`) %>%
+    dplyr::select(date, Australia, Victoria) %>%
+    tidyr::pivot_longer(names_to = "state",
+                        cols = !date) %>%
+    dplyr::filter(!is.na(value))
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
