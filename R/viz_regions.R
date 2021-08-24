@@ -1884,8 +1884,11 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::select(.data$date, .data$series, .data$value)
 
+  df <- df %>%
+    dplyr::filter(.data$date == max(.data$date))
+
   # Note that this is substantially faster than tidyr::separate()
-  split_series <- stringr::str_split_fixed(df$series, " ; ", 3)
+  split_series <- stringr::str_split_fixed(df$series, stringr::fixed(" ; "), 3)
 
   df <- df %>%
     dplyr::mutate(
@@ -1895,9 +1898,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::select(-.data$series)
 
-  df <- df %>%
-    dplyr::filter(.data$date == max(.data$date))
-
   # calculate participation, unemployment rate and employment to pop ratio for each regional area
   df <- df %>%
     tidyr::pivot_wider(
@@ -1905,6 +1905,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
       values_from = .data$value
     )
 
+  # Calculate national totals for regional areas
   df <- df %>%
     dplyr::group_by(.data$date, .data$age) %>%
     dplyr::summarise(
@@ -1924,20 +1925,23 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
 
   # depending on selected_indicator, choose measure to be calculated
   df <- df %>%
-    dplyr::rename(value = .env$selected_indicator) %>%
-    dplyr::select(.data$date, .data$age, .data$geog, .data$value)
+    dplyr::select(.data$date, .data$age, .data$geog, "value" = .env$selected_indicator)
 
   indic_long <- dplyr::case_when(
-    selected_indicator == "unemp_rate" ~ "unemployment rate",
-    selected_indicator == "part_rate" ~ "participation rate",
-    selected_indicator == "emp_pop" ~ "employment to population ratio",
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
     TRUE ~ NA_character_
   )
 
+  max_date <- max(data$date) %>%
+    format("%B %Y")
+
   subtitle <- paste0(
-    "The ", indic_long,
-    " in regional areas by age in ", format(max(data$date), "%B %Y")
+    indic_long,
+    " in regional areas by age, ", max_date
   )
+
 
   df <- df %>%
     dplyr::mutate(state_group = dplyr::if_else(
@@ -1952,7 +1956,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
   title_df <- df %>%
     dplyr::ungroup() %>%
     dplyr::filter(.data$geog %in% c("Regional Aus.", "Regional Vic.")) %>%
-    dplyr::select(.data$age, .data$geog, .data$value) %>%
+    # dplyr::select(.data$age, .data$geog, .data$value) %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(rank = rank(.data$value))
 
@@ -1960,28 +1964,28 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
     all(title_df$rank[title_df$geog == "Regional Vic."] == 1) ~
     paste0(
       "Regional Victoria had a lower ",
-      indic_long,
+      tolower(indic_long),
       " than regional Australia across all age groups in ",
-      format(max(df$date), "%B %Y")
+      max_date
     ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 1 ~
     paste0(
       "Regional Victoria had a lower ",
       indic_long,
       " for young people than regional Australia in ",
-      format(max(df$date), "%B %Y")
+      max_date
     ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 2 ~
     paste0(
       "Regional Victoria had a higher ",
       indic_long,
       " for young people than regional Australia in ",
-      format(max(df$date), "%B %Y")
+      max_date
     ),
     TRUE ~
     paste0(
       "Regional ", indic_long, " by age by State and Territory, ",
-      format(max(df$date), "%B %Y")
+      max_date
     )
   )
 
@@ -1993,105 +1997,57 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
       round2(.data$value, 1), "%"
     ))
 
-  # use patchwork to make three plots and tie them together
-  patch_1 <- df %>%
-    dplyr::filter(.data$age == "15-24") %>%
-    ggplot(aes(
-      x = stats::reorder(.data$geog, .data$value),
-      y = .data$value,
-      fill = .data$state_group
-    )) +
-    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
-    coord_flip() +
-    theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(
-      limits = c(0, max_value),
-      breaks = scales::breaks_pretty(5)
-    ) +
-    scale_fill_manual(
-      values = c(
-        "Rest of Vic." = djprtheme::djpr_royal_blue,
-        "Rest of Aus." = djprtheme::djpr_green,
-        "Other" = "grey75"
+  make_age_patch <- function(age, upper_limit = max_value) {
+    df %>%
+      dplyr::filter(.data$age == .env$age) %>%
+      ggplot(aes(
+        x = stats::reorder(.data$geog, .data$value),
+        y = .data$value,
+        fill = .data$state_group
+      )) +
+      ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
+      coord_flip() +
+      theme_djpr(flipped = TRUE) +
+      djpr_y_continuous(
+        limits = c(0, upper_limit),
+        breaks = scales::breaks_pretty(5),
+        labels = function(x) paste0(x, "%")
+      ) +
+      scale_fill_manual(
+        values = c(
+          "Rest of Vic." = djprtheme::djpr_royal_blue,
+          "Rest of Aus." = djprtheme::djpr_green,
+          "Other" = "grey75"
+        )
+      ) +
+      labs(subtitle = paste0("Age ", age)) +
+      theme(
+        plot.subtitle = element_text(
+          hjust = 0.5,
+          colour = "black",
+          size = 14
+        ),
+        axis.title.x = element_blank(),
+        axis.text.x = if (age == "55+") {
+          element_text()
+        } else {
+          element_blank()
+        }
       )
-    ) +
-    labs(subtitle = "Age 15-24") +
-    theme(
-      plot.subtitle = element_text(
-        hjust = 0.5,
-        colour = "black",
-        size = 14
-      ),
-      axis.title.x = element_blank(),
-      axis.text.x = element_blank()
-    )
+  }
 
-  patch_2 <- df %>%
-    dplyr::filter(.data$age == "25-54") %>%
-    ggplot(aes(
-      x = stats::reorder(.data$geog, .data$value),
-      y = .data$value,
-      fill = .data$state_group
-    )) +
-    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
-    coord_flip() +
-    theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(
-      limits = c(0, max_value),
-      breaks = scales::breaks_pretty(5)
-    ) +
-    scale_fill_manual(
-      values = c(
-        "Rest of Vic." = djprtheme::djpr_royal_blue,
-        "Rest of Aus." = djprtheme::djpr_green,
-        "Other" = "grey70"
-      )
-    ) +
-    labs(subtitle = "Age 25-54") +
-    theme(
-      plot.subtitle = element_text(
-        hjust = 0.5,
-        colour = "black",
-        size = 14
-      ),
-      axis.title.x = element_blank(),
-      axis.text.x = element_blank()
-    )
+  patches <- lapply(
+    c(
+      "15-24",
+      "25-54",
+      "55+"
+    ),
+    make_age_patch
+  )
 
-  patch_3 <- df %>%
-    dplyr::filter(.data$age == "55+") %>%
-    ggplot(aes(
-      x = stats::reorder(.data$geog, .data$value),
-      y = .data$value,
-      fill = .data$state_group
-    )) +
-    ggiraph::geom_col_interactive(aes(tooltip = .data$tooltip)) +
-    coord_flip() +
-    theme_djpr(flipped = TRUE) +
-    djpr_y_continuous(
-      limits = c(0, max_value),
-      breaks = scales::breaks_pretty(5),
-      labels = function(x) paste0(x, "%")
-    ) +
-    scale_fill_manual(
-      values = c(
-        "Rest of Vic." = djprtheme::djpr_royal_blue,
-        "Rest of Aus." = djprtheme::djpr_green,
-        "Other" = "grey70"
-      )
-    ) +
-    labs(subtitle = "Age 55+") +
-    theme(
-      plot.subtitle = element_text(
-        hjust = 0.5,
-        colour = "black",
-        size = 14
-      ),
-      axis.title.x = element_blank()
-    )
 
   patchwork::wrap_plots(
-    patch_1, patch_2, patch_3,
+    patches,
     ncol = 1
   ) +
     patchwork::plot_annotation(

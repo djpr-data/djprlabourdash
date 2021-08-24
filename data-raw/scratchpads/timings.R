@@ -17,8 +17,10 @@ for (f in viz_funcs) {
     # print(
     name_to_eval(f)
     # )
-    , time_unit = "s",
-    min_iterations = 10)
+    ,
+    time_unit = "s",
+    min_iterations = 10
+  )
   x <- as_tibble(x)
   x$expression <- f
   x <- dplyr::select(x, expression, median, `itr/sec`)
