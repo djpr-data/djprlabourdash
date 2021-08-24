@@ -1956,7 +1956,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
   title_df <- df %>%
     dplyr::ungroup() %>%
     dplyr::filter(.data$geog %in% c("Regional Aus.", "Regional Vic.")) %>%
-    # dplyr::select(.data$age, .data$geog, .data$value) %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(rank = rank(.data$value))
 
@@ -1971,14 +1970,14 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 1 ~
     paste0(
       "Regional Victoria had a lower ",
-      indic_long,
+      tolower(indic_long),
       " for young people than regional Australia in ",
       max_date
     ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 2 ~
     paste0(
       "Regional Victoria had a higher ",
-      indic_long,
+      tolower(indic_long),
       " for young people than regional Australia in ",
       max_date
     ),
