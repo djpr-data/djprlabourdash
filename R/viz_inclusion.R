@@ -881,20 +881,20 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   df <- df %>%
     tidyr::pivot_wider(
-      names_from = series,
-      values_from = value
+      names_from = .data$series,
+      values_from = .data$value
     ) %>%
     dplyr::mutate(
-      Australia = 100 * (`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;` /
-        `Labour force total ;  Persons ;  Australia ;`),
-      Victoria = 100 * ((`Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)` +
-        `Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
-        `Labour force total ;  Persons ;  > Victoria ;`)
+      Australia = 100 * (.data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;` /
+                           .data$`Labour force total ;  Persons ;  Australia ;`),
+      Victoria = 100 * ((.data$`Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)` +
+                           .data$`Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
+                          .data$`Labour force total ;  Persons ;  > Victoria ;`)
     ) %>%
-    dplyr::select(date, Australia, Victoria) %>%
+    dplyr::select(.data$date, .data$Australia, .data$Victoria) %>%
     tidyr::pivot_longer(
       names_to = "state",
-      cols = !date
+      cols = !.data$date
     )
 
   df <- df %>%
