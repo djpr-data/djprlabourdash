@@ -880,18 +880,21 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$series, .data$value, .data$date)
 
   df <- df %>%
-    dplyr::group_by(.data$date) %>%
-    summarise(
-      Australia = .data$value[.data$series == "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;"] /
-        .data$value[.data$series == "Labour force total ;  Persons ;  Australia ;"],
-      Victoria = (.data$value[.data$series == "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)"] +
-        .data$value[.data$series == "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)"]) /
-        .data$value[.data$series == "Labour force total ;  Persons ;  > Victoria ;"]
+    tidyr::pivot_wider(
+      names_from = .data$series,
+      values_from = .data$value
     ) %>%
-    dplyr::ungroup() %>%
+    dplyr::mutate(
+      Australia = 100 * (.data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;` /
+                           .data$`Labour force total ;  Persons ;  Australia ;`),
+      Victoria = 100 * ((.data$`Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)` +
+                           .data$`Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
+                          .data$`Labour force total ;  Persons ;  > Victoria ;`)
+    ) %>%
+    dplyr::select(.data$date, .data$Australia, .data$Victoria) %>%
     tidyr::pivot_longer(
-      cols = !date,
-      names_to = "state"
+      names_to = "state",
+      cols = !.data$date
     )
 
   df <- df %>%
@@ -903,8 +906,6 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-  df <- df %>%
-    dplyr::mutate(value = 100 * .data$value)
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
@@ -2369,17 +2370,11 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
 
   # Reduce to selected_indicator
   df <- df %>%
-    dplyr::filter(.data$indicator == indic_long)
+    dplyr::filter(.data$indicator == .env$indic_long)
 
   # create state_group
   df <- df %>%
     dplyr::mutate(
-      line_col = dplyr::if_else(.data$state %in% c(
-        "Vic", "Aus"
-      ),
-      .data$state,
-      "Other"
-      ),
       tooltip = paste0(
         .data$state, "\n",
         format(.data$date, "%b %Y"), "\n",
@@ -2387,34 +2382,26 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
       )
     )
 
-  # select the latest date
-  latest_date <- df %>%
-    dplyr::group_by(.data$state) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
-
   latest <- df %>%
     dplyr::filter(
-      .data$date == max(.data$date),
-      !.data$state %in% c("ACT", "NT")
+      .data$date == max(.data$date)
     ) %>%
-    dplyr::select(.data$state, .data$value) %>%
-    dplyr::mutate(rank = dplyr::min_rank(-.data$value))
+    dplyr::select(.data$state, .data$value)
 
-  vic_rank <- latest$rank[latest$state == "Vic"]
-  aus_rank <- latest$rank[latest$state == "Aus"]
-  vic_level <- paste0(round2(latest$value[latest$state == "Vic"], 1), "%")
+  vic_level_raw <- round2(latest$value[latest$state == "Vic"], 1)
+  aus_level_raw <- round2(latest$value[latest$state == "Aus"], 1)
+  vic_level <- paste0(vic_level_raw, "%")
 
   title <- dplyr::case_when(
-    vic_rank > aus_rank ~ ", which was lower than the Australian average",
-    vic_rank == aus_rank ~ ", which was the same as the Australian average",
-    vic_rank < aus_rank ~ ", which was higher than the Australian average",
+    vic_level_raw > aus_level_raw ~ ", which was higher than the Australian average",
+    vic_level_raw == aus_level_raw ~ ", which was the same as the Australian average",
+    vic_level_raw < aus_level_raw ~ ", which was lower than the Australian average",
     TRUE ~ paste0("Victoria's ", indic_long, "compared to other states and territories and the Australian average")
   )
 
-  title <- paste0("Victoria's youth ", tolower(indic_long), " in ", format(latest_date$date[1], "%B %Y"), " was ", vic_level, title)
+  title <- paste0("Victoria's youth ", tolower(indic_long), " in ", format(max(df$date), "%B %Y"), " was ", vic_level, title)
 
-  subtitle <- paste0("Youth (aged 15 to 24) ", tolower(indic_long), " by state")
+  subtitle <- paste0("Youth (age 15 to 24) ", tolower(indic_long), " by state")
 
   other_colour <- "grey70"
 
@@ -2423,10 +2410,6 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
       col_var = .data$state,
       y_labels = function(x) paste0(x, "%"),
       label_num = paste0(round2(.data$value, 1), "%")
-    ) +
-    scale_y_continuous(
-      breaks = scales::breaks_pretty(5),
-      labels = function(x) paste0(x, "%")
     ) +
     scale_colour_manual(values = c(
       "Vic" = djprtheme::djpr_royal_blue,
