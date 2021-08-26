@@ -337,8 +337,14 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
                                                 title = title_reg_emp_regions_sincecovid_line(data = data)) {
   df <- data %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+    dplyr::mutate(
+      value = 100 * ((.data$value / .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   df %>%
     djpr_ts_linechart(
@@ -1503,7 +1509,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     dplyr::mutate(
       tooltip = paste0(
         .data$gcc_restofstate, "\n",
-        format(.data$date, "%B %Y"),
+        format(.data$date, "%b %Y"),
         "\n",
         round2(.data$value, 1), "%"
       )
