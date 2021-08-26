@@ -1579,8 +1579,9 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-      .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+    dplyr::mutate(
+      value = 100 * (
+        (.data$value / .data$value[.data$date == as.Date("2020-03-01")]) - 1),
       tooltip = paste0(
         .data$state, "\n",
         format(.data$date, "%b %Y"), "\n",
