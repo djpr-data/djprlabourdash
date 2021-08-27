@@ -313,7 +313,7 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     geom_line() +
     ggiraph::geom_point_interactive(aes(tooltip = paste0(
       .data$state_abbr, "\n",
-      round2(.data$value, 1)
+      round2(.data$value, 1), "%"
     )),
     size = 3,
     shape = "circle filled",
