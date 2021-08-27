@@ -418,30 +418,30 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
 }
 
 # Line chart --- unemployment rate by age, Victoria ------
-youth_focus_box_data <- function() {
-  df <- filter_dash_data(
-    c(
-      "15-24_greater melbourne_employed",
-      "25-54_greater melbourne_employed",
-      "55+_greater melbourne_employed",
-      "15-24_rest of vic._employed",
-      "25-54_rest of vic._employed",
-      "55+_rest of vic._employed",
-      "15-24_greater melbourne_nilf",
-      "25-54_greater melbourne_nilf",
-      "55+_greater melbourne_nilf",
-      "15-24_rest of vic._nilf",
-      "25-54_rest of vic._nilf",
-      "55+_rest of vic._nilf",
-      "15-24_greater melbourne_unemployed",
-      "25-54_greater melbourne_unemployed",
-      "55+_greater melbourne_unemployed",
-      "15-24_rest of vic._unemployed",
-      "25-54_rest of vic._unemployed",
-      "55+_rest of vic._unemployed"
-    ),
-    df = dash_data
-  ) %>%
+youth_focus_box_data <- function(data = filter_dash_data(
+  c(
+    "15-24_greater melbourne_employed",
+    "25-54_greater melbourne_employed",
+    "55+_greater melbourne_employed",
+    "15-24_rest of vic._employed",
+    "25-54_rest of vic._employed",
+    "55+_rest of vic._employed",
+    "15-24_greater melbourne_nilf",
+    "25-54_greater melbourne_nilf",
+    "55+_greater melbourne_nilf",
+    "15-24_rest of vic._nilf",
+    "25-54_rest of vic._nilf",
+    "55+_rest of vic._nilf",
+    "15-24_greater melbourne_unemployed",
+    "25-54_greater melbourne_unemployed",
+    "55+_greater melbourne_unemployed",
+    "15-24_rest of vic._unemployed",
+    "25-54_rest of vic._unemployed",
+    "55+_rest of vic._unemployed"
+  ),
+  df = dash_data
+)) {
+   df <- data %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
     dplyr::filter(!is.na(.data$value)) %>%
@@ -482,16 +482,18 @@ youth_focus_box_data <- function() {
 viz_gr_ages_line <- function(data = youth_focus_box_data(),
                              selected_indicator = "unemp_rate") {
   df <- data %>%
-    dplyr::rename(value = selected_indicator) %>%
+    dplyr::rename(value = .env$selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$value)
 
   latest <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::mutate(value = round2(.data$value * 100, 1)) %>%
     tidyr::pivot_wider(
       names_from = .data$age,
       values_from = .data$value
-    )
+    ) %>%
+    dplyr::mutate(diff = `15-24` - `25-54`) %>%
+    dplyr::mutate(dplyr::across(-.data$date,
+                                ~round2(.x * 100, 1)))
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "unemployment rate",
@@ -507,8 +509,8 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
     TRUE ~ NA_character_
   )
 
-  diff <- dplyr::if_else(latest$`15-24` != latest$`25-54`,
-    paste0(abs(latest$`15-24` - latest$`25-54`), " percentage points "),
+  diff <- dplyr::if_else(latest$diff != 0,
+    paste0(abs(latest$diff), " percentage points "),
     ""
   )
 
