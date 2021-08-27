@@ -296,15 +296,6 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
     TRUE ~ "Victoria's employment to population ratio compared to other states and territories"
   )
 
-  #add tooltip
-  df <- df %>%
-    dplyr::mutate(
-      tooltip = paste0(
-        .data$state, "\n",
-        round2(.data$value, 1), "%"
-      )
-    )
-
   df %>%
     ggplot(aes(
       x = .data$date, y = .data$value,
