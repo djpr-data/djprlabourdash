@@ -78,12 +78,12 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
     dplyr::ungroup()
 
   #add tooltip
-  df %>%
+  df <- df %>%
     dplyr::mutate(
       tooltip = paste0(
         .data$state, "\n",
         format(.data$date, "%b %Y"), "\n",
-        round2(.data$value * 100, 1), "%"
+        round2(.data$value, 1), "%"
       )
     )
 
@@ -297,12 +297,11 @@ viz_ind_emppop_state_slope <- function(data = filter_dash_data(c(
   )
 
   #add tooltip
-  df %>%
+  df <- df %>%
     dplyr::mutate(
       tooltip = paste0(
         .data$state, "\n",
-        format(.data$date, "%b %Y"), "\n",
-        round2(.data$value * 100, 1), "%"
+        round2(.data$value, 1), "%"
       )
     )
 
@@ -487,12 +486,12 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
   )
 
   #add tooltip
-  data %>%
+  data <- data %>%
     dplyr::mutate(
       tooltip = paste0(
         .data$geog, "\n",
         format(.data$date, "%b %Y"), "\n",
-        round2(.data$value * 100, 1), "%"
+        round2(.data$value, 1), "%"
       )
     )
 
@@ -707,7 +706,18 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
     dplyr::group_by(.data$series, .data$indicator) %>%
     dplyr::mutate(value = mean(.data$value)) %>%
     dplyr::ungroup() %>%
-    dplyr::bind_rows(df)
+    dplyr::bind_rows(df) %>%
+    dplyr::mutate(
+    tooltip =
+      dplyr::if_else(
+        .data$indicator == "Average",
+        paste0("Average\n", round2(.data$value, 1), "%"),
+        paste0(
+          .data$indicator, "\n",
+          format(.data$date, "%b %Y"), "\n",
+          round2(.data$value, 1), "%"
+        )
+      ))
 
   # Create title
   latest_change <- df %>%
@@ -912,7 +922,13 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
                                   df = dash_data
                                   )) {
   data <- data %>%
-    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state))
+    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state),
+                  tooltip = paste0(
+                    .data$geog, "\n",
+                    format(.data$date, "%b %Y"), "\n",
+                    round2(.data$value, 1), "%"
+                  )
+    )
 
   latest_values <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -960,7 +976,13 @@ viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
   df <- data %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(value = 100 * ((.data$value /
-      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+    tooltip = paste0(
+    .data$indicator, "\n",
+    format(.data$date, "%b %Y"), "\n",
+    round2(.data$value, 1), "%"
+  )
+  )
 
   latest_full_time <- df %>%
     dplyr::filter(
@@ -988,15 +1010,7 @@ viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
     "it was in March 2020"
   )
 
-  #add tooltip
-  df %>%
-    dplyr::mutate(
-      tooltip = paste0(
-        .data$indicator, "\n",
-        format(.data$date, "%b %Y"), "\n",
-        round2(.data$value * 100, 1), "%"
-      )
-    )
+
 
   df %>%
     djpr_ts_linechart(
