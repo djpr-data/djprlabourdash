@@ -26,7 +26,7 @@ labour_server <- function(input, output, session) {
   )
 
   plt_change <- reactive(input$plt_change) %>%
-    debounce(10)
+    debounce(2)
 
   # Overview ------
   # Overview: bar chart and active text ------

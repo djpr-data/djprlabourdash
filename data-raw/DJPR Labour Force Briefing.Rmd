@@ -251,6 +251,8 @@ table_reg_metro_unemprate()
 table_reg_metro_partrate()
 ```
 
+\newpage
+
 ## [Regional Victoria]{.ul}
 
 ```{r}
