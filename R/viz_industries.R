@@ -394,7 +394,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
         round2(.data$value, 1), "%"
       )
     ) %>%
-    dplyr::select(.data$date, .data$industry, .data$value) %>%
+    dplyr::select(.data$date, .data$industry, .data$value, .data$tooltip) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
