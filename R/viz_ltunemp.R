@@ -12,14 +12,15 @@
 #' @noRd
 
 viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-  "A84423687K",
-  "A84423089K",
-  "A84597681W"
-),
-df = dash_data
-)) {
+                            "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                            "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                            "A84423687K",
+                            "A84423089K",
+                            "A84597681W"),
+                            df = dash_data
+                            )
+                          )
+{
   df <- data %>%
     dplyr::select(.data$series, .data$value, .data$date)
 
@@ -43,7 +44,8 @@ df = dash_data
     dplyr::mutate(value = slider::slide_mean(.data$value,
                                              before = 2,
                                              complete = TRUE
-    )) %>%
+      )
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
@@ -276,17 +278,15 @@ df = dash_data
 
 # area chart for the proportion of unemployed by duration
 viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
-  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-),
-df = dash_data
-)) {
+                          "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                          "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                          "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                          "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                          "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                          "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"),
+                          df = dash_data))
+{
   # select the series you need for the bar chart
-
   data <- data %>%
     dplyr::select(.data$duration, .data$value, .data$date)
 
@@ -299,7 +299,6 @@ df = dash_data
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
-
 
   # Convert duration to factor to order area chart
   data <- data %>%
