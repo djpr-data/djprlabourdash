@@ -25,18 +25,21 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$series, .data$value, .data$date)
 
   df <- df %>%
-    dplyr::group_by(.data$date) %>%
-    summarise(
-      Australia = .data$value[.data$series == "52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;"] /
-        .data$value[.data$series == "Labour force total ;  Persons ;  Australia ;"],
-      Victoria = (.data$value[.data$series == "Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)"] +
-                    .data$value[.data$series == "Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)"]) /
-        .data$value[.data$series == "Labour force total ;  Persons ;  > Victoria ;"]
+    tidyr::pivot_wider(
+      names_from = .data$series,
+      values_from = .data$value
     ) %>%
-    dplyr::ungroup() %>%
+    dplyr::mutate(
+      Australia = 100 * (.data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;` /
+                           .data$`Labour force total ;  Persons ;  Australia ;`),
+      Victoria = 100 * ((.data$`Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)` +
+                           .data$`Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
+                          .data$`Labour force total ;  Persons ;  > Victoria ;`)
+    ) %>%
+    dplyr::select(.data$date, .data$Australia, .data$Victoria) %>%
     tidyr::pivot_longer(
-      cols = !date,
-      names_to = "state"
+      names_to = "state",
+      cols = !.data$date
     )
 
   df <- df %>%
@@ -44,14 +47,13 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     dplyr::mutate(value = slider::slide_mean(.data$value,
                                              before = 2,
                                              complete = TRUE
-      )
-    ) %>%
+    )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
+
   df <- df %>%
-    dplyr::mutate(value = 100 * .data$value,
-                  tooltip = paste0(
+    dplyr::mutate(tooltip = paste0(
                     .data$state, "\n",
                     format(.data$date, "%b %Y"), "\n",
                     round2(.data$value, 1), "%"
@@ -60,6 +62,7 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
+    dplyr::select(-.data$tooltip) %>%
     dplyr::mutate(
       value = round2(.data$value, 1),
       date = format(.data$date, "%B %Y")
