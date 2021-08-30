@@ -3,9 +3,11 @@ labour_ui <- function(...) {
     title = shiny::HTML("DJPR Jobs<br>Dashboard"),
     page_overview(),
     page_indicators(),
-    page_sex(),
-    page_age(),
-    page_ltunemp(),
+    navbarMenu("Groups",
+               page_sex(),
+               page_age(),
+               page_ltunemp()
+    ),
     page_regions(),
     page_industries()
   )
