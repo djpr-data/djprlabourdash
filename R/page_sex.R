@@ -2,7 +2,7 @@ page_sex <- function(...) {
   djpr_tab_panel(
     title = "Sex",
     br(),
-    h2(br(), "Overview table"),
+    h2(br(), "Overview"),
       uiOutput("table_gr_sex"),
     br(),
     h2(br(), "Labour force status by sex"),
