@@ -40,7 +40,6 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
   # Youth data = 12m rolling average
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c(
       "A84433601W",
       "A84424691V",
@@ -49,14 +48,11 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
     ),
     slider::slide_mean(.data$value, before = 11, complete = TRUE),
     .data$value
-    )) %>%
-    dplyr::ungroup()
+    ))
 
   # Regional data = 3m rolling average
   data <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
-    dplyr::mutate(value = dplyr::if_else(.data$series_id %in% c("A84600079X"),
+    dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84600079X",
       slider::slide_mean(.data$value, before = 2, complete = TRUE),
       .data$value
     )) %>%
@@ -145,11 +141,11 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                    )) {
   data <- filter_dash_data(
     c(
-      "A84433594K",
-      "A84433597T",
-      "A84433601W",
+      "A84424687C",
+      "A84424688F",
+      "A84424691V",
       "A84424692W",
-      "A84433476W",
+      "A84424602F",
       "15-24_females_unemployment rate",
       "15-24_males_unemployment rate"
     )
@@ -164,18 +160,18 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
   data %>%
     make_table_mem(
       row_order = c(
-        "A84433594K",
-        "A84433601W",
+        "A84424687C",
+        "A84424691V",
         "15-24_males_unemployment rate",
         "15-24_females_unemployment rate",
-        "A84433597T",
+        "A84424688F",
         "A84424692W",
-        "A84433476W"
+        "A84424602F"
       ),
       highlight_rows = c(
-        "A84433594K",
-        "A84433601W",
-        "A84433597T",
+        "A84424687C",
+        "A84424691V",
+        "A84424688F",
         "A84424692W"
       ),
       title = title,
@@ -240,27 +236,35 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
       .data$date, .data$series, .data$table_no,
       .data$frequency, .data$value
     ) %>%
-    tidyr::separate(
-      col = .data$series,
-      into = c("age", "indicator", "sa4"),
-      sep = " ; "
-    ) %>%
+    dplyr::mutate(split_series = stringr::str_split_fixed(.data$series,
+                                                          pattern = " ; ",
+                                                          n = 3),
+                  age = .data$split_series[ ,1],
+                  indicator = .data$split_series[ ,2],
+                  sa4 = .data$split_series[ ,3]) %>%
+    dplyr::select(-.data$split_series, -.data$series)
+
+  data <- data %>%
+    tidyr::pivot_wider(names_from = .data$indicator,
+                       values_from = .data$value) %>%
     dplyr::group_by(.data$sa4, .data$date, .data$age, .data$table_no, .data$frequency) %>%
-    dplyr::summarise(value = 100 * (sum(.data$value[.data$indicator == "Unemployed"]) /
-      (sum(.data$value[.data$indicator == "Employed"]) +
-        sum(.data$value[.data$indicator == "Unemployed"])))) %>%
+    dplyr::mutate(value = 100 * (.data$Unemployed /
+                                   (.data$Unemployed + .data$Employed))) %>%
+    dplyr::select(-.data$Employed, -.data$Unemployed) %>%
     dplyr::group_by(.data$sa4, .data$age) %>%
     dplyr::mutate(
       indicator = "Unemployment rate",
       value = slider::slide_mean(.data$value,
         before = 11L,
         complete = TRUE
-      ),
-      unit = "Percent",
-      series_id = paste(.data$age, .data$indicator, .data$sa4, sep = "_"),
-      series = gsub("_", " ; ", .data$series_id, fixed = T)
+      )
     ) %>%
     dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::mutate(
+      unit = "Percent",
+      series_id = paste(.data$age, .data$indicator, .data$sa4, sep = "_") ,
+      series = paste(.data$age, .data$indicator, .data$sa4, sep = " ; ")
+    ) %>%
     dplyr::ungroup()
 
   data <- data %>%
