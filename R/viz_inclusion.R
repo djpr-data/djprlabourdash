@@ -1981,4 +1981,54 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A8
       subtitle = "Full-time and part-time employment for Victorian youth",
       caption = paste0(caption_lfs()," Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
-  }
+}
+
+viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_females_employed",
+                                                                      "25-54_females_employed",
+                                                                      "55+_females_employed"),
+                                                                              df = dash_data
+                                                                                  ))  {
+
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  # 12 month moving average
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+                                                )) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(date >= as.Date("2020-01-01"))
+
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+
+
+  df <- df %>%
+    dplyr::mutate(series = dplyr::case_when(
+      .data$series == "Employed ; Females ; 15-24" ~ "15-24",
+      .data$series == "Employed ; Females ; 25-54" ~ " 25-54",
+      .data$series == "Employed ; Females ; 55+"  ~ " 55+",
+      ))
+
+  latest_month <- format(max(df$date), "%B %Y")
+
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$series,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
+    ) +
+    labs(
+      title = title,
+      subtitle = "Cumulative change in employment by age since March 2020 for Victorian women",
+      caption = caption_lfs()
+    )
+
+
+}
