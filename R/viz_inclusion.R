@@ -491,7 +491,7 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
       names_from = .data$age,
       values_from = .data$value
     ) %>%
-    dplyr::mutate(diff = `15-24` - `25-54`) %>%
+    dplyr::mutate(diff = .data$`15-24` - .data$`25-54`) %>%
     dplyr::mutate(dplyr::across(-.data$date,
                                 ~round2(.x * 100, 1)))
 
@@ -1606,9 +1606,6 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$date, .data$value, .data$sex, .data$indicator) %>%
     dplyr::mutate(series = .data$indicator)
 
-  min_year <- format(min(df$date), "%Y")
-  max_year <- format(max(df$date), "%Y")
-
   ave_df <- df %>%
     dplyr::group_by(.data$sex) %>%
     dplyr::summarise(
@@ -1631,23 +1628,28 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
         .data$diff < 0 ~ "slightly below",
         .data$diff == 0 ~ "equal to"
       )
-    )
+    ) %>%
+    dplyr::select(.data$sex,
+                  .data$sex,
+                  .data$diff_desc,
+                  .data$max_date) %>%
+    tidyr::pivot_wider(names_from = .data$sex,
+                       values_from = .data$diff_desc)
 
   title <- paste0(
     "The proportion of Victorian women in work was ",
-    title_df$diff_desc[title_df$sex == "Females"],
+    title_df$Females,
     " its long-run average in ",
-    format(unique(title_df$max_date), "%B %Y"),
+    format(title_df$max_date, "%B %Y"),
     ", while the rate for men was ",
-    title_df$diff_desc[title_df$sex == "Males"],
+    title_df$Males,
     " its long-run average"
   )
 
-
   df <- df %>%
-    group_by(.data$sex) %>%
-    mutate(value = mean(.data$value)) %>%
-    mutate(indicator = "Average") %>%
+    dplyr::group_by(.data$sex) %>%
+    dplyr::mutate(value = mean(.data$value)) %>%
+    dplyr::mutate(indicator = "Average") %>%
     bind_rows(df) %>%
     dplyr::mutate(
       tooltip =
@@ -2352,17 +2354,6 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
                                        ),
                                      selected_indicator = "unemp_rate") {
 
-  # 12 month smoothing, remove NAs and drop not needed columns
-  df <- data %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::select(.data$date, .data$value, .data$series, .data$indicator, .data$state) %>%
-    dplyr::ungroup()
-
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -2371,8 +2362,19 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
   )
 
   # Reduce to selected_indicator
-  df <- df %>%
+  df <- data %>%
     dplyr::filter(.data$indicator == .env$indic_long)
+
+  # 12 month smoothing, remove NAs and drop not needed columns
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::select(.data$date, .data$value, .data$series, .data$indicator, .data$state) %>%
+    dplyr::ungroup()
 
   # create state_group
   df <- df %>%
