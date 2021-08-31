@@ -297,10 +297,18 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
 }
 
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
-title_reg_emp_regions_sincecovid_line <- function(data) {
+title_reg_emp_regions_sincecovid_line <- function(data)
+{
   current <- data %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-03-01")]) - 1)) %>%
+    dplyr::mutate(
+      value = 100 * ((.data$value / .data$value[date == as.Date("2020-03-01")]) - 1),
+      tooltip = paste0(
+        .data$gcc_restofstate, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup() %>%
     dplyr::select(.data$gcc_restofstate, .data$value) %>%
@@ -329,8 +337,14 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
                                                 title = title_reg_emp_regions_sincecovid_line(data = data)) {
   df <- data %>%
     dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+    dplyr::mutate(
+      value = 100 * ((.data$value / .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+      tooltip = paste0(
+        .data$gcc_restofstate, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   df %>%
     djpr_ts_linechart(
@@ -1475,9 +1489,11 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
   )
 
   data <- data %>%
-    mutate(gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
-      fixed = TRUE
-    ))
+    mutate(
+      gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
+        fixed = TRUE
+      )
+    )
 
   max_date <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -1490,12 +1506,14 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
   days_in_data <- as.numeric(max(data$date) - min(data$date))
 
   data %>%
-    dplyr::mutate(tooltip = paste0(
-      .data$gcc_restofstate, "\n",
-      format(.data$date, "%B %Y"),
-      "\n",
-      round2(.data$value, 1)
-    )) %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$gcc_restofstate, "\n",
+        format(.data$date, "%b %Y"),
+        "\n",
+        round2(.data$value, 1), "%"
+      )
+    ) %>%
     djpr_ts_linechart(
       col_var = .data$gcc_restofstate,
       label_num = paste0(round2(.data$value, 1), "%"),
@@ -1508,7 +1526,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Employment to population ratio and unemployment rate and in Greater Melbourne and the rest of Victoria",
+      subtitle = "Employment to population ratio and unemployment rate in Greater Melbourne and the rest of Victoria",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
@@ -1561,8 +1579,15 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+    dplyr::mutate(
+      value = 100 * (
+        (.data$value / .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   latest <- df %>%
     dplyr::select(.data$date, .data$state, .data$value) %>%

@@ -399,10 +399,8 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  # Inclusion ------
+  # Sex -----
 
-
-  # Inclusion: women and men -----
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
       flextable::htmltools_value()
@@ -487,7 +485,7 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 5)
   )
 
-  # Inclusion: age ----
+  # Age ----
 
   output$table_gr_youth_summary <- renderUI({
     table_gr_youth_summary() %>%
@@ -530,8 +528,7 @@ labour_server <- function(input, output, session) {
     width_percent = 45
   )
 
-  # Inclusion: youth focus box -----
-
+  # Age: youth focus box -----
 
   djpr_plot_server("gr_youth_states_dot",
     viz_gr_youth_states_dot,
@@ -720,7 +717,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(ts_summ)
 
-  # Inclusion: youth LF status by region focus box ----
+  # Youth LF status by region focus box ----
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
     title_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus) %>%
       djpr_plot_title()
@@ -794,7 +791,7 @@ labour_server <- function(input, output, session) {
     width_percent = 45
   )
 
-  # Inclusion: long term unemployment ------
+  # Long-term unemployment ------
 
   djpr_plot_server("gr_ltunemp_line",
     viz_gr_ltunemp_line,
@@ -1525,8 +1522,16 @@ labour_server <- function(input, output, session) {
     updateNavbarPage(session, "navbarpage", "tab-regions")
   })
 
-  observeEvent(input$link_inclusion, {
-    updateNavbarPage(session, "navbarpage", "tab-inclusion")
+  observeEvent(input$link_sex, {
+    updateNavbarPage(session, "navbarpage", "tab-sex")
+  })
+
+  observeEvent(input$link_age, {
+    updateNavbarPage(session, "navbarpage", "tab-age")
+  })
+
+  observeEvent(input$link_ltunemp, {
+    updateNavbarPage(session, "navbarpage", "tab-ltunemp")
   })
 
   observeEvent(input$link_industries, {
