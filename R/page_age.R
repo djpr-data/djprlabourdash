@@ -2,7 +2,7 @@ page_age <- function(...) {
   djpr_tab_panel(
     title = "Age",
     br(),
-    h2(br(), "Overview table"),
+    h2(br(), "Overview"),
     uiOutput("table_gr_youth_summary"),
     fluidRow(
       column(
