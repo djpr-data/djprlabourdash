@@ -1498,7 +1498,7 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
     )) %>%
     djpr_ts_linechart(
       col_var = .data$gcc_restofstate,
-      label_num = paste0(round(.data$value, 1), "%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     facet_wrap(~indicator, scales = "free_y") +
