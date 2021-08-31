@@ -2354,17 +2354,6 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
                                        ),
                                      selected_indicator = "unemp_rate") {
 
-  # 12 month smoothing, remove NAs and drop not needed columns
-  df <- data %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::select(.data$date, .data$value, .data$series, .data$indicator, .data$state) %>%
-    dplyr::ungroup()
-
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -2373,8 +2362,19 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
   )
 
   # Reduce to selected_indicator
-  df <- df %>%
+  df <- data %>%
     dplyr::filter(.data$indicator == .env$indic_long)
+
+  # 12 month smoothing, remove NAs and drop not needed columns
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::filter(!is.na(.data$value)) %>%
+    dplyr::select(.data$date, .data$value, .data$series, .data$indicator, .data$state) %>%
+    dplyr::ungroup()
 
   # create state_group
   df <- df %>%
