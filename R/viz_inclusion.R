@@ -2017,6 +2017,37 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
 
   latest_month <- format(max(df$date), "%B %Y")
 
+  # create latest data by age
+
+  employed_15_24_latest <- df %>%
+    dplyr::filter(.data$series == "15-24" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  employed_25_54_latest <- df %>%
+    dplyr::filter(.data$series == "25-54" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  employed_55_plus_latest <- df %>%
+    dplyr::filter(.data$series == "55+" &
+                    .data$date == max(.data$date)) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+
+
+  # title
+   title <- dplyr::case_when(
+  employed_55_plus_latest > employed_25_54_latest & employed_55_plus_latest > employed_15_24_latest ~
+  paste0("Employment for 55+ rose much faster after the COVID shock than employment for other Victorians womens", latest_month),
+ employed_25_54_latest > employed_55_plus_latest &  employed_25_54_latest > employed_15_24_latest ~
+  paste0("Employment for 25-54 rose much faster after the COVID shock than employment for other Victorian womens" , latest_month),
+  TRUE ~ "Employment Victorian womens by age",)
+
+
 
   df %>%
     djpr_ts_linechart(
@@ -2025,9 +2056,9 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
-      title = title,
+      title = "title",
       subtitle = "Cumulative change in employment by age since March 2020 for Victorian women",
-      caption = caption_lfs()
+      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
     )
 
 
