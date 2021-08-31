@@ -491,7 +491,7 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
       names_from = .data$age,
       values_from = .data$value
     ) %>%
-    dplyr::mutate(diff = `15-24` - `25-54`) %>%
+    dplyr::mutate(diff = .data$`15-24` - .data$`25-54`) %>%
     dplyr::mutate(dplyr::across(-.data$date,
                                 ~round2(.x * 100, 1)))
 
