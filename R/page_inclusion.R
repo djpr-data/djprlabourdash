@@ -13,6 +13,11 @@ page_inclusion <- function(...) {
     djpr_plot_ui("gr_full_part_line"),
     h2(br(), "Young people"),
     uiOutput("table_gr_youth_summary"),
+    "Youth labour market data provides insights into headline figures. Youth labour force data ",
+    "is volatile, and therefore DJPR smooths the data by using 12-month averages. While this assists ",
+    "in observing underlying trends, it makes large month-to-month changes in underlying conditions ",
+    "less apparent.",
+    br(),
     fluidRow(
       column(
         6,
