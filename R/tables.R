@@ -248,8 +248,8 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
     tidyr::pivot_wider(names_from = .data$indicator,
                        values_from = .data$value) %>%
     dplyr::group_by(.data$sa4, .data$date, .data$age, .data$table_no, .data$frequency) %>%
-    dplyr::mutate(value = 100 * (Unemployed /
-                                   (Unemployed + Employed))) %>%
+    dplyr::mutate(value = 100 * (.data$Unemployed /
+                                   (.data$Unemployed + .data$Employed))) %>%
     dplyr::select(-.data$Employed, -.data$Unemployed) %>%
     dplyr::group_by(.data$sa4, .data$age) %>%
     dplyr::mutate(
