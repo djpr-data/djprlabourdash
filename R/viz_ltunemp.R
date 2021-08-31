@@ -1,15 +1,4 @@
-#' Function to create the graphs for the 'Long-term unemployed' subpage on the dashboard.
-#' @param data the dataframe containing data to visualise
-#' @examples
-#' \dontrun{
-#' # for viz_gr_ltunemp_line()
-#' ids <- c(
-#' "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-#' "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-#' "A84423687K",
-#' "A84423089K",
-#' "A84597681W"),
-#' @noRd
+# Functions to create the graphs for the 'Long-term unemployed' subpage on the dashboard.
 
 viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
                             "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
