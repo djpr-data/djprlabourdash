@@ -11,6 +11,7 @@ page_indicators <- function(...) {
     focus_box(
       br(),
       h4("Employment focus"),
+      br(),
       column(
         6, djpr_plot_ui("ind_emp_sincecovid_line"),
         height = "600px"
