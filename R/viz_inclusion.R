@@ -2011,8 +2011,8 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
   df <- df %>%
     dplyr::mutate(series = dplyr::case_when(
       .data$series == "Employed ; Females ; 15-24" ~ "15-24",
-      .data$series == "Employed ; Females ; 25-54" ~ " 25-54",
-      .data$series == "Employed ; Females ; 55+"  ~ " 55+",
+      .data$series == "Employed ; Females ; 25-54" ~ "25-54",
+      .data$series == "Employed ; Females ; 55+"  ~ "55+",
       ))
 
   latest_month <- format(max(df$date), "%B %Y")
@@ -2042,10 +2042,10 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
   # title
    title <- dplyr::case_when(
   employed_55_plus_latest > employed_25_54_latest & employed_55_plus_latest > employed_15_24_latest ~
-  paste0("Employment for 55+ rose much faster after the COVID shock than employment for other Victorians womens", latest_month),
+  paste0("Employment for 55+ rose much faster after the COVID shock than employment for other Victorian women age group in ", latest_month),
  employed_25_54_latest > employed_55_plus_latest &  employed_25_54_latest > employed_15_24_latest ~
-  paste0("Employment for 25-54 rose much faster after the COVID shock than employment for other Victorian womens" , latest_month),
-  TRUE ~ "Employment Victorian womens by age",)
+  paste0("Employment for 25-54 rose much faster after the COVID shock than employment for other Victorian women age group in" , latest_month),
+  TRUE ~ "Employment for Victorian women",)
 
 
 
@@ -2056,7 +2056,7 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
-      title = "title",
+      title = title,
       subtitle = "Cumulative change in employment by age since March 2020 for Victorian women",
       caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
     )
