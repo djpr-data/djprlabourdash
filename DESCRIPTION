@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.0.1.900
+Version: 0.1.0.900
 Authors@R: 
     c(
     person(given = "Annett",
@@ -30,7 +30,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     djprdashdata (>= 0.0.2.9004),
-    djprshiny (>= 0.0.3.913),
+    djprshiny (>= 0.0.5.909),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
@@ -46,7 +46,9 @@ Imports:
     patchwork,
     strayr (>= 0.0.1),
     slider,
-    flextable
+    flextable,
+    cachem,
+    shinyjs
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
@@ -59,5 +61,5 @@ Suggests:
     vdiffr,
     memoise,
     pkgload,
-    cachem
+    usethis
 Config/testthat/edition: 3

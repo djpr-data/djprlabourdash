@@ -4,19 +4,11 @@ page_regions <- function(...) {
     h1("Regions of Victoria"),
     # Unemployment by region -----
     br(),
-    "Victoria's regions vary by population density and other factors that influence labour force ",
-    "key indicators. Regional and rural areas in Victoria contribute to ~20 per cent of the ",
-    "state's overall economy, are home to one in four Victorians and employ ~30 per cent of the ",
-    "state's work force. Metropolitan regions, defined as 'Greater Melbourne' make up the majority ",
-    "of the Victorian population and labour force.",
-    br(),
-    "Unemployment rate (number of unemployed divided by number of employed and unemployed), ",
-    "participation rate (number of employed and unemployed divided by number of employed, unemployed ",
-    "and not in labour force) and employment to population ratio (number of employed divided by ",
-    "working age population) are some of the most important economic measures of a labour force.",
+    "Victoria contains a range of diverse regions, both within Greater Melbourne",
+    " and outside the metropolitan area.",
     br(),
     "Below we explore the regional differences in historical and current labour force status, ",
-    "first within Victoria and then by comparing regional (non-metropolitan) areas of Australia ",
+    "both within Victoria and also by comparing regional (non-metropolitan) areas of Australia ",
     "with regional Victoria.",
     br(),
     h2(br(), "Labour force status by region"),
@@ -56,7 +48,8 @@ page_regions <- function(...) {
       selected = "unemp_rate"
     ),
     djpr_plot_ui("reg_unemp_emppop_partrate_multiline",
-      height = "500px"
+      height = "500px",
+      interactive = FALSE
     ),
     br(),
     br(),
@@ -79,7 +72,9 @@ page_regions <- function(...) {
       ),
       selected = "all"
     ),
-    djpr_plot_ui("reg_unemprate_dispersion"),
+    djpr_plot_ui("reg_unemprate_dispersion",
+      interactive = FALSE
+    ),
     br(),
 
     # Regional Vic vs Greater Melb -----
@@ -157,13 +152,16 @@ page_regions <- function(...) {
       ),
       column(
         6,
-        djpr_plot_ui("reg_regionstates_bar", height = "600px")
+        djpr_plot_ui("reg_regionstates_bar",
+          height = "600px",
+          interactive = FALSE
+        )
       )
     ),
     br(),
     djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),
-    h2(br(),"Australian metropolitan areas"),
+    h2(br(), "Australian metropolitan areas"),
     h4("Unemployment rates in Australian major cities"),
     uiOutput("table_reg_metro_states_unemprate"),
     htmlOutput("regions_footnote"),

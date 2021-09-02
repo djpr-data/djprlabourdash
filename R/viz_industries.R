@@ -387,9 +387,14 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::group_by(.data$industry) %>%
     dplyr::mutate(
-      value = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1)
+      value = 100 * ((.data$value / dplyr::lag(.data$value, 4)) - 1),
+      tooltip = paste0(
+        .data$industry, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
     ) %>%
-    dplyr::select(.data$date, .data$industry, .data$value) %>%
+    dplyr::select(.data$date, .data$industry, .data$value, .data$tooltip) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 

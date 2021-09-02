@@ -289,7 +289,7 @@ make_table <- function(data,
   if (destination == "dashboard") {
     caption_notes <- paste0(
       notes,
-      " Shading of cells is based on how the indicator relates to historical trends. If the indicator grew by around its typical amount, the cell will be white. If growth was very strong relative to historical levels, it will be dark green. If it was weak relative to historical growth, the cell will be dark red."
+      " Differences are calculated based on unrounded numbers, following the ABS convention. Shading of cells is based on how the indicator relates to historical trends."
     )
   } else {
     if (is.null(notes)) {
@@ -323,7 +323,10 @@ make_table <- function(data,
     flextable::line_spacing(
       part = "footer",
       space = 0.8
-    )
+    ) %>%
+    flextable::font(fontname = font_family,
+                    part = "footer") %>%
+    flextable::italic(part = "footer")
 
   # Add title to briefing tables and resize columns
   if (destination == "briefing") {
