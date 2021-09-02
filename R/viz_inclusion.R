@@ -2041,11 +2041,15 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
 
   # title
    title <- dplyr::case_when(
-  employed_55_plus_latest > employed_25_54_latest & employed_55_plus_latest > employed_15_24_latest ~
-  paste0("Employment for 55+ rose much faster after the COVID shock than employment for other Victorian women age group in ", latest_month),
- employed_25_54_latest > employed_55_plus_latest &  employed_25_54_latest > employed_15_24_latest ~
-  paste0("Employment for 25-54 rose much faster after the COVID shock than employment for other Victorian women age group in" , latest_month),
-  TRUE ~ "Employment for Victorian women",)
+  employed_55_plus_latest < employed_25_54_latest & employed_55_plus_latest < employed_15_24_latest ~
+  paste0("Employment for 55+ women fell much faster after the COVID shock than employment for other Victorian women age group in ", latest_month),
+ employed_25_54_latest < employed_55_plus_latest &  employed_25_54_latest < employed_15_24_latest ~
+  paste0("Employment for 25-54 women fell much faster after the COVID shock than employment for other Victorian women age group in" , latest_month
+         ),
+ employed_15_24_latest < employed_55_plus_latest &  employed_15_24_latest < employed_25_54_latest   ~
+   paste0("Employment for 15-24 women fell much faster after the COVID shock than employment for other Victorian women age group in" , latest_month),
+
+  TRUE ~ "Employment for Victorian women by age",)
 
 
 
@@ -2063,3 +2067,59 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
 
 
 }
+
+viz_gr_unemp_bysex_line <- function(data = filter_dash_data(c("A85223418L",
+                                                              "A85223482F"),
+                                                            df = dash_data
+                                                              )) {
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  df <- df %>%
+    dplyr::mutate(series = dplyr::case_when(
+      .data$series == "Underemployment rate (proportion of labour force) ;  > Males ;  > Victoria ;" ~ "Males",
+      .data$series == "Underemployment rate (proportion of labour force) ;  > Females ;  > Victoria ;" ~ "Females",
+    ))
+
+
+
+  latest_values <- df %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
+    ) %>%
+    dplyr::select(.data$series, .data$value, .data$date) %>%
+    tidyr::pivot_wider(
+    names_from = .data$series,
+    values_from = .data$value
+  )
+
+  title <- dplyr::case_when(
+    latest_values$Females > latest_values$Males ~
+      paste0("Females underemployment rate in ", latest_values$date, " was higher than males"),
+    latest_values$Females < latest_values$Males ~
+      paste0("Females underemployment rate in ", latest_values$date, " was lower than males"),
+    latest_values$Females == latest_values$Males ~
+      paste0("Females underemployment rate in ", latest_values$date, " was the same as males"),
+    TRUE ~ "Underemployment rate for males and females in Victoria"
+  )
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$series,
+      label_num = paste0(round2(.data$value, 1), "%")
+    ) +
+    labs(
+      subtitle = "Underemployment rate for males and females in Victoria",
+      caption = caption_lfs(),
+      title = title
+    ) +
+    scale_y_continuous(
+      limits = function(x) c(0, x[2]),
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(5),
+      expand = expansion(mult = c(0, 0.05))
+    )
+}
+
