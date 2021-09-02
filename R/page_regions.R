@@ -2,17 +2,15 @@ page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
     h1("Regions of Victoria"),
-    # tagList(
-    #   "This page contains information about employment and unemployment across",
-    #   "the different regions of Victoria.",
-    #   shiny::tags$b("More information will be included with future releases. "),
-    #   "For more information about overall labour force indicators ",
-    #   "see the ",
-    #   actionLink("link_indicators", "indicators page"),
-    #   ". For information about the labour force status of key groups of Victorians, see the ",
-    #   actionLink("link_inclusion", "inclusion page"), "."
-    # ),
     # Unemployment by region -----
+    br(),
+    "Victoria contains a range of diverse regions, both within Greater Melbourne",
+    " and outside the metropolitan area.",
+    br(),
+    "Below we explore the regional differences in historical and current labour force status, ",
+    "both within Victoria and also by comparing regional (non-metropolitan) areas of Australia ",
+    "with regional Victoria.",
+    br(),
     h2(br(), "Labour force status by region"),
     selectInput("lf_status_region",
       label = "Choose an indicator",
@@ -53,6 +51,15 @@ page_regions <- function(...) {
       height = "500px",
       interactive = FALSE
     ),
+    br(),
+    br(),
+    "The unemployment rate always varies substantially across Victoria. The amount of ",
+    "variation across the regions of Victoria changes over time - the gap between the ",
+    "highest and lowest unemployment rate in the state grows and shrinks. ",
+    "The graphs below explore the level of that dispersion (i.e. the ",
+    "difference between minimum and maximum) of unemployment rates over time", "
+    in different regions in Victoria. The breakdown of regions is by ",
+    shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4"),
     br(),
     br(),
     selectInput(

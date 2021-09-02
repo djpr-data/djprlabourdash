@@ -2,6 +2,7 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Key indicators"),
+    "This page contains key labour force indicators, focusing on Victoria as a whole.",
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%

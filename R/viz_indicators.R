@@ -1,13 +1,5 @@
+# Functions to create Indicators page graphs
 
-#' Line chart of cumulative employment change since March 2020
-#' in Victoria and Australia
-#' @noRd
-#' @examples
-#' \dontrun{
-#' dash_data <- load_dash_data()
-#' viz_ind_emp_sincecovid_line()
-#' }
-#'
 viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                           "A84423043C",
                                           "A84423349V"
