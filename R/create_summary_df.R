@@ -18,13 +18,28 @@ create_summary_df <- function(data,
                               years_in_sparklines = 3) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
+  freq <- unique(data$frequency)
+  if (length(freq) != 1) {
+    stop("Cannot make a table with mixed frequency data (eg. montly + quarterly")
+  }
+
+  num_in_year <- dplyr::case_when(
+    freq == "Month" ~ 12,
+    freq == "Quarter" ~ 4,
+    TRUE ~ NA_real_
+  )
+
+  if (is.na(num_in_year)) {
+    stop("Cannot make a table with data that is neither monthly or quarterly")
+  }
+
   # Drop unneeded columns -----
   summary_df <- data %>%
     dplyr::select(
       .data$date, .data$series_id,
-      .data$indicator, .data$value, .data$unit
+      .data$indicator, .data$value, .data$unit,
+      .data$frequency
     )
-
 
   # Calculate change over time -----
   summary_df <- summary_df %>%
@@ -39,8 +54,8 @@ create_summary_df <- function(data,
       ),
       changeinmonth = (.data$value - dplyr::lag(.data$value)),
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
-      changeinyear = (.data$value - dplyr::lag(.data$value, 12)),
-      changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, 12) * 100,
+      changeinyear = (.data$value - dplyr::lag(.data$value, num_in_year)),
+      changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, num_in_year) * 100,
       changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
     ) %>%
     dplyr::filter(.data$date >= startdate) %>%
@@ -119,7 +134,7 @@ create_summary_df <- function(data,
 
   latest_date <- max(changedf$date)
   prev_date <- dates[length(dates) - 1]
-  prev_year <- dates[length(dates) - 12]
+  prev_year <- subtract_years(max(dates), 1)
 
   nice_latest_date <- format(latest_date, "%b %Y")
   nice_prev_date <- format(prev_date, "%b %Y")

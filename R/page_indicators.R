@@ -2,6 +2,7 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Key indicators"),
+    "This page contains key labour force indicators, focusing on Victoria as a whole.",
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
@@ -20,7 +21,9 @@ page_indicators <- function(...) {
     uiOutput("table_ind_unemp_state"),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
-    djpr_plot_ui("ind_underut_area"),
+    djpr_plot_ui("ind_underut_area",
+      interactive = FALSE
+    ),
     br(),
     h2(br(), "Hours worked"),
     djpr_plot_ui("ind_hoursworked_line"),
@@ -28,7 +31,9 @@ page_indicators <- function(...) {
     h2(br(), "Participation"),
     br(),
     djpr_plot_ui("ind_partrate_line"),
-    djpr_plot_ui("ind_partrate_bar"),
+    djpr_plot_ui("ind_partrate_bar",
+      interactive = FALSE
+    ),
     djpr_plot_ui("ind_partrate_un_line"),
     br(),
     paste0(
