@@ -48,7 +48,6 @@ Imports:
     slider,
     flextable,
     treemapify,
-    cachem,
     shinyjs
 Remotes: 
     djpr-data/djprshiny,
@@ -62,5 +61,6 @@ Suggests:
     vdiffr,
     memoise,
     pkgload,
-    usethis
+    usethis,
+    cachem
 Config/testthat/edition: 3
