@@ -1776,72 +1776,6 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
 }
 
 
-viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_females_unemployment rate",
-                                                  "15-24_males_unemployment rate"),
-df = dash_data
-)){
-  df <- data %>%
-    dplyr::select(.data$date, .data$series, .data$value)
-
-  # 12 month moving average
-  df <- df %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
-    )) %>%
-    dplyr::ungroup() %>%
-    dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::filter(.data$date >= as.Date("1994-05-01"))
-
-
-  df <- df %>%
-    dplyr::mutate(indicator = dplyr::case_when(
-      .data$series == "Unemployment rate ; Males ; 15-24" ~ "Males 15-24",
-      .data$series == "Unemployment rate ; Females ; 15-24" ~ "Females 15-24",
-    ))
-
-  latest_month <- format(max(df$date), "%B %Y")
-
-  # create latest data by gender
-  female_15_24 <- df %>%
-    dplyr::filter(.data$indicator == "Females 15-24" &
-                    .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
-
-  male_15_24 <- df %>%
-    dplyr::filter(.data$indicator == "Males 15-24" &
-                    .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
-
-  # create title
-  title <- dplyr::case_when(
-    female_15_24 > male_15_24  ~
-      paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was higher than that for males"),
-    female_15_24 < male_15_24  ~
-      paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was lower than that for males"),
-    female_15_24 == male_15_24  ~
-      paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was equal to that for males"),
-    TRUE ~ "Youth unemployment in Victoria by sex"
-  )
-
-
-
-  df %>%
-    djpr_ts_linechart(
-      col_var = .data$indicator,
-      label_num = paste0(round2(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
-    ) +
-  labs(
-    title = title,
-    subtitle = " Unemployment rate of Victorian youth by sex ",
-    caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
-  )
-
-  }
 
 viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_females_unemployment rate",
                                                                     "15-24_males_unemployment rate"),
@@ -1861,12 +1795,21 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_femal
     dplyr::filter(!is.na(.data$value))
 
 
-
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
       .data$series == "Unemployment rate ; Males ; 15-24" ~ "Males 15-24",
       .data$series == "Unemployment rate ; Females ; 15-24" ~ "Females 15-24",
     ))
+
+  #add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   latest_month <- format(max(df$date), "%B %Y")
 
@@ -1935,12 +1878,24 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A8
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::ungroup()
 
+
+
+
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
       .data$series == "> Victoria ;  > Employed full-time ;" ~ "Employed full-time",
       .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
     ))
 
+  #add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
   latest_month <- format(max(df$date), "%B %Y")
 
   # create latest data by gender
@@ -2006,6 +1961,16 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c("15-24_fe
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = 100 * ((.data$value /
                                     .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+
+  #add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$series, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
 
   df <- df %>%
@@ -2081,7 +2046,15 @@ viz_gr_unemp_bysex_line <- function(data = filter_dash_data(c("A85223418L",
       .data$series == "Underemployment rate (proportion of labour force) ;  > Females ;  > Victoria ;" ~ "Females",
     ))
 
-
+  #add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$series, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
