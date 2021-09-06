@@ -208,6 +208,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server(
     id = "ind_emp_sincecovid_line",
     plot_function = viz_ind_emp_sincecovid_line,
+    width_percent = 45,
     date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
@@ -223,8 +224,10 @@ labour_server <- function(input, output, session) {
     bindCache(ts_summ)
 
   # Indicators: slopegraph of emp-pop ratios in states
-  djpr_plot_server("ind_emppop_state_slope",
-    viz_ind_emppop_state_slope,
+  djpr_plot_server(
+    id = "ind_emppop_state_slope",
+    plot_function = viz_ind_emppop_state_slope,
+    width_percent = 45,
     date_slider = FALSE,
     plt_change = plt_change,
     data = filter_dash_data(c(
@@ -241,8 +244,10 @@ labour_server <- function(input, output, session) {
 
   # Indicators: line chart of annual employment growth in Vic & Aus
 
-  djpr_plot_server("ind_empgro_line",
-    viz_ind_empgro_line,
+  djpr_plot_server(
+    id = "ind_empgro_line",
+    plot_function = viz_ind_empgro_line,
+    width_percent = 45,
     data = filter_dash_data(c(
       "A84423349V",
       "A84423043C"
@@ -252,8 +257,10 @@ labour_server <- function(input, output, session) {
   )
 
   # Indicators: cumulative change in PT / FT since COVID
-  djpr_plot_server("ind_gen_full_part_line",
+  djpr_plot_server(
+    id = "ind_gen_full_part_line",
     plot_function = viz_ind_gen_full_part_line,
+    width_percent = 45,
     data = filter_dash_data(c(
       "pt_emp_vic",
       "A84423357V"

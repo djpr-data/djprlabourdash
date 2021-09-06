@@ -12,21 +12,22 @@ page_indicators <- function(...) {
       br(),
       h4("Employment focus"),
       br(),
+      br(),
       column(
-        6, djpr_plot_ui("ind_emp_sincecovid_line"),
-        height = "600px"
-      ),
-      column(
-        6, djpr_plot_ui("ind_emppop_state_slope"),
-        height = "600px"
+        3, djpr_plot_ui("ind_emppop_state_slope"),
+        height = "300px"
       ),
       column(
         6, djpr_plot_ui("ind_empgro_line"),
-        height = "600px"
+        height = "300px"
       ),
       column(
         6, djpr_plot_ui("ind_gen_full_part_line"),
-        height = "600px"
+        height = "300px"
+      ),
+      column(
+        6, djpr_plot_ui("ind_emp_sincecovid_line"),
+        height = "300px"
       )
     ),
     h2(br(), "Unemployment & underemployment"),
