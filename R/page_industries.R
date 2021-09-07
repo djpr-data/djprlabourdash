@@ -12,6 +12,8 @@ page_industries <- function(...) {
     br(),
     "Note that industries data is not seasonally adjusted and is released quarterly.",
     uiOutput("table_industries_summary"),
+    br(),
+    djpr_plot_ui("industries_employment_treemap"),
     djpr_plot_ui("industries_empchange_sincecovid_bar"),
     br(),
     focus_box(

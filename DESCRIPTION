@@ -47,7 +47,7 @@ Imports:
     strayr (>= 0.0.1),
     slider,
     flextable,
-    cachem,
+    treemapify,
     shinyjs
 Remotes: 
     djpr-data/djprshiny,
@@ -61,5 +61,6 @@ Suggests:
     vdiffr,
     memoise,
     pkgload,
-    usethis
+    usethis,
+    cachem
 Config/testthat/edition: 3
