@@ -25,6 +25,9 @@ labour_server <- function(input, output, session) {
     envir = myenv
   )
 
+  ts_summ_latestdate <- ts_summ %>%
+    dplyr::select(.data$series_id, .data$latest_date)
+
   plt_change <- reactive(input$plt_change) %>%
     debounce(2)
 
@@ -164,7 +167,7 @@ labour_server <- function(input, output, session) {
     table_overview() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Indicators -----
 
@@ -220,7 +223,7 @@ labour_server <- function(input, output, session) {
     table_ind_employment() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Indicators: slopegraph of emp-pop ratios in states
   djpr_plot_server("ind_emppop_state_slope",
@@ -270,7 +273,7 @@ labour_server <- function(input, output, session) {
     table_ind_unemp_summary() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Indicators: line chart of Aus v Vic
   djpr_plot_server("ind_unemprate_line",
@@ -289,7 +292,7 @@ labour_server <- function(input, output, session) {
     table_ind_unemp_state() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
@@ -405,7 +408,7 @@ labour_server <- function(input, output, session) {
     table_gr_sex() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_gen_emppopratio_line",
@@ -491,7 +494,7 @@ labour_server <- function(input, output, session) {
     table_gr_youth_summary() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
@@ -715,7 +718,7 @@ labour_server <- function(input, output, session) {
     table_gr_youth_unemp_region() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Youth LF status by region focus box ----
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
@@ -1072,7 +1075,7 @@ labour_server <- function(input, output, session) {
   ) %>%
     bindCache(
       input$focus_region,
-      ts_summ
+      ts_summ_latestdate
     )
 
   output$table_region_focus <- renderUI({
@@ -1081,7 +1084,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ
+      ts_summ_latestdate
     )
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
@@ -1089,7 +1092,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ
+      ts_summ_latestdate
     )
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
@@ -1097,7 +1100,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ
+      ts_summ_latestdate
     )
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
@@ -1107,20 +1110,20 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ
+      ts_summ_latestdate
     )
 
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   output$table_reg_metro_states_unemprate <- renderUI({
     table_reg_metro_states_unemprate() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ)
+    bindCache(ts_summ_latestdate)
 
   # Regions: National focus box -----
   djpr_plot_server("reg_regionstates_dot",
@@ -1505,7 +1508,7 @@ labour_server <- function(input, output, session) {
       flextable::htmltools_value()
   }) %>%
     bindCache(
-      ts_summ,
+      ts_summ_latestdate,
       input$chosen_industry
     )
 
@@ -1548,6 +1551,14 @@ app <- function(...) {
   shinyOptions(
     cache = jobs_dash_cache
   )
+
+  if (requireNamespace("memoise", quietly = TRUE)) {
+    make_table_mem <<- memoise::memoise(make_table,
+                                        cache = jobs_dash_cache
+    )
+  } else {
+    make_table_mem <<- make_table
+  }
 
   shiny::shinyApp(labour_ui(), labour_server)
 }
