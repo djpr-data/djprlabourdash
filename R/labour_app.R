@@ -1540,5 +1540,14 @@ labour_server <- function(input, output, session) {
 }
 
 app <- function(...) {
+  jobs_dash_cache <- cachem::cache_disk(
+    # dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache")
+    dir = file.path(".", "app-cache")
+  )
+
+  shinyOptions(
+    cache = jobs_dash_cache
+  )
+
   shiny::shinyApp(labour_ui(), labour_server)
 }
