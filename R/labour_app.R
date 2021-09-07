@@ -38,42 +38,44 @@ labour_server <- function(input, output, session) {
   ur_bar_data <- filter_dash_data("A84423354L")
   ur_bar_latest <- max(ur_bar_data$date)
 
-  ur_bar_static <- ur_bar_data %>%
-    dplyr::slice_tail(n = 12) %>%
-    ggplot(aes(
-      x = as.character(.data$date),
-      y = .data$value,
-      data_id = as.character(.data$date),
-      fill = dplyr::if_else(.data$date == max(.data$date),
-        "max",
-        "other"
-      )
-    )) +
-    scale_fill_manual(
-      values = c(
-        "max" = "#1F1547",
-        "other" = "#A1BBD2"
-      )
-    ) +
-    geom_col() +
-    theme_void() +
-    scale_x_discrete(
-      labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
-      breaks = function(limits) c(limits[1], limits[12])
-    ) +
-    djprtheme::djpr_y_continuous(expand_bottom = 0.04) +
-    theme(
-      axis.text.x = element_text(
-        size = 12,
-        vjust = 1,
-        family = "Roboto",
-        colour = "#BBBBBB"
-      ),
-      plot.margin = margin(0, 7, 0, 7, "pt"),
-      legend.position = "none"
-    )
 
   output$ur_bar_static <- renderPlot({
+
+    ur_bar_static <- ur_bar_data %>%
+      dplyr::slice_tail(n = 12) %>%
+      ggplot(aes(
+        x = as.character(.data$date),
+        y = .data$value,
+        data_id = as.character(.data$date),
+        fill = dplyr::if_else(.data$date == max(.data$date),
+                              "max",
+                              "other"
+        )
+      )) +
+      scale_fill_manual(
+        values = c(
+          "max" = "#1F1547",
+          "other" = "#A1BBD2"
+        )
+      ) +
+      geom_col() +
+      theme_void() +
+      scale_x_discrete(
+        labels = function(x) toupper(format(as.Date(x), "%b\n%Y")),
+        breaks = function(limits) c(limits[1], limits[12])
+      ) +
+      djprtheme::djpr_y_continuous(expand_bottom = 0.04) +
+      theme(
+        axis.text.x = element_text(
+          size = 12,
+          vjust = 1,
+          family = "Roboto",
+          colour = "#BBBBBB"
+        ),
+        plot.margin = margin(0, 7, 0, 7, "pt"),
+        legend.position = "none"
+      )
+
     ur_bar_static
   }) %>%
     bindCache(ur_bar_latest)
@@ -1551,14 +1553,6 @@ app <- function(...) {
   shinyOptions(
     cache = jobs_dash_cache
   )
-
-  if (requireNamespace("memoise", quietly = TRUE)) {
-    make_table_mem <<- memoise::memoise(make_table,
-                                        cache = jobs_dash_cache
-    )
-  } else {
-    make_table_mem <<- make_table
-  }
 
   shiny::shinyApp(labour_ui(), labour_server)
 }

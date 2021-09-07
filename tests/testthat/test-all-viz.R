@@ -2,12 +2,18 @@ test_that("all viz_*() functions at least produce a plot", {
 
   # Load dash data -----
   # Use `<<-` so that dash_data is available to viz functions
-  dash_data <<- load_dash_data()
+  myenv <- as.environment(1)
 
-  dash_data <<- dash_data %>%
+  x <- load_dash_data()
+
+  x <- x %>%
     tidyr::unnest(cols = .data$data) %>%
     # Restrict date range so that chart doesn't change as new data comes in
     dplyr::filter(.data$date <= as.Date("2021-03-01"))
+
+  assign("dash_data",
+         x,
+         envir = myenv)
 
   # Re-nest
   dash_data <<- dash_data %>%
@@ -31,7 +37,8 @@ test_that("all viz_*() functions at least produce a plot", {
 
   name_to_eval <- function(func_name_as_string) {
     suppressMessages(
-      eval(str2lang(paste0(func_name_as_string, "()")))
+      eval(str2lang(paste0(func_name_as_string, "()")),
+           envir = myenv)
     )
   }
 
