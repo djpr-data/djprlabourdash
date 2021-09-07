@@ -8,3 +8,4 @@
 ^rsconnect$
 ^\.httr-oauth$
 images
+^app-cache$

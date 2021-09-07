@@ -1,6 +1,7 @@
 .onLoad <- function(libname, pkgname) {
   jobs_dash_cache <- cachem::cache_disk(
-    dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache")
+    # dir = file.path(dirname(tempdir()), "djpr-jobs-dash-cache")
+    dir = file.path(".", "app-cache")
   )
 
   shinyOptions(
