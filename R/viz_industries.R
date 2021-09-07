@@ -387,7 +387,7 @@ viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
       yend = .data$y_end,
       colour = .data$indicator
     )) +
-    geom_segment(size = 15) +
+    geom_segment(size = 12) +
     geom_text(aes(
       y = .data$label_y,
       label = .data$bar_label
@@ -407,7 +407,7 @@ viz_industries_emp_contri_waterfall <- function(data = filter_dash_data(c(
       axis.title = element_blank(),
       axis.text.y = element_blank(),
       panel.grid.major = element_blank(),
-      axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = 0.5, size = 10)
+      axis.text.x = element_text(angle = 0, hjust = 0.5, vjust = .8, size = 10)
     ) +
     guides(x = guide_axis(n.dodge = 2)) +
     labs(
