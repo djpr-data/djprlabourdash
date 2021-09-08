@@ -725,19 +725,19 @@ df = dash_data
 
 # engagement in education and employment
 
-viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(c(
-  "A84433475V",
-  "A84424781X"
-),
+viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(
+  c("A84424601C",
+    "A84424781X")
+,
 df = dash_data
 )) {
   # select the necessary column
   df <- data %>%
-    dplyr::select(.data$date, .data$series, .data$value)
+    dplyr::select(.data$date, .data$series_id, .data$value)
 
   # 12 month moving average
   df <- df %>%
-    dplyr::group_by(.data$series) %>%
+    dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
                                              before = 11,
                                              complete = TRUE
@@ -747,10 +747,10 @@ df = dash_data
 
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
-      .data$series == "15-24 years ;  > Victoria ;  Not attending full-time education ;  Unemployment rate ;" ~ "Youth not in education",
-      .data$series == "> Victoria ;  Attending full-time education ;  Unemployment rate ;" ~ "Youth in education"
+      .data$series_id == "A84424601C" ~ "Youth not in education",
+      .data$series_id == "A84424781X" ~ "Youth in education"
     )) %>%
-    dplyr::select(-.data$series)
+    dplyr::select(-.data$series_id)
 
   # calculate annual growth
   change_df <- df %>%

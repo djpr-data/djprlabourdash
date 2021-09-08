@@ -703,18 +703,17 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE
   )
 
-  # djpr_plot_server("gr_yth_mostvuln_line",
-  #   plot_function = viz_gr_yth_mostvuln_line,
-  #   data = filter_dash_data(c(
-  #     "A84433475V",
-  #     "A84424781X"
-  #   ),
-  #   df = dash_data
-  #   ),
-  #   plt_change = plt_change,
-  #   date_slider_value_min = Sys.Date() - (365.25 * 10),
-  #   date_slider = TRUE
-  # )
+  djpr_plot_server("gr_yth_mostvuln_line",
+    plot_function = viz_gr_yth_mostvuln_line,
+    data = filter_dash_data(
+      c("A84424601C",
+        "A84424781X"),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = Sys.Date() - (365.25 * 10),
+    date_slider = TRUE
+  )
 
   output$table_gr_youth_unemp_region <- renderUI({
     table_gr_youth_unemp_region() %>%
