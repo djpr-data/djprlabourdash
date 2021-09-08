@@ -58,7 +58,6 @@ Depends:
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr,
     memoise,
     pkgload,
     usethis
