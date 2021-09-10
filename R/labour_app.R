@@ -224,12 +224,8 @@ labour_server <- function(input, output, session) {
     bindCache(ts_summ)
 
   # Indicators: slopegraph of emp-pop ratios in states
-  djpr_plot_server(
-    id = "ind_emppop_state_slope",
+  djpr_plot_server("ind_emppop_state_slope",
     plot_function = viz_ind_emppop_state_slope,
-    width_percent = 45,
-    date_slider = FALSE,
-    plt_change = plt_change,
     data = filter_dash_data(c(
       "A84423272J",
       "A84423356T",
@@ -239,7 +235,13 @@ labour_server <- function(input, output, session) {
       "A84423300F",
       "A84423314V",
       "A84423342C"
-    ))
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    width_percent = 45,
+    height_percent = 75
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus

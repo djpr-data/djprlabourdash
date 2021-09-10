@@ -14,20 +14,16 @@ page_indicators <- function(...) {
       br(),
       br(),
       column(
-        3, djpr_plot_ui("ind_emppop_state_slope"),
-        height = "300px"
+        6, djpr_plot_ui("ind_emppop_state_slope")
       ),
       column(
-        6, djpr_plot_ui("ind_empgro_line"),
-        height = "300px"
+        6, djpr_plot_ui("ind_empgro_line")
       ),
       column(
-        6, djpr_plot_ui("ind_gen_full_part_line"),
-        height = "300px"
+        6, djpr_plot_ui("ind_gen_full_part_line")
       ),
       column(
-        6, djpr_plot_ui("ind_emp_sincecovid_line"),
-        height = "300px"
+        6, djpr_plot_ui("ind_emp_sincecovid_line")
       )
     ),
     h2(br(), "Unemployment & underemployment"),
