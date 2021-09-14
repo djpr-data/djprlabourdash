@@ -26,7 +26,7 @@ labour_server <- function(input, output, session) {
   )
 
   ts_summ_latestdate <- ts_summ %>%
-    dplyr::select(.data$series_id, .data$latest_date)
+    dplyr::pull(.data$latest_date)
 
   plt_change <- reactive(input$plt_change) %>%
     debounce(2)
