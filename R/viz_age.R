@@ -521,7 +521,8 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 df = dash_data
 ) %>%
   dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = zoo::rollmeanr(.data$value, 12, fill = NA)) %>%
+  dplyr::mutate(value = slider::slide_mean(.data$value, before = 11,
+                                           complete = TRUE)) %>%
   dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
