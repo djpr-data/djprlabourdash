@@ -30,7 +30,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
 Imports: 
     djprdashdata (>= 0.0.2.9004),
-    djprshiny (>= 0.0.5.909),
+    djprshiny (>= 0.0.5.910),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
@@ -58,7 +58,6 @@ Depends:
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr,
     memoise,
     pkgload,
     usethis
