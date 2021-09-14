@@ -3,7 +3,15 @@ page_industries <- function(...) {
     title = "Industries",
     h1("Victoria's industries"),
     br(),
+    "On this page, we explore the economic and financial performance of Victorian industries. ",
+    "The ",
+    shiny::a("ABS", href = "https://www.abs.gov.au/ausstats/abs@.nsf/mf/1292.0"),
+    " classifies businesses into one of 19 broad industry divisions, each of which is further ",
+    " divided into sub-divisions, groups, and classes.",
+    br(),
+    br(),
     "Note that industries data is not seasonally adjusted and is released quarterly.",
+    uiOutput("table_industries_summary"),
     djpr_plot_ui("industries_empchange_sincecovid_bar"),
     br(),
     focus_box(
@@ -39,7 +47,7 @@ page_industries <- function(...) {
       ),
       column(
         6,
-        reactable::reactableOutput("industries_employment")
+        uiOutput("industries_employment")
       ),
       br(),
       djpr_plot_ui("industries_emp_bysex_bar")

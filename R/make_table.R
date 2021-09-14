@@ -5,60 +5,31 @@
 #' charts.
 #' @param row_order Vector of series IDs, in the order in which you wish the
 #' corresponding rows to be included in the output table
-#' @param highlight_rows Numeric vector of rows in the table to highlight.
+#' @param highlight_rows Vector of series IDs, corresponding to rows
+#' in the table to highlight.
 #' Highlighted rows are bolded and have a top border; non-highlighted rows
 #' are indented. If `NULL` then all rows are non-bold, non-indented.
 #' @param notes Optional notes to add to caption. Source will be inferred
 #' automatically based on the data using `caption_auto()`.
+#' @param title Character vector to use as the table title. Will only be used
+#' when `destination` is "briefing".
+#' @param rename_indicators logical; default is `TRUE`. If `TRUE`, the
+#' `rename_indicators()` function will be used to rename certain indicators.
 #' @examples
-#' dash_data <- load_dash_data()
+#' # dash_data <- load_dash_data()
 #' \dontrun{
 #' make_table(
 #'   data = filter_dash_data(series_ids = c(
 #'     "A84423354L",
 #'     "A84423242V",
 #'     "A84423466F",
-#'     "A84433601W",
-#'     "A84600079X",
-#'     "A84423350C",
-#'     "A84423349V",
-#'     "A84423357V",
-#'     "pt_emp_vic",
-#'     "A84423461V",
-#'     "A84423237A",
-#'     "A84424687C",
-#'     "A84423355R",
-#'     "A84423243W",
-#'     "A84423467J",
-#'     "A84433602X",
-#'     "A84426256L",
-#'     "A85223450L",
-#'     "A85223451R",
-#'     "A84423356T"
 #'   )),
 #'   row_order = c(
 #'     "A84423354L",
 #'     "A84423242V",
-#'     "A84423466F",
-#'     "A84433601W",
-#'     "A84600079X",
-#'     "A84423350C",
-#'     "A84423349V",
-#'     "A84423357V",
-#'     "pt_emp_vic",
-#'     "A84423461V",
-#'     "A84423237A",
-#'     "A84424687C",
-#'     "A84423355R",
-#'     "A84423243W",
-#'     "A84423467J",
-#'     "A84433602X",
-#'     "A84426256L",
-#'     "A85223450L",
-#'     "A85223451R",
-#'     "A84423356T"
+#'     "A84423466F"
 #'   ),
-#'   highlight_rows = c("A84426256L", "A85223450L", "A84423242V")
+#'   highlight_rows = c("A84426256L")
 #' )
 #' }
 make_table <- function(data,
@@ -68,13 +39,19 @@ make_table <- function(data,
                        years_in_sparklines = 3,
                        row_order = NULL,
                        highlight_rows = NULL,
-                       notes = NULL) {
+                       notes = NULL,
+                       title = "",
+                       rename_indicators = TRUE) {
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
 
   # Change value of indicator column for specific series IDs
-  df <- rename_indicators(data)
+  if (rename_indicators) {
+    df <- rename_indicators(data)
+  } else {
+    df <- data
+  }
 
   # Create a summary dataframe with one row per unique indicator
   summary_df <- create_summary_df(df,
@@ -203,13 +180,19 @@ make_table <- function(data,
     flextable::line_spacing(space = 1)
 
   # Add sparklines
+  if (destination == "dashboard") {
+    spark_height <- 0.36
+  } else {
+    spark_height <- 0.26
+  }
+
   flex <- flex %>%
     flextable::compose(
       j = 2,
       value = flextable::as_paragraph(
         flextable::gg_chunk(
           value = .,
-          height = 0.38,
+          height = spark_height,
           width = 1
         )
       ),
@@ -218,7 +201,7 @@ make_table <- function(data,
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
-    flextable::autofit(add_w = 0, add_h = 0)
+    flextable::autofit(add_w = 0, add_h = 0, part = "all")
 
   # Centre content
   flex <- flex %>%
@@ -234,7 +217,7 @@ make_table <- function(data,
     "",
     "Recent trend",
     "Current figures",
-    "Change in past month",
+    "Change in latest period",
     "Change in past year",
     "Change during govt"
   )
@@ -258,7 +241,6 @@ make_table <- function(data,
       i = 1,
       border.top = flextable::fp_border_default()
     ) %>%
-    # flextable::border(i = 1, part = "header", border.top = flextable::fp_border_default()) %>%
     flextable::border(i = nrow(summary_df), border.bottom = flextable::fp_border_default())
 
   # Ensure font, font size, and bolding is correct
@@ -307,7 +289,7 @@ make_table <- function(data,
   if (destination == "dashboard") {
     caption_notes <- paste0(
       notes,
-      " Shading of cells is based on how the indicator relates to historical trends. If the indicator grew by around its typical amount, the cell will be white. If growth was very strong relative to historical levels, it will be dark green. If it was weak relative to historical growth, the cell will be dark red."
+      " Differences are calculated based on unrounded numbers, following the ABS convention. Shading of cells is based on how the indicator relates to historical trends."
     )
   } else {
     if (is.null(notes)) {
@@ -321,6 +303,7 @@ make_table <- function(data,
     notes = caption_notes
   )
 
+  # Add footer caption
   flex <- flex %>%
     flextable::add_footer(` ` = table_caption) %>%
     flextable::merge_at(
@@ -340,7 +323,26 @@ make_table <- function(data,
     flextable::line_spacing(
       part = "footer",
       space = 0.8
-    )
+    ) %>%
+    flextable::font(fontname = font_family,
+                    part = "footer") %>%
+    flextable::italic(part = "footer")
+
+  # Add title to briefing tables and resize columns
+  if (destination == "briefing") {
+    flex <- flex %>%
+      flextable::set_caption(caption = title)
+
+    flex <- flex %>%
+      flextable::width(
+        j = c(3:flextable::ncol_keys(flex)),
+        width = 0.88
+      ) %>%
+      flextable::width(
+        j = 1,
+        width = 2
+      )
+  }
 
   flex
 }

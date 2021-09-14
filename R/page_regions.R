@@ -2,27 +2,25 @@ page_regions <- function(...) {
   djpr_tab_panel(
     title = "Regions",
     h1("Regions of Victoria"),
-    # tagList(
-    #   "This page contains information about employment and unemployment across",
-    #   "the different regions of Victoria.",
-    #   shiny::tags$b("More information will be included with future releases. "),
-    #   "For more information about overall labour force indicators ",
-    #   "see the ",
-    #   actionLink("link_indicators", "indicators page"),
-    #   ". For information about the labour force status of key groups of Victorians, see the ",
-    #   actionLink("link_inclusion", "inclusion page"), "."
-    # ),
     # Unemployment by region -----
+    br(),
+    "Victoria contains a range of diverse regions, both within Greater Melbourne",
+    " and outside the metropolitan area.",
+    br(),
+    "Below we explore the regional differences in historical and current labour force status, ",
+    "both within Victoria and also by comparing regional (non-metropolitan) areas of Australia ",
+    "with regional Victoria.",
+    br(),
     h2(br(), "Labour force status by region"),
     selectInput("lf_status_region",
-                label = "Choose an indicator",
-                choices = c(
-                  "Unemployment rate" = "unemp_rate",
-                  "Participation rate" = "part_rate",
-                  "Employment to population ratio" = "emp_pop"
-                ),
-                selected = "unemp_rate"
-                ),
+      label = "Choose an indicator",
+      choices = c(
+        "Unemployment rate" = "unemp_rate",
+        "Participation rate" = "part_rate",
+        "Employment to population ratio" = "emp_pop"
+      ),
+      selected = "unemp_rate"
+    ),
     djpr_plot_title(textOutput("title_unemp_emppop_partrate_vic")),
     djpr_plot_subtitle(textOutput("subtitle_unemp_emppop_partrate_vic")),
     fluidRow(
@@ -39,10 +37,44 @@ page_regions <- function(...) {
     ),
     djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."),
     br(),
-    djpr_plot_ui("reg_unemprate_multiline",
-      height = "500px"
+    br(),
+    selectInput("lf_status_multiline",
+      label = "Choose an indicator",
+      choices = c(
+        "Unemployment rate" = "unemp_rate",
+        "Participation rate" = "part_rate",
+        "Employment to population ratio" = "emp_pop"
+      ),
+      selected = "unemp_rate"
     ),
-    djpr_plot_ui("reg_unemprate_dispersion"),
+    djpr_plot_ui("reg_unemp_emppop_partrate_multiline",
+      height = "500px",
+      interactive = FALSE
+    ),
+    br(),
+    br(),
+    "The unemployment rate always varies substantially across Victoria. The amount of ",
+    "variation across the regions of Victoria changes over time - the gap between the ",
+    "highest and lowest unemployment rate in the state grows and shrinks. ",
+    "The graphs below explore the level of that dispersion (i.e. the ",
+    "difference between minimum and maximum) of unemployment rates over time", "
+    in different regions in Victoria. The breakdown of regions is by ",
+    shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4"),
+    br(),
+    br(),
+    selectInput(
+      "sa4_type_dispersion",
+      label = "Choose regions",
+      choices = c(
+        "All Victorian SA4s" = "all",
+        "Metropolitan Melbourne SA4s" = "metropolitan",
+        "Rural and regional SA4s" = "regional"
+      ),
+      selected = "all"
+    ),
+    djpr_plot_ui("reg_unemprate_dispersion",
+      interactive = FALSE
+    ),
     br(),
 
     # Regional Vic vs Greater Melb -----
@@ -55,6 +87,7 @@ page_regions <- function(...) {
     h2(br(), "Victorian regions"),
     # Box for regional focus
     focus_box(
+      h4("Compare regions of Victoria"),
       selectInput("focus_region",
         label = "Choose a region of Victoria",
         selected = "Ballarat",
@@ -93,13 +126,15 @@ page_regions <- function(...) {
         6,
         br(),
         uiOutput("table_region_focus") %>%
-          djpr_with_spinner(),
-        djpr_plot_caption("Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average.")
+          djpr_with_spinner()
       )
     ),
     br(),
     h2(br(), "Australian regions"),
+    h4("Unemployment rate in Australian regional areas"),
+    uiOutput("table_reg_nonmetro_states_unemprate"),
     focus_box(
+      h4("Compare regional areas of Australian states"),
       selectInput(
         inputId = "aus_regions_indicator",
         label = "Select indicator",
@@ -117,12 +152,18 @@ page_regions <- function(...) {
       ),
       column(
         6,
-        djpr_plot_ui("reg_regionstates_bar", height = "600px")
+        djpr_plot_ui("reg_regionstates_bar",
+          height = "600px",
+          interactive = FALSE
+        )
       )
     ),
     br(),
     djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),
+    h2(br(), "Australian metropolitan areas"),
+    h4("Unemployment rates in Australian major cities"),
+    uiOutput("table_reg_metro_states_unemprate"),
     htmlOutput("regions_footnote"),
     br()
   )
