@@ -43,4 +43,3 @@ for (f in table_funcs) {
   x <- dplyr::select(x, expression, median, `itr/sec`)
   tables <- bind_rows(tables, x)
 }
-

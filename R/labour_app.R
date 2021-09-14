@@ -40,7 +40,6 @@ labour_server <- function(input, output, session) {
 
 
   output$ur_bar_static <- renderPlot({
-
     ur_bar_static <- ur_bar_data %>%
       dplyr::slice_tail(n = 12) %>%
       ggplot(aes(
@@ -48,8 +47,8 @@ labour_server <- function(input, output, session) {
         y = .data$value,
         data_id = as.character(.data$date),
         fill = dplyr::if_else(.data$date == max(.data$date),
-                              "max",
-                              "other"
+          "max",
+          "other"
         )
       )) +
       scale_fill_manual(
@@ -706,9 +705,11 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("gr_yth_mostvuln_line",
     plot_function = viz_gr_yth_mostvuln_line,
     data = filter_dash_data(
-      c("A84424601C",
-        "A84424781X"),
-    df = dash_data
+      c(
+        "A84424601C",
+        "A84424781X"
+      ),
+      df = dash_data
     ),
     plt_change = plt_change,
     date_slider_value_min = Sys.Date() - (365.25 * 10),

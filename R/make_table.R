@@ -324,8 +324,10 @@ make_table <- function(data,
       part = "footer",
       space = 0.8
     ) %>%
-    flextable::font(fontname = font_family,
-                    part = "footer") %>%
+    flextable::font(
+      fontname = font_family,
+      part = "footer"
+    ) %>%
     flextable::italic(part = "footer")
 
   # Add title to briefing tables and resize columns

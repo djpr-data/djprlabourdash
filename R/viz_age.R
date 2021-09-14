@@ -2,20 +2,18 @@
 
 
 viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
-  "15-24_greater melbourne_employed",
-  "25-54_greater melbourne_employed",
-  "55+_greater melbourne_employed",
-  "15-24_rest of vic._employed",
-  "25-54_rest of vic._employed",
-  "55+_rest of vic._employed"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-  dplyr::filter(.data$date >= as.Date("2020-01-01")))
-
-{
+                                             "15-24_greater melbourne_employed",
+                                             "25-54_greater melbourne_employed",
+                                             "55+_greater melbourne_employed",
+                                             "15-24_rest of vic._employed",
+                                             "25-54_rest of vic._employed",
+                                             "55+_rest of vic._employed"
+                                           ),
+                                           df = dash_data
+                                           ) %>%
+                                             dplyr::group_by(.data$series_id) %>%
+                                             dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
@@ -23,14 +21,15 @@ df = dash_data
   # Indexing to Covid start
   data <- data %>%
     dplyr::group_by(.data$age) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1),
-                  tooltip = paste0(
-                    .data$state, "\n",
-                    format(.data$date, "%b %Y"), "\n",
-                    round2(.data$value, 1), "%"
-                  )
-                )
+    dplyr::mutate(
+      value = 100 * ((.data$value /
+        .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+      tooltip = paste0(
+        .data$state, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   latest <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -59,19 +58,17 @@ df = dash_data
 
 # Line chart -- youth unemp in Greater Melb v Rest of State -----
 viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
-  c(
-    "15-24_greater melbourne_employed",
-    "15-24_rest of vic._employed",
-    "15-24_greater melbourne_nilf",
-    "15-24_rest of vic._nilf",
-    "15-24_greater melbourne_unemployed",
-    "15-24_rest of vic._unemployed"
-  ),
-  df = dash_data
-),
-selected_indicator = "unemp_rate")
-
-{
+                                        c(
+                                          "15-24_greater melbourne_employed",
+                                          "15-24_rest of vic._employed",
+                                          "15-24_greater melbourne_nilf",
+                                          "15-24_rest of vic._nilf",
+                                          "15-24_greater melbourne_unemployed",
+                                          "15-24_rest of vic._unemployed"
+                                        ),
+                                        df = dash_data
+                                      ),
+                                      selected_indicator = "unemp_rate") {
   df <- data %>%
     dplyr::filter(.data$age == "15-24") %>%
     dplyr::select(
@@ -133,11 +130,11 @@ selected_indicator = "unemp_rate")
     "The",
     dplyr::case_when(
       latest_values$`Greater Melbourne` > latest_values$`Rest of Vic.` ~
-        paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
+      paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
       latest_values$`Greater Melbourne` < latest_values$`Rest of Vic.` ~
-        paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
+      paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
       latest_values$`Greater Melbourne` == latest_values$`Rest of Vic.` ~
-        paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
+      paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
       TRUE ~ paste0(" youth ", indic_long, " in Greater Melbourne and the rest of Victoria in ")
     )
   )
@@ -147,9 +144,9 @@ selected_indicator = "unemp_rate")
   df %>%
     dplyr::mutate(
       gcc_restofstate = gsub("Melbourne",
-                             "Melb.",
-                             .data$gcc_restofstate,
-                             fixed = TRUE
+        "Melb.",
+        .data$gcc_restofstate,
+        fixed = TRUE
       ),
       tooltip = paste0(
         .data$gcc_restofstate, "\n",
@@ -262,8 +259,8 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
   )
 
   diff <- dplyr::if_else(latest$`15-24` != latest$`25-54`,
-                         paste0(abs(latest$`15-24` - latest$`25-54`), " percentage points "),
-                         ""
+    paste0(abs(latest$`15-24` - latest$`25-54`), " percentage points "),
+    ""
   )
 
   title <- paste0(
@@ -301,35 +298,35 @@ viz_gr_ages_line <- function(data = youth_focus_box_data(),
 
 # Dot plot -- youth unemployment rate by state -------
 viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
-  "A84433601W",
-  "A84433602X",
-  "A84433603A",
-  "A84433505W",
-  "A84433503T",
-  "A84433504V",
-  "A84433519K",
-  "A84433517F",
-  "A84433518J",
-  "A84433533F",
-  "A84433531A",
-  "A84433532C",
-  "A84433617R",
-  "A84433615K",
-  "A84433616L",
-  "A84433575C",
-  "A84433573X",
-  "A84433574A",
-  "A84433547V",
-  "A84433545R",
-  "A84433546T",
-  "A84433589T",
-  "A84433587L",
-  "A84433588R",
-  "A84433561R",
-  "A84433559C",
-  "A84433560L"
-), df = dash_data),
-selected_indicator = "unemp_rate") {
+                                      "A84433601W",
+                                      "A84433602X",
+                                      "A84433603A",
+                                      "A84433505W",
+                                      "A84433503T",
+                                      "A84433504V",
+                                      "A84433519K",
+                                      "A84433517F",
+                                      "A84433518J",
+                                      "A84433533F",
+                                      "A84433531A",
+                                      "A84433532C",
+                                      "A84433617R",
+                                      "A84433615K",
+                                      "A84433616L",
+                                      "A84433575C",
+                                      "A84433573X",
+                                      "A84433574A",
+                                      "A84433547V",
+                                      "A84433545R",
+                                      "A84433546T",
+                                      "A84433589T",
+                                      "A84433587L",
+                                      "A84433588R",
+                                      "A84433561R",
+                                      "A84433559C",
+                                      "A84433560L"
+                                    ), df = dash_data),
+                                    selected_indicator = "unemp_rate") {
   df <- data %>%
     mutate(indicator_short = dplyr::case_when(
       .data$indicator == "Unemployment rate" ~ "unemp_rate",
@@ -345,8 +342,8 @@ selected_indicator = "unemp_rate") {
     dplyr::mutate(
       value = slider::slide_mean(.data$value, before = 11, complete = TRUE),
       geog = dplyr::if_else(.data$state == "",
-                            "Australia",
-                            .data$state
+        "Australia",
+        .data$state
       ),
       geog_long = .data$geog,
       geog = strayr::clean_state(.data$geog)
@@ -368,14 +365,14 @@ selected_indicator = "unemp_rate") {
 
   df_wide <- df %>%
     dplyr::mutate(date_type = dplyr::if_else(.data$date == min(.data$date),
-                                             "min_date",
-                                             "max_date"
+      "min_date",
+      "max_date"
     )) %>%
     dplyr::select(.data$date_type, .data$value, .data$geog, .data$rank) %>%
     tidyr::spread(key = .data$date_type, value = .data$value) %>%
     dplyr::mutate(arrow_end = dplyr::if_else(.data$max_date > .data$min_date,
-                                             .data$max_date - 0.08,
-                                             .data$max_date + 0.08
+      .data$max_date - 0.08,
+      .data$max_date + 0.08
     ))
 
   latest_values <- df %>%
@@ -464,21 +461,20 @@ selected_indicator = "unemp_rate") {
 }
 
 viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
-  "A84424622R",
-  "A84424692W"
-), df = dash_data) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value,
-                                           before = 11, complete = TRUE
-  ))) {
+                                                "A84424622R",
+                                                "A84424692W"
+                                              ), df = dash_data) %>%
+                                                dplyr::group_by(.data$series_id) %>%
+                                                dplyr::mutate(value = slider::slide_mean(.data$value,
+                                                  before = 11, complete = TRUE
+                                                ))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
       .data$date == max(.data$date)
     ) %>%
     dplyr::select(.data$value, .data$series, ) %>%
-    dplyr::mutate(value = paste0(round2(.data$value, 1), " per cent"),
-                  ) %>%
+    dplyr::mutate(value = paste0(round2(.data$value, 1), " per cent"), ) %>%
     tidyr::spread(key = .data$series, value = .data$value)
 
   title <- paste0(
@@ -492,12 +488,14 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
 
   data %>%
     dplyr::filter(!is.na(.data$value)) %>%
-    dplyr::mutate(geog = dplyr::if_else(.data$state == "", "Australia", .data$state),
-                  tooltip = paste0(
-                    .data$geog, "\n",
-                    format(.data$date, "%b %Y"), "\n",
-                    round2(.data$value, 1), "%"
-                  )) %>%
+    dplyr::mutate(
+      geog = dplyr::if_else(.data$state == "", "Australia", .data$state),
+      tooltip = paste0(
+        .data$geog, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    ) %>%
     djpr_ts_linechart(
       col_var = .data$geog,
       label_num = paste0(round2(.data$value, 1), "%"),
@@ -511,19 +509,21 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
 }
 
 viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
-  "15-24_greater melbourne_employed",
-  "25-54_greater melbourne_employed",
-  "55+_greater melbourne_employed",
-  "15-24_rest of vic._employed",
-  "25-54_rest of vic._employed",
-  "55+_rest of vic._employed"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 11,
-                                           complete = TRUE)) %>%
-  dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
+                                             "15-24_greater melbourne_employed",
+                                             "25-54_greater melbourne_employed",
+                                             "55+_greater melbourne_employed",
+                                             "15-24_rest of vic._employed",
+                                             "25-54_rest of vic._employed",
+                                             "55+_rest of vic._employed"
+                                           ),
+                                           df = dash_data
+                                           ) %>%
+                                             dplyr::group_by(.data$series_id) %>%
+                                             dplyr::mutate(value = slider::slide_mean(.data$value,
+                                               before = 11,
+                                               complete = TRUE
+                                             )) %>%
+                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
@@ -531,13 +531,15 @@ df = dash_data
   # Indexing to Covid start
   data <- data %>%
     dplyr::group_by(.data$age) %>%
-    dplyr::mutate(value = 100 * ((.data$value /
-                                    .data$value[.data$date == as.Date("2020-03-01")]) - 1),
-                  tooltip = paste0(
-                    .data$age, "\n",
-                    format(.data$date, "%b %Y"), "\n",
-                    round2(.data$value, 1), "%"
-                  ))
+    dplyr::mutate(
+      value = 100 * ((.data$value /
+        .data$value[.data$date == as.Date("2020-03-01")]) - 1),
+      tooltip = paste0(
+        .data$age, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   latest <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -565,16 +567,16 @@ df = dash_data
 }
 
 viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
-  "A84424598A",
-  "A84424778K",
-  "A84424597X",
-  "A84424777J",
-  "A84424600A",
-  "A84424780W",
-  "A84424694A"
-),
-df = dash_data
-)) {
+                                            "A84424598A",
+                                            "A84424778K",
+                                            "A84424597X",
+                                            "A84424777J",
+                                            "A84424600A",
+                                            "A84424780W",
+                                            "A84424694A"
+                                          ),
+                                          df = dash_data
+                                          )) {
   # select the necessary column
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
@@ -583,8 +585,8 @@ df = dash_data
   df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -604,7 +606,7 @@ df = dash_data
 
   df <- df %>%
     dplyr::mutate(perc = 100 * (.data$value /
-                                  .data$value[.data$indicator == "civ_pop"]))
+      .data$value[.data$indicator == "civ_pop"]))
 
 
   # data for title &label
@@ -629,16 +631,16 @@ df = dash_data
     dplyr::mutate(
       indicator =
         factor(.data$indicator,
-               levels = c(
-                 "nafte_un",
-                 "nafte_nilf",
-                 "afe_un_total",
-                 "afe_nilf",
-                 "afe_emplo_total",
-                 "nafl_emplo_total",
-                 "civ_pop"
-               ),
-               ordered = TRUE
+          levels = c(
+            "nafte_un",
+            "nafte_nilf",
+            "afe_un_total",
+            "afe_nilf",
+            "afe_emplo_total",
+            "nafl_emplo_total",
+            "civ_pop"
+          ),
+          ordered = TRUE
         )
     ) %>%
     dplyr::arrange(.data$indicator)
@@ -727,11 +729,12 @@ df = dash_data
 # engagement in education and employment
 
 viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(
-  c("A84424601C",
-    "A84424781X")
-,
-df = dash_data
-)) {
+                                       c(
+                                         "A84424601C",
+                                         "A84424781X"
+                                       ),
+                                       df = dash_data
+                                     )) {
   # select the necessary column
   df <- data %>%
     dplyr::select(.data$date, .data$series_id, .data$value)
@@ -740,8 +743,8 @@ df = dash_data
   df <- df %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -772,11 +775,11 @@ df = dash_data
 
   title_change <- dplyr::case_when(
     title_df$`Youth not in education` < title_df$`Youth in education` ~
-      "lower than",
+    "lower than",
     title_df$`Youth not in education` > title_df$`Youth in education` ~
-      "higher than",
+    "higher than",
     title_df$`Youth not in education` == title_df$`Youth in education` ~
-      "the same as"
+    "the same as"
   )
 
   title <- paste0(
@@ -806,7 +809,7 @@ df = dash_data
     )
 
   patchwork::wrap_plots(level_plot, change_plot,
-                        ncol = 1
+    ncol = 1
   ) +
     patchwork::plot_annotation(
       title = title,
@@ -816,12 +819,12 @@ df = dash_data
 }
 
 viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
-  "A84424687C",
-  "A84424695C",
-  "A84424696F"
-),
-df = dash_data
-)) {
+                                          "A84424687C",
+                                          "A84424695C",
+                                          "A84424696F"
+                                        ),
+                                        df = dash_data
+                                        )) {
   df <- data %>%
     dplyr::select(.data$date, .data$value, .data$indicator)
 
@@ -829,8 +832,8 @@ df = dash_data
   df <- df %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -844,13 +847,14 @@ df = dash_data
 
   df <- df %>%
     dplyr::filter(!grepl("Employed total", .data$indicator, fixed = TRUE)) %>%
-    dplyr::mutate(value = .data$perc,
-                  tooltip = paste0(
-                    .data$indicator, "\n",
-                    format(.data$date, "%b %Y"), "\n",
-                    round2(.data$value, 1), "%"
-                  )
-                )
+    dplyr::mutate(
+      value = .data$perc,
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   title_df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -863,11 +867,11 @@ df = dash_data
 
   title <- dplyr::case_when(
     title_df$`Employed part-time` > title_df$`Employed full-time` ~
-      "More Victorian youth were employed part-time than full-time in ",
+    "More Victorian youth were employed part-time than full-time in ",
     title_df$`Employed part-time` < title_df$`Employed full-time` ~
-      "More Victorian youth were employed full-time than part-time in ",
+    "More Victorian youth were employed full-time than part-time in ",
     title_df$`Employed part-time` == title_df$`Employed full-time` ~
-      "The same proportion of young Victorian workers were employed full-time and part-time"
+    "The same proportion of young Victorian workers were employed full-time and part-time"
   )
 
   title <- paste0(title, format(title_df$date, "%B %Y"))
@@ -886,45 +890,44 @@ df = dash_data
 }
 
 viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
-  "A84433601W",
-  "A84433602X",
-  "A84433603A",
-  "A84433505W",
-  "A84433503T",
-  "A84433504V",
-  "A84433519K",
-  "A84433517F",
-  "A84433518J",
-  "A84433533F",
-  "A84433531A",
-  "A84433532C",
-  "A84433617R",
-  "A84433615K",
-  "A84433616L",
-  "A84433575C",
-  "A84433573X",
-  "A84433574A",
-  "A84433547V",
-  "A84433545R",
-  "A84433546T",
-  "A84433589T",
-  "A84433587L",
-  "A84433588R",
-  "A84433561R",
-  "A84433559C",
-  "A84433560L"
-),
-df = dash_data
-) %>%
-  dplyr::mutate(
-    state = dplyr::if_else(.data$state == "",
-                           "Aus",
-                           .data$state
-    ),
-    state = strayr::clean_state(.data$state)
-  ),
-selected_indicator = "unemp_rate") {
-
+                                       "A84433601W",
+                                       "A84433602X",
+                                       "A84433603A",
+                                       "A84433505W",
+                                       "A84433503T",
+                                       "A84433504V",
+                                       "A84433519K",
+                                       "A84433517F",
+                                       "A84433518J",
+                                       "A84433533F",
+                                       "A84433531A",
+                                       "A84433532C",
+                                       "A84433617R",
+                                       "A84433615K",
+                                       "A84433616L",
+                                       "A84433575C",
+                                       "A84433573X",
+                                       "A84433574A",
+                                       "A84433547V",
+                                       "A84433545R",
+                                       "A84433546T",
+                                       "A84433589T",
+                                       "A84433587L",
+                                       "A84433588R",
+                                       "A84433561R",
+                                       "A84433559C",
+                                       "A84433560L"
+                                     ),
+                                     df = dash_data
+                                     ) %>%
+                                       dplyr::mutate(
+                                         state = dplyr::if_else(.data$state == "",
+                                           "Aus",
+                                           .data$state
+                                         ),
+                                         state = strayr::clean_state(.data$state)
+                                       ),
+                                     selected_indicator = "unemp_rate") {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -940,8 +943,8 @@ selected_indicator = "unemp_rate") {
   df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::select(.data$date, .data$value, .data$series, .data$indicator, .data$state) %>%
@@ -1005,61 +1008,61 @@ selected_indicator = "unemp_rate") {
 }
 
 title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
-  "15-24_unemployed_melbourne - inner",
-  "15-24_unemployed_melbourne - inner east",
-  "15-24_unemployed_melbourne - inner south",
-  "15-24_unemployed_melbourne - north east",
-  "15-24_unemployed_melbourne - north west",
-  "15-24_unemployed_melbourne - outer east",
-  "15-24_unemployed_melbourne - south east",
-  "15-24_unemployed_melbourne - west",
-  "15-24_unemployed_mornington peninsula",
-  "15-24_unemployed_ballarat",
-  "15-24_unemployed_bendigo",
-  "15-24_unemployed_geelong",
-  "15-24_unemployed_hume",
-  "15-24_unemployed_latrobe - gippsland",
-  "15-24_unemployed_victoria - north west",
-  "15-24_unemployed_shepparton",
-  "15-24_unemployed_warrnambool and south west",
-  "15-24_employed_melbourne - inner",
-  "15-24_employed_melbourne - inner east",
-  "15-24_employed_melbourne - inner south",
-  "15-24_employed_melbourne - north east",
-  "15-24_employed_melbourne - north west",
-  "15-24_employed_melbourne - outer east",
-  "15-24_employed_melbourne - south east",
-  "15-24_employed_melbourne - west",
-  "15-24_employed_mornington peninsula",
-  "15-24_employed_ballarat",
-  "15-24_employed_bendigo",
-  "15-24_employed_geelong",
-  "15-24_employed_hume",
-  "15-24_employed_latrobe - gippsland",
-  "15-24_employed_victoria - north west",
-  "15-24_employed_shepparton",
-  "15-24_employed_warrnambool and south west",
-  "15-24_nilf_melbourne - inner",
-  "15-24_nilf_melbourne - inner east",
-  "15-24_nilf_melbourne - inner south",
-  "15-24_nilf_melbourne - north east",
-  "15-24_nilf_melbourne - north west",
-  "15-24_nilf_melbourne - outer east",
-  "15-24_nilf_melbourne - south east",
-  "15-24_nilf_melbourne - west",
-  "15-24_nilf_mornington peninsula",
-  "15-24_nilf_ballarat",
-  "15-24_nilf_bendigo",
-  "15-24_nilf_geelong",
-  "15-24_nilf_hume",
-  "15-24_nilf_latrobe - gippsland",
-  "15-24_nilf_victoria - north west",
-  "15-24_nilf_shepparton",
-  "15-24_nilf_warrnambool and south west"
-),
-df = dash_data
-),
-selected_indicator = "unemp_rate") {
+                                                    "15-24_unemployed_melbourne - inner",
+                                                    "15-24_unemployed_melbourne - inner east",
+                                                    "15-24_unemployed_melbourne - inner south",
+                                                    "15-24_unemployed_melbourne - north east",
+                                                    "15-24_unemployed_melbourne - north west",
+                                                    "15-24_unemployed_melbourne - outer east",
+                                                    "15-24_unemployed_melbourne - south east",
+                                                    "15-24_unemployed_melbourne - west",
+                                                    "15-24_unemployed_mornington peninsula",
+                                                    "15-24_unemployed_ballarat",
+                                                    "15-24_unemployed_bendigo",
+                                                    "15-24_unemployed_geelong",
+                                                    "15-24_unemployed_hume",
+                                                    "15-24_unemployed_latrobe - gippsland",
+                                                    "15-24_unemployed_victoria - north west",
+                                                    "15-24_unemployed_shepparton",
+                                                    "15-24_unemployed_warrnambool and south west",
+                                                    "15-24_employed_melbourne - inner",
+                                                    "15-24_employed_melbourne - inner east",
+                                                    "15-24_employed_melbourne - inner south",
+                                                    "15-24_employed_melbourne - north east",
+                                                    "15-24_employed_melbourne - north west",
+                                                    "15-24_employed_melbourne - outer east",
+                                                    "15-24_employed_melbourne - south east",
+                                                    "15-24_employed_melbourne - west",
+                                                    "15-24_employed_mornington peninsula",
+                                                    "15-24_employed_ballarat",
+                                                    "15-24_employed_bendigo",
+                                                    "15-24_employed_geelong",
+                                                    "15-24_employed_hume",
+                                                    "15-24_employed_latrobe - gippsland",
+                                                    "15-24_employed_victoria - north west",
+                                                    "15-24_employed_shepparton",
+                                                    "15-24_employed_warrnambool and south west",
+                                                    "15-24_nilf_melbourne - inner",
+                                                    "15-24_nilf_melbourne - inner east",
+                                                    "15-24_nilf_melbourne - inner south",
+                                                    "15-24_nilf_melbourne - north east",
+                                                    "15-24_nilf_melbourne - north west",
+                                                    "15-24_nilf_melbourne - outer east",
+                                                    "15-24_nilf_melbourne - south east",
+                                                    "15-24_nilf_melbourne - west",
+                                                    "15-24_nilf_mornington peninsula",
+                                                    "15-24_nilf_ballarat",
+                                                    "15-24_nilf_bendigo",
+                                                    "15-24_nilf_geelong",
+                                                    "15-24_nilf_hume",
+                                                    "15-24_nilf_latrobe - gippsland",
+                                                    "15-24_nilf_victoria - north west",
+                                                    "15-24_nilf_shepparton",
+                                                    "15-24_nilf_warrnambool and south west"
+                                                  ),
+                                                  df = dash_data
+                                                  ),
+                                                  selected_indicator = "unemp_rate") {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "The youth unemployment rate",
     selected_indicator == "part_rate" ~ "The youth participation rate",
@@ -1071,8 +1074,8 @@ selected_indicator = "unemp_rate") {
   df <- data %>%
     group_by(.data$series_id) %>%
     mutate(value = slider::slide_mean(.data$value,
-                                      before = 11,
-                                      complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
@@ -1139,62 +1142,62 @@ selected_indicator = "unemp_rate") {
 }
 
 map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
-  "15-24_unemployed_melbourne - inner",
-  "15-24_unemployed_melbourne - inner east",
-  "15-24_unemployed_melbourne - inner south",
-  "15-24_unemployed_melbourne - north east",
-  "15-24_unemployed_melbourne - north west",
-  "15-24_unemployed_melbourne - outer east",
-  "15-24_unemployed_melbourne - south east",
-  "15-24_unemployed_melbourne - west",
-  "15-24_unemployed_mornington peninsula",
-  "15-24_unemployed_ballarat",
-  "15-24_unemployed_bendigo",
-  "15-24_unemployed_geelong",
-  "15-24_unemployed_hume",
-  "15-24_unemployed_latrobe - gippsland",
-  "15-24_unemployed_victoria - north west",
-  "15-24_unemployed_shepparton",
-  "15-24_unemployed_warrnambool and south west",
-  "15-24_employed_melbourne - inner",
-  "15-24_employed_melbourne - inner east",
-  "15-24_employed_melbourne - inner south",
-  "15-24_employed_melbourne - north east",
-  "15-24_employed_melbourne - north west",
-  "15-24_employed_melbourne - outer east",
-  "15-24_employed_melbourne - south east",
-  "15-24_employed_melbourne - west",
-  "15-24_employed_mornington peninsula",
-  "15-24_employed_ballarat",
-  "15-24_employed_bendigo",
-  "15-24_employed_geelong",
-  "15-24_employed_hume",
-  "15-24_employed_latrobe - gippsland",
-  "15-24_employed_victoria - north west",
-  "15-24_employed_shepparton",
-  "15-24_employed_warrnambool and south west",
-  "15-24_nilf_melbourne - inner",
-  "15-24_nilf_melbourne - inner east",
-  "15-24_nilf_melbourne - inner south",
-  "15-24_nilf_melbourne - north east",
-  "15-24_nilf_melbourne - north west",
-  "15-24_nilf_melbourne - outer east",
-  "15-24_nilf_melbourne - south east",
-  "15-24_nilf_melbourne - west",
-  "15-24_nilf_mornington peninsula",
-  "15-24_nilf_ballarat",
-  "15-24_nilf_bendigo",
-  "15-24_nilf_geelong",
-  "15-24_nilf_hume",
-  "15-24_nilf_latrobe - gippsland",
-  "15-24_nilf_victoria - north west",
-  "15-24_nilf_shepparton",
-  "15-24_nilf_warrnambool and south west"
-),
-df = dash_data
-),
-selected_indicator = "unemp_rate",
-zoom = 6) {
+                                                  "15-24_unemployed_melbourne - inner",
+                                                  "15-24_unemployed_melbourne - inner east",
+                                                  "15-24_unemployed_melbourne - inner south",
+                                                  "15-24_unemployed_melbourne - north east",
+                                                  "15-24_unemployed_melbourne - north west",
+                                                  "15-24_unemployed_melbourne - outer east",
+                                                  "15-24_unemployed_melbourne - south east",
+                                                  "15-24_unemployed_melbourne - west",
+                                                  "15-24_unemployed_mornington peninsula",
+                                                  "15-24_unemployed_ballarat",
+                                                  "15-24_unemployed_bendigo",
+                                                  "15-24_unemployed_geelong",
+                                                  "15-24_unemployed_hume",
+                                                  "15-24_unemployed_latrobe - gippsland",
+                                                  "15-24_unemployed_victoria - north west",
+                                                  "15-24_unemployed_shepparton",
+                                                  "15-24_unemployed_warrnambool and south west",
+                                                  "15-24_employed_melbourne - inner",
+                                                  "15-24_employed_melbourne - inner east",
+                                                  "15-24_employed_melbourne - inner south",
+                                                  "15-24_employed_melbourne - north east",
+                                                  "15-24_employed_melbourne - north west",
+                                                  "15-24_employed_melbourne - outer east",
+                                                  "15-24_employed_melbourne - south east",
+                                                  "15-24_employed_melbourne - west",
+                                                  "15-24_employed_mornington peninsula",
+                                                  "15-24_employed_ballarat",
+                                                  "15-24_employed_bendigo",
+                                                  "15-24_employed_geelong",
+                                                  "15-24_employed_hume",
+                                                  "15-24_employed_latrobe - gippsland",
+                                                  "15-24_employed_victoria - north west",
+                                                  "15-24_employed_shepparton",
+                                                  "15-24_employed_warrnambool and south west",
+                                                  "15-24_nilf_melbourne - inner",
+                                                  "15-24_nilf_melbourne - inner east",
+                                                  "15-24_nilf_melbourne - inner south",
+                                                  "15-24_nilf_melbourne - north east",
+                                                  "15-24_nilf_melbourne - north west",
+                                                  "15-24_nilf_melbourne - outer east",
+                                                  "15-24_nilf_melbourne - south east",
+                                                  "15-24_nilf_melbourne - west",
+                                                  "15-24_nilf_mornington peninsula",
+                                                  "15-24_nilf_ballarat",
+                                                  "15-24_nilf_bendigo",
+                                                  "15-24_nilf_geelong",
+                                                  "15-24_nilf_hume",
+                                                  "15-24_nilf_latrobe - gippsland",
+                                                  "15-24_nilf_victoria - north west",
+                                                  "15-24_nilf_shepparton",
+                                                  "15-24_nilf_warrnambool and south west"
+                                                ),
+                                                df = dash_data
+                                                ),
+                                                selected_indicator = "unemp_rate",
+                                                zoom = 6) {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -1206,8 +1209,8 @@ zoom = 6) {
   df <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
@@ -1257,8 +1260,8 @@ zoom = 6) {
   df <- df %>%
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
-                           "North West",
-                           .data$sa4
+        "North West",
+        .data$sa4
       )
     )
 
@@ -1352,67 +1355,67 @@ zoom = 6) {
 }
 
 viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
-  "15-24_unemployed_melbourne - inner",
-  "15-24_unemployed_melbourne - inner east",
-  "15-24_unemployed_melbourne - inner south",
-  "15-24_unemployed_melbourne - north east",
-  "15-24_unemployed_melbourne - north west",
-  "15-24_unemployed_melbourne - outer east",
-  "15-24_unemployed_melbourne - south east",
-  "15-24_unemployed_melbourne - west",
-  "15-24_unemployed_mornington peninsula",
-  "15-24_unemployed_ballarat",
-  "15-24_unemployed_bendigo",
-  "15-24_unemployed_geelong",
-  "15-24_unemployed_hume",
-  "15-24_unemployed_latrobe - gippsland",
-  "15-24_unemployed_victoria - north west",
-  "15-24_unemployed_shepparton",
-  "15-24_unemployed_warrnambool and south west",
-  "15-24_employed_melbourne - inner",
-  "15-24_employed_melbourne - inner east",
-  "15-24_employed_melbourne - inner south",
-  "15-24_employed_melbourne - north east",
-  "15-24_employed_melbourne - north west",
-  "15-24_employed_melbourne - outer east",
-  "15-24_employed_melbourne - south east",
-  "15-24_employed_melbourne - west",
-  "15-24_employed_mornington peninsula",
-  "15-24_employed_ballarat",
-  "15-24_employed_bendigo",
-  "15-24_employed_geelong",
-  "15-24_employed_hume",
-  "15-24_employed_latrobe - gippsland",
-  "15-24_employed_victoria - north west",
-  "15-24_employed_shepparton",
-  "15-24_employed_warrnambool and south west",
-  "15-24_nilf_melbourne - inner",
-  "15-24_nilf_melbourne - inner east",
-  "15-24_nilf_melbourne - inner south",
-  "15-24_nilf_melbourne - north east",
-  "15-24_nilf_melbourne - north west",
-  "15-24_nilf_melbourne - outer east",
-  "15-24_nilf_melbourne - south east",
-  "15-24_nilf_melbourne - west",
-  "15-24_nilf_mornington peninsula",
-  "15-24_nilf_ballarat",
-  "15-24_nilf_bendigo",
-  "15-24_nilf_geelong",
-  "15-24_nilf_hume",
-  "15-24_nilf_latrobe - gippsland",
-  "15-24_nilf_victoria - north west",
-  "15-24_nilf_shepparton",
-  "15-24_nilf_warrnambool and south west"
-),
-df = dash_data
-),
-selected_indicator = "unemp_rate") {
+                                                     "15-24_unemployed_melbourne - inner",
+                                                     "15-24_unemployed_melbourne - inner east",
+                                                     "15-24_unemployed_melbourne - inner south",
+                                                     "15-24_unemployed_melbourne - north east",
+                                                     "15-24_unemployed_melbourne - north west",
+                                                     "15-24_unemployed_melbourne - outer east",
+                                                     "15-24_unemployed_melbourne - south east",
+                                                     "15-24_unemployed_melbourne - west",
+                                                     "15-24_unemployed_mornington peninsula",
+                                                     "15-24_unemployed_ballarat",
+                                                     "15-24_unemployed_bendigo",
+                                                     "15-24_unemployed_geelong",
+                                                     "15-24_unemployed_hume",
+                                                     "15-24_unemployed_latrobe - gippsland",
+                                                     "15-24_unemployed_victoria - north west",
+                                                     "15-24_unemployed_shepparton",
+                                                     "15-24_unemployed_warrnambool and south west",
+                                                     "15-24_employed_melbourne - inner",
+                                                     "15-24_employed_melbourne - inner east",
+                                                     "15-24_employed_melbourne - inner south",
+                                                     "15-24_employed_melbourne - north east",
+                                                     "15-24_employed_melbourne - north west",
+                                                     "15-24_employed_melbourne - outer east",
+                                                     "15-24_employed_melbourne - south east",
+                                                     "15-24_employed_melbourne - west",
+                                                     "15-24_employed_mornington peninsula",
+                                                     "15-24_employed_ballarat",
+                                                     "15-24_employed_bendigo",
+                                                     "15-24_employed_geelong",
+                                                     "15-24_employed_hume",
+                                                     "15-24_employed_latrobe - gippsland",
+                                                     "15-24_employed_victoria - north west",
+                                                     "15-24_employed_shepparton",
+                                                     "15-24_employed_warrnambool and south west",
+                                                     "15-24_nilf_melbourne - inner",
+                                                     "15-24_nilf_melbourne - inner east",
+                                                     "15-24_nilf_melbourne - inner south",
+                                                     "15-24_nilf_melbourne - north east",
+                                                     "15-24_nilf_melbourne - north west",
+                                                     "15-24_nilf_melbourne - outer east",
+                                                     "15-24_nilf_melbourne - south east",
+                                                     "15-24_nilf_melbourne - west",
+                                                     "15-24_nilf_mornington peninsula",
+                                                     "15-24_nilf_ballarat",
+                                                     "15-24_nilf_bendigo",
+                                                     "15-24_nilf_geelong",
+                                                     "15-24_nilf_hume",
+                                                     "15-24_nilf_latrobe - gippsland",
+                                                     "15-24_nilf_victoria - north west",
+                                                     "15-24_nilf_shepparton",
+                                                     "15-24_nilf_warrnambool and south west"
+                                                   ),
+                                                   df = dash_data
+                                                   ),
+                                                   selected_indicator = "unemp_rate") {
   # 12 month smoothing and only latest date
   df <- data %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup()
@@ -1454,8 +1457,8 @@ selected_indicator = "unemp_rate") {
   df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
-                                       "Warrnambool & S. West",
-                                       .data$sa4
+      "Warrnambool & S. West",
+      .data$sa4
     ))
 
   df %>%
@@ -1488,9 +1491,12 @@ selected_indicator = "unemp_rate") {
 }
 
 
-viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A84424695C",
-                                                                             "A84424696F"),
-                                                                           df = dash_data)){
+viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c(
+                                                     "A84424695C",
+                                                     "A84424696F"
+                                                   ),
+                                                   df = dash_data
+                                                   )) {
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
 
@@ -1498,13 +1504,13 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A8
   df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-  #Calculate growth for each type of employment
+  # Calculate growth for each type of employment
   df <- df %>%
     dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$series) %>%
@@ -1521,7 +1527,7 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A8
       .data$series == "> Victoria ;  > Employed part-time ;" ~ "Employed part-time",
     ))
 
-  #add tooltip
+  # add tooltip
   df <- df %>%
     dplyr::mutate(
       tooltip = paste0(
@@ -1535,24 +1541,24 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A8
   # create latest data by gender
   fUll_time_latest <- df %>%
     dplyr::filter(.data$indicator == "Employed full-time" &
-                    .data$date == max(.data$date)) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
   part_time_latest <- df %>%
     dplyr::filter(.data$indicator == "Employed part-time" &
-                    .data$date == max(.data$date)) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
 
   title <- dplyr::case_when(
     fUll_time_latest > part_time_latest ~
-      paste0("Full-time employment grew faster than part-time for Victorian youth in the year to ", latest_month),
+    paste0("Full-time employment grew faster than part-time for Victorian youth in the year to ", latest_month),
     fUll_time_latest < part_time_latest ~
-      paste0("Full-time employment grew slower than part-time for Victorian youth in the year to ", latest_month),
-    fUll_time_latest== part_time_latest ~
-      paste0("Full-time employment grew at around the same pace as part-time employment for Victorian youth  in the year to ", latest_month),
+    paste0("Full-time employment grew slower than part-time for Victorian youth in the year to ", latest_month),
+    fUll_time_latest == part_time_latest ~
+    paste0("Full-time employment grew at around the same pace as part-time employment for Victorian youth  in the year to ", latest_month),
     TRUE ~ paste0("Full-time and part-time annual employment growth for Victorian  youth")
   )
 
@@ -1568,15 +1574,17 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c("A8
     labs(
       title = title,
       subtitle = "Full-time and part-time employment for Victorian youth",
-      caption = paste0(caption_lfs()," Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
+      caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 }
 
 
-viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_females_unemployment rate",
-                                                                    "15-24_males_unemployment rate"),
-                                                                  df = dash_data
-)){
+viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c(
+                                            "15-24_females_unemployment rate",
+                                            "15-24_males_unemployment rate"
+                                          ),
+                                          df = dash_data
+                                          )) {
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
 
@@ -1584,8 +1592,8 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_femal
   df <- df %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -1597,7 +1605,7 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_femal
       .data$series == "Unemployment rate ; Females ; 15-24" ~ "Females 15-24",
     ))
 
-  #add tooltip
+  # add tooltip
   df <- df %>%
     dplyr::mutate(
       tooltip = paste0(
@@ -1612,24 +1620,24 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_femal
   # create latest data by gender
   female_15_24 <- df %>%
     dplyr::filter(.data$indicator == "Females 15-24" &
-                    .data$date == max(.data$date)) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
   male_15_24 <- df %>%
     dplyr::filter(.data$indicator == "Males 15-24" &
-                    .data$date == max(.data$date)) %>%
+      .data$date == max(.data$date)) %>%
     dplyr::pull(.data$value) %>%
     round2(1)
 
   # create title
   title <- dplyr::case_when(
-    female_15_24 > male_15_24  ~
-      paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was higher than that for males"),
-    female_15_24 < male_15_24  ~
-      paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was lower than that for males"),
-    female_15_24 == male_15_24  ~
-      paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was equal to that for males"),
+    female_15_24 > male_15_24 ~
+    paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was higher than that for males"),
+    female_15_24 < male_15_24 ~
+    paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was lower than that for males"),
+    female_15_24 == male_15_24 ~
+    paste0("The unemployment rate for females aged 15-24 in ", latest_month, " was equal to that for males"),
     TRUE ~ "Youth unemployment in Victoria by sex"
   )
 
@@ -1646,5 +1654,4 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c("15-24_femal
       subtitle = " Unemployment rate of Victorian youth by sex ",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
-
 }
