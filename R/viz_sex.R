@@ -494,20 +494,12 @@ viz_gr_underemp_bysex_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$date, .data$series, .data$value)
 
   df <- df %>%
-    dplyr::mutate(series = dplyr::case_when(
-      .data$series == "Underemployment rate (proportion of labour force) ;  > Males ;  > Victoria ;" ~ "Males",
-      .data$series == "Underemployment rate (proportion of labour force) ;  > Females ;  > Victoria ;" ~ "Females",
+    dplyr::mutate(series = dplyr::if_else(
+      .data$series == "Underemployment rate (proportion of labour force) ;  > Males ;  > Victoria ;",
+      "Males",
+      "Females"
     ))
 
-  # add tooltip
-  df <- df %>%
-    dplyr::mutate(
-      tooltip = paste0(
-        .data$series, "\n",
-        format(.data$date, "%b %Y"), "\n",
-        round2(.data$value, 1), "%"
-      )
-    )
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
@@ -515,7 +507,7 @@ viz_gr_underemp_bysex_line <- function(data = filter_dash_data(c(
       value = round2(.data$value, 1),
       date = format(.data$date, "%B %Y")
     ) %>%
-    dplyr::select(.data$series, .data$value, .data$date) %>%
+    # dplyr::select(.data$series, .data$value, .data$date) %>%
     tidyr::pivot_wider(
       names_from = .data$series,
       values_from = .data$value
@@ -530,6 +522,16 @@ viz_gr_underemp_bysex_line <- function(data = filter_dash_data(c(
     paste0("The underemployment rate in ", latest_values$date, " was the same for women and men"),
     TRUE ~ "Underemployment rate for men and women in Victoria"
   )
+
+  # add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$series, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   df %>%
     djpr_ts_linechart(
