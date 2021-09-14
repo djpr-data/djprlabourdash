@@ -1,12 +1,15 @@
 
-text_overview_summary <- function(ts_summ = ts_summ) {
-  emp_growth <- get_summ("A84423349V", "d_period_abs")
-  unemp_rate <- round2(get_summ("A84423354L", "latest_value"), 1)
-  unemp_change <- round2(get_summ("A84423354L", "d_period_abs"), 1)
-  latest_period <- get_summ("A84423349V", "latest_period")
-  prev_period <- format(get_summ("A84423349V", "prev_date"), "%B")
-  part_rate <- round2(get_summ("A84423355R", "latest_value"), 1)
-  part_change <- round2(get_summ("A84423355R", "d_period_abs"), 1)
+text_overview_summary <- function(ts_summ = dash_data %>%
+                                    tidyr::unnest(.data$data) %>%
+                                    ts_summarise()
+                                  ) {
+  emp_growth <- get_summ("A84423349V", "d_period_abs", ts_summ)
+  unemp_rate <- round2(get_summ("A84423354L", "latest_value", ts_summ), 1)
+  unemp_change <- round2(get_summ("A84423354L", "d_period_abs", ts_summ), 1)
+  latest_period <- get_summ("A84423349V", "latest_period", ts_summ)
+  prev_period <- format(get_summ("A84423349V", "prev_date", ts_summ), "%B")
+  part_rate <- round2(get_summ("A84423355R", "latest_value", ts_summ), 1)
+  part_change <- round2(get_summ("A84423355R", "d_period_abs", ts_summ), 1)
 
   emp_more_fewer <- dplyr::if_else(emp_growth > 0,
     " more ",

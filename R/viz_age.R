@@ -854,7 +854,7 @@ df = dash_data
 
   title_df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(-.data$perc) %>%
+    dplyr::select(-.data$perc, -.data$tooltip) %>%
     dplyr::mutate(value = round2(.data$value, 1)) %>%
     tidyr::pivot_wider(
       names_from = .data$indicator,
