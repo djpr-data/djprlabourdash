@@ -588,58 +588,37 @@ viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c(
 
 
   df <- df %>%
-    dplyr::mutate(series = dplyr::case_when(
-      .data$series == "Employed ; Females ; 15-24" ~ "15-24",
-      .data$series == "Employed ; Females ; 25-54" ~ "25-54",
-      .data$series == "Employed ; Females ; 55+" ~ "55+",
-    ))
+    mutate(series = gsub("Employed ; Females ; ", "", .data$series, fixed = TRUE))
 
   latest_month <- format(max(df$date), "%B %Y")
 
   # create latest data by age
+  latest_youth <- df %>%
+    dplyr::filter(.data$date == max(.data$date),
+                  .data$series == "15-24") %>%
+    dplyr::mutate(value = round2(.data$value, 1)) %>%
+    dplyr::pull(.data$value)
 
-  employed_15_24_latest <- df %>%
-    dplyr::filter(.data$series == "15-24" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
-
-  employed_25_54_latest <- df %>%
-    dplyr::filter(.data$series == "25-54" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
-
-  employed_55_plus_latest <- df %>%
-    dplyr::filter(.data$series == "55+" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
-
-
-
-  # title
   title <- dplyr::case_when(
-    employed_55_plus_latest < employed_25_54_latest & employed_55_plus_latest < employed_15_24_latest ~
-    paste0("Employment for 55+ women fell much faster after the COVID shock than employment for other Victorian women age group in ", latest_month),
-    employed_25_54_latest < employed_55_plus_latest & employed_25_54_latest < employed_15_24_latest ~
-    paste0("Employment for 25-54 women fell much faster after the COVID shock than employment for other Victorian women age group in", latest_month),
-    employed_15_24_latest < employed_55_plus_latest & employed_15_24_latest < employed_25_54_latest ~
-    paste0("Employment for 15-24 women fell much faster after the COVID shock than employment for other Victorian women age group in", latest_month),
-    TRUE ~ "Employment for Victorian women by age",
+    latest_youth < 0 ~ paste0("The number of young Victorian women in employment is ",
+                              abs(latest_youth),
+                              " per cent below its pre-COVID level"),
+    latest_youth == 0 ~ "The number of young Victorian women in employment is the same as its pre-COVID level",
+    latest_youth > 0 ~ paste0("The number of young Victorian women in employment is ",
+                              abs(latest_youth),
+                              " per cent above its pre-COVID level")
   )
-
-
 
   df %>%
     djpr_ts_linechart(
       col_var = .data$series,
       label_num = paste0(round2(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
+      y_labels = function(x) paste0(x, "%"),
+      hline = 0
     ) +
     labs(
       title = title,
       subtitle = "Cumulative change in employment by age since March 2020 for Victorian women",
-      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
+      caption = paste0(caption_lfs_det_m(), " Data smoothed using a 12 month rolling average.")
     )
 }
