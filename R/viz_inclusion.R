@@ -2070,12 +2070,12 @@ viz_gr_unemp_bysex_line <- function(data = filter_dash_data(c("A85223418L",
 
   title <- dplyr::case_when(
     latest_values$Females > latest_values$Males ~
-      paste0("Females underemployment rate in ", latest_values$date, " was higher than males"),
+      paste0("The underemployment rate in ", latest_values$date, " was higher for women than men"),
     latest_values$Females < latest_values$Males ~
-      paste0("Females underemployment rate in ", latest_values$date, " was lower than males"),
+      paste0("The underemployment rate in ", latest_values$date, " was lower for women than men"),
     latest_values$Females == latest_values$Males ~
-      paste0("Females underemployment rate in ", latest_values$date, " was the same as males"),
-    TRUE ~ "Underemployment rate for males and females in Victoria"
+      paste0("The underemployment rate in ", latest_values$date, " was the same for women and men"),
+    TRUE ~ "Underemployment rate for men and women in Victoria"
   )
 
   df %>%
@@ -2084,7 +2084,7 @@ viz_gr_unemp_bysex_line <- function(data = filter_dash_data(c("A85223418L",
       label_num = paste0(round2(.data$value, 1), "%")
     ) +
     labs(
-      subtitle = "Underemployment rate for males and females in Victoria",
+      subtitle = "Underemployment rate by sex, Victoria, per cent of labour force",
       caption = caption_lfs(),
       title = title
     ) +
