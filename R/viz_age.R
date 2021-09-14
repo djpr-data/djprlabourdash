@@ -1568,7 +1568,7 @@ viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Full-time and part-time employment for Victorian youth",
+      subtitle = "Full-time and part-time employment for Victorian youth (age 15-24)",
       caption = paste0(caption_lfs(), " Data not seasonally adjusted. Smoothed using a 12 month rolling average.")
     )
 }
@@ -1593,37 +1593,26 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c(
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
 
-
   df <- df %>%
     dplyr::mutate(indicator = dplyr::case_when(
       .data$series == "Unemployment rate ; Males ; 15-24" ~ "Males 15-24",
       .data$series == "Unemployment rate ; Females ; 15-24" ~ "Females 15-24",
     ))
 
-  # add tooltip
-  df <- df %>%
-    dplyr::mutate(
-      tooltip = paste0(
-        .data$indicator, "\n",
-        format(.data$date, "%b %Y"), "\n",
-        round2(.data$value, 1), "%"
-      )
-    )
-
   latest_month <- format(max(df$date), "%B %Y")
 
-  # create latest data by gender
-  female_15_24 <- df %>%
-    dplyr::filter(.data$indicator == "Females 15-24" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
+  latest <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(value = round2(.data$value, 1))
 
-  male_15_24 <- df %>%
-    dplyr::filter(.data$indicator == "Males 15-24" &
-      .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
+  # create latest data by gender
+  female_15_24 <- latest %>%
+    dplyr::filter(.data$indicator == "Females 15-24") %>%
+    dplyr::pull(.data$value)
+
+  male_15_24 <- latest %>%
+    dplyr::filter(.data$indicator == "Males 15-24" ) %>%
+    dplyr::pull(.data$value)
 
   # create title
   title <- dplyr::case_when(
@@ -1636,7 +1625,15 @@ viz_gr_youth_unemp_bysex_line <- function(data = filter_dash_data(c(
     TRUE ~ "Youth unemployment in Victoria by sex"
   )
 
-
+  # add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
 
   df %>%
     djpr_ts_linechart(
