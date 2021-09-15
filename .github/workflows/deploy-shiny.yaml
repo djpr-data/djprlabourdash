@@ -10,7 +10,7 @@ name: deploy-shiny
 
 jobs:
   deploy-shiny:
-    runs-on: macOS-latest
+    runs-on: windows-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
