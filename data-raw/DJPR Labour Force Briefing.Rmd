@@ -34,7 +34,8 @@ knitr::opts_chunk$set(
   echo = FALSE,
   message = FALSE,
   error = FALSE,
-  warning = FALSE
+  warning = FALSE,
+  tab.topcaption = TRUE
   )
 ```
 
@@ -191,7 +192,7 @@ hours_text <- dplyr::case_when(
 table_overview() 
 ```
 
-<br>
+\newpage
 
 ```{r}
 table_gr_sex()
