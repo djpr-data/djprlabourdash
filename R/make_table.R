@@ -22,7 +22,7 @@
 #'   data = filter_dash_data(series_ids = c(
 #'     "A84423354L",
 #'     "A84423242V",
-#'     "A84423466F",
+#'     "A84423466F"
 #'   )),
 #'   row_order = c(
 #'     "A84423354L",

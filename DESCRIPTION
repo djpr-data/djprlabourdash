@@ -27,7 +27,7 @@ Description: Shiny app to visualise Victorian labour force data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports: 
     djprdashdata (>= 0.0.2.9004),
     djprshiny (>= 0.0.5.910),
