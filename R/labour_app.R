@@ -19,7 +19,7 @@ labour_server <- function(input, output, session) {
   )
 
   series_latestdates <- dash_data %>%
-    tidyr::unnest(cols = .data$data) %>%
+    # tidyr::unnest(cols = .data$data) %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::pull(.data$date)

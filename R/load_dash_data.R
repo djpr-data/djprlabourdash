@@ -61,5 +61,9 @@ load_dash_data <- function(branch = "main") {
       by = "series_id"
     )
 
+  lfs <- lfs %>%
+    tidyr::unnest(cols = .data$data) %>%
+    dplyr::mutate_if(is.factor, as.character)
+
   lfs
 }
