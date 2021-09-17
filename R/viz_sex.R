@@ -260,7 +260,7 @@ df = dash_data
       names_to = "indicator",
       values_to = "value"
     ) %>%
-    dplyr::arrange(.data$date) %>%
+    # dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$sex) %>%
     dplyr::mutate(
       value = 100 * ((.data$value / lag(.data$value, 12) - 1)),
@@ -276,19 +276,18 @@ df = dash_data
   latest_month <- format(max(df$date), "%B %Y")
 
   # create latest data by gender
-  female_latest_f <- df %>%
-    dplyr::filter(.data$sex == "Females" &
-                    .data$indicator == "Employed full-time" &
+  latest_ft <- df %>%
+    dplyr::filter(.data$indicator == "Employed full-time" &
                     .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
+    dplyr::mutate(value = round2(.data$value, 1))
+
+  female_latest_f <- latest_ft %>%
+    dplyr::filter(.data$sex == "Females") %>%
+    dplyr::pull(.data$value)
 
   male_latest_f <- df %>%
-    dplyr::filter(.data$sex == "Males" &
-                    .data$indicator == "Employed full-time" &
-                    .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
+    dplyr::filter(.data$sex == "Males") %>%
+    dplyr::pull(.data$value)
 
 
   # create title
