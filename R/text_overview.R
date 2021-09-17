@@ -1,6 +1,6 @@
 
 text_overview_summary <- function(ts_summ = dash_data %>%
-                                    tidyr::unnest(.data$data) %>%
+                                    # tidyr::unnest(.data$data) %>%
                                     ts_summarise()
                                   ) {
   emp_growth <- get_summ("A84423349V", "d_period_abs", ts_summ)
