@@ -285,7 +285,7 @@ df = dash_data
     dplyr::filter(.data$sex == "Females") %>%
     dplyr::pull(.data$value)
 
-  male_latest_f <- df %>%
+  male_latest_f <- latest_ft %>%
     dplyr::filter(.data$sex == "Males") %>%
     dplyr::pull(.data$value)
 
