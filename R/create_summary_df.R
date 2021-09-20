@@ -20,7 +20,7 @@ create_summary_df <- function(data,
 
   freq <- unique(data$frequency)
   if (length(freq) != 1) {
-    stop("Cannot make a table with mixed frequency data (eg. montly + quarterly")
+    stop("Cannot make a table with mixed frequency data (eg. monthly + quarterly")
   }
 
   num_in_year <- dplyr::case_when(
@@ -42,9 +42,10 @@ create_summary_df <- function(data,
     )
 
   # Calculate change over time -----
+  summary_df <- summary_df[order(summary_df$date), ]
+
   summary_df <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
     dplyr::mutate(
       is_level = if_else(grepl("000", .data$unit), TRUE, FALSE),
       value = dplyr::if_else(

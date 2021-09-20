@@ -7,10 +7,10 @@
 #' filter_dash_data("A84423354L")
 #'
 filter_dash_data <- function(series_ids, df = dash_data) {
-  out <- df %>%
-    dplyr::filter(.data$series_id %in% series_ids)
 
-  all_present <- all(series_ids %in% out$series_id)
+  out <- subset(df, series_id %in% series_ids)
+
+  all_present <- all(.env$series_ids %in% out$series_id)
 
   if (!all_present) {
     warning("Not all series IDs could be found")
@@ -37,9 +37,6 @@ filter_dash_data <- function(series_ids, df = dash_data) {
 get_summ <- function(series_ids,
                      item,
                      df = ts_summ) {
-  stopifnot(!missing(item))
 
-  df %>%
-    dplyr::filter(.data$series_id %in% series_ids) %>%
-    dplyr::pull({{ item }})
+  subset(df, series_id %in% series_ids)[[deparse(substitute(item))]]
 }
