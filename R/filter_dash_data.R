@@ -38,5 +38,7 @@ get_summ <- function(series_ids,
                      item,
                      df = ts_summ) {
 
-  subset(df, series_id %in% series_ids)[[deparse(substitute(item))]]
+  df %>%
+    dplyr::filter(.data$series_id %in% series_ids) %>%
+    dplyr::pull({{ item }})
 }
