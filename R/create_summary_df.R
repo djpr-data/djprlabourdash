@@ -133,9 +133,9 @@ create_summary_df <- function(data,
   dates <- unique(data$date) %>%
     sort()
 
-  latest_date <- max(changedf$date)
+  latest_date <- dates[length(dates)]
   prev_date <- dates[length(dates) - 1]
-  prev_year <- subtract_years(max(dates), 1)
+  prev_year <- subtract_years(latest_date, 1)
 
   nice_latest_date <- format(latest_date, "%b %Y")
   nice_prev_date <- format(prev_date, "%b %Y")
