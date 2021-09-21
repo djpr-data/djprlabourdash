@@ -8,6 +8,8 @@
 #'
 filter_dash_data <- function(series_ids, df = dash_data) {
 
+  series_id <- NULL
+
   out <- subset(df, series_id %in% series_ids)
 
   all_present <- all(.env$series_ids %in% out$series_id)
