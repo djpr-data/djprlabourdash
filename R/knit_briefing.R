@@ -1,5 +1,7 @@
 
-knit_briefing <- function(path_out = tempfile(fileext = ".docx")) {
+knit_briefing <- function(path_out = file.path(tempdir(),
+                                               "djpr_jobs_briefing.docx")
+                          ) {
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop("knit_briefing() requires the rmarkdown package.\n",

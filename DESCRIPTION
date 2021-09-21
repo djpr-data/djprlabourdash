@@ -62,5 +62,6 @@ Suggests:
     pkgload,
     usethis,
     rmarkdown,
-    officedown
+    officedown,
+    blastula
 Config/testthat/edition: 3

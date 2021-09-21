@@ -19,15 +19,11 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v1
       - name: install-packages
         run: |
-          install.packages(c('blastula', 'remotes'), type = 'binary', dependencies = TRUE)
+          install.packages(c('remotes'), type = 'binary', dependencies = TRUE)
           remotes::install_deps(type = 'binary', force = FALSE, dependencies = TRUE)
         shell: Rscript {0}
       - name: knit-briefing
         run: |
-          pkgload::load_all()
-          briefing_doc <- knit_briefing()
-          email <- blastula::compose_email(body = "Latest jobs briefing attached")
-          email <- blastula::add_attachment(email, briefing_doc)
-          blastula::smtp_send(email, to = '${{secrets.EMAIL_TO}}', from = '${{secrets.EMAIL_FROM}}', subject = "Latest jobs briefing", credentials = blastula::creds_envvar(user = '${{secrets.EMAIL_FROM}}', provider = "gmail"))
+          source(file.path("data-raw", "send_briefing_email.R"))
         shell: Rscript {0}
 
