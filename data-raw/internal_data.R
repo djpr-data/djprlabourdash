@@ -26,7 +26,7 @@ if (dash_data_updated != remote_updated) {
   stopifnot(inherits(dash_data, "tbl_df"))
   stopifnot(nrow(dash_data) > 800)
   dash_data_updated <- remote_updated
-  source(file.path("data-raw", "send_briefing_email.R"))
+  source(file.path("data-raw", "send_briefing_email.R"), local = T)
 }
 
 usethis::use_data(sa42016,
