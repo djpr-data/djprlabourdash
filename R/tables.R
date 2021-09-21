@@ -955,7 +955,6 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   # Youth unemployment = 12m rolling average
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84424691V",
       slider::slide_mean(.data$value, before = 11, complete = TRUE),
       .data$value

@@ -156,10 +156,6 @@ labour_server <- function(input, output, session) {
     footnote()
   })
 
-  output$overview_text <- renderUI({
-    text_overview_summary()
-  })
-
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%

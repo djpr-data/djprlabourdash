@@ -60,5 +60,6 @@ Suggests:
     testthat (>= 3.0.0),
     memoise,
     pkgload,
-    usethis
+    usethis,
+    rmarkdown
 Config/testthat/edition: 3
