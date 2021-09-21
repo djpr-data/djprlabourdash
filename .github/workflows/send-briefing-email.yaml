@@ -1,0 +1,31 @@
+# For help debugging build failures open an issue on the RStudio community with the 'github-actions' tag.
+# https://community.rstudio.com/new-topic?category=Package%20development&tags=github-actions
+on:
+  push:
+    branches:
+      - dev
+
+name: knit-briefing
+
+jobs:
+  knit-briefing:
+    runs-on: macos-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@master
+      - name: install-packages
+        run: |
+          install.packages(c('blastula', 'remotes'), type = 'binary', dependencies = TRUE)
+          remotes::install_deps(type = 'binary', force = FALSE, dependencies = TRUE)
+        shell: Rscript {0}
+      - name: knit-briefing
+        run: |
+          pkgload::load_all()
+          briefing_doc <- knit_briefing()
+          email <- blastula::compose_email(body = "Latest jobs briefing attached")
+          email <- blastula::add_attachment(email, briefing_doc)
+          blastula::smtp_send(email, to = '${{secrets.EMAIL_TO}}', from = '${{secrets.EMAIL_FROM}}', subject = "Latest jobs briefing", credentials = blastula::creds_envvar(user = '${{secrets.EMAIL_FROM}}', provider = "gmail", pass_envvar = '${{secrets.SMTP_PASSWORD}}'))
+        shell: Rscript {0}
+
