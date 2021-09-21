@@ -24,6 +24,6 @@ jobs:
         shell: Rscript {0}
       - name: knit-briefing
         run: |
-          source(file.path("data-raw", "send_briefing_email.R"))
+          source(file.path("data-raw", "send_briefing_email.R", local = TRUE))
         shell: Rscript {0}
 
