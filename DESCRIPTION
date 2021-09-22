@@ -61,5 +61,7 @@ Suggests:
     memoise,
     pkgload,
     usethis,
-    rmarkdown
+    rmarkdown,
+    officedown,
+    blastula
 Config/testthat/edition: 3
