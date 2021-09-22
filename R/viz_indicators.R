@@ -170,10 +170,10 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     dplyr::pull(.data$rank)
 
   title <- dplyr::case_when(
-    vic_rank == 8 ~ "is the lowest in Australia",
-    vic_rank == 7 ~ "is the second lowest in Australia",
-    vic_rank == 6 ~ "is the third lowest in Australia",
-    vic_rank == 5 ~ "is the fourth lowest in Australia",
+    vic_rank == 8 ~ "is the lowest of all Australian states and territories",
+    vic_rank == 7 ~ "is the second lowest of all Australian states and territories",
+    vic_rank == 6 ~ "is the third lowest of all Australian states and territories",
+    vic_rank == 5 ~ "is the fourth lowest of all Australian states and territories",
     vic_rank < 5 &
       df_wide$max_date[df_wide$state == "Victoria"] < df_wide$min_date[df_wide$state == "Victoria"] ~
     "has fallen over the past year",
