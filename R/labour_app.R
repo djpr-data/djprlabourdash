@@ -209,6 +209,7 @@ labour_server <- function(input, output, session) {
     id = "ind_emp_sincecovid_line",
     plot_function = viz_ind_emp_sincecovid_line,
     width_percent = 45,
+    height_percent = 100,
     date_slider = FALSE,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
@@ -263,6 +264,7 @@ labour_server <- function(input, output, session) {
     id = "ind_gen_full_part_line",
     plot_function = viz_ind_gen_full_part_line,
     width_percent = 45,
+    height_percent = 100,
     data = filter_dash_data(c(
       "pt_emp_vic",
       "A84423357V"
