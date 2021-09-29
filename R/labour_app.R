@@ -251,6 +251,7 @@ labour_server <- function(input, output, session) {
     id = "ind_empgro_line",
     plot_function = viz_ind_empgro_line,
     width_percent = 45,
+    height_percent = 75,
     data = filter_dash_data(c(
       "A84423349V",
       "A84423043C"
