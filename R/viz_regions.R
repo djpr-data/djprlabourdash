@@ -297,8 +297,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
 }
 
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
-title_reg_emp_regions_sincecovid_line <- function(data)
-{
+title_reg_emp_regions_sincecovid_line <- function(data) {
   current <- data %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(
@@ -1901,7 +1900,6 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
                                      df = dash_data
                                      ),
                                      selected_indicator = "unemp_rate") {
-
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
 

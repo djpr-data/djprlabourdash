@@ -5,9 +5,7 @@
 #' @export
 #' @examples
 #' filter_dash_data("A84423354L")
-#'
 filter_dash_data <- function(series_ids, df = dash_data) {
-
   series_id <- NULL
 
   out <- subset(df, series_id %in% series_ids)
@@ -39,7 +37,6 @@ filter_dash_data <- function(series_ids, df = dash_data) {
 get_summ <- function(series_ids,
                      item,
                      df = ts_summ) {
-
   df %>%
     dplyr::filter(.data$series_id %in% series_ids) %>%
     dplyr::pull({{ item }})

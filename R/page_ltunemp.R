@@ -4,10 +4,10 @@ page_ltunemp <- function(...) {
     br(),
     djpr_plot_ui("gr_ltunemp_line"),
     djpr_plot_ui("gr_ltunvic_bar",
-                 interactive = FALSE
+      interactive = FALSE
     ),
     djpr_plot_ui("gr_ltunvic_area",
-                 interactive = FALSE
+      interactive = FALSE
     ),
     br(),
     htmlOutput("inclusion_footnote"),
