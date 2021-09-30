@@ -127,12 +127,6 @@ make_table <- function(data,
       out
     }
 
-    cols_d_period <- get_col(
-      summary_df$SERIES_ID,
-      "ptile_d_period_abs",
-      df_summ = df_summ, full_pal = full_pal
-    )
-
     # Add conditional formatting to flextable
     flex <- flex %>%
       # Latest value column
