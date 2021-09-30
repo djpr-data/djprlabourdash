@@ -26,7 +26,6 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
       )
     )
 
-
   latest_vic <- df %>%
     dplyr::filter(
       .data$state == "Victoria",
@@ -49,11 +48,12 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
     djpr_ts_linechart(
       col_var = .data$state,
       label_num = paste0(round2(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
+      y_labels = function(x) paste0(x, "%"),
+      n_x_breaks = 3
     ) +
     labs(
       title = title,
-      subtitle = "Cumulative change in employment since March 2020",
+      subtitle = "Cumulative change in employment since March 2020\n\n",
       caption = caption_lfs()
     )
 }
@@ -993,13 +993,12 @@ viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
     "it was in March 2020"
   )
 
-
-
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
       label_num = paste0(round2(.data$value, 1), "%"),
-      y_labels = function(x) paste0(x, "%")
+      y_labels = function(x) paste0(x, "%"),
+      n_x_breaks = 3
     ) +
     labs(
       title = title,
