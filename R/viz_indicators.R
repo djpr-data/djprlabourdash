@@ -494,7 +494,7 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
       limits = function(x) c(0, x[2]),
       labels = function(x) paste0(x, "%"),
       breaks = scales::breaks_pretty(5),
-      expand = expansion(mult = c(0, 0.05))
+      expand = expansion(mult = c(0, 0.1))
     )
 }
 

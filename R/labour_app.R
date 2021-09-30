@@ -275,6 +275,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
+    date_slider_value_min = as.Date("2000-01-01"),
     plt_change = plt_change
   )
 
@@ -332,7 +333,7 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ),
     plt_change = plt_change,
-    date_slider_value_min = Sys.Date() - (20 * 365)
+    date_slider_value_min = as.Date("2000-01-01")
   )
 
   # Indicators: participation ----
@@ -390,6 +391,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
+    date_slider_value_min = as.Date("2000-01-01"),
     plt_change = plt_change
   )
 
@@ -1221,7 +1223,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
-    selected_indicator = reactive(input$aus_regions_indicator),
+    selected_indicator = req(reactive(input$aus_regions_indicator)),
     plt_change = plt_change,
     height_percent = 150,
     width_percent = 46,
