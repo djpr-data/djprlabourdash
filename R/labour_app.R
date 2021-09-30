@@ -19,7 +19,6 @@ labour_server <- function(input, output, session) {
   )
 
   series_latestdates <- dash_data %>%
-    # tidyr::unnest(cols = .data$data) %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::pull(.data$date)
@@ -34,11 +33,10 @@ labour_server <- function(input, output, session) {
   ur_bar_data <- filter_dash_data("A84423354L")
   ur_bar_latest <- max(ur_bar_data$date)
 
-
   output$ur_bar_static <- renderPlot({
 
     ur_bar_static <- ur_bar_data %>%
-      dplyr::slice_tail(n = 12) %>%
+      utils::tail(12) %>%
       ggplot(aes(
         x = as.character(.data$date),
         y = .data$value,
@@ -1012,9 +1010,9 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  output$text_emp_regions <- renderUI({
-    text_reg_regions_sincecovid()
-  })
+  # output$text_emp_regions <- renderUI({
+  #   text_reg_regions_sincecovid()
+  # })
 
   djpr_plot_server("reg_emp_regions_sincecovid_line",
     viz_reg_emp_regions_sincecovid_line,

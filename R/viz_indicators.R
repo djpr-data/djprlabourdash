@@ -543,7 +543,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
   )
 
   data %>%
-    dplyr::filter(!grepl("Underutilisation", .data$series)) %>%
+    dplyr::filter(!grepl("Underutilisation", .data$series, fixed = TRUE)) %>%
     ggplot(aes(x = .data$date, y = .data$value, fill = .data$under)) +
     geom_area(colour = NA) +
     geom_label(
@@ -562,7 +562,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
     ) +
     geom_line(
       data = data %>%
-        dplyr::filter(grepl("Underutilisation", .data$series)),
+        dplyr::filter(grepl("Underutilisation", .data$series, fixed = TRUE)),
       size = 0.5,
       colour = "black"
     ) +
@@ -704,7 +704,7 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
 
   # Create title
   latest_change <- df %>%
-    dplyr::filter(!grepl("Average", .data$indicator)) %>%
+    dplyr::filter(!grepl("Average", .data$indicator, fixed = TRUE)) %>%
     dplyr::select(.data$date, .data$value, .data$indicator) %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::arrange(.data$date) %>%

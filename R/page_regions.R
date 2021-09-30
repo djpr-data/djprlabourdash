@@ -80,7 +80,8 @@ page_regions <- function(...) {
     # Regional Vic vs Greater Melb -----
     h2(br(), "Regional Victoria and Greater Melbourne"),
     djpr_plot_ui("reg_melvic_line"),
-    htmlOutput("text_emp_regions"),
+    # htmlOutput("text_emp_regions"),
+    br(),
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
     # Victorian regions focus box ------

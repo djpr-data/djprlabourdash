@@ -44,3 +44,4 @@ for (f in table_funcs) {
   tables <- bind_rows(tables, x)
 }
 
+# profvis::profvis(runApp(list(ui = labour_ui(), server = labour_server)))
