@@ -47,7 +47,7 @@ create_summary_df <- function(data,
   summary_df <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
     dplyr::mutate(
-      is_level = if_else(grepl("000", .data$unit), TRUE, FALSE),
+      is_level = if_else(grepl("000", .data$unit, fixed = TRUE), TRUE, FALSE),
       value = dplyr::if_else(
         .data$is_level,
         1000 * .data$value,

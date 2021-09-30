@@ -19,5 +19,4 @@ Convenience function to extract specified ABS series IDs from \code{dash_data}
 }
 \examples{
 filter_dash_data("A84423354L")
-
 }

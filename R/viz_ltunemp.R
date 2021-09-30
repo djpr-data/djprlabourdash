@@ -1,15 +1,14 @@
 # Functions to create the graphs for the 'Long-term unemployed' subpage on the dashboard.
 
 viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-                            "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                            "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                            "A84423687K",
-                            "A84423089K",
-                            "A84597681W"),
-                            df = dash_data
-                            )
-                          )
-{
+                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                  "A84423687K",
+                                  "A84423089K",
+                                  "A84597681W"
+                                ),
+                                df = dash_data
+                                )) {
   df <- data %>%
     dplyr::select(.data$series, .data$value, .data$date)
 
@@ -20,10 +19,10 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::mutate(
       Australia = 100 * (.data$`52 weeks and over (Long-term unemployed) ;  Unemployed total ;  Persons ;` /
-                           .data$`Labour force total ;  Persons ;  Australia ;`),
+        .data$`Labour force total ;  Persons ;  Australia ;`),
       Victoria = 100 * ((.data$`Unemployed total ('000) ; Victoria ; 104 weeks and over (2 years and over)` +
-                           .data$`Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
-                          .data$`Labour force total ;  Persons ;  > Victoria ;`)
+        .data$`Unemployed total ('000) ; Victoria ; 52 weeks and under 104 weeks (1-2 years)`) /
+        .data$`Labour force total ;  Persons ;  > Victoria ;`)
     ) %>%
     dplyr::select(.data$date, .data$Australia, .data$Victoria) %>%
     tidyr::pivot_longer(
@@ -34,8 +33,8 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::group_by(.data$state) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -43,11 +42,10 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::mutate(tooltip = paste0(
-                    .data$state, "\n",
-                    format(.data$date, "%b %Y"), "\n",
-                    round2(.data$value, 1), "%"
-                  )
-                )
+      .data$state, "\n",
+      format(.data$date, "%b %Y"), "\n",
+      round2(.data$value, 1), "%"
+    ))
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
@@ -60,11 +58,11 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
-      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
+    paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
     latest_values$Victoria < latest_values$Australia ~
-      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
+    paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
     latest_values$Victoria == latest_values$Australia ~
-      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
+    paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
     TRUE ~ "Long-term unemployment rate in Victoria and Australia"
   )
 
@@ -88,15 +86,15 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
 
 viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
-  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-),
-df = dash_data
-)) {
+                                 "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                 "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                                 "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                                 "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                                 "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                 "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                               ),
+                               df = dash_data
+                               )) {
   # select the series you need for the bar chart
   data <- data %>%
     dplyr::select(.data$duration, .data$value, .data$date)
@@ -105,8 +103,8 @@ df = dash_data
   data <- data %>%
     dplyr::group_by(.data$duration) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -144,15 +142,15 @@ df = dash_data
 
   df_data <- df_data %>%
     dplyr::mutate(duration = factor(.data$duration,
-                                    levels = c(
-                                      "<1 month",
-                                      "1-3 months",
-                                      "3-6 months",
-                                      "6-12 months",
-                                      "1-2 years",
-                                      "2+ years"
-                                    ),
-                                    ordered = TRUE
+      levels = c(
+        "<1 month",
+        "1-3 months",
+        "3-6 months",
+        "6-12 months",
+        "1-2 years",
+        "2+ years"
+      ),
+      ordered = TRUE
     ))
 
   latest_month <- format(max(data$date), "%B %Y")
@@ -191,16 +189,16 @@ df = dash_data
   title <- dplyr::case_when(
     title_df$LT > 0 &
       title_df$ST > 0 ~
-      "The number of long-term and short-term unemployed Victorians both rose over the year to ",
+    "The number of long-term and short-term unemployed Victorians both rose over the year to ",
     title_df$LT < 0 &
       title_df$ST > 0 ~
-      "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
+    "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
     title_df$LT > 0 &
       title_df$ST < 0 ~
-      "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
+    "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
     title_df$LT < 0 &
       title_df$ST ~
-      "The number of long-term and short-term unemployed Victorians both fell over the year to ",
+    "The number of long-term and short-term unemployed Victorians both fell over the year to ",
     TRUE ~ "Long-term and short-term unemployment in Victoria over the year to "
   )
 
@@ -211,8 +209,8 @@ df = dash_data
     dplyr::mutate(
       date = format(.data$date, "%B %Y"),
       date = factor(.data$date,
-                    levels = rev(sort(unique(.data$date))),
-                    ordered = TRUE
+        levels = rev(sort(unique(.data$date))),
+        ordered = TRUE
       )
     )
 
@@ -270,14 +268,15 @@ df = dash_data
 
 # area chart for the proportion of unemployed by duration
 viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
-                          "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                          "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-                          "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-                          "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-                          "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                          "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"),
-                          df = dash_data))
-{
+                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                                  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                                  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                                ),
+                                df = dash_data
+                                )) {
   # select the series you need for the bar chart
   data <- data %>%
     dplyr::select(.data$duration, .data$value, .data$date)
@@ -286,8 +285,8 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
   data <- data %>%
     dplyr::group_by(.data$duration) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::ungroup() %>%
     dplyr::filter(!is.na(.data$value))
@@ -297,15 +296,15 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
     dplyr::mutate(
       duration =
         factor(.data$duration,
-               levels = c(
-                 "Under 4 weeks (under 1 month)",
-                 "4 weeks and under 13 weeks (1-3 months)",
-                 "13 weeks and under 26 weeks (3-6 months)",
-                 "26 weeks and under 52 weeks (6-12 months)",
-                 "52 weeks and under 104 weeks (1-2 years)",
-                 "104 weeks and over (2 years and over)"
-               ),
-               ordered = TRUE
+          levels = c(
+            "Under 4 weeks (under 1 month)",
+            "4 weeks and under 13 weeks (1-3 months)",
+            "13 weeks and under 26 weeks (3-6 months)",
+            "26 weeks and under 52 weeks (6-12 months)",
+            "52 weeks and under 104 weeks (1-2 years)",
+            "104 weeks and over (2 years and over)"
+          ),
+          ordered = TRUE
         )
     )
 
@@ -318,17 +317,17 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       label_no_num =
         case_when(
           duration == "Under 4 weeks (under 1 month)" ~
-            "<1 month",
+          "<1 month",
           duration == "4 weeks and under 13 weeks (1-3 months)" ~
-            "1-3 months",
+          "1-3 months",
           duration == "13 weeks and under 26 weeks (3-6 months)" ~
-            "3-6 months",
+          "3-6 months",
           duration == "26 weeks and under 52 weeks (6-12 months)" ~
-            "6-12 months",
+          "6-12 months",
           duration == "52 weeks and under 104 weeks (1-2 years)" ~
-            "1-2 years",
+          "1-2 years",
           duration == "104 weeks and over (2 years and over)" ~
-            "2+ years",
+          "2+ years",
           TRUE ~ NA_character_
         ),
       label = paste0(
@@ -402,4 +401,3 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       title = title
     )
 }
-

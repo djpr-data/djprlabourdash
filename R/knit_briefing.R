@@ -1,23 +1,29 @@
 
-knit_briefing <- function(path_out = file.path(tempdir(),
-                                               "djpr_jobs_briefing.docx")
-                          ) {
-
+knit_briefing <- function(path_out = file.path(
+                            tempdir(),
+                            "djpr_jobs_briefing.docx"
+                          )) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
-    stop("knit_briefing() requires the rmarkdown package.\n",
-         " Install it with: install.packages('rmarkdown')")
+    stop(
+      "knit_briefing() requires the rmarkdown package.\n",
+      " Install it with: install.packages('rmarkdown')"
+    )
   }
 
   if (!requireNamespace("officedown", quietly = TRUE)) {
-    stop("knit_briefing() requires the officedown package.\n",
-         " Install it with: install.packages('officedown')")
+    stop(
+      "knit_briefing() requires the officedown package.\n",
+      " Install it with: install.packages('officedown')"
+    )
   }
 
   rmd_path <- system.file("jobs_briefing.Rmd", package = "djprlabourdash")
 
-  rmarkdown::render(input = rmd_path,
-                    output_file = path_out,
-                    quiet = FALSE)
+  rmarkdown::render(
+    input = rmd_path,
+    output_file = path_out,
+    quiet = FALSE
+  )
 
   return(path_out)
 }
