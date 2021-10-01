@@ -35,9 +35,10 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_hoursworked_line"),
     h2(br(), "Participation"),
     br(),
-    fluidRow(column(6, djpr_plot_ui("ind_partrate_line")),
-             column(6, djpr_plot_ui("ind_partrate_bar"))
-    ),
+    djpr_plot_ui("ind_partrate_line"),
+    djpr_plot_ui("ind_partrate_bar",
+      interactive = FALSE
+      ),
     djpr_plot_ui("ind_partrate_un_line"),
     br(),
     paste0(

@@ -369,7 +369,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
-    width_percent = 45,
+    height_percent = 75,
     plt_change = plt_change,
     date_slider = FALSE,
     interactive = FALSE
@@ -408,7 +408,6 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
-    width_percent = 45,
     plt_change = plt_change
   )
 
