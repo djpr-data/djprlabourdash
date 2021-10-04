@@ -1265,6 +1265,17 @@ labour_server <- function(input, output, session) {
         value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
       ) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
+    check_box_options = c(
+      "Reg. NSW",
+      "Reg. Qld",
+      "Reg. Tas",
+      "Reg. WA",
+      "Reg. NT",
+      "Reg. Vic",
+      "Reg. SA"
+    ),
+    check_box_var = .data$state,
+    check_box_selected = c("Reg. NSW", "Reg. Vic"),
     date_slider = FALSE,
     plt_change = plt_change
   )
