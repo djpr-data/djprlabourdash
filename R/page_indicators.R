@@ -37,7 +37,7 @@ page_indicators <- function(...) {
     br(),
       fluidRow(
         column(6, djpr_plot_ui("ind_partrate_line")),
-        column(6, djpr_plot_ui("ind_partrate_bar",interactive = FALSE)),
+        column(6, djpr_plot_ui("ind_partrate_bar"),interactive = FALSE)),
     djpr_plot_ui("ind_partrate_un_line"),
     br(),
     paste0(
