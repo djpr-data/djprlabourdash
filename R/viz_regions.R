@@ -1539,14 +1539,12 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
                                                        "A84600243R",
                                                        "A84599715V",
                                                        "A84599631K"
-                                                     ),
-                                                     df = dash_data
-                                                     ) %>%
-                                                       dplyr::group_by(.data$series_id) %>%
-                                                       dplyr::mutate(
-                                                         value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
-                                                       ) %>%
-                                                       dplyr::filter(date >= as.Date("2020-01-01"))) {
+                                                      ),
+                                                      df = dash_data
+                                                      ),
+                                                      selected_state = c("Reg. Vic", "Reg. NSW")
+                                                      )
+{
   df <- data %>%
     dplyr::mutate(
       state = dplyr::case_when(
@@ -1576,6 +1574,13 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
         "Other"
       )
     )
+
+  df <- data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(
+      value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
+    ) %>%
+    dplyr::filter(date >= as.Date("2020-01-01"))
 
   df <- df %>%
     dplyr::group_by(.data$state) %>%
