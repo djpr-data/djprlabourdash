@@ -242,7 +242,7 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change,
     date_slider = FALSE,
     width_percent = 45,
-    height_percent = 100
+    height_percent = 75
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
