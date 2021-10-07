@@ -13,10 +13,10 @@ page_indicators <- function(...) {
         column(6, djpr_plot_ui("ind_empgro_line"))
       ),
     br(),
-    #   fluidRow(
-    #     column(6, djpr_plot_ui("ind_gen_full_part_line")),
-    #     column(6, djpr_plot_ui("ind_emp_sincecovid_line"))
-    # ),
+      fluidRow(
+        column(6, djpr_plot_ui("ind_gen_full_part_line")),
+        column(6, djpr_plot_ui("ind_emp_sincecovid_line"))
+    ),
     h2(br(), "Unemployment & underemployment"),
     uiOutput(
       "ind_unemp_summary"
@@ -35,9 +35,10 @@ page_indicators <- function(...) {
     djpr_plot_ui("ind_hoursworked_line"),
     h2(br(), "Participation"),
     br(),
-      fluidRow(
-        column(6, djpr_plot_ui("ind_partrate_line")),
-        column(6, djpr_plot_ui("ind_partrate_bar"),interactive = FALSE)),
+    djpr_plot_ui("ind_partrate_line"),
+    br(),
+    djpr_plot_ui("ind_partrate_bar",interactive = FALSE),
+    br(),
     djpr_plot_ui("ind_partrate_un_line"),
     br(),
     paste0(
