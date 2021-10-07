@@ -13,10 +13,10 @@ page_indicators <- function(...) {
         column(6, djpr_plot_ui("ind_empgro_line"))
       ),
     br(),
-      fluidRow(
-        column(6, djpr_plot_ui("ind_gen_full_part_line")),
-        column(6, djpr_plot_ui("ind_emp_sincecovid_line"))
-    ),
+    #   fluidRow(
+    #     column(6, djpr_plot_ui("ind_gen_full_part_line")),
+    #     column(6, djpr_plot_ui("ind_emp_sincecovid_line"))
+    # ),
     h2(br(), "Unemployment & underemployment"),
     uiOutput(
       "ind_unemp_summary"
