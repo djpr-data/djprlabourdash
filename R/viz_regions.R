@@ -1541,30 +1541,28 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
                                                        "A84599631K"
                                                       ),
                                                       df = dash_data
-                                                      ),
-                                                      selected_state = c("Reg. Vic", "Reg. NSW")
+                                                      ) %>%
+                                                       dplyr::mutate(
+                                                         state = dplyr::case_when(
+                                                           .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
+                                                             "Reg. Vic",
+                                                           .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
+                                                             "Reg. NSW",
+                                                           .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
+                                                             "Reg. QLD",
+                                                           .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
+                                                             "Reg. NT",
+                                                           .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
+                                                             "Reg. WA",
+                                                           .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
+                                                             "Reg. SA",
+                                                           .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
+                                                             "Reg. Tas",
+                                                           TRUE ~ .data$state)
+                                                        )
                                                       )
 {
   df <- data %>%
-    dplyr::mutate(
-      state = dplyr::case_when(
-        .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-        "Reg. Vic",
-        .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-        "Reg. NSW",
-        .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-        "Reg. QLD",
-        .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-        "Reg. NT",
-        .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-        "Reg. WA",
-        .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-        "Reg. SA",
-        .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-        "Reg. Tas",
-        TRUE ~ .data$state
-      )
-    ) %>%
     dplyr::mutate(
       state_group = dplyr::if_else(
         .data$state %in% c(
@@ -1575,7 +1573,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
       )
     )
 
-  df <- data %>%
+  df <- df %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(
       value = slider::slide_mean(.data$value, before = 2, complete = TRUE)

@@ -1260,11 +1260,24 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ) %>%
-      dplyr::group_by(.data$series_id) %>%
       dplyr::mutate(
-        value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
-      ) %>%
-      dplyr::filter(date >= as.Date("2020-01-01")),
+        state = dplyr::case_when(
+          .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
+            "Reg. Vic",
+          .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
+            "Reg. NSW",
+          .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
+            "Reg. QLD",
+          .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
+            "Reg. NT",
+          .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
+            "Reg. WA",
+          .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
+            "Reg. SA",
+          .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
+            "Reg. Tas",
+          TRUE ~ .data$state)
+      ),
     check_box_options = c(
       "Reg. NSW",
       "Reg. Qld",
