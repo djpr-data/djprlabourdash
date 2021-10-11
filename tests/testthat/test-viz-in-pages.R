@@ -1,20 +1,13 @@
 
 test_that("All viz_* functions are included in a page_* file", {
-  viz_funcs <- ls("package:djprlabourdash", pattern = "viz_")
+  viz_funcs <- ls(getNamespace("djprlabourdash"), pattern = "viz_")
   ids <- gsub("viz_", "", viz_funcs)
 
-
-  page_funcs <- ls("package:djprlabourdash", pattern = "page_")
-
-  name_to_eval <- function(func_name_as_string) {
-    suppressMessages(
-      eval(str2lang(paste0(func_name_as_string, "()")))
-    )
-  }
+  page_funcs <- ls(getNamespace("djprlabourdash"), pattern = "page_")
 
   pages <- list()
   for (f in page_funcs) {
-    pages[[f]] <- name_to_eval(f)
+    pages[[f]] <- get(f)()
   }
 
   pages <- unlist(pages)
@@ -24,7 +17,7 @@ test_that("All viz_* functions are included in a page_* file", {
     function(x) any(grepl(x, pages))
   )
 
-  if (length(ids_in_pages[!ids_in_pages]) > 0) {
+  if (!all(ids_in_pages)) {
     print(paste0(
       "The function ",
       viz_funcs[!ids_in_pages],

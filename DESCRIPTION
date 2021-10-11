@@ -27,10 +27,10 @@ Description: Shiny app to visualise Victorian labour force data.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports: 
     djprdashdata (>= 0.0.2.9004),
-    djprshiny (>= 0.0.5.909),
+    djprshiny (>= 0.0.6.904),
     djprtheme (>= 0.0.2.903),
     dplyr (>= 1.0.5),
     ggplot2,
@@ -58,8 +58,10 @@ Depends:
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
-    vdiffr,
     memoise,
     pkgload,
-    usethis
+    usethis,
+    rmarkdown,
+    officedown,
+    blastula
 Config/testthat/edition: 3

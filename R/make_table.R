@@ -22,7 +22,7 @@
 #'   data = filter_dash_data(series_ids = c(
 #'     "A84423354L",
 #'     "A84423242V",
-#'     "A84423466F",
+#'     "A84423466F"
 #'   )),
 #'   row_order = c(
 #'     "A84423354L",
@@ -126,12 +126,6 @@ make_table <- function(data,
       }
       out
     }
-
-    cols_d_period <- get_col(
-      summary_df$SERIES_ID,
-      "ptile_d_period_abs",
-      df_summ = df_summ, full_pal = full_pal
-    )
 
     # Add conditional formatting to flextable
     flex <- flex %>%
@@ -324,8 +318,10 @@ make_table <- function(data,
       part = "footer",
       space = 0.8
     ) %>%
-    flextable::font(fontname = font_family,
-                    part = "footer") %>%
+    flextable::font(
+      fontname = font_family,
+      part = "footer"
+    ) %>%
     flextable::italic(part = "footer")
 
   # Add title to briefing tables and resize columns

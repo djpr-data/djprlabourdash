@@ -236,20 +236,25 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
       .data$date, .data$series, .data$table_no,
       .data$frequency, .data$value
     ) %>%
-    dplyr::mutate(split_series = stringr::str_split_fixed(.data$series,
-                                                          pattern = " ; ",
-                                                          n = 3),
-                  age = .data$split_series[ ,1],
-                  indicator = .data$split_series[ ,2],
-                  sa4 = .data$split_series[ ,3]) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      age = .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      sa4 = .data$split_series[, 3]
+    ) %>%
     dplyr::select(-.data$split_series, -.data$series)
 
   data <- data %>%
-    tidyr::pivot_wider(names_from = .data$indicator,
-                       values_from = .data$value) %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    ) %>%
     dplyr::group_by(.data$sa4, .data$date, .data$age, .data$table_no, .data$frequency) %>%
     dplyr::mutate(value = 100 * (.data$Unemployed /
-                                   (.data$Unemployed + .data$Employed))) %>%
+      (.data$Unemployed + .data$Employed))) %>%
     dplyr::select(-.data$Employed, -.data$Unemployed) %>%
     dplyr::group_by(.data$sa4, .data$age) %>%
     dplyr::mutate(
@@ -262,7 +267,7 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
     dplyr::filter(!is.na(.data$value)) %>%
     dplyr::mutate(
       unit = "Percent",
-      series_id = paste(.data$age, .data$indicator, .data$sa4, sep = "_") ,
+      series_id = paste(.data$age, .data$indicator, .data$sa4, sep = "_"),
       series = paste(.data$age, .data$indicator, .data$sa4, sep = " ; ")
     ) %>%
     dplyr::ungroup()
@@ -955,7 +960,6 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   # Youth unemployment = 12m rolling average
   data <- data %>%
     dplyr::group_by(.data$series_id) %>%
-    dplyr::arrange(.data$date) %>%
     dplyr::mutate(value = dplyr::if_else(.data$series_id == "A84424691V",
       slider::slide_mean(.data$value, before = 11, complete = TRUE),
       .data$value

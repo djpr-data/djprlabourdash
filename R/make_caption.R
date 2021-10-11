@@ -4,7 +4,7 @@ caption_make <- function(df,
                          release_name) {
   latest_date <- df %>%
     dplyr::filter(.data$series_id == series_for_date) %>%
-    tidyr::unnest(dplyr::everything()) %>%
+    # tidyr::unnest(dplyr::everything()) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     pull(.data$date) %>%
     max()

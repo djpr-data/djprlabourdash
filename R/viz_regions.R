@@ -297,8 +297,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
 }
 
 # Comparison of change in employment since Mar-20 in Greater Melbourne region and Rest of Victoria
-title_reg_emp_regions_sincecovid_line <- function(data)
-{
+title_reg_emp_regions_sincecovid_line <- function(data) {
   current <- data %>%
     dplyr::group_by(.data$series) %>%
     dplyr::mutate(
@@ -639,7 +638,7 @@ viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
-    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4),
+    dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
       "Warrnambool & S. West",
       .data$sa4
     ))
@@ -1711,7 +1710,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c(
     dplyr::mutate(
       series = gsub(";.*", "", .data$series),
       series = gsub(">> Rest of ", "Regional ", .data$series),
-      series = dplyr::if_else(grepl("Northern Territory", .data$series),
+      series = dplyr::if_else(grepl("Northern Territory", .data$series, fixed = TRUE),
         "Regional NT",
         .data$series
       ),
@@ -1905,12 +1904,12 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
                                      ),
                                      selected_indicator = "unemp_rate") {
   df <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-    dplyr::ungroup()
+    dplyr::select(.data$date, .data$series, .data$value)
 
   df <- df %>%
-    dplyr::select(.data$date, .data$series, .data$value)
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
+    dplyr::ungroup()
 
   df <- df %>%
     dplyr::filter(.data$date == max(.data$date))

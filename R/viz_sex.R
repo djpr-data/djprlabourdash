@@ -3,18 +3,18 @@
 
 # Bar chart -- LF status by sex ----
 viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
-  "A84423469L",
-  "A84423245A",
-  "A84423801C",
-  "A84423577W",
-  "A84423461V",
-  "A84423237A",
-  "A84423463X",
-  "A84423239F",
-  "A84423462W",
-  "A84423238C"
-), df = dash_data) %>%
-  dplyr::filter(.data$date == max(.data$date))) {
+                                 "A84423469L",
+                                 "A84423245A",
+                                 "A84423801C",
+                                 "A84423577W",
+                                 "A84423461V",
+                                 "A84423237A",
+                                 "A84423463X",
+                                 "A84423239F",
+                                 "A84423462W",
+                                 "A84423238C"
+                               ), df = dash_data) %>%
+                                 dplyr::filter(.data$date == max(.data$date))) {
   df <- data %>%
     dplyr::group_by(.data$sex) %>%
     dplyr::summarise(
@@ -30,12 +30,12 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
       cols = -.data$sex
     ) %>%
     dplyr::mutate(indicator = factor(.data$indicator,
-                                     levels = c(
-                                       "Not in the labour force",
-                                       "Unemployed",
-                                       "Employed part-time",
-                                       "Employed full-time"
-                                     )
+      levels = c(
+        "Not in the labour force",
+        "Unemployed",
+        "Employed part-time",
+        "Employed full-time"
+      )
     ))
 
   df <- df %>%
@@ -51,9 +51,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sex == "Males") %>%
     dplyr::mutate(label_y = case_when(
       .data$indicator == "Employed part-time" ~
-        .data$label_y - 0.1,
+      .data$label_y - 0.1,
       .data$indicator == "Not in the labour force" ~
-        0.92,
+      0.92,
       TRUE ~ .data$label_y
     ))
 
@@ -115,12 +115,12 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
 
 # Line chart -- LF participation by sex -----
 viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
-  "A84423355R",
-  "A84423243W",
-  "A84423467J"
-),
-df = dash_data
-)) {
+                                       "A84423355R",
+                                       "A84423243W",
+                                       "A84423467J"
+                                     ),
+                                     df = dash_data
+                                     )) {
   df <- data %>%
     dplyr::mutate(
       sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
@@ -143,25 +143,25 @@ df = dash_data
 
   title <- dplyr::case_when(
     change_by_sex$Females > 0 & change_by_sex$Males > 0 ~
-      paste0(
-        "Labour force participation rose for both men and women in the year to ",
-        max_date
-      ),
+    paste0(
+      "Labour force participation rose for both men and women in the year to ",
+      max_date
+    ),
     change_by_sex$Females > 0 & change_by_sex$Males < 0 ~
-      paste0(
-        "Labour force participation rose for women but fell for men in the year to ",
-        max_date
-      ),
+    paste0(
+      "Labour force participation rose for women but fell for men in the year to ",
+      max_date
+    ),
     change_by_sex$Females < 0 & change_by_sex$Males < 0 ~
-      paste0(
-        "Labour force participation fell for both women and men in the year to ",
-        max_date
-      ),
+    paste0(
+      "Labour force participation fell for both women and men in the year to ",
+      max_date
+    ),
     change_by_sex$Females < 0 & change_by_sex$Males > 0 ~
-      paste0(
-        "Labour force participation rose for men but fell for women in the year to ",
-        max_date
-      )
+    paste0(
+      "Labour force participation rose for men but fell for women in the year to ",
+      max_date
+    )
   )
 
   df %>%
@@ -179,12 +179,12 @@ df = dash_data
 
 # Line chart -- unemployment rate by sex ------
 viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
-  "A84423354L",
-  "A84423242V",
-  "A84423466F"
-),
-df = dash_data
-)) {
+                                    "A84423354L",
+                                    "A84423242V",
+                                    "A84423466F"
+                                  ),
+                                  df = dash_data
+                                  )) {
   df <- data %>%
     dplyr::mutate(
       sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
@@ -204,15 +204,15 @@ df = dash_data
 
   title <- dplyr::case_when(
     current_ur$Females < current_ur$Males ~
-      paste0(
-        "The unemployment rate for women was lower than the rate for men in ",
-        max_date
-      ),
+    paste0(
+      "The unemployment rate for women was lower than the rate for men in ",
+      max_date
+    ),
     current_ur$Females > current_ur$Males ~
-      paste0(
-        "The unemployment rate for women was higher than the rate for men in ",
-        max_date
-      ),
+    paste0(
+      "The unemployment rate for women was higher than the rate for men in ",
+      max_date
+    ),
     TRUE ~ paste0(
       "The unemployment rate for men and women was around the same level in ",
       max_date
@@ -234,13 +234,13 @@ df = dash_data
 
 # Full-time and part-time  employment growth pattern by gender
 viz_gr_full_part_line <- function(data = filter_dash_data(c(
-  "A84423237A",
-  "A84423461V",
-  "A84423245A",
-  "A84423469L"
-),
-df = dash_data
-)) {
+                                    "A84423237A",
+                                    "A84423461V",
+                                    "A84423245A",
+                                    "A84423469L"
+                                  ),
+                                  df = dash_data
+                                  )) {
 
   # We calculate part time employment using total + FT employment
   df <- data %>%
@@ -260,7 +260,7 @@ df = dash_data
       names_to = "indicator",
       values_to = "value"
     ) %>%
-    dplyr::arrange(.data$date) %>%
+    # dplyr::arrange(.data$date) %>%
     dplyr::group_by(.data$indicator, .data$sex) %>%
     dplyr::mutate(
       value = 100 * ((.data$value / lag(.data$value, 12) - 1)),
@@ -276,30 +276,29 @@ df = dash_data
   latest_month <- format(max(df$date), "%B %Y")
 
   # create latest data by gender
-  female_latest_f <- df %>%
-    dplyr::filter(.data$sex == "Females" &
-                    .data$indicator == "Employed full-time" &
-                    .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
+  latest_ft <- df %>%
+    dplyr::filter(.data$indicator == "Employed full-time" &
+      .data$date == max(.data$date)) %>%
+    dplyr::mutate(value = round2(.data$value, 1))
 
-  male_latest_f <- df %>%
-    dplyr::filter(.data$sex == "Males" &
-                    .data$indicator == "Employed full-time" &
-                    .data$date == max(.data$date)) %>%
-    dplyr::pull(.data$value) %>%
-    round2(1)
+  female_latest_f <- latest_ft %>%
+    dplyr::filter(.data$sex == "Females") %>%
+    dplyr::pull(.data$value)
+
+  male_latest_f <- latest_ft %>%
+    dplyr::filter(.data$sex == "Males") %>%
+    dplyr::pull(.data$value)
 
 
   # create title
 
   title <- dplyr::case_when(
     female_latest_f > male_latest_f ~
-      paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
+    paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
     female_latest_f < male_latest_f ~
-      paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
+    paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
     female_latest_f == male_latest_f ~
-      paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
+    paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
     TRUE ~ paste0("Full-time and part-time annual employment growth for men and women")
   )
 
@@ -320,11 +319,11 @@ df = dash_data
 }
 
 viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
-  "A84423244X",
-  "A84423468K"
-),
-df = dash_data
-)) {
+                                          "A84423244X",
+                                          "A84423468K"
+                                        ),
+                                        df = dash_data
+                                        )) {
   df <- data %>%
     dplyr::select(.data$date, .data$value, .data$sex, .data$indicator) %>%
     dplyr::mutate(series = .data$indicator)
@@ -391,11 +390,11 @@ df = dash_data
     dplyr::mutate(
       label =
         dplyr::if_else(.data$indicator == "Average",
-                       paste0("Average\n", round2(.data$value, 1), "%"),
-                       paste0(
-                         format(.data$date, "%b %Y"), "\n",
-                         round2(.data$value, 1), "%"
-                       )
+          paste0("Average\n", round2(.data$value, 1), "%"),
+          paste0(
+            format(.data$date, "%b %Y"), "\n",
+            round2(.data$value, 1), "%"
+          )
         )
     )
 
@@ -450,9 +449,9 @@ df = dash_data
       size = 14 / .pt
     ) +
     ggiraph::geom_point_interactive(aes(tooltip = .data$tooltip),
-                                    size = 3,
-                                    colour = "white",
-                                    alpha = 0.01
+      size = 3,
+      colour = "white",
+      alpha = 0.01
     ) +
     theme_djpr() +
     scale_linetype_manual(values = c(
@@ -483,4 +482,3 @@ df = dash_data
       title = title
     )
 }
-

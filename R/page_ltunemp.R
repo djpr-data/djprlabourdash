@@ -10,10 +10,10 @@ page_ltunemp <- function(...) {
     paste0("periods of time can experience higher levels of competition, decreased confidence and motivation."),
     djpr_plot_ui("gr_ltunemp_line"),
     djpr_plot_ui("gr_ltunvic_bar",
-                 interactive = FALSE
+      interactive = FALSE
     ),
     djpr_plot_ui("gr_ltunvic_area",
-                 interactive = FALSE
+      interactive = FALSE
     ),
     br(),
     htmlOutput("inclusion_footnote"),
