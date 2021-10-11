@@ -1559,8 +1559,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
                                                              "Reg. Tas",
                                                            TRUE ~ .data$state)
                                                         )
-                                                      )
-{
+                                                      ) {
   df <- data %>%
     dplyr::mutate(
       state_group = dplyr::if_else(

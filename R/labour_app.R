@@ -1277,7 +1277,7 @@ labour_server <- function(input, output, session) {
       ),
     check_box_options = c(
       "Reg. NSW",
-      "Reg. Qld",
+      "Reg. QLD",
       "Reg. Tas",
       "Reg. WA",
       "Reg. NT",
