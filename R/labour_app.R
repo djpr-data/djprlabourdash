@@ -18,15 +18,10 @@ labour_server <- function(input, output, session) {
     envir = myenv
   )
 
-  assign("ts_summ",
-    dash_data %>%
-      tidyr::unnest(cols = .data$data) %>%
-      djprshiny::ts_summarise(),
-    envir = myenv
-  )
-
-  ts_summ_latestdate <- ts_summ %>%
-    dplyr::select(.data$series_id, .data$latest_date)
+  series_latestdates <- dash_data %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::pull(.data$date)
 
   plt_change <- reactive(input$plt_change) %>%
     debounce(2)
@@ -38,10 +33,9 @@ labour_server <- function(input, output, session) {
   ur_bar_data <- filter_dash_data("A84423354L")
   ur_bar_latest <- max(ur_bar_data$date)
 
-
   output$ur_bar_static <- renderPlot({
     ur_bar_static <- ur_bar_data %>%
-      dplyr::slice_tail(n = 12) %>%
+      utils::tail(12) %>%
       ggplot(aes(
         x = as.character(.data$date),
         y = .data$value,
@@ -139,7 +133,7 @@ labour_server <- function(input, output, session) {
   # Overview: footnote and main table ----
   footnote <- reactive({
     req(dash_data)
-    latest <- max(ts_summ$latest_date)
+    latest <- max(series_latestdates)
     div(
       shiny::HTML(
         paste0(
@@ -159,16 +153,12 @@ labour_server <- function(input, output, session) {
     footnote()
   })
 
-  output$overview_text <- renderUI({
-    text_overview_summary(ts_summ)
-  })
-
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Indicators -----
 
@@ -224,7 +214,7 @@ labour_server <- function(input, output, session) {
     table_ind_employment() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Indicators: slopegraph of emp-pop ratios in states
   djpr_plot_server("ind_emppop_state_slope",
@@ -274,7 +264,7 @@ labour_server <- function(input, output, session) {
     table_ind_unemp_summary() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Indicators: line chart of Aus v Vic
   djpr_plot_server("ind_unemprate_line",
@@ -285,6 +275,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
+    date_slider_value_min = as.Date("2000-01-01"),
     plt_change = plt_change
   )
 
@@ -293,7 +284,7 @@ labour_server <- function(input, output, session) {
     table_ind_unemp_state() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
@@ -342,7 +333,7 @@ labour_server <- function(input, output, session) {
     df = dash_data
     ),
     plt_change = plt_change,
-    date_slider_value_min = Sys.Date() - (20 * 365)
+    date_slider_value_min = as.Date("2000-01-01")
   )
 
   # Indicators: participation ----
@@ -400,6 +391,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
+    date_slider_value_min = as.Date("2000-01-01"),
     plt_change = plt_change
   )
 
@@ -409,7 +401,7 @@ labour_server <- function(input, output, session) {
     table_gr_sex() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Groups: line chart of emp-pop by sex
   djpr_plot_server("gr_gen_emppopratio_line",
@@ -495,7 +487,7 @@ labour_server <- function(input, output, session) {
     table_gr_youth_summary() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Line chart indexed to COVID: employment by age
   djpr_plot_server("gr_yth_emp_sincecovid_line",
@@ -720,7 +712,7 @@ labour_server <- function(input, output, session) {
     table_gr_youth_unemp_region() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Youth LF status by region focus box ----
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
@@ -1021,9 +1013,9 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-  output$text_emp_regions <- renderUI({
-    text_reg_regions_sincecovid()
-  })
+  # output$text_emp_regions <- renderUI({
+  #   text_reg_regions_sincecovid()
+  # })
 
   djpr_plot_server("reg_emp_regions_sincecovid_line",
     viz_reg_emp_regions_sincecovid_line,
@@ -1077,7 +1069,7 @@ labour_server <- function(input, output, session) {
   ) %>%
     bindCache(
       input$focus_region,
-      ts_summ_latestdate
+      series_latestdates
     )
 
   output$table_region_focus <- renderUI({
@@ -1086,7 +1078,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ_latestdate
+      series_latestdates
     )
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
@@ -1094,7 +1086,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ_latestdate
+      series_latestdates
     )
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
@@ -1102,7 +1094,7 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ_latestdate
+      series_latestdates
     )
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
@@ -1112,20 +1104,20 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(
       input$focus_region,
-      ts_summ_latestdate
+      series_latestdates
     )
 
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   output$table_reg_metro_states_unemprate <- renderUI({
     table_reg_metro_states_unemprate() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(ts_summ_latestdate)
+    bindCache(series_latestdates)
 
   # Regions: National focus box -----
   djpr_plot_server("reg_regionstates_dot",
@@ -1231,7 +1223,7 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ),
-    selected_indicator = reactive(input$aus_regions_indicator),
+    selected_indicator = req(reactive(input$aus_regions_indicator)),
     plt_change = plt_change,
     height_percent = 150,
     width_percent = 46,
@@ -1510,7 +1502,7 @@ labour_server <- function(input, output, session) {
       flextable::htmltools_value()
   }) %>%
     bindCache(
-      ts_summ_latestdate,
+      series_latestdates,
       input$chosen_industry
     )
 

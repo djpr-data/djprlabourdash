@@ -171,10 +171,10 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     dplyr::pull(.data$rank)
 
   title <- dplyr::case_when(
-    vic_rank == 8 ~ "is the lowest in Australia",
-    vic_rank == 7 ~ "is the second lowest in Australia",
-    vic_rank == 6 ~ "is the third lowest in Australia",
-    vic_rank == 5 ~ "is the fourth lowest in Australia",
+    vic_rank == 8 ~ "is the lowest of all Australian states and territories",
+    vic_rank == 7 ~ "is the second lowest of all Australian states and territories",
+    vic_rank == 6 ~ "is the third lowest of all Australian states and territories",
+    vic_rank == 5 ~ "is the fourth lowest of all Australian states and territories",
     vic_rank < 5 &
       df_wide$max_date[df_wide$state == "Victoria"] < df_wide$min_date[df_wide$state == "Victoria"] ~
     "has fallen over the past year",
@@ -494,7 +494,7 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
       limits = function(x) c(0, x[2]),
       labels = function(x) paste0(x, "%"),
       breaks = scales::breaks_pretty(5),
-      expand = expansion(mult = c(0, 0.05))
+      expand = expansion(mult = c(0, 0.1))
     )
 }
 
@@ -544,7 +544,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
   )
 
   data %>%
-    dplyr::filter(!grepl("Underutilisation", .data$series)) %>%
+    dplyr::filter(!grepl("Underutilisation", .data$series, fixed = TRUE)) %>%
     ggplot(aes(x = .data$date, y = .data$value, fill = .data$under)) +
     geom_area(colour = NA) +
     geom_label(
@@ -563,7 +563,7 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
     ) +
     geom_line(
       data = data %>%
-        dplyr::filter(grepl("Underutilisation", .data$series)),
+        dplyr::filter(grepl("Underutilisation", .data$series, fixed = TRUE)),
       size = 0.5,
       colour = "black"
     ) +
@@ -706,7 +706,7 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
 
   # Create title
   latest_change <- df %>%
-    dplyr::filter(!grepl("Average", .data$indicator)) %>%
+    dplyr::filter(!grepl("Average", .data$indicator, fixed = TRUE)) %>%
     dplyr::select(.data$date, .data$value, .data$indicator) %>%
     dplyr::group_by(.data$indicator) %>%
     dplyr::arrange(.data$date) %>%

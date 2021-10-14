@@ -13,9 +13,11 @@ jobs:
     runs-on: macOS-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      SMTP_PASSWORD: ${{secrets.SMTP_PASSWORD}}
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@master
+      - uses: r-lib/actions/setup-pandoc@v1
       - name: install-packages
         run: |
          Rscript -e "install.packages(c('remotes', 'here'), type = 'binary', dependencies = TRUE)"
