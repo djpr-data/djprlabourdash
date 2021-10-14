@@ -1,7 +1,6 @@
-page_regions <- function(...) {
+page_vicregions <- function(...) {
   djpr_tab_panel(
-    title = "Regions",
-    h1("Regions of Victoria"),
+    title = "Victorian Regions",
     # Unemployment by region -----
     br(),
     "Victoria contains a range of diverse regions, both within Greater Melbourne",
@@ -129,43 +128,6 @@ page_regions <- function(...) {
         uiOutput("table_region_focus") %>%
           djpr_with_spinner()
       )
-    ),
-    br(),
-    h2(br(), "Australian regions"),
-    h4("Unemployment rate in Australian regional areas"),
-    uiOutput("table_reg_nonmetro_states_unemprate"),
-    focus_box(
-      h4("Compare regional areas of Australian states"),
-      selectInput(
-        inputId = "aus_regions_indicator",
-        label = "Select indicator",
-        choices = c(
-          "Unemployment rate" = "unemp_rate",
-          "Participation rate" = "part_rate",
-          "Employment-to-population ratio" = "emp_pop"
-        ),
-        width = "100%",
-        selected = "unemp_rate"
-      ),
-      column(6,
-        djpr_plot_ui("reg_regionstates_dot"),
-        height = "600px"
-      ),
-      column(
-        6,
-        djpr_plot_ui("reg_regionstates_bar",
-          height = "600px",
-          interactive = FALSE
-        )
-      )
-    ),
-    br(),
-    djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
-    br(),
-    h2(br(), "Australian metropolitan areas"),
-    h4("Unemployment rates in Australian major cities"),
-    uiOutput("table_reg_metro_states_unemprate"),
-    htmlOutput("regions_footnote"),
-    br()
+    )
   )
 }

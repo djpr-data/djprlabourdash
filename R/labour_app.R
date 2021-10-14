@@ -852,6 +852,8 @@ labour_server <- function(input, output, session) {
 
   # Regions ------
 
+  # Victorian Regions ------
+
   djpr_plot_server("reg_melvic_line",
     viz_reg_melvic_line,
     plt_change = plt_change,
@@ -868,7 +870,6 @@ labour_server <- function(input, output, session) {
       dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
       dplyr::filter(!is.na(.data$value))
   )
-
 
   output$caption_regions_data2 <- output$caption_regions_data1 <- renderUI({
     djpr_plot_caption(paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."))
@@ -1118,6 +1119,8 @@ labour_server <- function(input, output, session) {
       input$focus_region,
       series_latestdates
     )
+
+  # Australian Regions -----------
 
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
@@ -1551,10 +1554,6 @@ labour_server <- function(input, output, session) {
     updateNavbarPage(session, "navbarpage", "tab-overview")
   })
 
-  observeEvent(input$link_regions, {
-    updateNavbarPage(session, "navbarpage", "tab-regions")
-  })
-
   observeEvent(input$link_sex, {
     updateNavbarPage(session, "navbarpage", "tab-sex")
   })
@@ -1565,6 +1564,14 @@ labour_server <- function(input, output, session) {
 
   observeEvent(input$link_ltunemp, {
     updateNavbarPage(session, "navbarpage", "tab-ltunemp")
+  })
+
+  observeEvent(input$link_vicregions, {
+    updateNavbarPage(session, "navbarpage", "tab-vicregions")
+  })
+
+  observeEvent(input$link_ausregions, {
+    updateNavbarPage(session, "navbarpage", "tab-ausregions")
   })
 
   observeEvent(input$link_industries, {
