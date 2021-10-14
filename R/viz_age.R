@@ -858,7 +858,7 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
 
   title_df <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::select(-.data$perc) %>%
+    dplyr::select(-.data$perc, -.data$tooltip) %>%
     dplyr::mutate(value = round2(.data$value, 1)) %>%
     tidyr::pivot_wider(
       names_from = .data$indicator,
@@ -1489,7 +1489,6 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
     ) +
     labs(title = "")
 }
-
 
 viz_gr_youth_full_part_ann_growth_line <- function(data = filter_dash_data(c(
                                                      "A84424695C",
