@@ -28,9 +28,6 @@ page_overview <- function(...) {
       br(),
       centred_row(htmlOutput("overview_footnote")),
       br(),
-      centred_row(
-        HTML("Note: this dashboard is a prototype in active development. The content is not yet complete. <a href='mailto:matt.cowgill@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard'>Feedback is welcome</a>."),
-      ),
       br()
     )
   )
