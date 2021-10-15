@@ -1,14 +1,15 @@
 page_vicregions <- function(...) {
   djpr_tab_panel(
     title = "Victorian Regions",
+    br(),
+    br(),
     # Unemployment by region -----
     br(),
     "Victoria contains a range of diverse regions, both within Greater Melbourne",
     " and outside the metropolitan area.",
     br(),
     "Below we explore the regional differences in historical and current labour force status, ",
-    "both within Victoria and also by comparing regional (non-metropolitan) areas of Australia ",
-    "with regional Victoria.",
+    "within Victoria.",
     br(),
     h2(br(), "Labour force status by region"),
     selectInput("lf_status_region",
@@ -128,6 +129,7 @@ page_vicregions <- function(...) {
         uiOutput("table_region_focus") %>%
           djpr_with_spinner()
       )
-    )
+    ),
+    htmlOutput("regions_footnote")
   )
 }
