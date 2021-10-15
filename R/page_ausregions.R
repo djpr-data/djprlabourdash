@@ -5,7 +5,7 @@ page_ausregions <- function(...) {
     br(),
     br(),
     "This section explores labour force indicators in regional areas of Australia,",
-    "excluding all metropolitan areas.",
+    " excluding all metropolitan areas.",
     h2("Unemployment rate in Australian regional areas"),
     uiOutput("table_reg_nonmetro_states_unemprate"),
     focus_box(
@@ -38,6 +38,6 @@ page_ausregions <- function(...) {
     h2(br(), "Australian metropolitan areas"),
     h4("Unemployment rates in Australian major cities"),
     uiOutput("table_reg_metro_states_unemprate"),
-    htmlOutput("regions_footnote"),
+    htmlOutput("regions_footnote")
   )
 }
