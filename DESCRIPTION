@@ -63,5 +63,6 @@ Suggests:
     usethis,
     rmarkdown,
     officedown,
-    blastula
+    blastula,
+    covr
 Config/testthat/edition: 3

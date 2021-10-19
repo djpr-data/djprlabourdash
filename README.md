@@ -7,8 +7,9 @@
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/djpr-data/djprlabourdash/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprlabourdash/actions)
-
+[![R-CMD-check](https://github.com/djpr-data/djprlabourdash/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprlabourdash/actions)[![Codecov
+test
+coverage](https://codecov.io/gh/djpr-data/djprlabourdash/branch/main/graph/badge.svg)](https://codecov.io/gh/djpr-data/djprlabourdash?branch=main)
 <!-- badges: end -->
 
 ## Overview
@@ -160,10 +161,15 @@ information about data extraction and storage.
 
 ### Loading dashboard data
 
-Data is loaded into the dashboard using the function
-`djprlabourdash::load_dash_data()`. This function is executed once at
-the start of each dashboard session, ensuring any upstream change in the
-data is (nearly) immediately reflected on the dashboard itself.
+The `djprlabourdash` package has an internal data object called
+`dash_data`. This is created/updated by sourcing the file
+`data-raw/internal_data.R`.
+
+The function `djprlabourdash::load_dash_data()` can be used to obtain
+the latest version of the data from the `djprdashdata` repository. This
+function is executed once at the start of each dashboard session,
+ensuring any upstream change in the data is (nearly) immediately
+reflected on the dashboard itself.
 
 In interactive sessions where a contributor is working with the
 dashboard data, the following command should be run at the beginning of
@@ -183,25 +189,26 @@ prior to use. Users generally do not need to do this directly, as the
 
 ``` r
 dash_data
-#> # A tibble: 784 × 25
-#>    series_id        data age   gcc_restofstate indicator sex   industry duration
-#>    <chr>       <list<ti> <chr> <chr>           <chr>     <chr> <chr>    <chr>   
-#>  1 15-24_empl… [273 × 8] 15-24 Australian Cap… Employed  ""    ""       ""      
-#>  2 15-24_empl… [273 × 8] 15-24 Greater Adelai… Employed  ""    ""       ""      
-#>  3 15-24_empl… [273 × 8] 15-24 Greater Brisba… Employed  ""    ""       ""      
-#>  4 15-24_empl… [273 × 8] 15-24 Greater Darwin  Employed  ""    ""       ""      
-#>  5 15-24_empl… [273 × 8] 15-24 Greater Hobart  Employed  ""    ""       ""      
-#>  6 15-24_empl… [273 × 8] 15-24 Greater Melbou… Employed  ""    ""       ""      
-#>  7 15-24_empl… [273 × 8] 15-24 Greater Perth   Employed  ""    ""       ""      
-#>  8 15-24_empl… [273 × 8] 15-24 Greater Sydney  Employed  ""    ""       ""      
-#>  9 15-24_empl… [273 × 8] 15-24 Rest of NSW     Employed  ""    ""       ""      
-#> 10 15-24_empl… [273 × 8] 15-24 Rest of NT      Employed  ""    ""       ""      
-#> # … with 774 more rows, and 17 more variables: state <chr>, current_lfs <chr>,
+#> # A tibble: 212,556 × 32
+#>    series_id   date       value series  series_type table_no data_type frequency
+#>    <chr>       <date>     <dbl> <chr>   <chr>       <chr>    <chr>     <chr>    
+#>  1 15-24_empl… 1998-10-01  30.8 15-24 … Original    RM1      STOCK     Month    
+#>  2 15-24_empl… 1998-11-01  31.9 15-24 … Original    RM1      STOCK     Month    
+#>  3 15-24_empl… 1998-12-01  32.3 15-24 … Original    RM1      STOCK     Month    
+#>  4 15-24_empl… 1999-01-01  30.6 15-24 … Original    RM1      STOCK     Month    
+#>  5 15-24_empl… 1999-02-01  32.0 15-24 … Original    RM1      STOCK     Month    
+#>  6 15-24_empl… 1999-03-01  31.3 15-24 … Original    RM1      STOCK     Month    
+#>  7 15-24_empl… 1999-04-01  31.5 15-24 … Original    RM1      STOCK     Month    
+#>  8 15-24_empl… 1999-05-01  31.2 15-24 … Original    RM1      STOCK     Month    
+#>  9 15-24_empl… 1999-06-01  31.7 15-24 … Original    RM1      STOCK     Month    
+#> 10 15-24_empl… 1999-07-01  32.1 15-24 … Original    RM1      STOCK     Month    
+#> # … with 212,546 more rows, and 24 more variables: unit <chr>, age <chr>,
+#> #   gcc_restofstate <chr>, indicator <chr>, sex <chr>, industry <chr>,
+#> #   duration <chr>, state <chr>, sa4 <chr>, current_lfs <chr>,
 #> #   dependents <chr>, duration_of_unemp <chr>, duration_with_employer <chr>,
 #> #   education_attendance <chr>, exp_future_emp <chr>, highest_ed <chr>,
 #> #   hours <chr>, industry_subdiv <chr>, marital_status <chr>,
-#> #   market_nonmarket <chr>, occupation <chr>, relship_in_hhold <chr>,
-#> #   sa4 <chr>, sector <chr>, status_in_emp <chr>
+#> #   market_nonmarket <chr>, occupation <chr>, relship_in_hhold <chr>, …
 ```
 
 ### Filtering dashboard data
@@ -217,26 +224,26 @@ package:
 
 ``` r
 djprdashdata::lfs_lookup
-#> # A tibble: 22,171 × 28
-#>    age   gcc_restofstate  indicator series_id series series_type table_no cat_no
-#>    <chr> <chr>            <chr>     <chr>     <chr>  <chr>       <chr>    <chr> 
-#>  1 15-24 Australian Capi… Employed  15-24_em… 15-24… Original    RM1      6291.…
-#>  2 15-24 Australian Capi… NILF      15-24_ni… 15-24… Original    RM1      6291.…
-#>  3 15-24 Australian Capi… Unemploy… 15-24_un… 15-24… Original    RM1      6291.…
-#>  4 15-24 Greater Adelaide Employed  15-24_em… 15-24… Original    RM1      6291.…
-#>  5 15-24 Greater Adelaide NILF      15-24_ni… 15-24… Original    RM1      6291.…
-#>  6 15-24 Greater Adelaide Unemploy… 15-24_un… 15-24… Original    RM1      6291.…
-#>  7 15-24 Greater Brisbane Employed  15-24_em… 15-24… Original    RM1      6291.…
-#>  8 15-24 Greater Brisbane NILF      15-24_ni… 15-24… Original    RM1      6291.…
-#>  9 15-24 Greater Brisbane Unemploy… 15-24_un… 15-24… Original    RM1      6291.…
-#> 10 15-24 Greater Darwin   Employed  15-24_em… 15-24… Original    RM1      6291.…
-#> # … with 22,161 more rows, and 20 more variables: sex <chr>, industry <chr>,
-#> #   duration <chr>, state <chr>, current_lfs <chr>, dependents <chr>,
-#> #   duration_of_unemp <chr>, duration_with_employer <chr>,
+#> # A tibble: 22,246 × 28
+#>    age   gcc_restofstate indicator series_id  series  sex   series_type table_no
+#>    <chr> <chr>           <chr>     <chr>      <chr>   <chr> <chr>       <chr>   
+#>  1 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  2 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  3 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  4 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  5 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  6 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  7 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  8 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#>  9 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#> 10 15-24 ""              Employed  15-24_emp… 15-24 … ""    Original    RM1     
+#> # … with 22,236 more rows, and 20 more variables: cat_no <chr>, industry <chr>,
+#> #   duration <chr>, state <chr>, sa4 <chr>, current_lfs <chr>,
+#> #   dependents <chr>, duration_of_unemp <chr>, duration_with_employer <chr>,
 #> #   education_attendance <chr>, exp_future_emp <chr>, highest_ed <chr>,
 #> #   hours <chr>, industry_subdiv <chr>, marital_status <chr>,
 #> #   market_nonmarket <chr>, occupation <chr>, relship_in_hhold <chr>,
-#> #   sa4 <chr>, sector <chr>, status_in_emp <chr>
+#> #   sector <chr>, status_in_emp <chr>
 ```
 
 If a user wanted to get a data frame with the number of unemployed
@@ -246,7 +253,7 @@ people in Bendigo each month from 1998 to present, they would use
 ``` r
 bendigo_unemp <- filter_dash_data("A84600028X")
 bendigo_unemp
-#> # A tibble: 273 × 32
+#> # A tibble: 275 × 32
 #>    series_id  date       value series   series_type table_no data_type frequency
 #>    <chr>      <date>     <dbl> <chr>    <chr>       <chr>    <chr>     <chr>    
 #>  1 A84600028X 1998-10-01  5.01 >>> Ben… Original    6291016  STOCK     Month    
@@ -259,14 +266,13 @@ bendigo_unemp
 #>  8 A84600028X 1999-05-01  6.20 >>> Ben… Original    6291016  STOCK     Month    
 #>  9 A84600028X 1999-06-01  3.73 >>> Ben… Original    6291016  STOCK     Month    
 #> 10 A84600028X 1999-07-01  2.74 >>> Ben… Original    6291016  STOCK     Month    
-#> # … with 263 more rows, and 24 more variables: unit <chr>, age <chr>,
+#> # … with 265 more rows, and 24 more variables: unit <chr>, age <chr>,
 #> #   gcc_restofstate <chr>, indicator <chr>, sex <chr>, industry <chr>,
-#> #   duration <chr>, state <chr>, current_lfs <chr>, dependents <chr>,
-#> #   duration_of_unemp <chr>, duration_with_employer <chr>,
+#> #   duration <chr>, state <chr>, sa4 <chr>, current_lfs <chr>,
+#> #   dependents <chr>, duration_of_unemp <chr>, duration_with_employer <chr>,
 #> #   education_attendance <chr>, exp_future_emp <chr>, highest_ed <chr>,
 #> #   hours <chr>, industry_subdiv <chr>, marital_status <chr>,
-#> #   market_nonmarket <chr>, occupation <chr>, relship_in_hhold <chr>,
-#> #   sa4 <chr>, sector <chr>, status_in_emp <chr>
+#> #   market_nonmarket <chr>, occupation <chr>, relship_in_hhold <chr>, …
 ```
 
 It is then straightforward to visualise this. We will use the
@@ -557,18 +563,18 @@ with `dplyr::mutate()` as follows:
 ggplot2::mpg %>%
   dplyr::mutate(ratio = hwy / cty)
 #> # A tibble: 234 × 12
-#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
-#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
-#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
-#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
-#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
-#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
-#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
-#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
-#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
-#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
-#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
-#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#>    manufacturer model      displ  year   cyl trans drv     cty   hwy fl    class
+#>    <chr>        <chr>      <dbl> <int> <int> <chr> <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4           1.8  1999     4 auto… f        18    29 p     comp…
+#>  2 audi         a4           1.8  1999     4 manu… f        21    29 p     comp…
+#>  3 audi         a4           2    2008     4 manu… f        20    31 p     comp…
+#>  4 audi         a4           2    2008     4 auto… f        21    30 p     comp…
+#>  5 audi         a4           2.8  1999     6 auto… f        16    26 p     comp…
+#>  6 audi         a4           2.8  1999     6 manu… f        18    26 p     comp…
+#>  7 audi         a4           3.1  2008     6 auto… f        18    27 p     comp…
+#>  8 audi         a4 quattro   1.8  1999     4 manu… 4        18    26 p     comp…
+#>  9 audi         a4 quattro   1.8  1999     4 auto… 4        16    25 p     comp…
+#> 10 audi         a4 quattro   2    2008     4 manu… 4        20    28 p     comp…
 #> # … with 224 more rows, and 1 more variable: ratio <dbl>
 ```
 
@@ -583,18 +589,18 @@ cty <- 15
 ggplot2::mpg %>%
   dplyr::mutate(ratio = hwy / cty)
 #> # A tibble: 234 × 12
-#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
-#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
-#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
-#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
-#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
-#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
-#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
-#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
-#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
-#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
-#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
-#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#>    manufacturer model      displ  year   cyl trans drv     cty   hwy fl    class
+#>    <chr>        <chr>      <dbl> <int> <int> <chr> <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4           1.8  1999     4 auto… f        18    29 p     comp…
+#>  2 audi         a4           1.8  1999     4 manu… f        21    29 p     comp…
+#>  3 audi         a4           2    2008     4 manu… f        20    31 p     comp…
+#>  4 audi         a4           2    2008     4 auto… f        21    30 p     comp…
+#>  5 audi         a4           2.8  1999     6 auto… f        16    26 p     comp…
+#>  6 audi         a4           2.8  1999     6 manu… f        18    26 p     comp…
+#>  7 audi         a4           3.1  2008     6 auto… f        18    27 p     comp…
+#>  8 audi         a4 quattro   1.8  1999     4 manu… 4        18    26 p     comp…
+#>  9 audi         a4 quattro   1.8  1999     4 auto… 4        16    25 p     comp…
+#> 10 audi         a4 quattro   2    2008     4 manu… 4        20    28 p     comp…
 #> # … with 224 more rows, and 1 more variable: ratio <dbl>
 ```
 
@@ -613,18 +619,18 @@ cty <- 15
 ggplot2::mpg %>%
   dplyr::mutate(ratio = .data$hwy / .data$cty)
 #> # A tibble: 234 × 12
-#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
-#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
-#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
-#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
-#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
-#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
-#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
-#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
-#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
-#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
-#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
-#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#>    manufacturer model      displ  year   cyl trans drv     cty   hwy fl    class
+#>    <chr>        <chr>      <dbl> <int> <int> <chr> <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4           1.8  1999     4 auto… f        18    29 p     comp…
+#>  2 audi         a4           1.8  1999     4 manu… f        21    29 p     comp…
+#>  3 audi         a4           2    2008     4 manu… f        20    31 p     comp…
+#>  4 audi         a4           2    2008     4 auto… f        21    30 p     comp…
+#>  5 audi         a4           2.8  1999     6 auto… f        16    26 p     comp…
+#>  6 audi         a4           2.8  1999     6 manu… f        18    26 p     comp…
+#>  7 audi         a4           3.1  2008     6 auto… f        18    27 p     comp…
+#>  8 audi         a4 quattro   1.8  1999     4 manu… 4        18    26 p     comp…
+#>  9 audi         a4 quattro   1.8  1999     4 auto… 4        16    25 p     comp…
+#> 10 audi         a4 quattro   2    2008     4 manu… 4        20    28 p     comp…
 #> # … with 224 more rows, and 1 more variable: ratio <dbl>
 ```
 
@@ -639,18 +645,18 @@ cty <- 15
 ggplot2::mpg %>%
   dplyr::mutate(ratio = .data$hwy / .env$cty)
 #> # A tibble: 234 × 12
-#>    manufacturer model    displ  year   cyl trans   drv     cty   hwy fl    class
-#>    <chr>        <chr>    <dbl> <int> <int> <chr>   <chr> <int> <int> <chr> <chr>
-#>  1 audi         a4         1.8  1999     4 auto(l… f        18    29 p     comp…
-#>  2 audi         a4         1.8  1999     4 manual… f        21    29 p     comp…
-#>  3 audi         a4         2    2008     4 manual… f        20    31 p     comp…
-#>  4 audi         a4         2    2008     4 auto(a… f        21    30 p     comp…
-#>  5 audi         a4         2.8  1999     6 auto(l… f        16    26 p     comp…
-#>  6 audi         a4         2.8  1999     6 manual… f        18    26 p     comp…
-#>  7 audi         a4         3.1  2008     6 auto(a… f        18    27 p     comp…
-#>  8 audi         a4 quat…   1.8  1999     4 manual… 4        18    26 p     comp…
-#>  9 audi         a4 quat…   1.8  1999     4 auto(l… 4        16    25 p     comp…
-#> 10 audi         a4 quat…   2    2008     4 manual… 4        20    28 p     comp…
+#>    manufacturer model      displ  year   cyl trans drv     cty   hwy fl    class
+#>    <chr>        <chr>      <dbl> <int> <int> <chr> <chr> <int> <int> <chr> <chr>
+#>  1 audi         a4           1.8  1999     4 auto… f        18    29 p     comp…
+#>  2 audi         a4           1.8  1999     4 manu… f        21    29 p     comp…
+#>  3 audi         a4           2    2008     4 manu… f        20    31 p     comp…
+#>  4 audi         a4           2    2008     4 auto… f        21    30 p     comp…
+#>  5 audi         a4           2.8  1999     6 auto… f        16    26 p     comp…
+#>  6 audi         a4           2.8  1999     6 manu… f        18    26 p     comp…
+#>  7 audi         a4           3.1  2008     6 auto… f        18    27 p     comp…
+#>  8 audi         a4 quattro   1.8  1999     4 manu… 4        18    26 p     comp…
+#>  9 audi         a4 quattro   1.8  1999     4 auto… 4        16    25 p     comp…
+#> 10 audi         a4 quattro   2    2008     4 manu… 4        20    28 p     comp…
 #> # … with 224 more rows, and 1 more variable: ratio <dbl>
 ```
 
@@ -730,11 +736,11 @@ djpr_plot_server(id = "ind_emppop_state_slope",
     team.
 2.  As a once-off step, you will need to create a local version of the
     `djprlabourdash` repository on your machine. In RStudio, click
-    `File` -&gt; `New Project` -&gt; `Version Control` -&gt; `Git.` Then
-    paste the GitHub repository URL for `djprdashdata` and choose a
-    location for the project on your disk. Note that this copy of the
-    repository is just for you, so put it in a location that only you
-    have access to.
+    `File` -> `New Project` -> `Version Control` -> `Git.` Then paste
+    the GitHub repository URL for `djprdashdata` and choose a location
+    for the project on your disk. Note that this copy of the repository
+    is just for you, so put it in a location that only you have access
+    to.
 3.  Create a new branch on GitHub in `djprlabourdash` from the `dev`
     branch.
 4.  In RStudio, click the `Git` pane (by default this is in the
@@ -772,9 +778,9 @@ dash_data <- load_dash_data()
     your function works by running it in the console. A ggplot2 chart
     should be displayed in RStudio.
 2.  Check that the dashboard (including your new function) passes the
-    automated test by clicking `Build` -&gt; `Check` in RStudio. It
-    should go through the process of checking the passage and conclude
-    by saying `0 ERRORS | 0 WARNINGS | 0 NOTES`. If you encounter errors
+    automated test by clicking `Build` -> `Check` in RStudio. It should
+    go through the process of checking the passage and conclude by
+    saying `0 ERRORS | 0 WARNINGS | 0 NOTES`. If you encounter errors
     here, you will need to fix the error, with help from teammates where
     required.
 
@@ -843,7 +849,7 @@ see `?djpr_plot_server()` for the help file.
 
 #### Manually inspecting your work
 
-1.  Clear your environment and start a new R session (`Session` -&gt;
+1.  Clear your environment and start a new R session (`Session` ->
     `Restart R`). This ensures that any objects you’ve created in your
     development process are not available.
 2.  Run `devtools::load_all()`
