@@ -22,8 +22,7 @@ library(djprlabourdash)
 
 <!-- badges: start -->
 
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![R-CMD-check](https://github.com/djpr-data/djprlabourdash/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprlabourdash/actions)
-
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental) [![R-CMD-check](https://github.com/djpr-data/djprlabourdash/workflows/R-CMD-check/badge.svg)](https://github.com/djpr-data/djprlabourdash/actions)[![Codecov test coverage](https://codecov.io/gh/djpr-data/djprlabourdash/branch/main/graph/badge.svg)](https://codecov.io/gh/djpr-data/djprlabourdash?branch=main)
 <!-- badges: end -->
 
 ## Overview
@@ -117,7 +116,9 @@ All data in the dashboard is publicly available. The [`djprdashdata` repository]
 
 ### Loading dashboard data
 
-Data is loaded into the dashboard using the function `djprlabourdash::load_dash_data()`. This function is executed once at the start of each dashboard session, ensuring any upstream change in the data is (nearly) immediately reflected on the dashboard itself.
+The `djprlabourdash` package has an internal data object called `dash_data`. This is created/updated by sourcing the file `data-raw/internal_data.R`. 
+
+The function `djprlabourdash::load_dash_data()` can be used to obtain the latest version of the data from the `djprdashdata` repository. This function is executed once at the start of each dashboard session, ensuring any upstream change in the data is (nearly) immediately reflected on the dashboard itself.
 
 In interactive sessions where a contributor is working with the dashboard data, the following command should be run at the beginning of the session:
 
