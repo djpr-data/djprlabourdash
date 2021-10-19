@@ -3,6 +3,7 @@
 export("%>%")
 export(combine_words)
 export(filter_dash_data)
+export(knit_briefing)
 export(load_dash_data)
 export(make_sparklines)
 export(pretty_round)
