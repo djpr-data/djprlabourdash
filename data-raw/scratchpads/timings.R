@@ -43,5 +43,3 @@ for (f in table_funcs) {
   x <- dplyr::select(x, expression, median, `itr/sec`)
   tables <- bind_rows(tables, x)
 }
-
-# profvis::profvis(runApp(list(ui = labour_ui(), server = labour_server)))

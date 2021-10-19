@@ -289,7 +289,6 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sex == "Males") %>%
     dplyr::pull(.data$value)
 
-
   # create title
 
   title <- dplyr::case_when(
@@ -480,5 +479,144 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
       subtitle = "Employment to population ratio by sex for Victoria ",
       caption = caption_lfs(),
       title = title
+    )
+}
+
+viz_gr_underemp_bysex_line <- function(data = filter_dash_data(c(
+                                         "A85223418L",
+                                         "A85223482F"
+                                       ),
+                                       df = dash_data
+                                       )) {
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  df <- df %>%
+    dplyr::mutate(series = dplyr::if_else(
+      .data$series == "Underemployment rate (proportion of labour force) ;  > Males ;  > Victoria ;",
+      "Males",
+      "Females"
+    ))
+
+
+  latest_values <- df %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
+    ) %>%
+    # dplyr::select(.data$series, .data$value, .data$date) %>%
+    tidyr::pivot_wider(
+      names_from = .data$series,
+      values_from = .data$value
+    )
+
+  title <- dplyr::case_when(
+    latest_values$Females > latest_values$Males ~
+    paste0("The underemployment rate in ", latest_values$date, " was higher for women than men"),
+    latest_values$Females < latest_values$Males ~
+    paste0("The underemployment rate in ", latest_values$date, " was lower for women than men"),
+    latest_values$Females == latest_values$Males ~
+    paste0("The underemployment rate in ", latest_values$date, " was the same for women and men"),
+    TRUE ~ "Underemployment rate for men and women in Victoria"
+  )
+
+  # add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$series, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$series,
+      label_num = paste0(round2(.data$value, 1), "%")
+    ) +
+    labs(
+      subtitle = "Underemployment rate by sex, Victoria, per cent of labour force",
+      caption = caption_lfs(),
+      title = title
+    ) +
+    scale_y_continuous(
+      limits = function(x) c(0, x[2]),
+      labels = function(x) paste0(x, "%"),
+      breaks = scales::breaks_pretty(5),
+      expand = expansion(mult = c(0, 0.05))
+    )
+}
+
+viz_gr_women_emp_sincecovid_line <- function(data = filter_dash_data(c(
+                                               "15-24_females_employed",
+                                               "25-54_females_employed",
+                                               "55+_females_employed"
+                                             ),
+                                             df = dash_data
+                                             )) {
+  df <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value)
+
+  # 12 month moving average
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::ungroup() %>%
+    dplyr::filter(date >= as.Date("2020-01-01"))
+
+  df <- df %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::mutate(value = 100 * ((.data$value /
+      .data$value[.data$date == as.Date("2020-03-01")]) - 1))
+
+  # add tooltip
+  df <- df %>%
+    dplyr::mutate(
+      tooltip = paste0(
+        .data$series, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1), "%"
+      )
+    )
+
+
+  df <- df %>%
+    mutate(series = gsub("Employed ; Females ; ", "", .data$series, fixed = TRUE))
+
+  latest_month <- format(max(df$date), "%B %Y")
+
+  # create latest data by age
+  latest_youth <- df %>%
+    dplyr::filter(.data$date == max(.data$date),
+                  .data$series == "15-24") %>%
+    dplyr::mutate(value = round2(.data$value, 1)) %>%
+    dplyr::pull(.data$value)
+
+  title <- dplyr::case_when(
+    latest_youth < 0 ~ paste0("The number of young Victorian women in employment is ",
+                              abs(latest_youth),
+                              " per cent below its pre-COVID level"),
+    latest_youth == 0 ~ "The number of young Victorian women in employment is the same as its pre-COVID level",
+    latest_youth > 0 ~ paste0("The number of young Victorian women in employment is ",
+                              abs(latest_youth),
+                              " per cent above its pre-COVID level")
+  )
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$series,
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%"),
+      hline = 0
+    ) +
+    labs(
+      title = title,
+      subtitle = "Cumulative change in employment by age since March 2020 for Victorian women",
+      caption = paste0(caption_lfs_det_m(), " Data smoothed using a 12 month rolling average.")
     )
 }
