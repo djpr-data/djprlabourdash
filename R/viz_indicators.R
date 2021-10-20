@@ -39,9 +39,9 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
   title <- paste0(
     "The number of Victorians employed is ",
     dplyr::case_when(
-      latest_vic > 0 ~ paste0(latest_vic, " per cent higher than "),
+      latest_vic > 0 ~ paste0(abs(latest_vic), " per cent higher than "),
       latest_vic == 0 ~ "the same as ",
-      latest_vic < 0 ~ paste0(latest_vic, " per cent lower than ")
+      latest_vic < 0 ~ paste0(abs(latest_vic), " per cent lower than ")
     ),
     "it was in March 2020"
   )
