@@ -189,7 +189,7 @@ prior to use. Users generally do not need to do this directly, as the
 
 ``` r
 dash_data
-#> # A tibble: 212,556 × 32
+#> # A tibble: 221,284 × 32
 #>    series_id   date       value series  series_type table_no data_type frequency
 #>    <chr>       <date>     <dbl> <chr>   <chr>       <chr>    <chr>     <chr>    
 #>  1 15-24_empl… 1998-10-01  30.8 15-24 … Original    RM1      STOCK     Month    
@@ -202,7 +202,7 @@ dash_data
 #>  8 15-24_empl… 1999-05-01  31.2 15-24 … Original    RM1      STOCK     Month    
 #>  9 15-24_empl… 1999-06-01  31.7 15-24 … Original    RM1      STOCK     Month    
 #> 10 15-24_empl… 1999-07-01  32.1 15-24 … Original    RM1      STOCK     Month    
-#> # … with 212,546 more rows, and 24 more variables: unit <chr>, age <chr>,
+#> # … with 221,274 more rows, and 24 more variables: unit <chr>, age <chr>,
 #> #   gcc_restofstate <chr>, indicator <chr>, sex <chr>, industry <chr>,
 #> #   duration <chr>, state <chr>, sa4 <chr>, current_lfs <chr>,
 #> #   dependents <chr>, duration_of_unemp <chr>, duration_with_employer <chr>,
@@ -253,7 +253,7 @@ people in Bendigo each month from 1998 to present, they would use
 ``` r
 bendigo_unemp <- filter_dash_data("A84600028X")
 bendigo_unemp
-#> # A tibble: 275 × 32
+#> # A tibble: 276 × 32
 #>    series_id  date       value series   series_type table_no data_type frequency
 #>    <chr>      <date>     <dbl> <chr>    <chr>       <chr>    <chr>     <chr>    
 #>  1 A84600028X 1998-10-01  5.01 >>> Ben… Original    6291016  STOCK     Month    
@@ -266,7 +266,7 @@ bendigo_unemp
 #>  8 A84600028X 1999-05-01  6.20 >>> Ben… Original    6291016  STOCK     Month    
 #>  9 A84600028X 1999-06-01  3.73 >>> Ben… Original    6291016  STOCK     Month    
 #> 10 A84600028X 1999-07-01  2.74 >>> Ben… Original    6291016  STOCK     Month    
-#> # … with 265 more rows, and 24 more variables: unit <chr>, age <chr>,
+#> # … with 266 more rows, and 24 more variables: unit <chr>, age <chr>,
 #> #   gcc_restofstate <chr>, indicator <chr>, sex <chr>, industry <chr>,
 #> #   duration <chr>, state <chr>, sa4 <chr>, current_lfs <chr>,
 #> #   dependents <chr>, duration_of_unemp <chr>, duration_with_employer <chr>,
