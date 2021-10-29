@@ -128,6 +128,7 @@ In interactive sessions where a contributor is working with the dashboard data, 
 dash_data <- load_dash_data()
 ```
 
+
 Note that `dash_data` is a data frame (tibble) with a nested structure. Each row of the tibble corresponds to an ABS series ID. The `data` column of the tibble contains a list of tibbles that must be unnested prior to use. Users generally do not need to do this directly, as the `filter_dash_data()` function does it for them (see below).
 
 ```{r}
