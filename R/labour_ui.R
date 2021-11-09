@@ -10,6 +10,7 @@ labour_ui <- function(...) {
       page_ltunemp()
     ),
     page_regions(),
-    page_industries()
+    page_industries(),
+    ...
   )
 }
