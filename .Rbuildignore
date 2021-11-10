@@ -9,3 +9,4 @@
 ^\.httr-oauth$
 images
 ^app-cache$
+^codecov\.yml$

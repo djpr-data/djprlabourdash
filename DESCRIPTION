@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.1.0.900
+Version: 0.1.0.902
 Authors@R: 
     c(
     person(given = "Annett",
@@ -63,5 +63,6 @@ Suggests:
     usethis,
     rmarkdown,
     officedown,
-    blastula
+    blastula,
+    covr
 Config/testthat/edition: 3
