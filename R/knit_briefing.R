@@ -2,7 +2,7 @@
 #' This function knits a briefing document that uses tables generated in this
 #' package to create a Word document. It knits the RMarkdown file
 #' `jobs_briefing.Rmd` that lives in the `inst` folder of `djprlabourdash`.
-#' @param path_out Path, including filename and extension, to the file where
+#' @param path Path to directory where
 #' the knitted Word document should be created.
 #' @param quietly Passd to `rmarkdown::render()`'s `quiet` argument. `FALSE` by
 #' default.
@@ -12,10 +12,7 @@
 #' }
 #' @export
 
-knit_briefing <- function(path_out = file.path(
-                            tempdir(),
-                            "djpr_jobs_briefing.docx"
-                          ),
+knit_briefing <- function(path = tempdir(),
                           quietly = FALSE) {
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
@@ -31,13 +28,16 @@ knit_briefing <- function(path_out = file.path(
     )
   }
 
+  filename <- paste0("DJPR_Jobs_Briefing_", Sys.Date(), ".docx")
+
+  out_path <- file.path(path, filename)
   rmd_path <- system.file("jobs_briefing.Rmd", package = "djprlabourdash")
 
   rmarkdown::render(
     input = rmd_path,
-    output_file = path_out,
+    output_file = out_path,
     quiet = quietly
   )
 
-  return(path_out)
+  return(out_path)
 }
