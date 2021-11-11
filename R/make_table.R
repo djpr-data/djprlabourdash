@@ -213,6 +213,7 @@ make_table <- function(data,
     "Current figures",
     "Change in latest period",
     "Change in past year",
+    "Change since COVID",
     "Change during govt"
   )
 

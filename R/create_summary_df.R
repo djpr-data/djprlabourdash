@@ -46,6 +46,15 @@ create_summary_df <- function(data,
 
   summary_df <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
+    dplyr::filter(.data$date <= as.Date("2020-03-14")) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(pre_covid_date = .data$date,
+                  .data$series_id) %>%
+    dplyr::right_join(summary_df, by = "series_id")
+
+  summary_df <- summary_df %>%
+    dplyr::group_by(.data$indicator, .data$series_id) %>%
     dplyr::mutate(
       is_level = if_else(grepl("000", .data$unit, fixed = TRUE), TRUE, FALSE),
       value = dplyr::if_else(
@@ -57,6 +66,8 @@ create_summary_df <- function(data,
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
       changeinyear = (.data$value - dplyr::lag(.data$value, num_in_year)),
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, num_in_year) * 100,
+      changesincecovid = .data$value - .data$value[.data$date == .data$pre_covid_date],
+      changesincecovidpc = (.data$changesincecovid / .data$value[.data$date == .data$pre_covid_date]) * 100,
       changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
     ) %>%
     dplyr::filter(.data$date >= startdate) %>%
@@ -72,7 +83,7 @@ create_summary_df <- function(data,
       )
     ),
     across(
-      c(.data$changeinmonth, .data$changeinyear, .data$changesince14),
+      c(.data$changeinmonth, .data$changeinyear, .data$changesincecovid, .data$changesince14),
       ~ dplyr::if_else(.data$is_level,
         pretty_round(.x),
         sprintf("%.1f ppts", .x)
@@ -85,7 +96,7 @@ create_summary_df <- function(data,
     )
     ) %>%
     dplyr::ungroup() %>%
-    dplyr::select(-.data$unit, .data$is_level)
+    dplyr::select(-.data$unit, .data$is_level, .data$pre_covid_date)
 
   # If a rounded number is -0.0, change to 0.0
   summary_df <- summary_df %>%
@@ -108,6 +119,8 @@ create_summary_df <- function(data,
       .data$changeinmonthpc,
       .data$changeinyear,
       .data$changeinyearpc,
+      .data$changesincecovid,
+      .data$changesincecovidpc,
       .data$changesince14
     ) %>%
     dplyr::ungroup()
@@ -123,6 +136,11 @@ create_summary_df <- function(data,
         .data$changeinyearpc != "-",
         paste0(.data$changeinyear, "\n(", .data$changeinyearpc, ")"),
         .data$changeinyear
+      ),
+      changesincecovid = ifelse(
+        .data$changesincecovidpc != "-",
+        paste0(.data$changesincecovid, "\n(", .data$changesincecovidpc, ")"),
+        .data$changesincecovid
       )
     )
 
@@ -136,13 +154,16 @@ create_summary_df <- function(data,
   latest_date <- dates[length(dates)]
   prev_date <- dates[length(dates) - 1]
   prev_year <- subtract_years(latest_date, 1)
+  covid_date <- max(summary_df$pre_covid_date)
 
   nice_latest_date <- format(latest_date, "%b %Y")
   nice_prev_date <- format(prev_date, "%b %Y")
   nice_prev_year <- format(prev_year, "%b %Y")
+  nice_covid_date <- format(covid_date, "%b %Y")
 
   since_prev_date <- paste0("Since ", nice_prev_date)
   since_prev_year <- paste0("Since ", nice_prev_year)
+  since_covid <- paste0("Since ", nice_covid_date)
 
   out <- changedf %>%
     dplyr::select(-.data$date,
@@ -150,6 +171,7 @@ create_summary_df <- function(data,
       {{ nice_latest_date }} := .data$latest_value,
       {{ since_prev_date }} := .data$changeinmonth,
       {{ since_prev_year }} := .data$changeinyear,
+      {{ since_covid }} := .data$changesincecovid,
       `Since Nov 2014` = .data$changesince14
     )
 
