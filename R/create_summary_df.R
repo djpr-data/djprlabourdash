@@ -62,20 +62,25 @@ create_summary_df <- function(data,
         1000 * .data$value,
         .data$value
       ),
+      min_date = min(.data$date),
       changeinmonth = (.data$value - dplyr::lag(.data$value)),
       changeinmonthpc = .data$changeinmonth / dplyr::lag(.data$value) * 100,
       changeinyear = (.data$value - dplyr::lag(.data$value, num_in_year)),
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, num_in_year) * 100,
       changesincecovid = .data$value - .data$value[.data$date == .data$pre_covid_date],
       changesincecovidpc = (.data$changesincecovid / .data$value[.data$date == .data$pre_covid_date]) * 100,
-      changesince14 = (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
+      changesince14 = ifelse(min_date >= as.Date("2014-11-01"),
+                                     NA_real_,
+                                     (.data$value - .data$value[.data$date == as.Date("2014-11-01")]))
     ) %>%
+    dplyr::select(-min_date) %>%
     dplyr::filter(.data$date >= startdate) %>%
     dplyr::ungroup()
 
   # Reformat columns -----
   summary_df <- summary_df %>%
-    dplyr::mutate(across(
+    dplyr::mutate(
+      across(
       c(dplyr::ends_with("pc")),
       ~ dplyr::if_else(.data$is_level,
         paste0(round2(.x, 1), "%"),
@@ -95,6 +100,7 @@ create_summary_df <- function(data,
       sprintf("%.1f%%", .data$value)
     )
     ) %>%
+    dplyr::mutate(changesince14 = ifelse(.data$changesince14 == "NA ppts", "-", .data$changesince14)) %>%
     dplyr::ungroup() %>%
     dplyr::select(-.data$unit, .data$is_level, .data$pre_covid_date)
 
