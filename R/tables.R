@@ -1065,3 +1065,45 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     rename_indicators = FALSE
   )
 }
+
+
+table_jobactive <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                      unset = "dashboard"
+),
+title = paste0(
+  "Total jobactive caseload by employment regions, ",
+  format(max(data$date), "%B %Y")
+)){
+  data <- filter_dash_data(
+    series_ids =c("jobactive_total_ballarat",
+                  "jobactive_total_bendigo",
+                  "jobactive_total_barwon",
+                  "jobactive_total_gippsland",
+                  "jobactive_total_goulburn/murray",
+                  "jobactive_total_inner metropolitan melbourne",
+                  "jobactive_total_north eastern melbourne",
+                  "jobactive_total_north western melbourne",
+                  "jobactive_total_south coast of victoria",
+                  "jobactive_total_south eastern melbourne and peninsula",
+                  "jobactive_total_north western melbourne",
+                  "jobactive_total_wimmera mallee"))
+
+  make_table_mem(data,
+                 row_order = c("jobactive_total_ballarat",
+                               "jobactive_total_bendigo",
+                               "jobactive_total_barwon",
+                               "jobactive_total_gippsland",
+                               "jobactive_total_goulburn/murray",
+                               "jobactive_total_inner metropolitan melbourne",
+                               "jobactive_total_north eastern melbourne",
+                               "jobactive_total_north western melbourne",
+                               "jobactive_total_south coast of victoria",
+                               "jobactive_total_south eastern melbourne and peninsula",
+
+                               "jobactive_total_north western melbourne",
+                               "jobactive_total_wimmera mallee"),
+                 title = title,
+                 destination = destination,
+  )}
+
+
