@@ -1069,10 +1069,10 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
 
 table_jobactive <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                       unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload by employment regions, ",
-  format(max(data$date), "%B %Y")
+        ),
+    title = paste0(
+    "Total jobactive caseload by employment regions, ",
+    format(max(data$date), "%B %Y")
 )){
   data <- filter_dash_data(
     series_ids =c("jobactive_total_ballarat",
@@ -1087,6 +1087,22 @@ title = paste0(
                   "jobactive_total_south eastern melbourne and peninsula",
                   "jobactive_total_north western melbourne",
                   "jobactive_total_wimmera mallee"))
+
+   data <- data %>%
+    dplyr::select(
+      .data$date, .data$series,
+      .data$frequency, .data$value
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+                                              pattern = " ; ",
+                                              n = 3
+      ),
+      jobactive= .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      employment_region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$series, -.data$jobactive)
 
   make_table_mem(data,
                  row_order = c("jobactive_total_ballarat",
@@ -1104,6 +1120,8 @@ title = paste0(
                                "jobactive_total_wimmera mallee"),
                  title = title,
                  destination = destination,
-  )}
+                 rename_indicators = FALSE
+  )
+  }
 
 
