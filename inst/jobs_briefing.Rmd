@@ -154,7 +154,7 @@ ftemp_text <- dplyr::case_when(
 )
 
 ptemp_raw_diff <- get_summ("pt_emp_vic", d_period_abs, summ_data)
-ptemp_perc_diff <- get_summ("A84423357V", d_period_perc, summ_data) %>%
+ptemp_perc_diff <- get_summ("pt_emp_vic", d_period_perc, summ_data) %>%
   round2(1)
 ptemp_sign <- sign(ptemp_raw_diff)
 ptemp_pretty_diff <- ptemp_raw_diff %>% abs() %>% pretty_round()
