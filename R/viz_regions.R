@@ -1557,7 +1557,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
                                                              "Reg. SA",
                                                            .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
                                                              "Reg. Tas",
-                                                           TRUE ~ .data$state
+                                                           TRUE ~ .data$state)
                                                          )
                                                        )
   {
