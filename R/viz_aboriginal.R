@@ -26,7 +26,7 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
                                                                           "jobactive_total_wimmera mallee"),
 
                                                                                     df = dash_data) %>%
-                                                                                                  dplyr::filter(date >= as.Date("2019-12-31"))){
+                                                                                                  dplyr::filter(date >= as.Date("2019-03-31"))){
 
 
  df <- data %>%
@@ -52,9 +52,9 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
       tidyr::pivot_wider(
       names_from = .data$indicator,
       values_from = .data$value) %>%
-      dplyr::mutate(Non_Aboriginal = .data$Total - .data$Indigenous) %>%
+      dplyr::mutate("Non-Aboriginal" = .data$Total - .data$Indigenous) %>%
       dplyr::rename(Aboriginal = Indigenous) %>%
-      dplyr::select(.data$date, .data$Non_Aboriginal, .data$Aboriginal) %>%
+      dplyr::select(.data$date, .data$`Non-Aboriginal`, .data$Aboriginal) %>%
       tidyr::pivot_longer(
                     cols = !.data$date,
                     names_to = "indicator",
@@ -68,9 +68,11 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
                         round2(.data$value, 1)
                       )
                     )
+
+
  latest_date <- df %>%
-   dplyr::filter(.data$date == max(.data$date))
-    dplyr::pull(.data$value) %>%
+   dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::pull(.data$date)
     round2(1)
 
  latest_values <- df %>%
@@ -84,11 +86,11 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
 
 
  title <- dplyr::case_when(
-   latest_values$Non_Aboriginal > latest_values$Aboriginal ~
+   latest_values$`Non-Aboriginal` > latest_values$Aboriginal ~
      paste0("Victoria's Non-Aboriginal jobactive Caseload in ", latest_values$date, " was higher than Aboriginal's"),
-   latest_values$Non_Aboriginal < latest_values$Aboriginal ~
+   latest_values$`Non-Aboriginal` < latest_values$Aboriginal ~
      paste0("Victoria's Non-Aboriginal jobactive Caseloadin", latest_values$date, "was higher than Aboriginal's"),
-   latest_values$Non_Aboriginal == latest_values$Aboriginal ~
+   latest_values$`Non-Aboriginal` == latest_values$Aboriginal ~
      paste0("Victoria's Non-Aboriginal jobactive Caseload in ", latest_values$date, "was higher than Aboriginal's"),
    TRUE ~ "Jobactive Caseload for Aboriginal and Non-Aboriginal Victorians"
  )
