@@ -945,8 +945,8 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
       "A84423357V",
       "pt_emp_vic",
       "A84423356T",
-      "A84423468K",
-      "A84423244X"),
+      "A84423244X",
+      "A84423468K"),
     highlight_rows = c(
       "A84423349V",
       "A84423356T"
