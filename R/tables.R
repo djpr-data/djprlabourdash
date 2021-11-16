@@ -1090,7 +1090,7 @@ table_jobactive <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDES
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value
+      .data$frequency, .data$value,.data$unit
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
