@@ -9,8 +9,11 @@ labour_ui <- function(...) {
       page_age(),
       page_ltunemp()
     ),
-    page_regions(),
-    page_industries(),
-    ...
+    navbarMenu(
+      "Regions",
+      page_vicregions(),
+      page_ausregions()
+    ),
+    page_industries()
   )
 }
