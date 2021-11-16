@@ -84,7 +84,7 @@ page_vicregions <- function(...) {
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
     # Victorian regions focus box ------
-    h2(br(), "Victorian regions"),
+    h2(br(), "Regional Victoria"),
     # Box for regional focus
     focus_box(
       h4("Compare regions of Victoria"),
