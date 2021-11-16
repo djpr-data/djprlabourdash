@@ -102,6 +102,7 @@ labour_server <- function(input, output, session) {
     plot_function = viz_ind_emp_sincecovid_line,
     date_slider = FALSE,
     width_percent = 45,
+    height_percent = 70,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
     plt_change = plt_change
@@ -120,6 +121,7 @@ labour_server <- function(input, output, session) {
     viz_ind_emppop_state_slope,
     date_slider = FALSE,
     width_percent = 45,
+    height_percent = 70,
     plt_change = plt_change,
     data = filter_dash_data(c(
       "A84423272J",
@@ -143,7 +145,8 @@ labour_server <- function(input, output, session) {
     )),
     date_slider_value_min = Sys.Date() - (365 * 5),
     plt_change = plt_change,
-    width_percent = 45
+    width_percent = 45,
+    height_percent = 70
   )
 
   # Indicators: cumulative change in PT / FT since COVID
@@ -158,6 +161,7 @@ labour_server <- function(input, output, session) {
       dplyr::filter(date >= as.Date("2020-01-01")),
     plt_change = plt_change,
     width_percent = 45,
+    height_percent = 70,
     date_slider = FALSE
   )
 
@@ -1168,7 +1172,7 @@ labour_server <- function(input, output, session) {
       check_box_options = c(
       "Reg. Vic",
       "Reg. NSW",
-      "Reg. Qld",
+      "Reg. QLD",
       "Reg. Tas",
       "Reg. WA",
       "Reg. NT",
