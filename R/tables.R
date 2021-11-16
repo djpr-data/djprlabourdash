@@ -928,8 +928,8 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
     "A84423349V",  # total employed
     "A84423357V",  # employed fulltime
     "A84423356T",  # emp to pop ratio, all persons
-    "A84423244X",  # emp to pop ratio, females
-    "A84423468K",  # emp to pop ratio, males
+    "A84423244X",  # emp to pop ratio, males
+    "A84423468K",  # emp to pop ratio, females
     "pt_emp_vic"
   ))
 
