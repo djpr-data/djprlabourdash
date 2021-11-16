@@ -925,11 +925,11 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
                                    unset = "dashboard"
                                  )) {
   data <- filter_dash_data(c(
-    "A84423349V",
-    "A84423357V",
-    "A84423356T",
-    "A84423244X",
-    "A84423468K",
+    "A84423349V",  # total employed
+    "A84423357V",  # employed fulltime
+    "A84423356T",  # emp to pop ratio, all persons
+    "A84423244X",  # emp to pop ratio, males
+    "A84423468K",  # emp to pop ratio, females
     "pt_emp_vic"
   ))
 
@@ -940,6 +940,17 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
     ))
 
   make_table_mem(table_data,
+    row_order = c(
+      "A84423349V",
+      "A84423357V",
+      "pt_emp_vic",
+      "A84423356T",
+      "A84423244X",
+      "A84423468K"),
+    highlight_rows = c(
+      "A84423349V",
+      "A84423356T"
+    ),
     destination = destination,
     notes = "Data not seasonally adjusted."
   )
@@ -973,6 +984,19 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     ))
 
   make_table_mem(table_data,
+    row_order = c(
+      "A84423350C",
+      "A84423242V",
+      "A84423466F",
+      "A84424691V",
+      "A84423354L",
+      "A85223451R"
+    ),
+    highlight_rows = c(
+      "A84423350C",
+      "A84423354L",
+      "A85223451R"
+    ),
     destination = destination,
     notes = "Data not seasonally adjusted; smoothed using a 12-month rolling average."
   )
