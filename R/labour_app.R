@@ -101,6 +101,7 @@ labour_server <- function(input, output, session) {
     id = "ind_emp_sincecovid_line",
     plot_function = viz_ind_emp_sincecovid_line,
     date_slider = FALSE,
+    width_percent = 45,
     data = filter_dash_data(c("A84423043C", "A84423349V")) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
     plt_change = plt_change
@@ -118,6 +119,7 @@ labour_server <- function(input, output, session) {
   djpr_plot_server("ind_emppop_state_slope",
     viz_ind_emppop_state_slope,
     date_slider = FALSE,
+    width_percent = 45,
     plt_change = plt_change,
     data = filter_dash_data(c(
       "A84423272J",
@@ -140,7 +142,8 @@ labour_server <- function(input, output, session) {
       "A84423043C"
     )),
     date_slider_value_min = Sys.Date() - (365 * 5),
-    plt_change = plt_change
+    plt_change = plt_change,
+    width_percent = 45
   )
 
   # Indicators: cumulative change in PT / FT since COVID
@@ -154,6 +157,7 @@ labour_server <- function(input, output, session) {
     ) %>%
       dplyr::filter(date >= as.Date("2020-01-01")),
     plt_change = plt_change,
+    width_percent = 45,
     date_slider = FALSE
   )
 
@@ -1143,12 +1147,25 @@ labour_server <- function(input, output, session) {
     ),
     df = dash_data
     ) %>%
-      dplyr::group_by(.data$series_id) %>%
       dplyr::mutate(
-        value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
-      ) %>%
-      dplyr::filter(date >= as.Date("2020-01-01")),
-    check_box_options = c(
+        state = dplyr::case_when(
+          .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
+            "Reg. Vic",
+          .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
+            "Reg. NSW",
+          .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
+            "Reg. QLD",
+          .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
+            "Reg. NT",
+          .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
+            "Reg. WA",
+          .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
+            "Reg. SA",
+          .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
+            "Reg. Tas",
+          TRUE ~ .data$state)
+        ),
+      check_box_options = c(
       "Reg. Vic",
       "Reg. NSW",
       "Reg. Qld",
