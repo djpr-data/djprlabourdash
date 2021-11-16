@@ -7,10 +7,16 @@ page_indicators <- function(...) {
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
       djpr_with_spinner(hide.ui = TRUE),
-    djpr_plot_ui("ind_emp_sincecovid_line"),
-    djpr_plot_ui("ind_emppop_state_slope"),
-    djpr_plot_ui("ind_empgro_line"),
-    djpr_plot_ui("ind_gen_full_part_line"),
+    br(),
+    fluidRow(
+      column(6, djpr_plot_ui("ind_emppop_state_slope")),
+      column(6, djpr_plot_ui("ind_empgro_line"))
+    ),
+    br(),
+    fluidRow(
+      column(6, djpr_plot_ui("ind_gen_full_part_line")),
+      column(6, djpr_plot_ui("ind_emp_sincecovid_line"))
+    ),
     h2(br(), "Unemployment & underemployment"),
     uiOutput("ind_unemp_summary") %>%
       djpr_with_spinner(hide.ui = TRUE),
