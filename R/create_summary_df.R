@@ -69,11 +69,11 @@ create_summary_df <- function(data,
       changeinyearpc = .data$changeinyear / dplyr::lag(.data$value, num_in_year) * 100,
       changesincecovid = .data$value - .data$value[.data$date == .data$pre_covid_date],
       changesincecovidpc = (.data$changesincecovid / .data$value[.data$date == .data$pre_covid_date]) * 100,
-      changesince14 = ifelse(min_date >= as.Date("2014-11-01"),
+      changesince14 = ifelse(.data$min_date >= as.Date("2014-11-01"),
                                      NA_real_,
                                      (.data$value - .data$value[.data$date == as.Date("2014-11-01")]))
     ) %>%
-    dplyr::select(-min_date) %>%
+    dplyr::select(-.data$min_date) %>%
     dplyr::filter(.data$date >= startdate) %>%
     dplyr::ungroup()
 
