@@ -45,32 +45,65 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
     ) %>%
     dplyr::select(-.data$split_series, -.data$series,-.data$jobactive )
 
- df_Vic <- df %>%
+ df <- df %>%
       dplyr::group_by(.data$indicator, .data$date) %>%
       dplyr::summarise(value = sum(.data$value)) %>%
       dplyr::ungroup() %>%
       tidyr::pivot_wider(
       names_from = .data$indicator,
       values_from = .data$value) %>%
-      dplyr::mutate(non_indiginous = .data$Total - .data$Indigenous) %>%
-      dplyr::select(.data$date, .data$non_indiginous, .data$Indigenous) %>%
+      dplyr::mutate(Non_Aboriginal = .data$Total - .data$Indigenous) %>%
+      dplyr::rename(Aboriginal = Indigenous) %>%
+      dplyr::select(.data$date, .data$Non_Aboriginal, .data$Aboriginal) %>%
       tidyr::pivot_longer(
                     cols = !.data$date,
-                    names_to = "Indicator",
+                    names_to = "indicator",
                     values_to = "value") %>%
                     dplyr::mutate(
                       value = 100 *(.data$value
                                       / .data$value[.data$date == as.Date("2020-03-31")]),
                       tooltip = paste0(
-                        .data$state, "\n",
+                        .data$indicator, "\n",
                         format(.data$date, "%b %Y"), "\n",
                         round2(.data$value, 1)
                       )
                     )
+ latest_date <- df %>%
+   dplyr::filter(.data$date == max(.data$date))
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+ latest_values <- df %>%
+   dplyr::filter(date == max(.data$date)) %>%
+   dplyr::select(-.data$tooltip) %>%
+   dplyr::mutate(
+     value = round2(.data$value, 1),
+     date = format(.data$date, "%B %Y")
+   ) %>%
+   tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
 
 
+ title <- dplyr::case_when(
+   latest_values$Non_Aboriginal > latest_values$Aboriginal ~
+     paste0("Victoria's Non-Aboriginal jobactive Caseload in ", latest_values$date, " was higher than Aboriginal's"),
+   latest_values$Non_Aboriginal < latest_values$Aboriginal ~
+     paste0("Victoria's Non-Aboriginal jobactive Caseloadin", latest_values$date, "was higher than Aboriginal's"),
+   latest_values$Non_Aboriginal == latest_values$Aboriginal ~
+     paste0("Victoria's Non-Aboriginal jobactive Caseload in ", latest_values$date, "was higher than Aboriginal's"),
+   TRUE ~ "Jobactive Caseload for Aboriginal and Non-Aboriginal Victorians"
+ )
 
 
+ df %>%
+   djpr_ts_linechart(
+     col_var = .data$indicator,
+     label_num = paste0(round2(.data$value, 1)),
+   ) +
+   labs(
+     title = title,
+     subtitle = "Aboriginal and Non-Aboriginal Victorians Jobactive Caseload, Indexed March 2020",
+     caption = paste0("Department of Education, Skills and Employment, caseload data" )
+   )
 
 
 }
