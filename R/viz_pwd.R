@@ -53,8 +53,8 @@ Viz_gr_pwd_jobact_sincecovidIndex_line <- function (data = filter_dash_data(c("j
       names_from = .data$indicator,
       values_from = .data$value) %>%
     dplyr::mutate("Others" = .data$Total - .data$PWD) %>%
-    dplyr::rename(`People with disability` = PWD) %>%
-    dplyr::select(.data$date, .data$Others, .data$`People with disability`) %>%
+    dplyr::rename(`People with disabilities` = PWD) %>%
+    dplyr::select(.data$date, .data$Others, .data$`People with disabilities`) %>%
     tidyr::pivot_longer(
       cols = !.data$date,
       names_to = "indicator",
@@ -88,13 +88,13 @@ Viz_gr_pwd_jobact_sincecovidIndex_line <- function (data = filter_dash_data(c("j
 
 
   title <- dplyr::case_when(
-    latest_values$Others > latest_values$`People with disability` ~
-      paste0("Victoria's Other people jobactive Caseload in ", latest_values$date, " was higher than People with disabilities"),
-    latest_values$Others < latest_values$`People with disability` ~
-      paste0("Victoria's Other people jobactive Caseloadin", latest_values$date, "was higher than People with disabilities's"),
-    latest_values$Others == latest_values$`People with disability` ~
-      paste0("Victoria's Other people jobactive Caseload in ", latest_values$date, "was higher than People with disabilities's"),
-    TRUE ~ "Jobactive Caseload for People with disabilities and Other Victorians"
+    latest_values$`People with disabilities` > latest_values$Others ~
+      paste0("Victoria's people with disabilities jobactive caseload in ", latest_values$date, " was higher than other Victorians "),
+    latest_values$`People with disabilities` < latest_values$Others ~
+      paste0("Victoria's people with disabilities jobactive caseload in ", latest_values$date, " was lower than other Victorians"),
+    latest_values$`People with disabilities`< latest_values$Others ~
+      paste0("Victoria's People with disabilities jobactive caseload in ", latest_values$date, " was the same as  other Victorians "),
+    TRUE ~ "Jobactive caseload for People with disabilities and other Victorians"
   )
 
 
@@ -105,7 +105,7 @@ Viz_gr_pwd_jobact_sincecovidIndex_line <- function (data = filter_dash_data(c("j
     ) +
     labs(
       title = title,
-      subtitle = "People with a disability and Others Victorians Jobactive Caseload, Indexed March 2020",
+      subtitle = "People with a disabilities and Others Victorians Jobactive Caseload, Indexed March 2020",
       caption = caption_jobactive()
     )
 
