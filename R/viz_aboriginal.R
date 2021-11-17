@@ -68,7 +68,9 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
                         round2(.data$value, 1)
                       )
                     )
-
+ # titl_df <- df %>%
+ #   dplyr::group_by(.data$series) %>%
+ #   dplyr::mutate(value = 100 * ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
 
  latest_date <- df %>%
    dplyr::filter(.data$date == max(.data$date)) %>%
@@ -110,7 +112,7 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
 
 }
 
-viz_abor_empchange_sincecovid_bar <- function(data = filter_dash_data(c("jobactive_indigenous_ballarat",
+viz_aborg_jobacelaod_bar <- function(data = filter_dash_data(c("jobactive_indigenous_ballarat",
                                                                 "jobactive_indigenous_bendigo",
                                                                 "jobactive_indigenous_barwon",
                                                                 "jobactive_indigenous_gippsland",
@@ -143,7 +145,7 @@ df = dash_data
     ) %>%
     dplyr::select(-.data$split_series, -.data$series,-.data$jobactive,-.data$indicator) %>%
     dplyr::mutate(
-      value = scales::comma(.data$value * 1000))
+      value = .data$value * 1000)
 
   # reduce to only latest month
   df <- df %>%
@@ -157,10 +159,10 @@ df = dash_data
           x = stats::reorder(.data$region, .data$value),
           y = .data$value
         )) +
-        geom_col(
-          col = "grey85",
-          aes(fill = -.data$value)
-        ) +
+      geom_col(
+        col = "grey85",
+        aes(fill = -.data$value)
+      ) +
         geom_text(
           nudge_y = 0.1,
           aes(label = paste0(round2(.data$value, 1))),
@@ -170,7 +172,7 @@ df = dash_data
         ) +
         coord_flip(clip = "off") +
         scale_fill_distiller(palette = "Blues") +
-        scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+        scale_y_continuous(expand = expansion(mult = c(0, 0.15)))+
         djprtheme::theme_djpr(flipped = TRUE) +
         theme(
           axis.title.x = element_blank(),
@@ -181,11 +183,10 @@ df = dash_data
         labs(
           title = "title",
           subtitle = paste0(
-            "Aboriginal Person Job Caseload by Region" ,
+            "Aboriginal Person Job Caseload by Region " ,
             format(max(data$date), "%B %Y")
           ),
           caption = paste0("Department of Education, Skills and Employment, caseload data" ),
-
 
           )
 }

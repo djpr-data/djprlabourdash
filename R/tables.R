@@ -1091,7 +1091,7 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
 }
 
 
-table_jobactive <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+table_jobactive_regions <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                       unset = "dashboard"
         ),
     title = paste0(
@@ -1125,7 +1125,7 @@ table_jobactive <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDES
       total= .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
-    dplyr::select(-.data$split_series, -.data$series, -.data$total,-.data$jobactive)
+    dplyr::select(-.data$split_series, -.data$total,-.data$jobactive)
 
   make_table_mem(table_data,
                  row_order = c("jobactive_total_ballarat",
