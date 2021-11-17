@@ -68,9 +68,9 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
                         round2(.data$value, 1)
                       )
                     )
- # titl_df <- df %>%
- #   dplyr::group_by(.data$series) %>%
- #   dplyr::mutate(value = 100 * ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
+  # titl_df <- df %>%
+  # dplyr::group_by(.data$indicator) %>%
+  # dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
 
  latest_date <- df %>%
    dplyr::filter(.data$date == max(.data$date)) %>%
@@ -106,7 +106,7 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
    labs(
      title = title,
      subtitle = "Aboriginal and Non-Aboriginal Victorians Jobactive Caseload, Indexed March 2020",
-     caption = paste0("Department of Education, Skills and Employment, caseload data" )
+     caption = caption_jobactive()
    )
 
 
