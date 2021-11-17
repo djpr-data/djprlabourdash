@@ -4,7 +4,7 @@ page_migration <- function(...) {
     br(),
     paste0("This section explores the labour force status of migrants in Australia."),
     br(),
-    "Lorem ipsum lorum ipsum",
+    br(),
     br(),
     htmlOutput("migration_footnote"),
     br()

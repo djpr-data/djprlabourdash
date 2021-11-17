@@ -5,7 +5,7 @@ page_disability <- function(...) {
     paste0("This section explores the labour force status of people with disability."),
     br(),
     br(),
-    "Lorem ipsum lorem ipsum",
+    br(),
     htmlOutput("disability_footnote"),
     br()
   )

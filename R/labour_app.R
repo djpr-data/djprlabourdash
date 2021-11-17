@@ -744,6 +744,12 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Aboriginal ------
+
+  # Disability ------
+
+  # Migration ------
+
   # Regions ------
 
   # Victorian Regions -------
