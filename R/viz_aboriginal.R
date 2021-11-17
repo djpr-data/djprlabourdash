@@ -147,11 +147,25 @@ df = dash_data
     dplyr::mutate(
       value = .data$value * 1000)
 
+  high_low <- df %>%
+    dplyr::ungroup() %>%
+    summarise(
+      min_region = .data$region[.data$value == min(.data$value)],
+      min_caseload = .data$value[.data$value == min(.data$value)],
+      max_region = .data$region[.data$value == max(.data$value)],
+      max_caseload = .data$value[.data$value == max(.data$value)],
+      date = unique(.data$date)
+    )
+
+
+
   # reduce to only latest month
   df <- df %>%
     dplyr::group_by(.data$region,) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup()
+
+
 
   # draw bar chart for all employment regions
     df %>%
@@ -186,8 +200,8 @@ df = dash_data
             "Aboriginal Person Job Caseload by Region " ,
             format(max(data$date), "%B %Y")
           ),
-          caption = paste0("Department of Education, Skills and Employment, caseload data" ),
+          caption = caption_jobactive())
 
-          )
+
 }
 
