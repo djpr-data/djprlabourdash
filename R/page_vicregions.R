@@ -1,15 +1,14 @@
-page_regions <- function(...) {
+page_vicregions <- function(...) {
   djpr_tab_panel(
-    title = "Regions",
+    title = "Victorian Regions",
     h1("Regions of Victoria"),
     # Unemployment by region -----
     br(),
     "Victoria contains a range of diverse regions, both within Greater Melbourne",
     " and outside the metropolitan area.",
     br(),
-    "Below we explore the regional differences in historical and current labour force status, ",
-    "both within Victoria and also by comparing regional (non-metropolitan) areas of Australia ",
-    "with regional Victoria.",
+    "Below we explore the regional differences in historical and current labour force status ",
+    "within Victoria.",
     br(),
     h2(br(), "Labour force status by region"),
     selectInput("lf_status_region",
@@ -85,7 +84,7 @@ page_regions <- function(...) {
     djpr_plot_ui("reg_emp_regions_sincecovid_line"),
 
     # Victorian regions focus box ------
-    h2(br(), "Victorian regions"),
+    h2(br(), "Regional Victoria"),
     # Box for regional focus
     focus_box(
       h4("Compare regions of Victoria"),
@@ -129,43 +128,6 @@ page_regions <- function(...) {
         uiOutput("table_region_focus") %>%
           djpr_with_spinner()
       )
-    ),
-    br(),
-    h2(br(), "Australian regions"),
-    h4("Unemployment rate in Australian regional areas"),
-    uiOutput("table_reg_nonmetro_states_unemprate"),
-    focus_box(
-      h4("Compare regional areas of Australian states"),
-      selectInput(
-        inputId = "aus_regions_indicator",
-        label = "Select indicator",
-        choices = c(
-          "Unemployment rate" = "unemp_rate",
-          "Participation rate" = "part_rate",
-          "Employment-to-population ratio" = "emp_pop"
-        ),
-        width = "100%",
-        selected = "unemp_rate"
-      ),
-      column(6,
-        djpr_plot_ui("reg_regionstates_dot"),
-        height = "600px"
-      ),
-      column(
-        6,
-        djpr_plot_ui("reg_regionstates_bar",
-          height = "600px",
-          interactive = FALSE
-        )
-      )
-    ),
-    br(),
-    djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
-    br(),
-    h2(br(), "Australian metropolitan areas"),
-    h4("Unemployment rates in Australian major cities"),
-    uiOutput("table_reg_metro_states_unemprate"),
-    htmlOutput("regions_footnote"),
-    br()
+    )
   )
 }
