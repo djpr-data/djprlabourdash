@@ -114,98 +114,79 @@ viz_abor_empchange_sincecovid_bar <- function(data = filter_dash_data(c("jobacti
                                                                 "jobactive_indigenous_bendigo",
                                                                 "jobactive_indigenous_barwon",
                                                                 "jobactive_indigenous_gippsland",
-                                                                  "jobactive_indigenous_goulburn/murray",
-                "jobactive_indigenous_inner metropolitan melbourne",
-                "jobactive_indigenous_north eastern melbourne",
-                "jobactive_indigenous_north western melbourne",
-                "jobactive_indigenous_south coast of victoria",
-                "jobactive_indigenous_south eastern melbourne and peninsula",
-                "jobactive_indigenous_north western melbourne",
-                "jobactive_indigenous_wimmera mallee"),
+                                                                "jobactive_indigenous_goulburn/murray",
+                                                                "jobactive_indigenous_inner metropolitan melbourne",
+                                                                "jobactive_indigenous_north eastern melbourne",
+                                                                "jobactive_indigenous_north western melbourne",
+                                                                "jobactive_indigenous_south coast of victoria",
+                                                                "jobactive_indigenous_south eastern melbourne and peninsula",
+                                                                "jobactive_indigenous_north western melbourne",
+                                                                "jobactive_indigenous_wimmera mallee"),
 
 df = dash_data
 )) {
-  data <- data %>%
-    dplyr::group_by(.data$series) %>%
-    dplyr::mutate(value = 100 * ((.data$value / .data$value[date == as.Date("2020-02-01")]) - 1))
 
-  # reduce to only latest month (indexing already done above in data input into function)                                {
-  data <- data %>%
-    dplyr::group_by(.data$series) %>%
+
+  df <- data %>%
+    dplyr::select(
+      .data$date, .data$series,
+      .data$unit, .data$value
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+                                              pattern = " ; ",
+                                              n = 3
+      ),
+      jobactive= .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$series,-.data$jobactive,-.data$indicator) %>%
+    dplyr::mutate(
+      value = scales::comma(.data$value * 1000))
+
+  # reduce to only latest month
+  df <- df %>%
+    dplyr::group_by(.data$region,) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup()
 
-  # add entry for data$industry for Victoria; employed total
-  data <- data %>%
-    dplyr::mutate(
-      industry = dplyr::if_else(.data$industry == "",
-                                "Victoria, all industries",
-                                .data$industry
-      )
-    )
+  # draw bar chart for all employment regions
+    df %>%
+        ggplot(aes(
+          x = stats::reorder(.data$region, .data$value),
+          y = .data$value
+        )) +
+        geom_col(
+          col = "grey85",
+          aes(fill = -.data$value)
+        ) +
+        geom_text(
+          nudge_y = 0.1,
+          aes(label = paste0(round2(.data$value, 1))),
+          colour = "black",
+          hjust = 0,
+          size = 12 / .pt
+        ) +
+        coord_flip(clip = "off") +
+        scale_fill_distiller(palette = "Blues") +
+        scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+        djprtheme::theme_djpr(flipped = TRUE) +
+        theme(
+          axis.title.x = element_blank(),
+          panel.grid = element_blank(),
+          axis.text.y = element_text(size = 12),
+          axis.text.x = element_blank()
+        ) +
+        labs(
+          title = "title",
+          subtitle = paste0(
+            "Aboriginal Person Job Caseload by Region" ,
+            format(max(data$date), "%B %Y")
+          ),
+          caption = paste0("Department of Education, Skills and Employment, caseload data" ),
 
-  lab_df <- data %>%
-    dplyr::select(.data$industry, .data$value) %>%
-    dplyr::mutate(
-      lab_y = dplyr::if_else(.data$value >= 0, .data$value + 0.1, .data$value - 0.75),
-      lab_hjust = dplyr::if_else(.data$value >= 0, 0, 1)
-    )
 
-  title <- paste0(
-    "Employment in ",
-    data$industry[data$value == max(data$value)],
-    dplyr::if_else(max(data$value) > 0, " grew", " shrank"),
-    " by ",
-    round2(max(data$value), 1),
-    " per cent between February 2020 and ",
-    format(max(data$date), "%B %Y"),
-    ", while employment in ",
-    data$industry[data$value == min(data$value)],
-    dplyr::if_else(min(data$value) > 0, " grew", " shrank"),
-    " by ",
-    round2(abs(min(data$value)), 1),
-    " per cent"
-  )
-
-  # draw bar chart for all 19 industries plus Vic total
-  data %>%
-    ggplot(aes(
-      x = stats::reorder(.data$industry, .data$value),
-      y = .data$value
-    )) +
-    geom_col(
-      aes(fill = -.data$value)
-    ) +
-    geom_text(
-      data = lab_df,
-      aes(
-        y = .data$lab_y,
-        hjust = .data$lab_hjust,
-        label = paste0(round2(.data$value, 1), "%")
-      ),
-      colour = "black",
-      size = 11 / .pt
-    ) +
-    geom_hline(
-      yintercept = 0
-    ) +
-    coord_flip(clip = "off") +
-    scale_y_continuous(expand = expansion(mult = c(0.2, 0.15))) +
-    scale_fill_distiller(palette = "Blues") +
-    djprtheme::theme_djpr(flipped = TRUE) +
-    theme(
-      axis.title.x = element_blank(),
-      panel.grid = element_blank(),
-      axis.text.y = element_text(size = 12),
-      axis.text.x = element_blank()
-    ) +
-    labs(
-      title = title,
-      subtitle = paste0(
-        "Growth in employment by industry between February 2020 and ",
-        format(max(data$date), "%B %Y")
-      ),
-      caption = paste0(caption_lfs_det_q(), " Data not seasonally adjusted. ")
-    )
+          )
 }
 
