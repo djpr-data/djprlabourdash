@@ -148,16 +148,27 @@ df = dash_data
       value = .data$value * 1000)
 
   high_low <- df %>%
-    dplyr::ungroup() %>%
+    dplyr::group_by(.data$date) %>%
     summarise(
       min_region = .data$region[.data$value == min(.data$value)],
       min_caseload = .data$value[.data$value == min(.data$value)],
       max_region = .data$region[.data$value == max(.data$value)],
       max_caseload = .data$value[.data$value == max(.data$value)],
-      date = unique(.data$date)
+      date = max(.data$date)
     )
 
-
+  title <-  paste0(
+    " Across Victoria job caseload ranged from ",
+    round2(high_low$min_caseload, 1),
+    " Aboriginal person in ",
+    high_low$min_region ,
+    " to ",
+    round2(high_low$max_caseload, 1),
+    " Aboriginal person in ",
+    high_low$ max_region,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
 
   # reduce to only latest month
   df <- df %>%
@@ -195,7 +206,7 @@ df = dash_data
           axis.text.x = element_blank()
         ) +
         labs(
-          title = "title",
+          title = title,
           subtitle = paste0(
             "Aboriginal Person Job Caseload by Region " ,
             format(max(data$date), "%B %Y")
