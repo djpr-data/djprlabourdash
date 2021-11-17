@@ -128,6 +128,8 @@ page_vicregions <- function(...) {
         uiOutput("table_region_focus") %>%
           djpr_with_spinner()
       )
-    )
+    ),
+    br(),
+    htmlOutput("vicregions_footnote")
   )
 }

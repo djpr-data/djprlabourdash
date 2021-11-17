@@ -6,9 +6,10 @@ page_aboriginal <- function(...) {
     paste0("and Torre Strait Islander Peoples"),
     br(),
     # this table is just a placeholder and needs to be removed once we have functions for aboriginals
-    djpr_plot_ui("gr_aboriginal_test_line"),
+    "Lorem ipsum lorem ipsum",
     br(),
-    htmlOutput("inclusion_footnote"),
+    br(),
+    htmlOutput("aboriginal_footnote"),
     br()
   )
 }

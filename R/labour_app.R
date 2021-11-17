@@ -47,7 +47,7 @@ labour_server <- function(input, output, session) {
     )
   })
 
-  output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
+  output$aboriginal_footnote <- output$vicregions_footnote <- output$disability_footnote <- output$migration_footnote <- output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
     footnote()
   })
 
@@ -742,69 +742,6 @@ labour_server <- function(input, output, session) {
     ),
     interactive = FALSE,
     plt_change = plt_change
-  )
-
-  # Aboriginal -----
-  # this chart below is just a placeholder and needs to be removed once we have functions for aboriginal
-  djpr_plot_server("gr_aboriginal_test_line",
-                   viz_gr_aboriginal_test_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "15-24_greater melbourne_employed",
-                     "25-54_greater melbourne_employed",
-                     "55+_greater melbourne_employed",
-                     "15-24_rest of vic._employed",
-                     "25-54_rest of vic._employed",
-                     "55+_rest of vic._employed"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-                     dplyr::filter(.data$date >= as.Date("2020-01-01")),
-                   date_slider = FALSE,
-  )
-
-  # Disability -----
-  # this chart below is just a placeholder and needs to be removed once we have functions for disability
-  djpr_plot_server("gr_disability_test_line",
-                   viz_gr_disability_test_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "15-24_greater melbourne_employed",
-                     "25-54_greater melbourne_employed",
-                     "55+_greater melbourne_employed",
-                     "15-24_rest of vic._employed",
-                     "25-54_rest of vic._employed",
-                     "55+_rest of vic._employed"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-                     dplyr::filter(.data$date >= as.Date("2020-01-01")),
-                   date_slider = FALSE,
-  )
-
-  # Migration -----
-  # this chart below is just a placeholder and needs to be removed once we have functions for migrantion
-  djpr_plot_server("gr_migration_test_line",
-                   viz_gr_migration_test_line,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "15-24_greater melbourne_employed",
-                     "25-54_greater melbourne_employed",
-                     "55+_greater melbourne_employed",
-                     "15-24_rest of vic._employed",
-                     "25-54_rest of vic._employed",
-                     "55+_rest of vic._employed"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-                     dplyr::filter(.data$date >= as.Date("2020-01-01")),
-                   date_slider = FALSE,
   )
 
   # Regions ------
