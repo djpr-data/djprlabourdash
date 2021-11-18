@@ -46,7 +46,7 @@ create_summary_df <- function(data,
 
   summary_df <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
-    dplyr::filter(.data$date <= as.Date("2020-03-14")) %>%
+    dplyr::filter(.data$date <= as.Date("2020-03-31")) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup() %>%
     dplyr::select(pre_covid_date = .data$date,
