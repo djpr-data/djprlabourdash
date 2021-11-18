@@ -1127,7 +1127,7 @@ table_jobactive_regions <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
-  make_table_mem(table_data,
+  make_table(table_data,
                  row_order = c("jobactive_total_ballarat",
                                "jobactive_total_bendigo",
                                "jobactive_total_barwon",
