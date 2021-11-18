@@ -1548,6 +1548,7 @@ Viz_gr_age_jobact_sincecovidIndex_line <- function (data = filter_dash_data(c("j
     ) %>%
     dplyr::select(-.data$split_series, -.data$series,-.data$jobactive )
 
+
   df <- df %>%
     dplyr::group_by(.data$indicator, .data$date) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
@@ -1570,6 +1571,12 @@ Viz_gr_age_jobact_sincecovidIndex_line <- function (data = filter_dash_data(c("j
         round2(.data$value, 1)
       )
     )
+
+  titl_df <- df %>%
+  dplyr::group_by(.data$indicator) %>%
+  tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
+  dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
+
 
   latest_date <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -1594,7 +1601,7 @@ Viz_gr_age_jobact_sincecovidIndex_line <- function (data = filter_dash_data(c("j
       label_num = paste0(round2(.data$value, 1)),
     ) +
       labs(
-      title = title,
+      title = "title",
       subtitle = "Victorians Jobactive Caseload by age, Indexed March 2020",
       caption = caption_jobactive()
     )
