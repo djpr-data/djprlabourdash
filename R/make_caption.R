@@ -45,3 +45,13 @@ caption_lfs_det_q <- function(df = dash_data,
     release_name = "ABS Labour Force, Detailed (quarterly)"
   )
 }
+
+caption_jobactive <- function(df = dash_data,
+                              series_for_date = "jobactive_total_ballarat") {
+  caption_make(
+    df = df,
+    series_for_date = series_for_date,
+    release_name = "Commonwealth Jobactive Caseload data"
+  )
+}
+
