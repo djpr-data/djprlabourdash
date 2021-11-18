@@ -1114,7 +1114,7 @@ table_jobactive_regions <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit
+      .data$frequency, .data$value,.data$unit,.data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
@@ -1125,7 +1125,7 @@ table_jobactive_regions <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_
       total= .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
-    dplyr::select(-.data$split_series, -.data$total, -.data$series, -.data$jobactive)
+    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
   make_table_mem(table_data,
                  row_order = c("jobactive_total_ballarat",
