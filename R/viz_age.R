@@ -1070,17 +1070,8 @@ title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     TRUE ~ NA_character_
   )
 
-  # 12 month smoothing and only latest date
-  df <- data %>%
-    group_by(.data$series_id) %>%
-    mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
-
   # combining value for each date, sa4 and indicator
-  df <- df %>%
+  df <- data %>%
     dplyr::group_by(.data$date, .data$sa4, .data$indicator) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
@@ -1115,6 +1106,14 @@ title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   # Reduce to selected_indicator
   df <- df %>%
     dplyr::filter(.data$indicator == selected_indicator)
+
+  df <- df %>%
+    dplyr::group_by(.data$sa4, .data$indicator) %>%
+      mutate(value = slider::slide_mean(.data$value,
+        before = 11,
+        complete = TRUE
+      )) %>%
+      dplyr::filter(.data$date == max(.data$date))
 
   high_low <- df %>%
     dplyr::ungroup() %>%
@@ -1205,17 +1204,9 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     TRUE ~ NA_character_
   )
 
-  # 12 month smoothing and only latest date
-  df <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
 
   # combining value for each date, sa4 and indicator
-  df <- df %>%
+  df <- data %>%
     dplyr::group_by(.data$date, .data$sa4, .data$indicator) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
@@ -1250,6 +1241,15 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   # Reduce to selected_indicator
   df <- df %>%
     dplyr::filter(.data$indicator == selected_indicator)
+
+  # 12 month smoothing and only latest date
+  df <- df %>%
+    dplyr::group_by(.data$sa4, .data$indicator) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- sa42016 %>%
@@ -1410,17 +1410,8 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
                                                    df = dash_data
                                                    ),
                                                    selected_indicator = "unemp_rate") {
-  # 12 month smoothing and only latest date
-  df <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
 
-  df <- df %>%
+  df <- data %>%
     dplyr::select(.data$date, .data$sa4, .data$indicator, .data$value)
 
   # Go from long to wide
@@ -1453,6 +1444,17 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
   # Reduce to selected_indicator
   df <- df %>%
     dplyr::filter(.data$indicator == selected_indicator)
+
+  # 12 month smoothing and only latest date
+  df <- df %>%
+    dplyr::group_by(.data$sa4, .data$indicator) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11,
+                                             complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
 
   df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
