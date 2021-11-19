@@ -1187,7 +1187,8 @@ title = paste0(
       total = .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
-    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
+    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive) %>%
+    dplyr::mutate(value = .data$value * 1000)
 
   make_table(table_data,
              row_order = c(
