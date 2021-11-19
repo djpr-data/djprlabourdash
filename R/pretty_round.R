@@ -11,7 +11,6 @@
 #' pretty_round(c(10, 110, 10050, 20500, 2000100, 3445123))
 #' @export
 pretty_round <- function(x) {
-  sign_x <- sign(x)
   x <- (x / 1000)
   x <- round2(x, 1)
   x <- x * 1000

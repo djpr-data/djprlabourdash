@@ -1270,8 +1270,6 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     dplyr::left_join(df, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour palette
-  # Switched here from binned to continuous colours
-  # pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
   pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
 
   # Create metro boundary (Greater Melbourne) ----
@@ -1491,7 +1489,7 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
     labs(title = "")
 }
 
-Viz_gr_age_jobact_sincecovidIndex_line <- function(data = filter_dash_data(c(
+viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
                                                      "jobactive_youth (15-24)_ballarat",
                                                      "jobactive_youth (15-24)_bendigo",
                                                      "jobactive_youth (15-24)_barwon",
