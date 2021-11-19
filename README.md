@@ -185,7 +185,7 @@ dash_data <- load_dash_data()
 
 ``` r
 dash_data
-#> # A tibble: 221,284 × 32
+#> # A tibble: 221,786 × 32
 #>    series_id   date       value series  series_type table_no data_type frequency
 #>    <chr>       <date>     <dbl> <chr>   <chr>       <chr>    <chr>     <chr>    
 #>  1 15-24_empl… 1998-10-01  30.8 15-24 … Original    RM1      STOCK     Month    
@@ -198,7 +198,7 @@ dash_data
 #>  8 15-24_empl… 1999-05-01  31.2 15-24 … Original    RM1      STOCK     Month    
 #>  9 15-24_empl… 1999-06-01  31.7 15-24 … Original    RM1      STOCK     Month    
 #> 10 15-24_empl… 1999-07-01  32.1 15-24 … Original    RM1      STOCK     Month    
-#> # … with 221,274 more rows, and 24 more variables: unit <chr>, age <chr>,
+#> # … with 221,776 more rows, and 24 more variables: unit <chr>, age <chr>,
 #> #   gcc_restofstate <chr>, indicator <chr>, sex <chr>, industry <chr>,
 #> #   duration <chr>, state <chr>, sa4 <chr>, current_lfs <chr>,
 #> #   dependents <chr>, duration_of_unemp <chr>, duration_with_employer <chr>,

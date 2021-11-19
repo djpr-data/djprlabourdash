@@ -267,7 +267,7 @@ make_table <- function(data,
     flex <- flex %>%
       flextable::bold(i = highlight_rows, j = 1)
 
-    all_rows <- 1:nrow(summary_df)
+    all_rows <- seq_len(nrow(summary_df))
     non_highlight_rows <- all_rows[!all_rows %in% highlight_rows]
 
     flex <- flex %>%
