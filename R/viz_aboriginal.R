@@ -24,7 +24,6 @@ viz_gr_abor_jobact_sincecovid_line <- function (data = filter_dash_data(c("jobac
                                                                           "jobactive_total_south eastern melbourne and peninsula",
                                                                           "jobactive_total_north western melbourne",
                                                                           "jobactive_total_wimmera mallee"),
-
                                                                         df = dash_data) %>%
                                                   dplyr::filter(date >= as.Date("2019-03-31"))){
 
