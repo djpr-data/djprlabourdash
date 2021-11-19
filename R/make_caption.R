@@ -54,4 +54,3 @@ caption_jobactive <- function(df = dash_data,
     release_name = "Commonwealth Jobactive Caseload data"
   )
 }
-
