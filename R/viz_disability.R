@@ -55,7 +55,7 @@ viz_gr_pwd_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
       values_from = .data$value
     ) %>%
     dplyr::mutate("Others" = .data$Total - .data$PWD) %>%
-    dplyr::rename(`People with disabilities` = PWD) %>%
+    dplyr::rename(`People with disabilities` = .data$PWD) %>%
     dplyr::select(.data$date, .data$Others, .data$`People with disabilities`) %>%
     tidyr::pivot_longer(
       cols = !.data$date,

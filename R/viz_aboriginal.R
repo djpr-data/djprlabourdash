@@ -54,7 +54,7 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
       values_from = .data$value
     ) %>%
     dplyr::mutate("Non-Aboriginal" = .data$Total - .data$Indigenous) %>%
-    dplyr::rename(Aboriginal = Indigenous) %>%
+    dplyr::rename(Aboriginal = .data$Indigenous) %>%
     dplyr::select(.data$date, .data$`Non-Aboriginal`, .data$Aboriginal) %>%
     tidyr::pivot_longer(
       cols = !.data$date,
