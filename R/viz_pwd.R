@@ -1,4 +1,4 @@
-# Functions to create the graphs for the 'Disability' subpage on the dashboard.
+# Functions to create  people with disabilities page graphs
 
 viz_gr_pwd_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
                                                      "jobactive_pwd_ballarat",
@@ -98,6 +98,7 @@ viz_gr_pwd_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
     paste0("Victoria's People with disabilities jobactive caseload in ", latest_values$date, " was the same as  other Victorians "),
     TRUE ~ "Jobactive caseload for People with disabilities and other Victorians"
   )
+
 
   df %>%
     djpr_ts_linechart(

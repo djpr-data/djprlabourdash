@@ -1,6 +1,5 @@
 # Functions to create the graphs for the 'Age' subpage on the dashboard.
 
-
 viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                              "15-24_greater melbourne_employed",
                                              "25-54_greater melbourne_employed",
@@ -1070,17 +1069,8 @@ title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     TRUE ~ NA_character_
   )
 
-  # 12 month smoothing and only latest date
-  df <- data %>%
-    group_by(.data$series_id) %>%
-    mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
-
   # combining value for each date, sa4 and indicator
-  df <- df %>%
+  df <- data %>%
     dplyr::group_by(.data$date, .data$sa4, .data$indicator) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
@@ -1115,6 +1105,14 @@ title_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   # Reduce to selected_indicator
   df <- df %>%
     dplyr::filter(.data$indicator == selected_indicator)
+
+  df <- df %>%
+    dplyr::group_by(.data$sa4, .data$indicator) %>%
+    mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
 
   high_low <- df %>%
     dplyr::ungroup() %>%
@@ -1205,17 +1203,9 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     TRUE ~ NA_character_
   )
 
-  # 12 month smoothing and only latest date
-  df <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
 
   # combining value for each date, sa4 and indicator
-  df <- df %>%
+  df <- data %>%
     dplyr::group_by(.data$date, .data$sa4, .data$indicator) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::ungroup()
@@ -1251,6 +1241,15 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::filter(.data$indicator == selected_indicator)
 
+  # 12 month smoothing and only latest date
+  df <- df %>%
+    dplyr::group_by(.data$sa4, .data$indicator) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date))
+
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- sa42016 %>%
     dplyr::filter(.data$state_name_2016 == "Victoria") %>%
@@ -1270,8 +1269,6 @@ map_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     dplyr::left_join(df, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour palette
-  # Switched here from binned to continuous colours
-  # pal <- leaflet::colorBin("Blues", mapdata$value, 3) # last object is number of bins
   pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
 
   # Create metro boundary (Greater Melbourne) ----
@@ -1410,17 +1407,7 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
                                                    df = dash_data
                                                    ),
                                                    selected_indicator = "unemp_rate") {
-  # 12 month smoothing and only latest date
   df <- data %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 11,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
-
-  df <- df %>%
     dplyr::select(.data$date, .data$sa4, .data$indicator, .data$value)
 
   # Go from long to wide
@@ -1453,6 +1440,17 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
   # Reduce to selected_indicator
   df <- df %>%
     dplyr::filter(.data$indicator == selected_indicator)
+
+  # 12 month smoothing and only latest date
+  df <- df %>%
+    dplyr::group_by(.data$sa4, .data$indicator) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+      before = 11,
+      complete = TRUE
+    )) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
 
   df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
@@ -1490,3 +1488,116 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
     labs(title = "")
 }
 
+viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
+                                                     "jobactive_youth (15-24)_ballarat",
+                                                     "jobactive_youth (15-24)_bendigo",
+                                                     "jobactive_youth (15-24)_barwon",
+                                                     "jobactive_youth (15-24)_gippsland",
+                                                     "jobactive_youth (15-24)_goulburn/murray",
+                                                     "jobactive_youth (15-24)_inner metropolitan melbourne",
+                                                     "jobactive_youth (15-24)_north eastern melbourne",
+                                                     "jobactive_youth (15-24)_north western melbourne",
+                                                     "jobactive_youth (15-24)_south coast of victoria",
+                                                     "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                                                     "jobactive_youth (15-24)_north western melbourne",
+                                                     "jobactive_youth (15-24)_wimmera mallee",
+                                                     "jobactive_mature age (50+)_ballarat",
+                                                     "jobactive_mature age (50+)_bendigo",
+                                                     "jobactive_mature age (50+)_barwon",
+                                                     "jobactive_mature age (50+)_gippsland",
+                                                     "jobactive_mature age (50+)_goulburn/murray",
+                                                     "jobactive_mature age (50+)_inner metropolitan melbourne",
+                                                     "jobactive_mature age (50+)_north eastern melbourne",
+                                                     "jobactive_mature age (50+)_north western melbourne",
+                                                     "jobactive_mature age (50+)_south coast of victoria",
+                                                     "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                                                     "jobactive_mature age (50+)_north western melbourne",
+                                                     "jobactive_mature age (50+)_wimmera mallee",
+                                                     "jobactive_total_ballarat",
+                                                     "jobactive_total_bendigo",
+                                                     "jobactive_total_barwon",
+                                                     "jobactive_total_gippsland",
+                                                     "jobactive_total_goulburn/murray",
+                                                     "jobactive_total_inner metropolitan melbourne",
+                                                     "jobactive_total_north eastern melbourne",
+                                                     "jobactive_total_north western melbourne",
+                                                     "jobactive_total_south coast of victoria",
+                                                     "jobactive_total_south eastern melbourne and peninsula",
+                                                     "jobactive_total_north western melbourne",
+                                                     "jobactive_total_wimmera mallee"
+                                                   ),
+                                                   df = dash_data
+                                                   ) %>%
+                                                     dplyr::filter(date >= as.Date("2019-03-31"))) {
+  df <- data %>%
+    dplyr::select(
+      .data$date, .data$series,
+      .data$frequency, .data$value
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      jobactive = .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      employment_region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$series, -.data$jobactive)
+
+
+  df <- df %>%
+    dplyr::group_by(.data$indicator, .data$date) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::ungroup() %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    ) %>%
+    dplyr::mutate("25-49 Age" = .data$Total - .data$`Mature Age (50+)` - .data$`Youth (15-24)`) %>%
+    dplyr::select(.data$date, .data$`25-49 Age`, .data$`Mature Age (50+)`, .data$`Youth (15-24)`) %>%
+    tidyr::pivot_longer(
+      cols = !.data$date,
+      names_to = "indicator",
+      values_to = "value"
+    ) %>%
+    dplyr::mutate(
+      value = 100 * (.data$value
+        / .data$value[.data$date == as.Date("2020-03-31")]),
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1)
+      )
+    )
+
+  # titl_df <- df %>%
+  #   dplyr::group_by(.data$indicator) %>%
+  #   tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
+  #   dplyr::mutate(value = ((.data$value[date == as.Date(max(.data$date))] - .data$value[date == as.Date("2020-03-31")])))
+
+  latest_date <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::pull(.data$date)
+  round2(1)
+
+  latest_values <- df %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::select(-.data$tooltip) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
+    ) %>%
+    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1)),
+    ) +
+    labs(
+      title = "title",
+      subtitle = "Victorians Jobactive Caseload by age, Indexed March 2020",
+      caption = caption_jobactive()
+    )
+}
