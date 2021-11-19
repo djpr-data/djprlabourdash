@@ -925,11 +925,11 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
                                    unset = "dashboard"
                                  )) {
   data <- filter_dash_data(c(
-    "A84423349V",  # total employed
-    "A84423357V",  # employed fulltime
-    "A84423356T",  # emp to pop ratio, all persons
-    "A84423244X",  # emp to pop ratio, males
-    "A84423468K",  # emp to pop ratio, females
+    "A84423349V", # total employed
+    "A84423357V", # employed fulltime
+    "A84423356T", # emp to pop ratio, all persons
+    "A84423244X", # emp to pop ratio, males
+    "A84423468K", # emp to pop ratio, females
     "pt_emp_vic"
   ))
 
@@ -946,7 +946,8 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
       "pt_emp_vic",
       "A84423356T",
       "A84423244X",
-      "A84423468K"),
+      "A84423468K"
+    ),
     highlight_rows = c(
       "A84423349V",
       "A84423356T"
@@ -1090,58 +1091,61 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
   )
 }
 
-table_jobactive_regions <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                              unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload by employment regions, ",
-  format(max(data$date), "%B %Y")
-)
-) {
-  data <- filter_dash_data(c("jobactive_total_ballarat",
-                             "jobactive_total_bendigo",
-                             "jobactive_total_barwon",
-                             "jobactive_total_gippsland",
-                             "jobactive_total_goulburn/murray",
-                             "jobactive_total_inner metropolitan melbourne",
-                             "jobactive_total_north eastern melbourne",
-                             "jobactive_total_north western melbourne",
-                             "jobactive_total_south coast of victoria",
-                             "jobactive_total_south eastern melbourne and peninsula",
-                             "jobactive_total_north western melbourne",
-                             "jobactive_total_wimmera mallee"))
+table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                      unset = "dashboard"
+                                    ),
+                                    title = paste0(
+                                      "Total jobactive caseload by employment regions, ",
+                                      format(max(data$date), "%B %Y")
+                                    )) {
+  data <- filter_dash_data(c(
+    "jobactive_total_ballarat",
+    "jobactive_total_bendigo",
+    "jobactive_total_barwon",
+    "jobactive_total_gippsland",
+    "jobactive_total_goulburn/murray",
+    "jobactive_total_inner metropolitan melbourne",
+    "jobactive_total_north eastern melbourne",
+    "jobactive_total_north western melbourne",
+    "jobactive_total_south coast of victoria",
+    "jobactive_total_south eastern melbourne and peninsula",
+    "jobactive_total_north western melbourne",
+    "jobactive_total_wimmera mallee"
+  ))
 
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit,.data$table_no
+      .data$frequency, .data$value, .data$unit, .data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
-      jobactive= .data$split_series[, 1],
-      total= .data$split_series[, 2],
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
   make_table(table_data,
-             row_order = c("jobactive_total_ballarat",
-                           "jobactive_total_bendigo",
-                           "jobactive_total_barwon",
-                           "jobactive_total_gippsland",
-                           "jobactive_total_goulburn/murray",
-                           "jobactive_total_inner metropolitan melbourne",
-                           "jobactive_total_north eastern melbourne",
-                           "jobactive_total_north western melbourne",
-                           "jobactive_total_south coast of victoria",
-                           "jobactive_total_south eastern melbourne and peninsula",
-                           "jobactive_total_north western melbourne",
-                           "jobactive_total_wimmera mallee"),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }

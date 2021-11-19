@@ -1164,22 +1164,23 @@ labour_server <- function(input, output, session) {
       dplyr::mutate(
         state = dplyr::case_when(
           .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-            "Reg. Vic",
+          "Reg. Vic",
           .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-            "Reg. NSW",
+          "Reg. NSW",
           .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-            "Reg. QLD",
+          "Reg. QLD",
           .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-            "Reg. NT",
+          "Reg. NT",
           .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-            "Reg. WA",
+          "Reg. WA",
           .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-            "Reg. SA",
+          "Reg. SA",
           .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-            "Reg. Tas",
-          TRUE ~ .data$state)
-        ),
-      check_box_options = c(
+          "Reg. Tas",
+          TRUE ~ .data$state
+        )
+      ),
+    check_box_options = c(
       "Reg. Vic",
       "Reg. NSW",
       "Reg. QLD",

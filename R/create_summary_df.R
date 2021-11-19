@@ -49,8 +49,10 @@ create_summary_df <- function(data,
     dplyr::filter(.data$date <= as.Date("2020-03-31")) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup() %>%
-    dplyr::select(pre_covid_date = .data$date,
-                  .data$series_id) %>%
+    dplyr::select(
+      pre_covid_date = .data$date,
+      .data$series_id
+    ) %>%
     dplyr::right_join(summary_df, by = "series_id")
 
   summary_df <- summary_df %>%
@@ -70,8 +72,9 @@ create_summary_df <- function(data,
       changesincecovid = .data$value - .data$value[.data$date == .data$pre_covid_date],
       changesincecovidpc = (.data$changesincecovid / .data$value[.data$date == .data$pre_covid_date]) * 100,
       changesince14 = ifelse(.data$min_date >= as.Date("2014-11-01"),
-                                     NA_real_,
-                                     (.data$value - .data$value[.data$date == as.Date("2014-11-01")]))
+        NA_real_,
+        (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
+      )
     ) %>%
     dplyr::select(-.data$min_date) %>%
     dplyr::filter(.data$date >= startdate) %>%
@@ -81,24 +84,24 @@ create_summary_df <- function(data,
   summary_df <- summary_df %>%
     dplyr::mutate(
       across(
-      c(dplyr::ends_with("pc")),
-      ~ dplyr::if_else(.data$is_level,
-        paste0(round2(.x, 1), "%"),
-        "-"
+        c(dplyr::ends_with("pc")),
+        ~ dplyr::if_else(.data$is_level,
+          paste0(round2(.x, 1), "%"),
+          "-"
+        )
+      ),
+      across(
+        c(.data$changeinmonth, .data$changeinyear, .data$changesincecovid, .data$changesince14),
+        ~ dplyr::if_else(.data$is_level,
+          pretty_round(.x),
+          sprintf("%.1f ppts", .x)
+        )
+      ),
+      latest_value = dplyr::if_else(
+        .data$is_level,
+        pretty_round(.data$value),
+        sprintf("%.1f%%", .data$value)
       )
-    ),
-    across(
-      c(.data$changeinmonth, .data$changeinyear, .data$changesincecovid, .data$changesince14),
-      ~ dplyr::if_else(.data$is_level,
-        pretty_round(.x),
-        sprintf("%.1f ppts", .x)
-      )
-    ),
-    latest_value = dplyr::if_else(
-      .data$is_level,
-      pretty_round(.data$value),
-      sprintf("%.1f%%", .data$value)
-    )
     ) %>%
     dplyr::mutate(changesince14 = ifelse(.data$changesince14 == "NA ppts", "-", .data$changesince14)) %>%
     dplyr::ungroup() %>%
