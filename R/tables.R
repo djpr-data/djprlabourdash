@@ -1149,3 +1149,63 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     rename_indicators = FALSE
   )
 }
+
+
+table_jobactive_aboriginals <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                             unset = "dashboard"
+),
+title = paste0(
+  "Total jobactive caseload for Aboriginal Victorians, ",
+  format(max(data$date), "%B %Y")
+)) {
+  data <- filter_dash_data(c(
+    "jobactive_indigenous_ballarat",
+    "jobactive_indigenous_bendigo",
+    "jobactive_indigenous_barwon",
+    "jobactive_indigenous_gippsland",
+    "jobactive_indigenous_goulburn/murray",
+    "jobactive_indigenous_inner metropolitan melbourne",
+    "jobactive_indigenous_north eastern melbourne",
+    "jobactive_indigenous_north western melbourne",
+    "jobactive_indigenous_south coast of victoria",
+    "jobactive_indigenous_south eastern melbourne and peninsula",
+    "jobactive_indigenous_north western melbourne",
+    "jobactive_indigenous_wimmera mallee"
+  ))
+
+  table_data <- data %>%
+    dplyr::select(
+      .data$date, .data$series_id, .data$series,
+      .data$frequency, .data$value, .data$unit, .data$table_no
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+                                              pattern = " ; ",
+                                              n = 3
+      ),
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
+      indicator = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
+
+  make_table(table_data,
+             row_order = c(
+               "jobactive_indigenous_ballarat",
+               "jobactive_indigenous_bendigo",
+               "jobactive_indigenous_barwon",
+               "jobactive_indigenous_gippsland",
+               "jobactive_indigenous_goulburn/murray",
+               "jobactive_indigenous_inner metropolitan melbourne",
+               "jobactive_indigenous_north eastern melbourne",
+               "jobactive_indigenous_north western melbourne",
+               "jobactive_indigenous_south coast of victoria",
+               "jobactive_indigenous_south eastern melbourne and peninsula",
+               "jobactive_indigenous_north western melbourne",
+               "jobactive_indigenous_wimmera mallee"
+             ),
+             title = title,
+             destination = destination,
+             rename_indicators = FALSE
+  )
+}
