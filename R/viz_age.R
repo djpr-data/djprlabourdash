@@ -1,6 +1,5 @@
 # Functions to create the graphs for the 'Age' subpage on the dashboard.
 
-
 viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                              "15-24_greater melbourne_employed",
                                              "25-54_greater melbourne_employed",
