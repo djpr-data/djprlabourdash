@@ -1209,3 +1209,59 @@ title = paste0(
              rename_indicators = FALSE
   )
 }
+
+
+table_jobactive_mature_age <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                                                 unset = "dashboard"
+),
+title = paste0(
+  "Total jobactive caseload for mature age Victorians, ",
+  format(max(data$date), "%B %Y")
+)){
+  data <- filter_dash_data(c("jobactive_mature age (50+)_ballarat",
+                             "jobactive_mature age (50+)_bendigo",
+                             "jobactive_mature age (50+)_barwon",
+                             "jobactive_mature age (50+)_gippsland",
+                             "jobactive_mature age (50+)_goulburn/murray",
+                             "jobactive_mature age (50+)_inner metropolitan melbourne",
+                             "jobactive_mature age (50+)_north eastern melbourne",
+                             "jobactive_mature age (50+)_north western melbourne",
+                             "jobactive_mature age (50+)_south coast of victoria",
+                             "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                             "jobactive_mature age (50+)_north western melbourne",
+                             "jobactive_mature age (50+)_wimmera mallee"))
+
+  table_data <- data %>%
+    dplyr::select(
+      .data$date, .data$series_id, .data$series,
+      .data$frequency, .data$value,.data$unit,.data$table_no
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+                                              pattern = " ; ",
+                                              n = 3
+      ),
+      jobactive= .data$split_series[, 1],
+      total= .data$split_series[, 2],
+      indicator = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
+
+  make_table(table_data,
+             row_order = c("jobactive_mature age (50+)_ballarat",
+                           "jobactive_mature age (50+)_bendigo",
+                           "jobactive_mature age (50+)_barwon",
+                           "jobactive_mature age (50+)_gippsland",
+                           "jobactive_mature age (50+)_goulburn/murray",
+                           "jobactive_mature age (50+)_inner metropolitan melbourne",
+                           "jobactive_mature age (50+)_north eastern melbourne",
+                           "jobactive_mature age (50+)_north western melbourne",
+                           "jobactive_mature age (50+)_south coast of victoria",
+                           "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                           "jobactive_mature age (50+)_north western melbourne",
+                           "jobactive_mature age (50+)_wimmera mallee"),
+             title = title,
+             destination = destination,
+             rename_indicators = FALSE
+  )
+}
