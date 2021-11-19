@@ -1096,7 +1096,8 @@ table_jobactive_regions <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_
 title = paste0(
   "Total jobactive caseload by employment regions, ",
   format(max(data$date), "%B %Y")
-)){
+)
+) {
   data <- filter_dash_data(c("jobactive_total_ballarat",
                              "jobactive_total_bendigo",
                              "jobactive_total_barwon",
@@ -1144,5 +1145,3 @@ title = paste0(
              rename_indicators = FALSE
   )
 }
-
-
