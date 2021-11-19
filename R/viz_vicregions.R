@@ -1457,16 +1457,16 @@ table_region_focus <- function(data = filter_dash_data(
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
-  "A84600144J",
-  "A84600078W",
-  "A84595516F",
-  "A84595471L"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-  dplyr::filter(!is.na(.data$value))) {
+                                  "A84600144J",
+                                  "A84600078W",
+                                  "A84595516F",
+                                  "A84595471L"
+                                ),
+                                df = dash_data
+                                ) %>%
+                                  dplyr::group_by(.data$series_id) %>%
+                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                  dplyr::filter(!is.na(.data$value))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1490,7 +1490,7 @@ df = dash_data
   data <- data %>%
     mutate(
       gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
-                             fixed = TRUE
+        fixed = TRUE
       )
     )
 

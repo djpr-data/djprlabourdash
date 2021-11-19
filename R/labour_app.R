@@ -47,7 +47,7 @@ labour_server <- function(input, output, session) {
     )
   })
 
-  output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
+  output$aboriginal_footnote <- output$vicregions_footnote <- output$disability_footnote <- output$migration_footnote <- output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
     footnote()
   })
 
@@ -744,6 +744,12 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Aboriginal ------
+
+  # Disability ------
+
+  # Migration ------
+
   # Regions ------
 
   # Victorian Regions -------
@@ -969,8 +975,7 @@ labour_server <- function(input, output, session) {
   )
 
   # Regions: Focus box -----
-  output$reg_sa4 <- renderPlot(
-    {
+  output$reg_sa4 <- renderPlot({
       map_reg_sa4(sa4 = input$focus_region)
     },
     height = 350
@@ -1158,22 +1163,23 @@ labour_server <- function(input, output, session) {
       dplyr::mutate(
         state = dplyr::case_when(
           .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-            "Reg. Vic",
+          "Reg. Vic",
           .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-            "Reg. NSW",
+          "Reg. NSW",
           .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-            "Reg. QLD",
+          "Reg. QLD",
           .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-            "Reg. NT",
+          "Reg. NT",
           .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-            "Reg. WA",
+          "Reg. WA",
           .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-            "Reg. SA",
+          "Reg. SA",
           .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-            "Reg. Tas",
-          TRUE ~ .data$state)
-        ),
-      check_box_options = c(
+          "Reg. Tas",
+          TRUE ~ .data$state
+        )
+      ),
+    check_box_options = c(
       "Reg. Vic",
       "Reg. NSW",
       "Reg. QLD",

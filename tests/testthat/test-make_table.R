@@ -3,14 +3,18 @@ test_that("make_table() makes tables", {
   expect_s3_class(t_o, "flextable")
 
   t_o_header_row <- as.character(t_o$header$dataset[1, ])
-  expect_equal(t_o_header_row,
-               c("",
-                 "Recent trend",
-                 "Current figures",
-                 "Change in latest period",
-                 "Change in past year",
-                 "Change since COVID",
-                 "Change during govt"))
+  expect_equal(
+    t_o_header_row,
+    c(
+      "",
+      "Recent trend",
+      "Current figures",
+      "Change in latest period",
+      "Change in past year",
+      "Change since COVID",
+      "Change during govt"
+    )
+  )
 
   t_o_final_col <- t_o$body$dataset$`SINCE NOV 2014`
   expect_type(t_o_final_col, "character")
