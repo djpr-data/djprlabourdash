@@ -482,3 +482,115 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
       title = title
     )
 }
+
+viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
+  "jobactive_female_ballarat",
+  "jobactive_female_bendigo",
+  "jobactive_female_barwon",
+  "jobactive_female_gippsland",
+  "jobactive_female_goulburn/murray",
+  "jobactive_female_inner metropolitan melbourne",
+  "jobactive_female_north eastern melbourne",
+  "jobactive_female_north western melbourne",
+  "jobactive_female_south coast of victoria",
+  "jobactive_female_south eastern melbourne and peninsula",
+  "jobactive_female_north western melbourne",
+  "jobactive_female_wimmera mallee",
+  "jobactive_total_ballarat",
+  "jobactive_total_bendigo",
+  "jobactive_total_barwon",
+  "jobactive_total_gippsland",
+  "jobactive_total_goulburn/murray",
+  "jobactive_total_inner metropolitan melbourne",
+  "jobactive_total_north eastern melbourne",
+  "jobactive_total_north western melbourne",
+  "jobactive_total_south coast of victoria",
+  "jobactive_total_south eastern melbourne and peninsula",
+  "jobactive_total_north western melbourne",
+  "jobactive_total_wimmera mallee"
+),
+df = dash_data
+) %>%
+  dplyr::filter(date >= as.Date("2019-03-31"))) {
+  df <- data %>%
+    dplyr::select(
+      .data$date, .data$series,
+      .data$frequency, .data$value
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+                                              pattern = " ; ",
+                                              n = 3
+      ),
+      jobactive = .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      employment_region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$series, -.data$jobactive)
+
+  df <- df %>%
+    dplyr::group_by(.data$indicator, .data$date) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::ungroup() %>%
+    tidyr::pivot_wider(
+      names_from = .data$indicator,
+      values_from = .data$value
+    ) %>%
+    dplyr::mutate("Male" = .data$Total - .data$Female) %>%
+    dplyr::select(.data$date, .data$Male, .data$Female) %>%
+    tidyr::pivot_longer(
+      cols = !.data$date,
+      names_to = "indicator",
+      values_to = "value"
+    ) %>%
+    dplyr::mutate(
+      value = 100 * (.data$value
+                     / .data$value[.data$date == as.Date("2020-03-31")]),
+      tooltip = paste0(
+        .data$indicator, "\n",
+        format(.data$date, "%b %Y"), "\n",
+        round2(.data$value, 1)
+      )
+    )
+  # titl_df <- df %>%
+  # dplyr::group_by(.data$indicator) %>%
+  # dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
+
+  latest_date <- df %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::pull(.data$date)
+  round2(1)
+
+  latest_values <- df %>%
+    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::select(-.data$tooltip) %>%
+    dplyr::mutate(
+      value = round2(.data$value, 1),
+      date = format(.data$date, "%B %Y")
+    ) %>%
+    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
+
+
+  title <- dplyr::case_when(
+    latest_values$Female > latest_values$Male ~
+      paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
+    latest_values$Female < latest_values$Male ~
+      paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
+    latest_values$Female == latest_values$Male ~
+      paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
+    TRUE ~ "Jobactive caseload for female and male Victorians"
+  )
+
+
+  df %>%
+    djpr_ts_linechart(
+      col_var = .data$indicator,
+      label_num = paste0(round2(.data$value, 1)),
+    ) +
+    labs(
+      title = title,
+      subtitle = "Female and male Victorians jobactive caseload, Indexed March 2020",
+      caption = caption_jobactive()
+    )
+}
+
