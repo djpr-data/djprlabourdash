@@ -1270,7 +1270,7 @@ title = paste0(
 }
 
 
-table_jobactive_people_with_disabilities <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+table_jobactive_pwd <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                                                unset = "dashboard"
 ),
 title = paste0(
