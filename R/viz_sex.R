@@ -484,34 +484,34 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
 }
 
 viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
-  "jobactive_female_ballarat",
-  "jobactive_female_bendigo",
-  "jobactive_female_barwon",
-  "jobactive_female_gippsland",
-  "jobactive_female_goulburn/murray",
-  "jobactive_female_inner metropolitan melbourne",
-  "jobactive_female_north eastern melbourne",
-  "jobactive_female_north western melbourne",
-  "jobactive_female_south coast of victoria",
-  "jobactive_female_south eastern melbourne and peninsula",
-  "jobactive_female_north western melbourne",
-  "jobactive_female_wimmera mallee",
-  "jobactive_total_ballarat",
-  "jobactive_total_bendigo",
-  "jobactive_total_barwon",
-  "jobactive_total_gippsland",
-  "jobactive_total_goulburn/murray",
-  "jobactive_total_inner metropolitan melbourne",
-  "jobactive_total_north eastern melbourne",
-  "jobactive_total_north western melbourne",
-  "jobactive_total_south coast of victoria",
-  "jobactive_total_south eastern melbourne and peninsula",
-  "jobactive_total_north western melbourne",
-  "jobactive_total_wimmera mallee"
-),
-df = dash_data
-) %>%
-  dplyr::filter(date >= as.Date("2019-03-31"))) {
+                                                   "jobactive_female_ballarat",
+                                                   "jobactive_female_bendigo",
+                                                   "jobactive_female_barwon",
+                                                   "jobactive_female_gippsland",
+                                                   "jobactive_female_goulburn/murray",
+                                                   "jobactive_female_inner metropolitan melbourne",
+                                                   "jobactive_female_north eastern melbourne",
+                                                   "jobactive_female_north western melbourne",
+                                                   "jobactive_female_south coast of victoria",
+                                                   "jobactive_female_south eastern melbourne and peninsula",
+                                                   "jobactive_female_north western melbourne",
+                                                   "jobactive_female_wimmera mallee",
+                                                   "jobactive_total_ballarat",
+                                                   "jobactive_total_bendigo",
+                                                   "jobactive_total_barwon",
+                                                   "jobactive_total_gippsland",
+                                                   "jobactive_total_goulburn/murray",
+                                                   "jobactive_total_inner metropolitan melbourne",
+                                                   "jobactive_total_north eastern melbourne",
+                                                   "jobactive_total_north western melbourne",
+                                                   "jobactive_total_south coast of victoria",
+                                                   "jobactive_total_south eastern melbourne and peninsula",
+                                                   "jobactive_total_north western melbourne",
+                                                   "jobactive_total_wimmera mallee"
+                                                 ),
+                                                 df = dash_data
+                                                 ) %>%
+                                                   dplyr::filter(date >= as.Date("2019-03-31"))) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -519,8 +519,8 @@ df = dash_data
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
       jobactive = .data$split_series[, 1],
       indicator = .data$split_series[, 2],
@@ -545,7 +545,7 @@ df = dash_data
     ) %>%
     dplyr::mutate(
       value = 100 * (.data$value
-                     / .data$value[.data$date == as.Date("2020-03-31")]),
+        / .data$value[.data$date == as.Date("2020-03-31")]),
       tooltip = paste0(
         .data$indicator, "\n",
         format(.data$date, "%b %Y"), "\n",
@@ -573,11 +573,11 @@ df = dash_data
 
   title <- dplyr::case_when(
     latest_values$Female > latest_values$Male ~
-      paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
+    paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
     latest_values$Female < latest_values$Male ~
-      paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
+    paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
     latest_values$Female == latest_values$Male ~
-      paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
+    paste0("Victoria's female jobactive caseload in ", latest_values$date, " was higher than male's"),
     TRUE ~ "Jobactive caseload for female and male Victorians"
   )
 
@@ -593,4 +593,3 @@ df = dash_data
       caption = caption_jobactive()
     )
 }
-

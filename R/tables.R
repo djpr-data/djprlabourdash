@@ -1153,12 +1153,12 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
 
 
 table_jobactive_aboriginals <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                             unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload for Aboriginal Victorians, ",
-  format(max(data$date), "%B %Y")
-)) {
+                                          unset = "dashboard"
+                                        ),
+                                        title = paste0(
+                                          "Total jobactive caseload for Aboriginal Victorians, ",
+                                          format(max(data$date), "%B %Y")
+                                        )) {
   data <- filter_dash_data(c(
     "jobactive_indigenous_ballarat",
     "jobactive_indigenous_bendigo",
@@ -1181,314 +1181,335 @@ title = paste0(
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
       jobactive = .data$split_series[, 1],
       total = .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
-    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive) %>%
-    dplyr::mutate(value = .data$value * 1000)
+    dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
+
 
   make_table(table_data,
-        row_order = c(
-               "jobactive_indigenous_ballarat",
-               "jobactive_indigenous_bendigo",
-               "jobactive_indigenous_barwon",
-               "jobactive_indigenous_gippsland",
-               "jobactive_indigenous_goulburn/murray",
-               "jobactive_indigenous_inner metropolitan melbourne",
-               "jobactive_indigenous_north eastern melbourne",
-               "jobactive_indigenous_north western melbourne",
-               "jobactive_indigenous_south coast of victoria",
-               "jobactive_indigenous_south eastern melbourne and peninsula",
-               "jobactive_indigenous_north western melbourne",
-               "jobactive_indigenous_wimmera mallee"
-             ),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_indigenous_ballarat",
+      "jobactive_indigenous_bendigo",
+      "jobactive_indigenous_barwon",
+      "jobactive_indigenous_gippsland",
+      "jobactive_indigenous_goulburn/murray",
+      "jobactive_indigenous_inner metropolitan melbourne",
+      "jobactive_indigenous_north eastern melbourne",
+      "jobactive_indigenous_north western melbourne",
+      "jobactive_indigenous_south coast of victoria",
+      "jobactive_indigenous_south eastern melbourne and peninsula",
+      "jobactive_indigenous_north western melbourne",
+      "jobactive_indigenous_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }
 
 
-table_jobactive_mature_age <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                                 unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload for mature age Victorians, ",
-  format(max(data$date), "%B %Y")
-)){
-  data <- filter_dash_data(c("jobactive_mature age (50+)_ballarat",
-                             "jobactive_mature age (50+)_bendigo",
-                             "jobactive_mature age (50+)_barwon",
-                             "jobactive_mature age (50+)_gippsland",
-                             "jobactive_mature age (50+)_goulburn/murray",
-                             "jobactive_mature age (50+)_inner metropolitan melbourne",
-                             "jobactive_mature age (50+)_north eastern melbourne",
-                             "jobactive_mature age (50+)_north western melbourne",
-                             "jobactive_mature age (50+)_south coast of victoria",
-                             "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-                             "jobactive_mature age (50+)_north western melbourne",
-                             "jobactive_mature age (50+)_wimmera mallee"))
+table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                         unset = "dashboard"
+                                       ),
+                                       title = paste0(
+                                         "Total jobactive caseload for mature age Victorians, ",
+                                         format(max(data$date), "%B %Y")
+                                       )) {
+  data <- filter_dash_data(c(
+    "jobactive_mature age (50+)_ballarat",
+    "jobactive_mature age (50+)_bendigo",
+    "jobactive_mature age (50+)_barwon",
+    "jobactive_mature age (50+)_gippsland",
+    "jobactive_mature age (50+)_goulburn/murray",
+    "jobactive_mature age (50+)_inner metropolitan melbourne",
+    "jobactive_mature age (50+)_north eastern melbourne",
+    "jobactive_mature age (50+)_north western melbourne",
+    "jobactive_mature age (50+)_south coast of victoria",
+    "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+    "jobactive_mature age (50+)_north western melbourne",
+    "jobactive_mature age (50+)_wimmera mallee"
+  ))
 
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit,.data$table_no
+      .data$frequency, .data$value, .data$unit, .data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
-      jobactive= .data$split_series[, 1],
-      total= .data$split_series[, 2],
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
 
   make_table(table_data,
-             row_order = c("jobactive_mature age (50+)_ballarat",
-                           "jobactive_mature age (50+)_bendigo",
-                           "jobactive_mature age (50+)_barwon",
-                           "jobactive_mature age (50+)_gippsland",
-                           "jobactive_mature age (50+)_goulburn/murray",
-                           "jobactive_mature age (50+)_inner metropolitan melbourne",
-                           "jobactive_mature age (50+)_north eastern melbourne",
-                           "jobactive_mature age (50+)_north western melbourne",
-                           "jobactive_mature age (50+)_south coast of victoria",
-                           "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-                           "jobactive_mature age (50+)_north western melbourne",
-                           "jobactive_mature age (50+)_wimmera mallee"),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_mature age (50+)_ballarat",
+      "jobactive_mature age (50+)_bendigo",
+      "jobactive_mature age (50+)_barwon",
+      "jobactive_mature age (50+)_gippsland",
+      "jobactive_mature age (50+)_goulburn/murray",
+      "jobactive_mature age (50+)_inner metropolitan melbourne",
+      "jobactive_mature age (50+)_north eastern melbourne",
+      "jobactive_mature age (50+)_north western melbourne",
+      "jobactive_mature age (50+)_south coast of victoria",
+      "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+      "jobactive_mature age (50+)_north western melbourne",
+      "jobactive_mature age (50+)_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }
 
 
-table_jobactive_pwd <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                                               unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload for people withdisabilities Victorians",
-  format(max(data$date), "%B %Y")
-)){
-  data <- filter_dash_data(c("jobactive_pwd_ballarat",
-                             "jobactive_pwd_bendigo",
-                             "jobactive_pwd_barwon",
-                             "jobactive_pwd_gippsland",
-                             "jobactive_pwd_goulburn/murray",
-                             "jobactive_pwd_inner metropolitan melbourne",
-                             "jobactive_pwd_north eastern melbourne",
-                             "jobactive_pwd_north western melbourne",
-                             "jobactive_pwd_south coast of victoria",
-                             "jobactive_pwd_south eastern melbourne and peninsula",
-                             "jobactive_pwd_north western melbourne",
-                             "jobactive_pwd_wimmera mallee"))
+table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                  unset = "dashboard"
+                                ),
+                                title = paste0(
+                                  "Total jobactive caseload for people withdisabilities Victorians",
+                                  format(max(data$date), "%B %Y")
+                                )) {
+  data <- filter_dash_data(c(
+    "jobactive_pwd_ballarat",
+    "jobactive_pwd_bendigo",
+    "jobactive_pwd_barwon",
+    "jobactive_pwd_gippsland",
+    "jobactive_pwd_goulburn/murray",
+    "jobactive_pwd_inner metropolitan melbourne",
+    "jobactive_pwd_north eastern melbourne",
+    "jobactive_pwd_north western melbourne",
+    "jobactive_pwd_south coast of victoria",
+    "jobactive_pwd_south eastern melbourne and peninsula",
+    "jobactive_pwd_north western melbourne",
+    "jobactive_pwd_wimmera mallee"
+  ))
 
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit,.data$table_no
+      .data$frequency, .data$value, .data$unit, .data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
-      jobactive= .data$split_series[, 1],
-      total= .data$split_series[, 2],
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
       indicator = .data$split_series[, 3]
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
 
   make_table(table_data,
-             row_order = c("jobactive_pwd_ballarat",
-                           "jobactive_pwd_bendigo",
-                           "jobactive_pwd_barwon",
-                           "jobactive_pwd_gippsland",
-                           "jobactive_pwd_goulburn/murray",
-                           "jobactive_pwd_inner metropolitan melbourne",
-                           "jobactive_pwd_north eastern melbourne",
-                           "jobactive_pwd_north western melbourne",
-                           "jobactive_pwd_south coast of victoria",
-                           "jobactive_pwd_south eastern melbourne and peninsula",
-                           "jobactive_pwd_north western melbourne",
-                           "jobactive_pwd_wimmera mallee"),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_pwd_ballarat",
+      "jobactive_pwd_bendigo",
+      "jobactive_pwd_barwon",
+      "jobactive_pwd_gippsland",
+      "jobactive_pwd_goulburn/murray",
+      "jobactive_pwd_inner metropolitan melbourne",
+      "jobactive_pwd_north eastern melbourne",
+      "jobactive_pwd_north western melbourne",
+      "jobactive_pwd_south coast of victoria",
+      "jobactive_pwd_south eastern melbourne and peninsula",
+      "jobactive_pwd_north western melbourne",
+      "jobactive_pwd_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }
 
-table_jobactive_female <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                                 unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload for mature age Victorians, ",
-  format(max(data$date), "%B %Y")
-)){
-  data <- filter_dash_data(c("jobactive_female_ballarat",
-                             "jobactive_female_bendigo",
-                             "jobactive_female_barwon",
-                             "jobactive_female_gippsland",
-                             "jobactive_female_goulburn/murray",
-                             "jobactive_female_inner metropolitan melbourne",
-                             "jobactive_female_north eastern melbourne",
-                             "jobactive_female_north western melbourne",
-                             "jobactive_female_south coast of victoria",
-                             "jobactive_female_south eastern melbourne and peninsula",
-                             "jobactive_female_north western melbourne",
-                             "jobactive_female_wimmera mallee"))
+table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                     unset = "dashboard"
+                                   ),
+                                   title = paste0(
+                                     "Total jobactive caseload for mature age Victorians, ",
+                                     format(max(data$date), "%B %Y")
+                                   )) {
+  data <- filter_dash_data(c(
+    "jobactive_female_ballarat",
+    "jobactive_female_bendigo",
+    "jobactive_female_barwon",
+    "jobactive_female_gippsland",
+    "jobactive_female_goulburn/murray",
+    "jobactive_female_inner metropolitan melbourne",
+    "jobactive_female_north eastern melbourne",
+    "jobactive_female_north western melbourne",
+    "jobactive_female_south coast of victoria",
+    "jobactive_female_south eastern melbourne and peninsula",
+    "jobactive_female_north western melbourne",
+    "jobactive_female_wimmera mallee"
+  ))
 
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit,.data$table_no
+      .data$frequency, .data$value, .data$unit, .data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
-      jobactive= .data$split_series[, 1],
-      total= .data$split_series[, 2],
-      indicator = .data$split_series[, 3]) %>%
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
+      indicator = .data$split_series[, 3]
+    ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
   make_table(table_data,
-             row_order = c("jobactive_female_ballarat",
-                           "jobactive_female_bendigo",
-                           "jobactive_female_barwon",
-                           "jobactive_female_gippsland",
-                           "jobactive_female_goulburn/murray",
-                           "jobactive_female_inner metropolitan melbourne",
-                           "jobactive_female_north eastern melbourne",
-                           "jobactive_female_north western melbourne",
-                           "jobactive_female_south coast of victoria",
-                           "jobactive_female_south eastern melbourne and peninsula",
-                           "jobactive_female_north western melbourne",
-                           "jobactive_female_wimmera mallee"),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_female_ballarat",
+      "jobactive_female_bendigo",
+      "jobactive_female_barwon",
+      "jobactive_female_gippsland",
+      "jobactive_female_goulburn/murray",
+      "jobactive_female_inner metropolitan melbourne",
+      "jobactive_female_north eastern melbourne",
+      "jobactive_female_north western melbourne",
+      "jobactive_female_south coast of victoria",
+      "jobactive_female_south eastern melbourne and peninsula",
+      "jobactive_female_north western melbourne",
+      "jobactive_female_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }
 
 
-table_jobactive_refugees <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                             unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload for mature age Victorians, ",
-  format(max(data$date), "%B %Y")
-)){
-  data <- filter_dash_data(c("jobactive_refugee_ballarat",
-                             "jobactive_refugee_bendigo",
-                             "jobactive_refugee_barwon",
-                             "jobactive_refugee_gippsland",
-                             "jobactive_refugee_goulburn/murray",
-                             "jobactive_refugee_inner metropolitan melbourne",
-                             "jobactive_refugee_north eastern melbourne",
-                             "jobactive_refugee_north western melbourne",
-                             "jobactive_refugee_south coast of victoria",
-                             "jobactive_refugee_south eastern melbourne and peninsula",
-                             "jobactive_refugee_north western melbourne",
-                             "jobactive_refugee_wimmera mallee"))
+table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                       unset = "dashboard"
+                                     ),
+                                     title = paste0(
+                                       "Total jobactive caseload for mature age Victorians, ",
+                                       format(max(data$date), "%B %Y")
+                                     )) {
+  data <- filter_dash_data(c(
+    "jobactive_refugee_ballarat",
+    "jobactive_refugee_bendigo",
+    "jobactive_refugee_barwon",
+    "jobactive_refugee_gippsland",
+    "jobactive_refugee_goulburn/murray",
+    "jobactive_refugee_inner metropolitan melbourne",
+    "jobactive_refugee_north eastern melbourne",
+    "jobactive_refugee_north western melbourne",
+    "jobactive_refugee_south coast of victoria",
+    "jobactive_refugee_south eastern melbourne and peninsula",
+    "jobactive_refugee_north western melbourne",
+    "jobactive_refugee_wimmera mallee"
+  ))
 
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit,.data$table_no
+      .data$frequency, .data$value, .data$unit, .data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
-      jobactive= .data$split_series[, 1],
-      total= .data$split_series[, 2],
-      indicator = .data$split_series[, 3]) %>%
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
+      indicator = .data$split_series[, 3]
+    ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
 
   make_table(table_data,
-             row_order = c("jobactive_refugee_ballarat",
-                           "jobactive_refugee_bendigo",
-                           "jobactive_refugee_barwon",
-                           "jobactive_refugee_gippsland",
-                           "jobactive_refugee_goulburn/murray",
-                           "jobactive_refugee_inner metropolitan melbourne",
-                           "jobactive_refugee_north eastern melbourne",
-                           "jobactive_refugee_north western melbourne",
-                           "jobactive_refugee_south coast of victoria",
-                           "jobactive_refugee_south eastern melbourne and peninsula",
-                           "jobactive_refugee_north western melbourne",
-                           "jobactive_refugee_wimmera mallee"),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_refugee_ballarat",
+      "jobactive_refugee_bendigo",
+      "jobactive_refugee_barwon",
+      "jobactive_refugee_gippsland",
+      "jobactive_refugee_goulburn/murray",
+      "jobactive_refugee_inner metropolitan melbourne",
+      "jobactive_refugee_north eastern melbourne",
+      "jobactive_refugee_north western melbourne",
+      "jobactive_refugee_south coast of victoria",
+      "jobactive_refugee_south eastern melbourne and peninsula",
+      "jobactive_refugee_north western melbourne",
+      "jobactive_refugee_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }
 
-table_jobactive_youth <-  function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                                               unset = "dashboard"
-),
-title = paste0(
-  "Total jobactive caseload for mature age Victorians, ",
-  format(max(data$date), "%B %Y")
-)){
-  data <- filter_dash_data(c("jobactive_youth (15-24)_ballarat",
-                             "jobactive_youth (15-24)_bendigo",
-                             "jobactive_youth (15-24)_barwon",
-                             "jobactive_youth (15-24)_gippsland",
-                             "jobactive_youth (15-24)_goulburn/murray",
-                             "jobactive_youth (15-24)_inner metropolitan melbourne",
-                             "jobactive_youth (15-24)_north eastern melbourne",
-                             "jobactive_youth (15-24)_north western melbourne",
-                             "jobactive_youth (15-24)_south coast of victoria",
-                             "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-                             "jobactive_youth (15-24)_north western melbourne",
-                             "jobactive_youth (15-24)_wimmera mallee"))
+table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+                                    unset = "dashboard"
+                                  ),
+                                  title = paste0(
+                                    "Total jobactive caseload for mature age Victorians, ",
+                                    format(max(data$date), "%B %Y")
+                                  )) {
+  data <- filter_dash_data(c(
+    "jobactive_youth (15-24)_ballarat",
+    "jobactive_youth (15-24)_bendigo",
+    "jobactive_youth (15-24)_barwon",
+    "jobactive_youth (15-24)_gippsland",
+    "jobactive_youth (15-24)_goulburn/murray",
+    "jobactive_youth (15-24)_inner metropolitan melbourne",
+    "jobactive_youth (15-24)_north eastern melbourne",
+    "jobactive_youth (15-24)_north western melbourne",
+    "jobactive_youth (15-24)_south coast of victoria",
+    "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+    "jobactive_youth (15-24)_north western melbourne",
+    "jobactive_youth (15-24)_wimmera mallee"
+  ))
 
   table_data <- data %>%
     dplyr::select(
       .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value,.data$unit,.data$table_no
+      .data$frequency, .data$value, .data$unit, .data$table_no
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
-      jobactive= .data$split_series[, 1],
-      total= .data$split_series[, 2],
-      indicator = .data$split_series[, 3]) %>%
+      jobactive = .data$split_series[, 1],
+      total = .data$split_series[, 2],
+      indicator = .data$split_series[, 3]
+    ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
 
   make_table(table_data,
-             row_order = c("jobactive_youth (15-24)_ballarat",
-                           "jobactive_youth (15-24)_bendigo",
-                           "jobactive_youth (15-24)_barwon",
-                           "jobactive_youth (15-24)_gippsland",
-                           "jobactive_youth (15-24)_goulburn/murray",
-                           "jobactive_youth (15-24)_inner metropolitan melbourne",
-                           "jobactive_youth (15-24)_north eastern melbourne",
-                           "jobactive_youth (15-24)_north western melbourne",
-                           "jobactive_youth (15-24)_south coast of victoria",
-                           "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-                           "jobactive_youth (15-24)_north western melbourne",
-                           "jobactive_youth (15-24)_wimmera mallee"),
-             title = title,
-             destination = destination,
-             rename_indicators = FALSE
+    row_order = c(
+      "jobactive_youth (15-24)_ballarat",
+      "jobactive_youth (15-24)_bendigo",
+      "jobactive_youth (15-24)_barwon",
+      "jobactive_youth (15-24)_gippsland",
+      "jobactive_youth (15-24)_goulburn/murray",
+      "jobactive_youth (15-24)_inner metropolitan melbourne",
+      "jobactive_youth (15-24)_north eastern melbourne",
+      "jobactive_youth (15-24)_north western melbourne",
+      "jobactive_youth (15-24)_south coast of victoria",
+      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+      "jobactive_youth (15-24)_north western melbourne",
+      "jobactive_youth (15-24)_wimmera mallee"
+    ),
+    title = title,
+    destination = destination,
+    rename_indicators = FALSE
   )
 }
-
-
