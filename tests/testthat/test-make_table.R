@@ -37,7 +37,6 @@ test_that("make_table() works with data that starts after Nov 2014", {
 })
 
 test_that("make_table()'s output has not changed", {
-
   to_june_2020 <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
@@ -48,15 +47,17 @@ test_that("make_table()'s output has not changed", {
 
   save_my_table <- function(df) {
     x <- make_table(df,
-                    destination = "dashboard")
+      destination = "dashboard"
+    )
     path <- tempfile(fileext = ".png")
     flextable::save_as_image(x,
-                             path = path)
+      path = path
+    )
     path
   }
 
-  expect_snapshot_file(save_my_table(to_june_2020),
-                       "table_test.png")
+  expect_snapshot_file(
+    save_my_table(to_june_2020),
+    "table_test.png"
+  )
 })
-
-

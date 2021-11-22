@@ -106,7 +106,7 @@ create_summary_df <- function(data,
       across(
         c(.data$changeinmonth, .data$changeinyear, .data$changesincecovid, .data$changesince14),
         ~ dplyr::if_else(.data$is_level,
-                         rounding_function(.x, pretty_round),
+          rounding_function(.x, pretty_round),
           sprintf("%.1f ppts", .x)
         )
       ),

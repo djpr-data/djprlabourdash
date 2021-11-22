@@ -115,21 +115,21 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
 }
 
 viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
-                                       "jobactive_indigenous_ballarat",
-                                       "jobactive_indigenous_bendigo",
-                                       "jobactive_indigenous_barwon",
-                                       "jobactive_indigenous_gippsland",
-                                       "jobactive_indigenous_goulburn/murray",
-                                       "jobactive_indigenous_inner metropolitan melbourne",
-                                       "jobactive_indigenous_north eastern melbourne",
-                                       "jobactive_indigenous_north western melbourne",
-                                       "jobactive_indigenous_south coast of victoria",
-                                       "jobactive_indigenous_south eastern melbourne and peninsula",
-                                       "jobactive_indigenous_north western melbourne",
-                                       "jobactive_indigenous_wimmera mallee"
-                                     ),
-                                     df = dash_data
-                                     )) {
+                                        "jobactive_indigenous_ballarat",
+                                        "jobactive_indigenous_bendigo",
+                                        "jobactive_indigenous_barwon",
+                                        "jobactive_indigenous_gippsland",
+                                        "jobactive_indigenous_goulburn/murray",
+                                        "jobactive_indigenous_inner metropolitan melbourne",
+                                        "jobactive_indigenous_north eastern melbourne",
+                                        "jobactive_indigenous_north western melbourne",
+                                        "jobactive_indigenous_south coast of victoria",
+                                        "jobactive_indigenous_south eastern melbourne and peninsula",
+                                        "jobactive_indigenous_north western melbourne",
+                                        "jobactive_indigenous_wimmera mallee"
+                                      ),
+                                      df = dash_data
+                                      )) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -146,9 +146,10 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::select(-.data$split_series, -.data$series, -.data$jobactive, -.data$indicator) %>%
     dplyr::mutate(
-      value = .data$value * 1000)
+      value = .data$value * 1000
+    )
 
-  #value = scales::comma(.data$value * 1000),
+  # value = scales::comma(.data$value * 1000),
   high_low <- df %>%
     dplyr::group_by(.data$date) %>%
     summarise(

@@ -1153,12 +1153,12 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
 
 
 table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
-                                          unset = "dashboard"
-                                        ),
-                                        title = paste0(
-                                          "Total jobactive caseload for Aboriginal Victorians, ",
-                                          format(max(data$date), "%B %Y")
-                                        )) {
+                                         unset = "dashboard"
+                                       ),
+                                       title = paste0(
+                                         "Total jobactive caseload for Aboriginal Victorians, ",
+                                         format(max(data$date), "%B %Y")
+                                       )) {
   data <- filter_dash_data(c(
     "jobactive_indigenous_ballarat",
     "jobactive_indigenous_bendigo",
@@ -1329,7 +1329,6 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     destination = destination,
     rename_indicators = FALSE,
     pretty_round = FALSE
-
   )
 }
 
