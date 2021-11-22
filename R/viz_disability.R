@@ -209,7 +209,7 @@ df = dash_data
     labs(
       title = title,
       subtitle = paste0(
-        "people with a disbilitie jobactive caseload by region, ",
+        "People with disabilities jobactive caseload by region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
