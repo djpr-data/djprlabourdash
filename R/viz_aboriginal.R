@@ -91,12 +91,12 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$`Non-Aboriginal` > latest_values$Aboriginal ~
-    paste0("Victoria's Non-Aboriginal jobactive Caseload in ", latest_values$date, " was higher than Aboriginal's"),
+    paste0("Victoria's non-Aboriginal jobactive caseload in ", latest_values$date, " was higher than Aboriginal's"),
     latest_values$`Non-Aboriginal` < latest_values$Aboriginal ~
-    paste0("Victoria's Non-Aboriginal jobactive Caseloadin", latest_values$date, "was higher than Aboriginal's"),
+    paste0("Victoria's non-Aboriginal jobactive caseloadin", latest_values$date, "was higher than Aboriginal's"),
     latest_values$`Non-Aboriginal` == latest_values$Aboriginal ~
-    paste0("Victoria's Non-Aboriginal jobactive Caseload in ", latest_values$date, "was higher than Aboriginal's"),
-    TRUE ~ "Jobactive Caseload for Aboriginal and Non-Aboriginal Victorians"
+    paste0("Victoria's non-Aboriginal jobactive caseload in ", latest_values$date, "was higher than Aboriginal's"),
+    TRUE ~ "Jobactive Caseload for Aboriginal and non-Aboriginal Victorians"
   )
 
 
@@ -107,7 +107,7 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Aboriginal and Non-Aboriginal Victorians Jobactive Caseload, Indexed March 2020",
+      subtitle = "Aboriginal and non-Aboriginal Victorians Jobactive Caseload, Indexed March 2020",
       caption = caption_jobactive()
     )
 }
