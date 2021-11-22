@@ -70,6 +70,8 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
         round2(.data$value, 1)
       )
     )
+
+
   # titl_df <- df %>%
   # dplyr::group_by(.data$indicator) %>%
   # dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
@@ -112,7 +114,7 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_aborg_jobacelaod_bar <- function(data = filter_dash_data(c(
+viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
                                        "jobactive_indigenous_ballarat",
                                        "jobactive_indigenous_bendigo",
                                        "jobactive_indigenous_barwon",
@@ -144,9 +146,9 @@ viz_aborg_jobacelaod_bar <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::select(-.data$split_series, -.data$series, -.data$jobactive, -.data$indicator) %>%
     dplyr::mutate(
-      value = .data$value * 1000
-    )
+      value = .data$value * 1000)
 
+  #value = scales::comma(.data$value * 1000),
   high_low <- df %>%
     dplyr::group_by(.data$date) %>%
     summarise(
@@ -158,7 +160,7 @@ viz_aborg_jobacelaod_bar <- function(data = filter_dash_data(c(
     )
 
   title <- paste0(
-    " Across Victoria job caseload ranged from ",
+    " Across Victoria jobactive caseload ranged from ",
     round2(high_low$min_caseload, 1),
     " Aboriginal person in ",
     high_low$min_region,
@@ -208,7 +210,7 @@ viz_aborg_jobacelaod_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Aboriginal Person Job Caseload by Region ",
+        "Aboriginal person jobactive caseload by region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
