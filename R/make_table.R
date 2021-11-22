@@ -123,7 +123,17 @@ make_table <- function(data,
     # Note we do not use the dashboard-level ts_summ for this, as we want to ensure
     # any data pre-processing (such as rolling averages) are captured
 
-    df_summ <- djprshiny::ts_summarise(data)
+    df_summ_data <- data %>%
+      dplyr::mutate(indicator = dplyr::if_else(grepl("jobactive",
+                                                     .data$series_id),
+                                               "Jobactive caseload",
+                                               .data$indicator))
+
+    df_summ <- djprshiny::ts_summarise(df_summ_data) %>%
+      dplyr::mutate(up_is_good = dplyr::if_else(grepl("jobactive",
+                                                      .data$series_id),
+                                                FALSE,
+                                                .data$up_is_good))
 
     # Full palette for table
     full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
