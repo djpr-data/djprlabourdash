@@ -109,7 +109,7 @@ viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Aboriginal and non-Aboriginal Victorians Jobactive Caseload, Indexed March 2020",
+      subtitle = "Aboriginal and non-Aboriginal Victorians jobactive caseload, indexed March 2020",
       caption = caption_jobactive()
     )
 }
