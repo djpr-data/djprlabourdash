@@ -1265,7 +1265,8 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
+    rename_indicators = FALSE,
+    pretty_round = FALSE
   )
 }
 
@@ -1326,7 +1327,9 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
+    rename_indicators = FALSE,
+    pretty_round = FALSE
+
   )
 }
 
@@ -1385,7 +1388,8 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
+    rename_indicators = FALSE,
+    pretty_round = FALSE
   )
 }
 
@@ -1446,7 +1450,8 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
+    rename_indicators = FALSE,
+    pretty_round = FALSE
   )
 }
 
@@ -1506,6 +1511,7 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
+    rename_indicators = FALSE,
+    pretty_round = FALSE
   )
 }
