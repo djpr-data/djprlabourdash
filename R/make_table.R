@@ -104,9 +104,18 @@ make_table <- function(data,
 
   names(summary_df) <- toupper(names(summary_df))
 
+  # Define columns to include in output table
+  cols_to_include <- names(summary_df)[names(summary_df) != "SERIES_ID"]
+
+  # Drop "Change during govt" column if all values are NA
+  # This occurs if all data series in the table commenced after Nov 2014
+  if (all(is.na(summary_df$`SINCE NOV 2014`))) {
+    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
+  }
+
   # Create a basic flextable using the supplied dataframe
   flex <- summary_df %>%
-    flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
+    flextable::flextable(col_keys = cols_to_include)
 
   if (destination == "dashboard") {
     # Define cell colours ----
@@ -219,9 +228,12 @@ make_table <- function(data,
     "Current figures",
     "Change in latest period",
     "Change in past year",
-    "Change since COVID",
-    "Change during govt"
+    "Change since COVID"
   )
+
+  if ("SINCE NOV 2014" %in% cols_to_include) {
+    header_row <- c(header_row, "Change during govt")
+  }
 
   flex <- flex %>%
     flextable::add_header_row(values = header_row)
