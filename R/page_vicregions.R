@@ -25,7 +25,7 @@ page_vicregions <- function(...) {
     fluidRow(
       column(
         6,
-        leaflet::leafletOutput("map_unemp_emppop_partrate_vic") %>%
+        leaflet::leafletOutput("map_reg_unemp_emppop_partrate_vic") %>%
           djpr_with_spinner()
       ),
       column(

@@ -770,8 +770,13 @@ labour_server <- function(input, output, session) {
     djpr_plot_caption(paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average."))
   })
 
+  data_reg_map_bar_title <- reactive({
+    data_reg_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
+  })
+
   output$title_unemp_emppop_partrate_vic <- renderText({
-    title_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
+    title_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
+                                    selected_indicator = input$lf_status_region)
   })
 
   output$subtitle_unemp_emppop_partrate_vic <- renderText({
@@ -787,70 +792,15 @@ labour_server <- function(input, output, session) {
     paste0(indic_long, " by region (SA4), per cent")
   })
 
-  output$map_unemp_emppop_partrate_vic <-
+  output$map_reg_unemp_emppop_partrate_vic <-
     leaflet::renderLeaflet({
-      map_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
+      map_reg_unemp_emppop_partrate_vic(data = data_reg_map_bar_title(),
+                                        selected_indicator = input$lf_status_region)
     })
 
   output$reg_unemp_emppop_partrate_bar <- renderPlot({
-    df <- filter_dash_data(c(
-      "A84599659L",
-      "A84600019W",
-      "A84600187J",
-      "A84599557X",
-      "A84600115W",
-      "A84599851L",
-      "A84599923L",
-      "A84600025T",
-      "A84600193C",
-      "A84599665J",
-      "A84600031L",
-      "A84599671C",
-      "A84599677T",
-      "A84599683L",
-      "A84599929A",
-      "A84600121T",
-      "A84600037A",
-      "A84599658K",
-      "A84599660W",
-      "A84600018V",
-      "A84600020F",
-      "A84600186F",
-      "A84600188K",
-      "A84599556W",
-      "A84599558A",
-      "A84600114V",
-      "A84600116X",
-      "A84599850K",
-      "A84599852R",
-      "A84599922K",
-      "A84599924R",
-      "A84600024R",
-      "A84600026V",
-      "A84600192A",
-      "A84600194F",
-      "A84599664F",
-      "A84599666K",
-      "A84600030K",
-      "A84600032R",
-      "A84599670A",
-      "A84599672F",
-      "A84599676R",
-      "A84599678V",
-      "A84599682K",
-      "A84599684R",
-      "A84599928X",
-      "A84599930K",
-      "A84600120R",
-      "A84600122V",
-      "A84600036X",
-      "A84600038C"
-    ),
-    df = dash_data
-    )
-
-    df %>%
-      viz_reg_unemp_emppop_partrate_bar(selected_indicator = input$lf_status_region)
+    viz_reg_unemp_emppop_partrate_bar(data = data_reg_map_bar_title(),
+                                 selected_indicator = input$lf_status_region)
   })
 
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",
