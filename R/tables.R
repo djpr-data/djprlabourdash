@@ -1152,7 +1152,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
 }
 
 
-table_jobactive_aboriginals <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
+table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                           unset = "dashboard"
                                         ),
                                         title = paste0(
@@ -1175,10 +1175,6 @@ table_jobactive_aboriginals <- function(destination = Sys.getenv("R_DJPRLABOURDA
   ))
 
   table_data <- data %>%
-    dplyr::select(
-      .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value, .data$unit, .data$table_no
-    ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
         pattern = " ; ",
@@ -1189,7 +1185,6 @@ table_jobactive_aboriginals <- function(destination = Sys.getenv("R_DJPRLABOURDA
       indicator = .data$split_series[, 3]
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
-
 
   make_table(table_data,
     row_order = c(
@@ -1208,7 +1203,8 @@ table_jobactive_aboriginals <- function(destination = Sys.getenv("R_DJPRLABOURDA
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
+    rename_indicators = FALSE,
+    pretty_round = FALSE
   )
 }
 

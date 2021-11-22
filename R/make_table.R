@@ -15,6 +15,10 @@
 #' when `destination` is "briefing".
 #' @param rename_indicators logical; default is `TRUE`. If `TRUE`, the
 #' `rename_indicators()` function will be used to rename certain indicators.
+#' @param pretty_round Logical; `TRUE` by default. If `TRUE`, figures will be
+#' rounded using `pretty_round()`. This means (for eg.) figures below 50
+#' will be rounded to 0. If `FALSE`, figures will not be rounded with
+#' `pretty_round()`.
 #' @examples
 #' # dash_data <- load_dash_data()
 #' \dontrun{
@@ -41,7 +45,8 @@ make_table <- function(data,
                        highlight_rows = NULL,
                        notes = NULL,
                        title = "",
-                       rename_indicators = TRUE) {
+                       rename_indicators = TRUE,
+                       pretty_round = TRUE) {
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
@@ -55,7 +60,8 @@ make_table <- function(data,
 
   # Create a summary dataframe with one row per unique indicator
   summary_df <- create_summary_df(df,
-    years_in_sparklines = years_in_sparklines
+    years_in_sparklines = years_in_sparklines,
+    pretty_round = pretty_round
   )
 
   # Reorder dataframe if row_order is specified
