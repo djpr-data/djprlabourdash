@@ -1756,6 +1756,7 @@ df = dash_data
 
   # value = scales::comma(.data$value * 1000),
   high_low <- df %>%
+    group_by(.data$date) %>%
     summarise(
       min_region = .data$region[.data$value == min(.data$value)],
       min_caseload = .data$value[.data$value == min(.data$value)],
