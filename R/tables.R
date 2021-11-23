@@ -1147,8 +1147,9 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     ),
     title = title,
     destination = destination,
-    rename_indicators = FALSE
-  )
+    rename_indicators = FALSE,
+    pretty_round = FALSE
+    )
 }
 
 
