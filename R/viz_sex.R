@@ -630,8 +630,8 @@ df = dash_data
     )
 
   # value = scales::comma(.data$value * 1000),
+
   high_low <- df %>%
-    dplyr::group_by(.data$date) %>%
     summarise(
       min_region = .data$region[.data$value == min(.data$value)],
       min_caseload = .data$value[.data$value == min(.data$value)],
@@ -639,6 +639,9 @@ df = dash_data
       max_caseload = .data$value[.data$value == max(.data$value)],
       date = max(.data$date)
     )
+
+
+
 
   title <- paste0(
     " Across Victoria jobactive caseload ranged from ",
@@ -653,7 +656,7 @@ df = dash_data
     format(high_low$date, "%B %Y")
   )
 
-  # reduce to only latest month
+  #reduce to only latest month
   df <- df %>%
     dplyr::group_by(.data$region, ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
