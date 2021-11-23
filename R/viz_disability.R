@@ -1,6 +1,6 @@
 # Functions to create the graphs for the 'Disability' subpage on the dashboard.
 
-viz_gr_pwd_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
+viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
                                                      "jobactive_pwd_ballarat",
                                                      "jobactive_pwd_bendigo",
                                                      "jobactive_pwd_barwon",
@@ -175,9 +175,6 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
     " as at ",
     format(high_low$date, "%B %Y")
   )
-
-
-
 
 
   # draw bar chart for all employment regions
