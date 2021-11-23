@@ -151,7 +151,6 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
 
   # value = scales::comma(.data$value * 1000),
   high_low <- df %>%
-    dplyr::group_by(.data$date) %>%
     summarise(
       min_region = .data$region[.data$value == min(.data$value)],
       min_caseload = .data$value[.data$value == min(.data$value)],
