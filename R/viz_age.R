@@ -1578,8 +1578,8 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
 
   latest_date <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$date)
-  round2(1)
+    dplyr::pull(.data$date) %>%
+     round2(1)
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
@@ -1590,14 +1590,28 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
     ) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
 
+  title <- dplyr::case_when(
+    latest_values$`Youth (15-24)` > latest_values$`Mature Age (50+)` ~
+      paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was higher than mature age (50+)"),
+    latest_values$`Youth (15-24)`< latest_values$`Mature Age (50+)` ~
+      paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was lower than mature age (50+)"),
+    latest_values$`Youth (15-24)` == latest_values$`Mature Age (50+)` ~
+      paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was the same as mature age(50+)"),
+    TRUE ~ "Jobactive caseload fo Victorians by age group"
+  )
+
+
+
+
+
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
       label_num = paste0(round2(.data$value, 1)),
     ) +
     labs(
-      title = "title",
-      subtitle = "Victorians Jobactive Caseload by age, Indexed March 2020",
+      title = title,
+      subtitle = "Victorians jobactive caseload by age, indexed March 2020",
       caption = caption_jobactive()
     )
 }
@@ -1667,8 +1681,6 @@ df = dash_data
     dplyr::group_by(.data$region, ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup()
-
-
 
   # draw bar chart for all employment regions
   df %>%
