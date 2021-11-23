@@ -1488,7 +1488,7 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
     labs(title = "")
 }
 
-viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
+viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
                                                      "jobactive_youth (15-24)_ballarat",
                                                      "jobactive_youth (15-24)_bendigo",
                                                      "jobactive_youth (15-24)_barwon",
