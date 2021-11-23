@@ -636,20 +636,12 @@ labour_server <- function(input, output, session) {
                                         selected_indicator = input$youth_region_focus)
   })
 
-  djpr_plot_server("gr_youth_unemp_emppop_partrate_bar",
-    viz_gr_youth_unemp_emppop_partrate_bar,
-    data = data_youth_map_bar_title(),
-    date_slider = FALSE,
-    selected_indicator = reactive(input$youth_region_focus),
-    download_button = FALSE,
-    plt_change = plt_change,
-    width_percent = 45
-  )
-
-  # output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
-  #   viz_gr_youth_unemp_emppop_partrate_bar(data_youth_map_bar_title(),
-  #                                     selected_indicator = input$youth_region_focus)
-  # })
+  output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
+    viz_gr_youth_unemp_emppop_partrate_bar(
+      data = data_youth_map_bar_title(),
+      selected_indicator = input$youth_region_focus
+    )
+  })
 
 
   # Long-term unemployment ------

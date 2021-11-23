@@ -1265,7 +1265,7 @@ map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_p
 
 }
 
-viz_gr_youth_unemp_emppop_partrate_bar <- function(data = data_youth_unemp_emppop_partrate_vic(),
+viz_gr_youth_unemp_emppop_partrate_bar <- function(data = data_youth_unemp_emppop_partrate_vic(selected_indicator = selected_indicator),
                                                    selected_indicator = "unemp_rate") {
 
   data %>%
