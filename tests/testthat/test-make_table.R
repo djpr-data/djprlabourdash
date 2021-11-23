@@ -47,7 +47,7 @@ test_that("make_table()'s output has not changed", {
 
   save_my_table <- function(df) {
     x <- make_table(df,
-      destination = "dashboard"
+      destination = "briefing"
     )
     path <- tempfile(fileext = ".png")
     flextable::save_as_image(x,
