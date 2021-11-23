@@ -113,21 +113,21 @@ viz_gr_refugee_jobact_sincecovid_line <- function(data = filter_dash_data(c(
 
 
 viz_gr_refugee_jobactive_bar <- function(data = filter_dash_data(c(
-  "jobactive_refugee_ballarat",
-  "jobactive_refugee_bendigo",
-  "jobactive_refugee_barwon",
-  "jobactive_refugee_gippsland",
-  "jobactive_refugee_goulburn/murray",
-  "jobactive_refugee_inner metropolitan melbourne",
-  "jobactive_refugee_north eastern melbourne",
-  "jobactive_refugee_north western melbourne",
-  "jobactive_refugee_south coast of victoria",
-  "jobactive_refugee_south eastern melbourne and peninsula",
-  "jobactive_refugee_north western melbourne",
-  "jobactive_refugee_wimmera mallee"
-),
-df = dash_data
-)) {
+                                           "jobactive_refugee_ballarat",
+                                           "jobactive_refugee_bendigo",
+                                           "jobactive_refugee_barwon",
+                                           "jobactive_refugee_gippsland",
+                                           "jobactive_refugee_goulburn/murray",
+                                           "jobactive_refugee_inner metropolitan melbourne",
+                                           "jobactive_refugee_north eastern melbourne",
+                                           "jobactive_refugee_north western melbourne",
+                                           "jobactive_refugee_south coast of victoria",
+                                           "jobactive_refugee_south eastern melbourne and peninsula",
+                                           "jobactive_refugee_north western melbourne",
+                                           "jobactive_refugee_wimmera mallee"
+                                         ),
+                                         df = dash_data
+                                         )) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -135,8 +135,8 @@ df = dash_data
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
       jobactive = .data$split_series[, 1],
       indicator = .data$split_series[, 2],

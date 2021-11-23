@@ -1579,7 +1579,7 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
   latest_date <- df %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::pull(.data$date) %>%
-     round2(1)
+    round2(1)
 
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
@@ -1592,11 +1592,11 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$`Youth (15-24)` > latest_values$`Mature Age (50+)` ~
-      paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was higher than mature age (50+)"),
-    latest_values$`Youth (15-24)`< latest_values$`Mature Age (50+)` ~
-      paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was lower than mature age (50+)"),
+    paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was higher than mature age (50+)"),
+    latest_values$`Youth (15-24)` < latest_values$`Mature Age (50+)` ~
+    paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was lower than mature age (50+)"),
     latest_values$`Youth (15-24)` == latest_values$`Mature Age (50+)` ~
-      paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was the same as mature age(50+)"),
+    paste0("Victoria's youth (15-24) jobactive caseload in ", latest_values$date, " was the same as mature age(50+)"),
     TRUE ~ "Jobactive caseload fo Victorians by age group"
   )
 
@@ -1618,21 +1618,21 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
 
 
 viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
-  "jobactive_mature age (50+)_ballarat",
-  "jobactive_mature age (50+)_bendigo",
-  "jobactive_mature age (50+)_barwon",
-  "jobactive_mature age (50+)_gippsland",
-  "jobactive_mature age (50+)_goulburn/murray",
-  "jobactive_mature age (50+)_inner metropolitan melbourne",
-  "jobactive_mature age (50+)_north eastern melbourne",
-  "jobactive_mature age (50+)_north western melbourne",
-  "jobactive_mature age (50+)_south coast of victoria",
-  "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-  "jobactive_mature age (50+)_north western melbourne",
-  "jobactive_mature age (50+)_wimmera mallee"
-),
-df = dash_data
-)) {
+                                              "jobactive_mature age (50+)_ballarat",
+                                              "jobactive_mature age (50+)_bendigo",
+                                              "jobactive_mature age (50+)_barwon",
+                                              "jobactive_mature age (50+)_gippsland",
+                                              "jobactive_mature age (50+)_goulburn/murray",
+                                              "jobactive_mature age (50+)_inner metropolitan melbourne",
+                                              "jobactive_mature age (50+)_north eastern melbourne",
+                                              "jobactive_mature age (50+)_north western melbourne",
+                                              "jobactive_mature age (50+)_south coast of victoria",
+                                              "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                                              "jobactive_mature age (50+)_north western melbourne",
+                                              "jobactive_mature age (50+)_wimmera mallee"
+                                            ),
+                                            df = dash_data
+                                            )) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -1640,8 +1640,8 @@ df = dash_data
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
       jobactive = .data$split_series[, 1],
       indicator = .data$split_series[, 2],
@@ -1721,21 +1721,21 @@ df = dash_data
 
 
 viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
-  "jobactive_youth (15-24)_ballarat",
-  "jobactive_youth (15-24)_bendigo",
-  "jobactive_youth (15-24)_barwon",
-  "jobactive_youth (15-24)_gippsland",
-  "jobactive_youth (15-24)_goulburn/murray",
-  "jobactive_youth (15-24)_inner metropolitan melbourne",
-  "jobactive_youth (15-24)_north eastern melbourne",
-  "jobactive_youth (15-24)_north western melbourne",
-  "jobactive_youth (15-24)_south coast of victoria",
-  "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-  "jobactive_youth (15-24)_north western melbourne",
-  "jobactive_youth (15-24)_wimmera mallee"
-),
-df = dash_data
-)) {
+                                         "jobactive_youth (15-24)_ballarat",
+                                         "jobactive_youth (15-24)_bendigo",
+                                         "jobactive_youth (15-24)_barwon",
+                                         "jobactive_youth (15-24)_gippsland",
+                                         "jobactive_youth (15-24)_goulburn/murray",
+                                         "jobactive_youth (15-24)_inner metropolitan melbourne",
+                                         "jobactive_youth (15-24)_north eastern melbourne",
+                                         "jobactive_youth (15-24)_north western melbourne",
+                                         "jobactive_youth (15-24)_south coast of victoria",
+                                         "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                                         "jobactive_youth (15-24)_north western melbourne",
+                                         "jobactive_youth (15-24)_wimmera mallee"
+                                       ),
+                                       df = dash_data
+                                       )) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -1743,8 +1743,8 @@ df = dash_data
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
       jobactive = .data$split_series[, 1],
       indicator = .data$split_series[, 2],

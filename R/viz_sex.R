@@ -595,21 +595,21 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
 }
 
 viz_gr_female_age_jobactive_bar <- function(data = filter_dash_data(c(
-  "jobactive_female_ballarat",
-  "jobactive_female_bendigo",
-  "jobactive_female_barwon",
-  "jobactive_female_gippsland",
-  "jobactive_female_goulburn/murray",
-  "jobactive_female_inner metropolitan melbourne",
-  "jobactive_female_north eastern melbourne",
-  "jobactive_female_north western melbourne",
-  "jobactive_female_south coast of victoria",
-  "jobactive_female_south eastern melbourne and peninsula",
-  "jobactive_female_north western melbourne",
-  "jobactive_female_wimmera mallee"
-),
-df = dash_data
-)) {
+                                              "jobactive_female_ballarat",
+                                              "jobactive_female_bendigo",
+                                              "jobactive_female_barwon",
+                                              "jobactive_female_gippsland",
+                                              "jobactive_female_goulburn/murray",
+                                              "jobactive_female_inner metropolitan melbourne",
+                                              "jobactive_female_north eastern melbourne",
+                                              "jobactive_female_north western melbourne",
+                                              "jobactive_female_south coast of victoria",
+                                              "jobactive_female_south eastern melbourne and peninsula",
+                                              "jobactive_female_north western melbourne",
+                                              "jobactive_female_wimmera mallee"
+                                            ),
+                                            df = dash_data
+                                            )) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -617,8 +617,8 @@ df = dash_data
     ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
-                                              pattern = " ; ",
-                                              n = 3
+        pattern = " ; ",
+        n = 3
       ),
       jobactive = .data$split_series[, 1],
       indicator = .data$split_series[, 2],
@@ -630,7 +630,7 @@ df = dash_data
     )
 
 
-  #reduce to only latest month
+  # reduce to only latest month
   df <- df %>%
     dplyr::group_by(.data$region, ) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -700,5 +700,3 @@ df = dash_data
       caption = caption_jobactive()
     )
 }
-
-
