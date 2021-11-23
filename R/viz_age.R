@@ -1592,8 +1592,6 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
 
 
 
-
-
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
