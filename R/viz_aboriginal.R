@@ -149,9 +149,14 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
       value = .data$value * 1000
     )
 
+  df <- df %>%
+    dplyr::group_by(.data$region, ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
   # value = scales::comma(.data$value * 1000),
   high_low <- df %>%
-    summarise(
+    dplyr::summarise(
       min_region = .data$region[.data$value == min(.data$value)],
       min_caseload = .data$value[.data$value == min(.data$value)],
       max_region = .data$region[.data$value == max(.data$value)],
@@ -173,10 +178,10 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
   )
 
   # reduce to only latest month
-  df <- df %>%
-    dplyr::group_by(.data$region, ) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
+  # df <- df %>%
+  #   dplyr::group_by(.data$region, ) %>%
+  #   dplyr::filter(.data$date == max(.data$date)) %>%
+  #   dplyr::ungroup()
 
 
 
