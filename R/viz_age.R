@@ -1571,18 +1571,8 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
       )
     )
 
-  # titl_df <- df %>%
-  #   dplyr::group_by(.data$indicator) %>%
-  #   tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
-  #   dplyr::mutate(value = ((.data$value[date == as.Date(max(.data$date))] - .data$value[date == as.Date("2020-03-31")])))
-
-  latest_date <- df %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$date) %>%
-    round2(1)
-
   latest_values <- df %>%
-    dplyr::filter(date == max(.data$date)) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::select(-.data$tooltip) %>%
     dplyr::mutate(
       value = round2(.data$value, 1),
