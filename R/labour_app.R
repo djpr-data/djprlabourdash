@@ -622,7 +622,7 @@ labour_server <- function(input, output, session) {
 
   # Youth LF status by region focus box ----
   data_youth_map_bar_title <- reactive({
-    data_youth_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
+    data_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus)
   })
 
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
@@ -636,11 +636,6 @@ labour_server <- function(input, output, session) {
                                         selected_indicator = input$youth_region_focus)
   })
 
-  # output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
-  #   viz_gr_youth_unemp_emppop_partrate_bar(data = data_reg_map_bar_title(),
-  #                                     selected_indicator = input$lf_status_region)
-  # })
-
   djpr_plot_server("gr_youth_unemp_emppop_partrate_bar",
     viz_gr_youth_unemp_emppop_partrate_bar,
     data = data_youth_map_bar_title(),
@@ -650,6 +645,12 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change,
     width_percent = 45
   )
+
+  # output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
+  #   viz_gr_youth_unemp_emppop_partrate_bar(data_youth_map_bar_title(),
+  #                                     selected_indicator = input$youth_region_focus)
+  # })
+
 
   # Long-term unemployment ------
 
