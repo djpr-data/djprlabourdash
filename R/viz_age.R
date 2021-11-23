@@ -1652,6 +1652,11 @@ df = dash_data
       value = .data$value * 1000
     )
 
+  df <- df %>%
+    dplyr::group_by(.data$region, ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
   # value = scales::comma(.data$value * 1000),
   high_low <- df %>%
     summarise(
@@ -1675,10 +1680,7 @@ df = dash_data
     format(high_low$date, "%B %Y")
   )
 
-  df <- df %>%
-    dplyr::group_by(.data$region, ) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
+
 
   # draw bar chart for all employment regions
   df %>%
@@ -1753,6 +1755,11 @@ df = dash_data
       value = .data$value * 1000
     )
 
+  df <- df %>%
+    dplyr::group_by(.data$region, ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
   # value = scales::comma(.data$value * 1000),
   high_low <- df %>%
     group_by(.data$date) %>%
@@ -1777,10 +1784,7 @@ df = dash_data
     format(high_low$date, "%B %Y")
   )
 
-  df <- df %>%
-    dplyr::group_by(.data$region, ) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
+
 
   # draw bar chart for all employment regions
   df %>%
