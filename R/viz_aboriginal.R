@@ -1,6 +1,6 @@
 # Functions to create the graphs for the 'Aboriginal' subpage on the dashboard.
 
-viz_gr_abor_jobact_sincecovid_line <- function(data = filter_dash_data(c(
+viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
                                                  "jobactive_indigenous_ballarat",
                                                  "jobactive_indigenous_bendigo",
                                                  "jobactive_indigenous_barwon",
