@@ -81,7 +81,7 @@ data_reg_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
 }
 
 
-title_unemp_emppop_partrate_vic <- function(data = data_reg_unemp_emppop_partrate_vic(),
+title_reg_unemp_emppop_partrate_vic <- function(data = data_reg_unemp_emppop_partrate_vic(),
                                             selected_indicator = "unemp_rate") {
 
   high_low <- data %>%

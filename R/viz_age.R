@@ -1127,13 +1127,6 @@ data_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
 title_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_partrate_vic(),
                                                   selected_indicator = "unemp_rate") {
 
-  indic_long <- dplyr::case_when(
-    selected_indicator == "unemp_rate" ~ "The youth unemployment rate",
-    selected_indicator == "part_rate" ~ "The youth participation rate",
-    selected_indicator == "emp_pop" ~ "The youth employment to population ratio",
-    TRUE ~ NA_character_
-  )
-
   high_low <- data %>%
     dplyr::ungroup() %>%
     summarise(
@@ -1143,6 +1136,13 @@ title_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop
       max_val = .data$value[.data$value == max(.data$value)],
       date = unique(.data$date)
     )
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "The youth unemployment rate",
+    selected_indicator == "part_rate" ~ "The youth participation rate",
+    selected_indicator == "emp_pop" ~ "The youth employment to population ratio",
+    TRUE ~ NA_character_
+  )
 
   paste0(
     indic_long,
@@ -1163,7 +1163,7 @@ map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_p
                                                 selected_indicator = "unemp_rate",
                                                 zoom = 6) {
 
-    indic_long <- dplyr::case_when(
+  indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
     selected_indicator == "emp_pop" ~ "Employment to population ratio",
@@ -1177,7 +1177,7 @@ map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_p
 
   # Join shape file with data to create mapdata ----
   mapdata <- sa4_shp %>%
-    dplyr::left_join(df, by = c("sa4_name_2016" = "sa4"))
+    dplyr::left_join(data, by = c("sa4_name_2016" = "sa4"))
 
   # Create colour palette
   # Switched here from binned to continuous colours

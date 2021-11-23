@@ -621,72 +621,29 @@ labour_server <- function(input, output, session) {
     bindCache(series_latestdates)
 
   # Youth LF status by region focus box ----
+  data_youth_map_bar_title <- reactive({
+    data_youth_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
+  })
+
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
-    title_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus) %>%
+    title_youth_unemp_emppop_partrate_vic(data = data_youth_map_bar_title(),
+                                          selected_indicator = input$youth_region_focus) %>%
       djpr_plot_title()
   })
 
   output$map_youth_unemp_emppop_partrate_vic <- leaflet::renderLeaflet({
-    map_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus)
+    map_youth_unemp_emppop_partrate_vic(data = data_youth_map_bar_title(),
+                                        selected_indicator = input$youth_region_focus)
   })
+
+  # output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
+  #   viz_gr_youth_unemp_emppop_partrate_bar(data = data_reg_map_bar_title(),
+  #                                     selected_indicator = input$lf_status_region)
+  # })
 
   djpr_plot_server("gr_youth_unemp_emppop_partrate_bar",
     viz_gr_youth_unemp_emppop_partrate_bar,
-    data = filter_dash_data(c(
-      "15-24_unemployed_melbourne - inner",
-      "15-24_unemployed_melbourne - inner east",
-      "15-24_unemployed_melbourne - inner south",
-      "15-24_unemployed_melbourne - north east",
-      "15-24_unemployed_melbourne - north west",
-      "15-24_unemployed_melbourne - outer east",
-      "15-24_unemployed_melbourne - south east",
-      "15-24_unemployed_melbourne - west",
-      "15-24_unemployed_mornington peninsula",
-      "15-24_unemployed_ballarat",
-      "15-24_unemployed_bendigo",
-      "15-24_unemployed_geelong",
-      "15-24_unemployed_hume",
-      "15-24_unemployed_latrobe - gippsland",
-      "15-24_unemployed_victoria - north west",
-      "15-24_unemployed_shepparton",
-      "15-24_unemployed_warrnambool and south west",
-      "15-24_employed_melbourne - inner",
-      "15-24_employed_melbourne - inner east",
-      "15-24_employed_melbourne - inner south",
-      "15-24_employed_melbourne - north east",
-      "15-24_employed_melbourne - north west",
-      "15-24_employed_melbourne - outer east",
-      "15-24_employed_melbourne - south east",
-      "15-24_employed_melbourne - west",
-      "15-24_employed_mornington peninsula",
-      "15-24_employed_ballarat",
-      "15-24_employed_bendigo",
-      "15-24_employed_geelong",
-      "15-24_employed_hume",
-      "15-24_employed_latrobe - gippsland",
-      "15-24_employed_victoria - north west",
-      "15-24_employed_shepparton",
-      "15-24_employed_warrnambool and south west",
-      "15-24_nilf_melbourne - inner",
-      "15-24_nilf_melbourne - inner east",
-      "15-24_nilf_melbourne - inner south",
-      "15-24_nilf_melbourne - north east",
-      "15-24_nilf_melbourne - north west",
-      "15-24_nilf_melbourne - outer east",
-      "15-24_nilf_melbourne - south east",
-      "15-24_nilf_melbourne - west",
-      "15-24_nilf_mornington peninsula",
-      "15-24_nilf_ballarat",
-      "15-24_nilf_bendigo",
-      "15-24_nilf_geelong",
-      "15-24_nilf_hume",
-      "15-24_nilf_latrobe - gippsland",
-      "15-24_nilf_victoria - north west",
-      "15-24_nilf_shepparton",
-      "15-24_nilf_warrnambool and south west"
-    ),
-    df = dash_data
-    ),
+    data = data_youth_map_bar_title(),
     date_slider = FALSE,
     selected_indicator = reactive(input$youth_region_focus),
     download_button = FALSE,
@@ -774,12 +731,12 @@ labour_server <- function(input, output, session) {
     data_reg_unemp_emppop_partrate_vic(selected_indicator = input$lf_status_region)
   })
 
-  output$title_unemp_emppop_partrate_vic <- renderText({
-    title_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
+  output$title_reg_unemp_emppop_partrate_vic <- renderText({
+    title_reg_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
                                     selected_indicator = input$lf_status_region)
   })
 
-  output$subtitle_unemp_emppop_partrate_vic <- renderText({
+  output$subtitle_reg_unemp_emppop_partrate_vic <- renderText({
     indic_long <- dplyr::case_when(
       input$lf_status_region == "unemp_rate" ~
       "Unemployment rate",
