@@ -1529,3 +1529,70 @@ df = dash_data
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
 }
+
+map_reg_jobactive_vic <- function(data = filter_dash_data(c(
+
+                                  ),
+                                  df = dash_data
+                                  ),
+                                  zoom = 6) {
+
+  # Get map data for employment regions from data.gov.au
+  map <- read_sf("https://data.gov.au/geoserver/employment-regions-2015-2020/wfs?request=GetFeature&typeName=ckan_85ab9ed6_b5fe_4be9_ab68_a6b8a20af111&outputFormat=json")
+
+  # Victorian caseload data
+  case_load_data <- read_csv("H:/victorian_caseload.csv")
+
+  #Plot caseloads
+
+  case_load_data %>%
+    mutate(`Employment Region` = fct_reorder(`Employment Region`, `Proportion of Victorian caseload`)) %>%
+    ggplot(aes(`Employment Region`, `Proportion of Victorian caseload`)) +
+    geom_col() +
+    coord_flip() +
+    theme_bw() +
+    scale_y_continuous(labels = scales::percent)
+
+  #List of Victorian employment regions
+  vic <- c("Ballarat",
+           "Barwon",
+           "Bendigo",
+           "Gippsland",
+           "Goulburn/Murray",
+           "Inner Metropolitan Melbourne",
+           "South Eastern Melbourne and Peninsula",
+           "Western Melbourne",
+           "North Western Melbourne",
+           "North Eastern Melbourne",
+           "Wimmera Mallee",
+           "South Coast of Victoria")
+
+  # Keep just the Victorian regions
+  map_vic <- map %>%
+    filter(name %in% vic)
+
+  #Join together mapping data and caseload data
+  map_vic_joined <- map_vic %>%
+    left_join(case_load_data, by = c("name" = "Employment Region"))
+
+  # Create the map
+  # with names
+  map_vic_joined %>%
+    ggplot() +
+    geom_sf(aes(fill = `Proportion of Victorian caseload`)) +
+    geom_sf_text(aes(label = name), colour = "black", size = 1.2, fontface = "bold") +
+    ggthemes::theme_map() +
+    scale_fill_viridis_c(labels = percent) +
+    theme(legend.position=c(.5, .65))
+
+  #without names
+  map_vic_joined %>%
+    ggplot() +
+    geom_sf(aes(fill = `Proportion of Victorian caseload`)) +
+    ggthemes::theme_map() +
+    scale_fill_viridis_c(labels = percent) +
+    theme(legend.position=c(.5, .65))
+
+
+}
+
