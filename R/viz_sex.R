@@ -594,7 +594,7 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
+viz_gr_female_age_jobactive_bar <- function(data = filter_dash_data(c(
   "jobactive_female_ballarat",
   "jobactive_female_bendigo",
   "jobactive_female_barwon",

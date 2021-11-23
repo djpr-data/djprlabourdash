@@ -1765,12 +1765,6 @@ df = dash_data
       date = max(.data$date)
     )
 
-  df <- df %>%
-    dplyr::group_by(.data$region, ) %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::ungroup()
-
-
   title <- paste0(
     " Across Victoria youth (15-24) jobactive caseload ranged from ",
     round2(high_low$min_caseload, 1),
@@ -1784,7 +1778,10 @@ df = dash_data
     format(high_low$date, "%B %Y")
   )
 
-
+  df <- df %>%
+    dplyr::group_by(.data$region, ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
 
   # draw bar chart for all employment regions
   df %>%
