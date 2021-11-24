@@ -1563,6 +1563,8 @@ data_reg_jobactive_vic <- function(data = filter_dash_data(c(
       ) %>%
     dplyr::select(.data$date, .data$series, .data$value, .data$employment_region)
 
+  df$value <- df$value*1000
+
   df
 
 }
@@ -1646,10 +1648,10 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
         bringToFront = FALSE
       ), # FALSE = metro outline remains
       label = sprintf(
-        "<strong>%s</strong><br/>%s: %.1f",
+        "<strong>%s</strong><br/>%s: %.0f",
         mapdata$employment_region_name_2015, # region name displayed in label
-        "Total JobActive caseload ('000)",
-        mapdata$value
+        "Total JobActive caseload",
+        mapdata$value*1000
       ) %>%
         lapply(shiny::HTML),
       labelOptions = leaflet::labelOptions( # label options
@@ -1665,10 +1667,10 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
     leaflet::addLegend(
       position = "topright", # options: topright, bottomleft etc.
       pal = pal, # colour palette as defined
-      values = mapdata$value, # fill data
+      values = mapdata$value*1000, # fill data
       bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "JobActive cases ('000)",
+      title = "JobActive cases",
       opacity = 1,
     )
 
