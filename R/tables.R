@@ -1114,10 +1114,6 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   ))
 
   table_data <- data %>%
-    dplyr::select(
-      .data$date, .data$series_id, .data$series,
-      .data$frequency, .data$value, .data$unit, .data$table_no
-    ) %>%
     dplyr::mutate(
       split_series = stringr::str_split_fixed(.data$series,
         pattern = " ; ",
@@ -1129,9 +1125,20 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
+  table_data <- table_data %>%
+    dplyr::group_by(
+      .data$date,
+      .data$frequency, .data$unit, .data$table_no
+    ) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::mutate(series = "jobactive_total_total",
+                  series_id = "jobactive_total_total",
+                  indicator = "Victoria's jobactive caseload") %>%
+    dplyr::bind_rows(table_data)
 
   make_table(table_data,
     row_order = c(
+      "jobactive_total_total",
       "jobactive_total_ballarat",
       "jobactive_total_bendigo",
       "jobactive_total_barwon",
@@ -1145,6 +1152,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       "jobactive_total_north western melbourne",
       "jobactive_total_wimmera mallee"
     ),
+    highlight_rows = "jobactive_total_total",
     title = title,
     destination = destination,
     rename_indicators = FALSE,
