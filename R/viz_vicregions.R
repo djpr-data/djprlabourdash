@@ -1530,11 +1530,38 @@ df = dash_data
     )
 }
 
-map_reg_jobactive_vic <- function(data = filter_dash_data(c(
+data_reg_jobactive_vic <- function(data = filter_dash_data(c(
+                                                          "jobactive_total_ballarat",
+                                                          "jobactive_total_barwon",
+                                                          "jobactive_total_bendigo",
+                                                          "jobactive_total_gippsland",
+                                                          "jobactive_total_goulburn/murray",
+                                                          "jobactive_total_inner metropolitan melbourne",
+                                                          "jobactive_total_north eastern melbourne",
+                                                          "jobactive_total_north western melbourne",
+                                                          "jobactive_total_south coast of victoria",
+                                                          "jobactive_total_south eastern melbourne and peninsula",
+                                                          "jobactive_total_western melbourne",
+                                                          "jobactive_total_wimmera mallee"
+                                                        ),
+                                                        df = dash_data)) {
 
-                                  ),
-                                  df = dash_data
-                                  ),
+  # data manipulations of data frame for regional jobactive title / map and bar chart
+
+
+  df
+
+}
+
+title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
+
+  # create title for regional jobactive map  / bar chart
+
+
+
+}
+
+map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
                                   zoom = 6) {
 
   # Get map data for employment regions from data.gov.au
