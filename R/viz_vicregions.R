@@ -1596,28 +1596,34 @@ title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
 }
 
 map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
-                                  zoom = 6) {
+                                  zoom = 6
+                                  ) {
 
   # Get map data for Victorian employment regions
-  map <- employment_regions2015 #%>%
-
-    # dplyr::filter(name %in% c("Ballarat",
-    #                           "Barwon",
-    #                           "Bendigo",
-    #                           "Gippsland",
-    #                           "Goulburn/Murray",
-    #                           "Inner Metropolitan Melbourne",
-    #                           "South Eastern Melbourne and Peninsula",
-    #                           "Western Melbourne",
-    #                           "North Western Melbourne",
-    #                           "North Eastern Melbourne",
-    #                           "Wimmera Mallee",
-    #                           "South Coast of Victoria")
-    #               )
+  map <- employment_regions2015 %>%
+    dplyr::filter(employment_region_name_2015 %in% c("Ballarat",
+                              "Barwon",
+                              "Bendigo",
+                              "Gippsland",
+                              "Goulburn/Murray",
+                              "Inner Metropolitan Melbourne",
+                              "South Eastern Melbourne and Peninsula",
+                              "Western Melbourne",
+                              "North Western Melbourne",
+                              "North Eastern Melbourne",
+                              "Wimmera Mallee",
+                              "South Coast of Victoria")
+                 )
 
   #Join together mapping data and caseload data
-  map_vic_joined <- map_vic %>%
-    dplyr::left_join(data, by = c("name" = "employment_region"))
+  map_joined <- map %>%
+    dplyr::left_join(data, by = c("employment_region_name_2015" = "employment_region"))
+
+  mapdata <- map_joined %>%
+    sf::st_transform("+proj=longlat +datum=WGS84")
+
+  # Create colour palette
+  pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
 
   # Create the map
   map <- mapdata %>%
@@ -1641,10 +1647,10 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
       ), # FALSE = metro outline remains
       label = sprintf(
         "<strong>%s</strong><br/>%s: %.1f",
-        mapdata$sa4_name_2016, # region name displayed in label
-        indic_long,
+        mapdata$employment_region_name_2015, # region name displayed in label
+        "Total JobActive caseload ('000)",
         mapdata$value
-      ) %>% # eco data displayed in label
+      ) %>%
         lapply(shiny::HTML),
       labelOptions = leaflet::labelOptions( # label options
         style = list(
@@ -1662,23 +1668,11 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
       values = mapdata$value, # fill data
       bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
-      title = label_title,
+      title = "JobActive cases ('000)",
       opacity = 1,
-    ) %>%
-    # label opacity
-    leaflet::addPolygons(
-      data = metro_outline, #
-      fill = F,
-      stroke = T,
-      opacity = 1,
-      color = "black",
-      weight = 1
     )
 
   map
-
-
-
 
 }
 
