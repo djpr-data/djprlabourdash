@@ -1556,7 +1556,28 @@ data_reg_jobactive_vic <- function(data = filter_dash_data(c(
 title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
 
   # create title for regional jobactive map  / bar chart
+  high_low <- data %>%
+    dplyr::ungroup() %>%
+    summarise(
+      min_sa4 = .data$sa4[.data$value == min(.data$value)],
+      min_ur = .data$value[.data$value == min(.data$value)],
+      max_sa4 = .data$sa4[.data$value == max(.data$value)],
+      max_ur = .data$value[.data$value == max(.data$value)],
+      date = unique(.data$date)
+    )
 
+  paste0(
+    "The JobActive caseload across Victoria ranged from ",
+    round2(high_low$min_ur, 1),
+    " in ",
+    high_low$min_sa4,
+    " to ",
+    round2(high_low$max_ur, 1),
+    " in ",
+    high_low$max_sa4,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
 
 
 }
