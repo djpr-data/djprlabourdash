@@ -1499,7 +1499,7 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
                                                      "jobactive_youth (15-24)_western melbourne",
                                                      "jobactive_youth (15-24)_south coast of victoria",
                                                      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-                                                     "jobactive_youth (15-24)_north western melbourne",
+                                                     "jobactive_youth (15-24)_western melbourne",
                                                      "jobactive_youth (15-24)_wimmera mallee",
                                                      "jobactive_mature age (50+)_ballarat",
                                                      "jobactive_mature age (50+)_bendigo",
@@ -1616,7 +1616,7 @@ viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
                                               "jobactive_mature age (50+)_north western melbourne",
                                               "jobactive_mature age (50+)_south coast of victoria",
                                               "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-                                              "jobactive_mature age (50+)_north western melbourne",
+                                              "jobactive_mature age (50+)_western melbourne",
                                               "jobactive_mature age (50+)_wimmera mallee"
                                             ),
                                             df = dash_data
