@@ -1651,7 +1651,7 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
         "<strong>%s</strong><br/>%s: %.0f",
         mapdata$employment_region_name_2015, # region name displayed in label
         "Total JobActive caseload",
-        mapdata$value*1000
+        mapdata$value
       ) %>%
         lapply(shiny::HTML),
       labelOptions = leaflet::labelOptions( # label options
@@ -1667,7 +1667,7 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
     leaflet::addLegend(
       position = "topright", # options: topright, bottomleft etc.
       pal = pal, # colour palette as defined
-      values = mapdata$value*1000, # fill data
+      values = mapdata$value, # fill data
       bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
       title = "JobActive cases",
