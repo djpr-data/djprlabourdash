@@ -1457,16 +1457,16 @@ table_region_focus <- function(data = filter_dash_data(
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
-  "A84600144J",
-  "A84600078W",
-  "A84595516F",
-  "A84595471L"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-  dplyr::filter(!is.na(.data$value))) {
+                                  "A84600144J",
+                                  "A84600078W",
+                                  "A84595516F",
+                                  "A84595471L"
+                                ),
+                                df = dash_data
+                                ) %>%
+                                  dplyr::group_by(.data$series_id) %>%
+                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                  dplyr::filter(!is.na(.data$value))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1490,7 +1490,7 @@ df = dash_data
   data <- data %>%
     mutate(
       gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
-                             fixed = TRUE
+        fixed = TRUE
       )
     )
 
@@ -1531,20 +1531,21 @@ df = dash_data
 }
 
 data_reg_jobactive_vic <- function(data = filter_dash_data(c(
-                                                          "jobactive_total_ballarat",
-                                                          "jobactive_total_barwon",
-                                                          "jobactive_total_bendigo",
-                                                          "jobactive_total_gippsland",
-                                                          "jobactive_total_goulburn/murray",
-                                                          "jobactive_total_inner metropolitan melbourne",
-                                                          "jobactive_total_north eastern melbourne",
-                                                          "jobactive_total_north western melbourne",
-                                                          "jobactive_total_south coast of victoria",
-                                                          "jobactive_total_south eastern melbourne and peninsula",
-                                                          "jobactive_total_western melbourne",
-                                                          "jobactive_total_wimmera mallee"
-                                                        ),
-                                                        df = dash_data)) {
+                                     "jobactive_total_ballarat",
+                                     "jobactive_total_barwon",
+                                     "jobactive_total_bendigo",
+                                     "jobactive_total_gippsland",
+                                     "jobactive_total_goulburn/murray",
+                                     "jobactive_total_inner metropolitan melbourne",
+                                     "jobactive_total_north eastern melbourne",
+                                     "jobactive_total_north western melbourne",
+                                     "jobactive_total_south coast of victoria",
+                                     "jobactive_total_south eastern melbourne and peninsula",
+                                     "jobactive_total_western melbourne",
+                                     "jobactive_total_wimmera mallee"
+                                   ),
+                                   df = dash_data
+                                   )) {
 
   # data manipulations of data frame for regional jobactive title / map and bar chart
 
@@ -1552,21 +1553,20 @@ data_reg_jobactive_vic <- function(data = filter_dash_data(c(
   df <- data %>%
     dplyr::group_by(.data$series) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
-      dplyr::mutate(
-        split_series = stringr::str_split_fixed(.data$series,
-                                                pattern = " ; ",
-                                                n = 3
-        ),
-#        jobactive = .data$split_series[, 1],
-#        indicator = .data$split_series[, 2],
-        employment_region = .data$split_series[, 3]
-      ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      #        jobactive = .data$split_series[, 1],
+      #        indicator = .data$split_series[, 2],
+      employment_region = .data$split_series[, 3]
+    ) %>%
     dplyr::select(.data$date, .data$series, .data$value, .data$employment_region)
 
-  df$value <- df$value*1000
+  df$value <- df$value * 1000
 
   df
-
 }
 
 title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
@@ -1594,30 +1594,29 @@ title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
     " as at ",
     format(high_low$date, "%B %Y")
   )
-
 }
 
 map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
-                                  zoom = 6
-                                  ) {
+                                  zoom = 6) {
 
   # Get map data for Victorian employment regions
   map <- employment_regions2015 %>%
-    dplyr::filter(employment_region_name_2015 %in% c("Ballarat",
-                              "Barwon",
-                              "Bendigo",
-                              "Gippsland",
-                              "Goulburn/Murray",
-                              "Inner Metropolitan Melbourne",
-                              "South Eastern Melbourne and Peninsula",
-                              "Western Melbourne",
-                              "North Western Melbourne",
-                              "North Eastern Melbourne",
-                              "Wimmera Mallee",
-                              "South Coast of Victoria")
-                 )
+    dplyr::filter(employment_region_name_2015 %in% c(
+      "Ballarat",
+      "Barwon",
+      "Bendigo",
+      "Gippsland",
+      "Goulburn/Murray",
+      "Inner Metropolitan Melbourne",
+      "South Eastern Melbourne and Peninsula",
+      "Western Melbourne",
+      "North Western Melbourne",
+      "North Eastern Melbourne",
+      "Wimmera Mallee",
+      "South Coast of Victoria"
+    ))
 
-  #Join together mapping data and caseload data
+  # Join together mapping data and caseload data
   map_joined <- map %>%
     dplyr::left_join(data, by = c("employment_region_name_2015" = "employment_region"))
 
@@ -1675,7 +1674,6 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
     )
 
   map
-
 }
 
 viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
@@ -1684,9 +1682,10 @@ viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
 
   data %>%
     dplyr::mutate(employment_region = stringr::str_wrap(.data$employment_region, 20)) %>%
-        ggplot(aes(x = stats::reorder(.data$employment_region, .data$value),
-                   y = .data$value
-        )) +
+    ggplot(aes(
+      x = stats::reorder(.data$employment_region, .data$value),
+      y = .data$value
+    )) +
     geom_col(
       col = "grey85",
       aes(fill = -.data$value)
@@ -1709,5 +1708,4 @@ viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
       axis.text.x = element_blank()
     ) +
     labs(title = "")
-
 }

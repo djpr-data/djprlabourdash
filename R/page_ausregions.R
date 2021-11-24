@@ -22,15 +22,14 @@ page_ausregions <- function(...) {
         selected = "unemp_rate"
       ),
       column(6,
-            djpr_plot_ui("reg_regionstates_dot"),
-            height = "600px"
+        djpr_plot_ui("reg_regionstates_dot"),
+        height = "600px"
       ),
       column(6, djpr_plot_ui("reg_regionstates_bar",
-                height = "600px",
-                interactive = FALSE
-          )
-        )
-      ),
+        height = "600px",
+        interactive = FALSE
+      ))
+    ),
     br(),
     djpr_plot_ui("reg_emp_regionstates_sincecovid_line"),
     br(),

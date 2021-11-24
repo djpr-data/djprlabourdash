@@ -925,11 +925,11 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
                                    unset = "dashboard"
                                  )) {
   data <- filter_dash_data(c(
-    "A84423349V",  # total employed
-    "A84423357V",  # employed fulltime
-    "A84423356T",  # emp to pop ratio, all persons
-    "A84423244X",  # emp to pop ratio, males
-    "A84423468K",  # emp to pop ratio, females
+    "A84423349V", # total employed
+    "A84423357V", # employed fulltime
+    "A84423356T", # emp to pop ratio, all persons
+    "A84423244X", # emp to pop ratio, males
+    "A84423468K", # emp to pop ratio, females
     "pt_emp_vic"
   ))
 
@@ -946,7 +946,8 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
       "pt_emp_vic",
       "A84423356T",
       "A84423244X",
-      "A84423468K"),
+      "A84423468K"
+    ),
     highlight_rows = c(
       "A84423349V",
       "A84423356T"
