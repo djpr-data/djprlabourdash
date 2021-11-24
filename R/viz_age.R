@@ -1719,7 +1719,7 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
                                          "jobactive_youth (15-24)_north western melbourne",
                                          "jobactive_youth (15-24)_south coast of victoria",
                                          "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-                                         "jobactive_youth (15-24)_north western melbourne",
+                                         "jobactive_youth (15-24)_western melbourne",
                                          "jobactive_youth (15-24)_wimmera mallee"
                                        ),
                                        df = dash_data
@@ -1786,7 +1786,7 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = paste0(round2(.data$value, 0))),
+      aes(label = paste0(round2(.data$value, 1))),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
