@@ -1548,6 +1548,20 @@ data_reg_jobactive_vic <- function(data = filter_dash_data(c(
 
   # data manipulations of data frame for regional jobactive title / map and bar chart
 
+  # only latest date
+  df <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+      dplyr::mutate(
+        split_series = stringr::str_split_fixed(.data$series,
+                                                pattern = " ; ",
+                                                n = 3
+        ),
+#        jobactive = .data$split_series[, 1],
+#        indicator = .data$split_series[, 2],
+        employment_region = .data$split_series[, 3]
+      ) %>%
+    dplyr::select(.data$date, .data$series, .data$value, .data$employment_region)
 
   df
 
@@ -1559,26 +1573,25 @@ title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
   high_low <- data %>%
     dplyr::ungroup() %>%
     summarise(
-      min_sa4 = .data$sa4[.data$value == min(.data$value)],
-      min_ur = .data$value[.data$value == min(.data$value)],
-      max_sa4 = .data$sa4[.data$value == max(.data$value)],
-      max_ur = .data$value[.data$value == max(.data$value)],
+      min_er = .data$employment_region[.data$value == min(.data$value)],
+      min_value = .data$value[.data$value == min(.data$value)],
+      max_er = .data$employment_region[.data$value == max(.data$value)],
+      max_value = .data$value[.data$value == max(.data$value)],
       date = unique(.data$date)
     )
 
   paste0(
-    "The JobActive caseload across Victoria ranged from ",
-    round2(high_low$min_ur, 1),
+    "The JobActive caseload across Victoria's employment regions ranged from ",
+    round2(high_low$min_value, 1),
     " in ",
-    high_low$min_sa4,
+    high_low$min_er,
     " to ",
-    round2(high_low$max_ur, 1),
+    round2(high_low$max_value, 1),
     " in ",
-    high_low$max_sa4,
+    high_low$max_er,
     " as at ",
     format(high_low$date, "%B %Y")
   )
-
 
 }
 
