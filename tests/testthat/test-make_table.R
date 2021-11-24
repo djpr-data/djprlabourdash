@@ -51,7 +51,8 @@ test_that("make_table()'s output has not changed", {
     )
     path <- tempfile(fileext = ".png")
     flextable::save_as_image(x,
-      path = path
+      path = path,
+      webshot = "webshot2"
     )
     path
   }

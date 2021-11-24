@@ -53,7 +53,8 @@ Remotes:
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
-    mattcowgill/strayr
+    mattcowgill/strayr,
+    rstudio/webshot2
 Depends: 
     R (>= 3.50)
 Suggests: 
@@ -65,5 +66,5 @@ Suggests:
     officedown,
     blastula,
     covr,
-    webshot
+    webshot2
 Config/testthat/edition: 3
