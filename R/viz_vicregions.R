@@ -1598,33 +1598,87 @@ title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
 map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
                                   zoom = 6) {
 
-  # Get map data for employment regions from data.gov.au
-  map <- read_sf("https://data.gov.au/geoserver/employment-regions-2015-2020/wfs?request=GetFeature&typeName=ckan_85ab9ed6_b5fe_4be9_ab68_a6b8a20af111&outputFormat=json")
+  # Get map data for Victorian employment regions
+  map <- employment_regions2015 #%>%
 
-  # Victorian caseload data
-  df <- data
+    # dplyr::filter(name %in% c("Ballarat",
+    #                           "Barwon",
+    #                           "Bendigo",
+    #                           "Gippsland",
+    #                           "Goulburn/Murray",
+    #                           "Inner Metropolitan Melbourne",
+    #                           "South Eastern Melbourne and Peninsula",
+    #                           "Western Melbourne",
+    #                           "North Western Melbourne",
+    #                           "North Eastern Melbourne",
+    #                           "Wimmera Mallee",
+    #                           "South Coast of Victoria")
+    #               )
 
   #Join together mapping data and caseload data
   map_vic_joined <- map_vic %>%
-    left_join(df, by = c("name" = "Employment Region"))
+    dplyr::left_join(data, by = c("name" = "employment_region"))
 
   # Create the map
-  # with names
-  map_vic_joined %>%
-    ggplot() +
-    geom_sf(aes(fill = `Proportion of Victorian caseload`)) +
-    geom_sf_text(aes(label = name), colour = "black", size = 1.2, fontface = "bold") +
-    ggthemes::theme_map() +
-    scale_fill_viridis_c(labels = percent) +
-    theme(legend.position=c(.5, .65))
+  map <- mapdata %>%
+    leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
+    leaflet::setView(
+      lng = 145.4657, lat = -36.41472, # coordinates of map at first view
+      zoom = zoom
+    ) %>%
+    # size of map at first view
+    leaflet::addPolygons(
+      color = "grey", # colour of boundary lines, 'transparent' for no lines
+      weight = 1, # thickness of boundary lines
+      fillColor = ~ pal(mapdata$value), # pre-defined above
+      fillOpacity = 1.0, # strength of fill colour
+      smoothFactor = 0.5, # smoothing between region
+      stroke = T,
+      highlightOptions = leaflet::highlightOptions( # to highlight regions as you hover over them
+        color = "black", # boundary colour of region you hover over
+        weight = 2, # thickness of region boundary
+        bringToFront = FALSE
+      ), # FALSE = metro outline remains
+      label = sprintf(
+        "<strong>%s</strong><br/>%s: %.1f",
+        mapdata$sa4_name_2016, # region name displayed in label
+        indic_long,
+        mapdata$value
+      ) %>% # eco data displayed in label
+        lapply(shiny::HTML),
+      labelOptions = leaflet::labelOptions( # label options
+        style = list(
+          "font-weight" = "normal", # "bold" makes it so
+          padding = "3px 8px"
+        ),
+        textsize = "12px", # text size of label
+        noHide = FALSE, # TRUE makes labels permanently visible (messy)
+        direction = "auto"
+      ) # text box flips from side to side as needed
+    ) %>%
+    leaflet::addLegend(
+      position = "topright", # options: topright, bottomleft etc.
+      pal = pal, # colour palette as defined
+      values = mapdata$value, # fill data
+      bins = 3,
+      labFormat = leaflet::labelFormat(transform = identity),
+      title = label_title,
+      opacity = 1,
+    ) %>%
+    # label opacity
+    leaflet::addPolygons(
+      data = metro_outline, #
+      fill = F,
+      stroke = T,
+      opacity = 1,
+      color = "black",
+      weight = 1
+    )
 
-  #without names
-  map_vic_joined %>%
-    ggplot() +
-    geom_sf(aes(fill = `Proportion of Victorian caseload`)) +
-    ggthemes::theme_map() +
-    scale_fill_viridis_c(labels = percent) +
-    theme(legend.position=c(.5, .65))
+  map
+
+
+
 
 }
 
