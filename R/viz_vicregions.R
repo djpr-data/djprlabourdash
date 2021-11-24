@@ -1583,12 +1583,12 @@ title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
     )
 
   paste0(
-    "The JobActive caseload across Victoria's employment regions ranged from ",
-    round2(high_low$min_value, 1),
+    "The JobActive caseload across Victorian employment regions ranged from ",
+    scales::comma(high_low$min_value),
     " in ",
     high_low$min_er,
     " to ",
-    round2(high_low$max_value, 1),
+    scales::comma(high_low$max_value),
     " in ",
     high_low$max_er,
     " as at ",
@@ -1683,10 +1683,10 @@ viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
   # create bar chart next to map
 
   data %>%
-    ggplot(aes(
-      x = stats::reorder(.data$employment_region, .data$value),
-      y = .data$value
-    )) +
+    dplyr::mutate(employment_region = stringr::str_wrap(.data$employment_region, 20)) %>%
+        ggplot(aes(x = stats::reorder(.data$employment_region, .data$value),
+                   y = .data$value
+        )) +
     geom_col(
       col = "grey85",
       aes(fill = -.data$value)

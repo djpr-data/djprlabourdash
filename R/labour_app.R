@@ -1021,6 +1021,23 @@ labour_server <- function(input, output, session) {
       series_latestdates
     )
 
+  # Regional JobActive caseload --------
+  #data_reg_jobactive_map_bar_title <- data_reg_jobactive_vic()
+
+  output$title_reg_jobactive_vic <- renderUI({
+    title_reg_jobactive_vic(data = data_reg_jobactive_vic()) %>%
+      djpr_plot_title()
+  })
+
+  output$map_reg_jobactive_vic <- leaflet::renderLeaflet({
+    map_reg_jobactive_vic(data = data_reg_jobactive_vic())
+  })
+
+  output$reg_jobactive_vic_bar <- renderPlot({
+    viz_reg_jobactive_vic_bar(data = data_reg_jobactive_vic())
+  })
+
+
   # Australian Regions -----------
 
   output$table_reg_nonmetro_states_unemprate <- renderUI({
