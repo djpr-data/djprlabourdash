@@ -11,7 +11,7 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
                                                  "jobactive_indigenous_north western melbourne",
                                                  "jobactive_indigenous_south coast of victoria",
                                                  "jobactive_indigenous_south eastern melbourne and peninsula",
-                                                 "jobactive_indigenous_north western melbourne",
+                                                 "jobactive_indigenous_western melbourne",
                                                  "jobactive_indigenous_wimmera mallee",
                                                  "jobactive_total_ballarat",
                                                  "jobactive_total_bendigo",
@@ -23,7 +23,7 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
                                                  "jobactive_total_north western melbourne",
                                                  "jobactive_total_south coast of victoria",
                                                  "jobactive_total_south eastern melbourne and peninsula",
-                                                 "jobactive_total_north western melbourne",
+                                                 "jobactive_total_western melbourne",
                                                  "jobactive_total_wimmera mallee"
                                                ),
                                                df = dash_data
