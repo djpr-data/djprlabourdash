@@ -1496,7 +1496,7 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
                                                      "jobactive_youth (15-24)_goulburn/murray",
                                                      "jobactive_youth (15-24)_inner metropolitan melbourne",
                                                      "jobactive_youth (15-24)_north eastern melbourne",
-                                                     "jobactive_youth (15-24)_western melbourne",
+                                                     "jobactive_youth (15-24)_north western melbourne",
                                                      "jobactive_youth (15-24)_south coast of victoria",
                                                      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
                                                      "jobactive_youth (15-24)_western melbourne",
