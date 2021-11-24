@@ -1109,7 +1109,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     "jobactive_total_north western melbourne",
     "jobactive_total_south coast of victoria",
     "jobactive_total_south eastern melbourne and peninsula",
-    "jobactive_total_north western melbourne",
+    "jobactive_total_western melbourne",
     "jobactive_total_wimmera mallee"
   ))
 
@@ -1149,7 +1149,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       "jobactive_total_north western melbourne",
       "jobactive_total_south coast of victoria",
       "jobactive_total_south eastern melbourne and peninsula",
-      "jobactive_total_north western melbourne",
+      "jobactive_total_western melbourne",
       "jobactive_total_wimmera mallee"
     ),
     highlight_rows = "jobactive_total_total",
@@ -1179,7 +1179,7 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     "jobactive_indigenous_north western melbourne",
     "jobactive_indigenous_south coast of victoria",
     "jobactive_indigenous_south eastern melbourne and peninsula",
-    "jobactive_indigenous_north western melbourne",
+    "jobactive_indigenous_western melbourne",
     "jobactive_indigenous_wimmera mallee"
   ))
 
@@ -1207,7 +1207,7 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
       "jobactive_indigenous_north western melbourne",
       "jobactive_indigenous_south coast of victoria",
       "jobactive_indigenous_south eastern melbourne and peninsula",
-      "jobactive_indigenous_north western melbourne",
+      "jobactive_indigenous_western melbourne",
       "jobactive_indigenous_wimmera mallee"
     ),
     title = title,
@@ -1236,7 +1236,7 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     "jobactive_mature age (50+)_north western melbourne",
     "jobactive_mature age (50+)_south coast of victoria",
     "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-    "jobactive_mature age (50+)_north western melbourne",
+    "jobactive_mature age (50+)_western melbourne",
     "jobactive_mature age (50+)_wimmera mallee"
   ))
 
@@ -1269,7 +1269,7 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
       "jobactive_mature age (50+)_north western melbourne",
       "jobactive_mature age (50+)_south coast of victoria",
       "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-      "jobactive_mature age (50+)_north western melbourne",
+      "jobactive_mature age (50+)_western melbourne",
       "jobactive_mature age (50+)_wimmera mallee"
     ),
     title = title,
@@ -1298,7 +1298,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     "jobactive_pwd_north western melbourne",
     "jobactive_pwd_south coast of victoria",
     "jobactive_pwd_south eastern melbourne and peninsula",
-    "jobactive_pwd_north western melbourne",
+    "jobactive_pwd_western melbourne",
     "jobactive_pwd_wimmera mallee"
   ))
 
@@ -1331,7 +1331,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
       "jobactive_pwd_north western melbourne",
       "jobactive_pwd_south coast of victoria",
       "jobactive_pwd_south eastern melbourne and peninsula",
-      "jobactive_pwd_north western melbourne",
+      "jobactive_pwd_western melbourne",
       "jobactive_pwd_wimmera mallee"
     ),
     title = title,
@@ -1359,7 +1359,7 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     "jobactive_female_north western melbourne",
     "jobactive_female_south coast of victoria",
     "jobactive_female_south eastern melbourne and peninsula",
-    "jobactive_female_north western melbourne",
+    "jobactive_female_western melbourne",
     "jobactive_female_wimmera mallee"
   ))
 
@@ -1391,7 +1391,7 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
       "jobactive_female_north western melbourne",
       "jobactive_female_south coast of victoria",
       "jobactive_female_south eastern melbourne and peninsula",
-      "jobactive_female_north western melbourne",
+      "jobactive_female_western melbourne",
       "jobactive_female_wimmera mallee"
     ),
     title = title,
@@ -1420,7 +1420,7 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     "jobactive_refugee_north western melbourne",
     "jobactive_refugee_south coast of victoria",
     "jobactive_refugee_south eastern melbourne and peninsula",
-    "jobactive_refugee_north western melbourne",
+    "jobactive_refugee_western melbourne",
     "jobactive_refugee_wimmera mallee"
   ))
 
@@ -1453,7 +1453,7 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
       "jobactive_refugee_north western melbourne",
       "jobactive_refugee_south coast of victoria",
       "jobactive_refugee_south eastern melbourne and peninsula",
-      "jobactive_refugee_north western melbourne",
+      "jobactive_refugee_western melbourne",
       "jobactive_refugee_wimmera mallee"
     ),
     title = title,
@@ -1481,7 +1481,7 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
     "jobactive_youth (15-24)_north western melbourne",
     "jobactive_youth (15-24)_south coast of victoria",
     "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-    "jobactive_youth (15-24)_north western melbourne",
+    "jobactive_youth (15-24)_western melbourne",
     "jobactive_youth (15-24)_wimmera mallee"
   ))
 
@@ -1514,7 +1514,7 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
       "jobactive_youth (15-24)_north western melbourne",
       "jobactive_youth (15-24)_south coast of victoria",
       "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-      "jobactive_youth (15-24)_north western melbourne",
+      "jobactive_youth (15-24)_western melbourne",
       "jobactive_youth (15-24)_wimmera mallee"
     ),
     title = title,

@@ -11,7 +11,7 @@ viz_gr_refugee_jobact_sincecovid_line <- function(data = filter_dash_data(c(
                                                     "jobactive_refugee_north western melbourne",
                                                     "jobactive_refugee_south coast of victoria",
                                                     "jobactive_refugee_south eastern melbourne and peninsula",
-                                                    "jobactive_refugee_north western melbourne",
+                                                    "jobactive_refugee_western melbourne",
                                                     "jobactive_refugee_wimmera mallee",
                                                     "jobactive_total_ballarat",
                                                     "jobactive_total_bendigo",
@@ -23,7 +23,7 @@ viz_gr_refugee_jobact_sincecovid_line <- function(data = filter_dash_data(c(
                                                     "jobactive_total_north western melbourne",
                                                     "jobactive_total_south coast of victoria",
                                                     "jobactive_total_south eastern melbourne and peninsula",
-                                                    "jobactive_total_north western melbourne",
+                                                    "jobactive_total_western melbourne",
                                                     "jobactive_total_wimmera mallee"
                                                   ),
                                                   df = dash_data
@@ -123,7 +123,7 @@ viz_gr_refugee_jobactive_bar <- function(data = filter_dash_data(c(
                                            "jobactive_refugee_north western melbourne",
                                            "jobactive_refugee_south coast of victoria",
                                            "jobactive_refugee_south eastern melbourne and peninsula",
-                                           "jobactive_refugee_north western melbourne",
+                                           "jobactive_refugee_western melbourne",
                                            "jobactive_refugee_wimmera mallee"
                                          ),
                                          df = dash_data

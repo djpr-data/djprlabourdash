@@ -11,7 +11,7 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
                                                      "jobactive_pwd_north western melbourne",
                                                      "jobactive_pwd_south coast of victoria",
                                                      "jobactive_pwd_south eastern melbourne and peninsula",
-                                                     "jobactive_pwd_north western melbourne",
+                                                     "jobactive_pwd_western melbourne",
                                                      "jobactive_pwd_wimmera mallee",
                                                      "jobactive_total_ballarat",
                                                      "jobactive_total_bendigo",
@@ -23,7 +23,7 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
                                                      "jobactive_total_north western melbourne",
                                                      "jobactive_total_south coast of victoria",
                                                      "jobactive_total_south eastern melbourne and peninsula",
-                                                     "jobactive_total_north western melbourne",
+                                                     "jobactive_total_western melbourne",
                                                      "jobactive_total_wimmera mallee"
                                                    ),
                                                    df = dash_data
@@ -74,11 +74,6 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
   # dplyr::group_by(.data$indicator) %>%
   # dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
 
-  latest_date <- df %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$date)
-  round2(1)
-
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
     dplyr::select(-.data$tooltip) %>%
@@ -123,7 +118,7 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
                                        "jobactive_pwd_north western melbourne",
                                        "jobactive_pwd_south coast of victoria",
                                        "jobactive_pwd_south eastern melbourne and peninsula",
-                                       "jobactive_pwd_north western melbourne",
+                                       "jobactive_pwd_western melbourne",
                                        "jobactive_pwd_wimmera mallee"
                                      ),
                                      df = dash_data
