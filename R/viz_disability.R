@@ -118,7 +118,7 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
                                        "jobactive_pwd_north western melbourne",
                                        "jobactive_pwd_south coast of victoria",
                                        "jobactive_pwd_south eastern melbourne and peninsula",
-                                       "jobactive_pwd_north western melbourne",
+                                       "jobactive_pwd_western melbourne",
                                        "jobactive_pwd_wimmera mallee"
                                      ),
                                      df = dash_data
