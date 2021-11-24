@@ -89,7 +89,7 @@ create_summary_df <- function(data,
     if (pretty_round) {
       pretty_round(x)
     } else {
-      as.character(round2(x, 1))
+      scales::comma(round2(x, 1), accuracy = 1)
     }
   }
 
