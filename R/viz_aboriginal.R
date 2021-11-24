@@ -53,9 +53,9 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
       names_from = .data$indicator,
       values_from = .data$value
     ) %>%
-    dplyr::mutate("Non-Aboriginal" = .data$Total - .data$Indigenous) %>%
+    dplyr::mutate("non-Aboriginal" = .data$Total - .data$Indigenous) %>%
     dplyr::rename(Aboriginal = .data$Indigenous) %>%
-    dplyr::select(.data$date, .data$`Non-Aboriginal`, .data$Aboriginal) %>%
+    dplyr::select(.data$date, .data$`non-Aboriginal`, .data$Aboriginal) %>%
     tidyr::pivot_longer(
       cols = !.data$date,
       names_to = "indicator",
@@ -92,11 +92,11 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
 
 
   title <- dplyr::case_when(
-    latest_values$`Non-Aboriginal` > latest_values$Aboriginal ~
+    latest_values$`non-Aboriginal` > latest_values$Aboriginal ~
     paste0("Victoria's non-Aboriginal jobactive caseload in ", latest_values$date, " was higher than Aboriginal's"),
-    latest_values$`Non-Aboriginal` < latest_values$Aboriginal ~
+    latest_values$`non-Aboriginal` < latest_values$Aboriginal ~
     paste0("Victoria's non-Aboriginal jobactive caseloadin", latest_values$date, "was higher than Aboriginal's"),
-    latest_values$`Non-Aboriginal` == latest_values$Aboriginal ~
+    latest_values$`non-Aboriginal` == latest_values$Aboriginal ~
     paste0("Victoria's non-Aboriginal jobactive caseload in ", latest_values$date, "was higher than Aboriginal's"),
     TRUE ~ "Jobactive Caseload for Aboriginal and non-Aboriginal Victorians"
   )
@@ -125,7 +125,7 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
                                         "jobactive_indigenous_north western melbourne",
                                         "jobactive_indigenous_south coast of victoria",
                                         "jobactive_indigenous_south eastern melbourne and peninsula",
-                                        "jobactive_indigenous_north western melbourne",
+                                        "jobactive_indigenous_western melbourne",
                                         "jobactive_indigenous_wimmera mallee"
                                       ),
                                       df = dash_data
@@ -176,12 +176,6 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
     " as at ",
     format(high_low$date, "%B %Y")
   )
-
-  # reduce to only latest month
-  # df <- df %>%
-  #   dplyr::group_by(.data$region, ) %>%
-  #   dplyr::filter(.data$date == max(.data$date)) %>%
-  #   dplyr::ungroup()
 
 
 
