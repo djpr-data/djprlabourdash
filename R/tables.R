@@ -1133,7 +1133,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     dplyr::summarise(value = sum(.data$value)) %>%
     dplyr::mutate(series = "jobactive_total_total",
                   series_id = "jobactive_total_total",
-                  indicator = "Victoria's jobactive caseload") %>%
+                  indicator = "Total jobactive caseload") %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,
@@ -1195,8 +1195,21 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
+  table_data <- table_data %>%
+    dplyr::group_by(
+      .data$date,
+      .data$frequency, .data$unit, .data$table_no
+    ) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::mutate(series = "jobactive_total_aboriginal",
+                  series_id = "jobactive_total_aboriginal",
+                  indicator = "Aboriginal jobactive caseload") %>%
+    dplyr::bind_rows(table_data)
+
+
   make_table(table_data,
     row_order = c(
+      "jobactive_total_aboriginal",
       "jobactive_indigenous_ballarat",
       "jobactive_indigenous_bendigo",
       "jobactive_indigenous_barwon",
@@ -1210,6 +1223,7 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
       "jobactive_indigenous_western melbourne",
       "jobactive_indigenous_wimmera mallee"
     ),
+    highlight_rows = "jobactive_total_aboriginal",
     title = title,
     destination = destination,
     rename_indicators = FALSE,
