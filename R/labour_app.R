@@ -975,7 +975,8 @@ labour_server <- function(input, output, session) {
   )
 
   # Regions: Focus box -----
-  output$reg_sa4 <- renderPlot({
+  output$reg_sa4 <- renderPlot(
+    {
       map_reg_sa4(sa4 = input$focus_region)
     },
     height = 350
@@ -1019,6 +1020,23 @@ labour_server <- function(input, output, session) {
       input$focus_region,
       series_latestdates
     )
+
+  # Regional JobActive caseload --------
+  # data_reg_jobactive_map_bar_title <- data_reg_jobactive_vic()
+
+  output$title_reg_jobactive_vic <- renderUI({
+    title_reg_jobactive_vic(data = data_reg_jobactive_vic()) %>%
+      djpr_plot_title()
+  })
+
+  output$map_reg_jobactive_vic <- leaflet::renderLeaflet({
+    map_reg_jobactive_vic(data = data_reg_jobactive_vic())
+  })
+
+  output$reg_jobactive_vic_bar <- renderPlot({
+    viz_reg_jobactive_vic_bar(data = data_reg_jobactive_vic())
+  })
+
 
   # Australian Regions -----------
 

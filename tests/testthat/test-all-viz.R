@@ -5,7 +5,7 @@ test_that("all viz_ functions at least produce a plot", {
   plots <- lapply(plot_funcs, function(x) {
     print(x)
     get(x)()
-    })
+  })
 
   for (p in plots) {
     testthat::expect_s3_class(p, "gg")
