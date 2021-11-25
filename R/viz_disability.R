@@ -63,11 +63,11 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::mutate(
       value = 100 * (.data$value
-        / .data$value[.data$date == as.Date("2020-03-31")]-1),
+        / .data$value[.data$date == as.Date("2020-03-31")] - 1),
       tooltip = paste0(
         .data$indicator, "\n",
         format(.data$date, "%b %Y"), "\n",
-        round2(.data$value, 1),"%"
+        round2(.data$value, 1), "%"
       )
     )
 
@@ -93,7 +93,7 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
-      label_num = paste0(round2(.data$value, 1),"%"),
+      label_num = paste0(round2(.data$value, 1), "%"),
       y_labels = function(x) paste0(x, "%")
     ) +
     labs(
