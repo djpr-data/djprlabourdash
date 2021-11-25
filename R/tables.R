@@ -1564,9 +1564,20 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
+  table_data <- table_data %>%
+    dplyr::group_by(
+      .data$date,
+      .data$frequency, .data$unit, .data$table_no
+    ) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::mutate(series = "jobactive_total_youth",
+                  series_id = "jobactive_total_youth",
+                  indicator = "Youth (15-24) jobactive caseload") %>%
+    dplyr::bind_rows(table_data)
 
   make_table(table_data,
     row_order = c(
+      "jobactive_total_youth",
       "jobactive_youth (15-24)_ballarat",
       "jobactive_youth (15-24)_bendigo",
       "jobactive_youth (15-24)_barwon",
@@ -1580,6 +1591,7 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
       "jobactive_youth (15-24)_western melbourne",
       "jobactive_youth (15-24)_wimmera mallee"
     ),
+    highlight_rows = "jobactive_total_youth",
     title = title,
     destination = destination,
     rename_indicators = FALSE,
