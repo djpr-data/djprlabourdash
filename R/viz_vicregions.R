@@ -1601,7 +1601,7 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
 
   # Get map data for Victorian employment regions
   map <- employment_regions2015 %>%
-    dplyr::filter(employment_region_name_2015 %in% c(
+    dplyr::filter(.data$employment_region_name_2015 %in% c(
       "Ballarat",
       "Barwon",
       "Bendigo",
