@@ -53,9 +53,9 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
       names_from = .data$indicator,
       values_from = .data$value
     ) %>%
-    dplyr::mutate("non-Aboriginal" = .data$Total - .data$Indigenous) %>%
+    dplyr::mutate("Non-Aboriginal" = .data$Total - .data$Indigenous) %>%
     dplyr::rename(Aboriginal = .data$Indigenous) %>%
-    dplyr::select(.data$date, .data$`non-Aboriginal`, .data$Aboriginal) %>%
+    dplyr::select(.data$date, .data$`Non-Aboriginal`, .data$Aboriginal) %>%
     tidyr::pivot_longer(
       cols = !.data$date,
       names_to = "indicator",
@@ -169,13 +169,13 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
     )
 
   title <- paste0(
-    " Across Victoria jobactive caseload ranged from ",
+    "Across Victoria, the number of Aboriginal people on the jobactive program ranged from ",
     round2(high_low$min_caseload, 1),
-    " Aboriginal person in ",
+    " in ",
     high_low$min_region,
     " to ",
     round2(high_low$max_caseload, 1),
-    " Aboriginal person in ",
+    " in ",
     high_low$ max_region,
     " as at ",
     format(high_low$date, "%B %Y")
@@ -185,6 +185,9 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
 
   # draw bar chart for all employment regions
   df %>%
+    dplyr::mutate(region = gsub("South Eastern Melbourne",
+                                "SE Melbourne",
+                                .data$region)) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -194,8 +197,11 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
       aes(fill = -.data$value)
     ) +
     geom_text(
-      nudge_y = 0.1,
-      aes(label = paste0(round2(.data$value, 1))),
+      nudge_y = 5,
+      aes(label = paste0(
+        scales::comma(round2(.data$value, 1),
+                      accuracy = 1)
+        )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
