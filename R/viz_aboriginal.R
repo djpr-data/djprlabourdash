@@ -75,6 +75,27 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::pull(.data$date)
 
+
+  latest_vic <- df %>%
+    dplyr::filter(
+      .data$state == "Victoria",
+      .data$date == max(.data$date)
+    ) %>%
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  title <- paste0(
+    "The number of Victorians employed is ",
+    dplyr::case_when(
+      latest_vic > 0 ~ paste0(abs(latest_vic), " per cent higher than "),
+      latest_vic == 0 ~ "the same as ",
+      latest_vic < 0 ~ paste0(abs(latest_vic), " per cent lower than ")
+    ),
+    "it was in March 2020"
+  )
+
+
+
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
     dplyr::select(-.data$tooltip) %>%
