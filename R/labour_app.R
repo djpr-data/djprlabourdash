@@ -975,8 +975,7 @@ labour_server <- function(input, output, session) {
   )
 
   # Regions: Focus box -----
-  output$reg_sa4 <- renderPlot(
-    {
+  output$reg_sa4 <- renderPlot({
       map_reg_sa4(sa4 = input$focus_region)
     },
     height = 350
