@@ -62,51 +62,43 @@ viz_gr_refugee_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::mutate(
       value = 100 * (.data$value
-        / .data$value[.data$date == as.Date("2020-03-31")]),
+        / .data$value[.data$date == as.Date("2020-03-31")]-1),
       tooltip = paste0(
         .data$indicator, "\n",
         format(.data$date, "%b %Y"), "\n",
-        round2(.data$value, 1)
+        round2(.data$value, 1),"%"
       )
     )
-  # titl_df <- df %>%
-  # dplyr::group_by(.data$indicator) %>%
-  # dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
 
-  latest_date <- df %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$date)
-  round2(1)
 
-  latest_values <- df %>%
-    dplyr::filter(date == max(.data$date)) %>%
-    dplyr::select(-.data$tooltip) %>%
-    dplyr::mutate(
-      value = round2(.data$value, 1),
-      date = format(.data$date, "%B %Y")
+  latest_refugee <- df %>%
+    dplyr::filter(
+      .data$indicator == "Refugee",
+      .data$date == max(.data$date)
     ) %>%
-    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
-
-  title <- dplyr::case_when(
-    latest_values$Refugee > latest_values$Others ~
-    paste0("Victoria's refugees jobactive caseload in ", latest_values$date, " was higher than others"),
-    latest_values$Refugee < latest_values$Others ~
-    paste0("Victoria's refugee jobactive caseload in ", latest_values$date, " was higher than others"),
-    latest_values$Refugee == latest_values$Others ~
-    paste0("Victoria's refugee jobactive caseload in ", latest_values$date, " was higher than others"),
-    TRUE ~ "Jobactive caseload for refugee and others Victorians"
+  title <- paste0(
+    "Refugee Victorians jobactive caseload is ",
+    dplyr::case_when(
+      latest_refugee > 0 ~ paste0(abs(latest_refugee ), " per cent higher than "),
+      latest_refugee == 0 ~ "the same as ",
+      latest_refugee < 0 ~ paste0(abs(latest_refugee), " per cent lower than ")
+    ),
+    "it was in March 2020"
   )
 
 
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
-      label_num = paste0(round2(.data$value, 1)),
+      label_num = paste0(round2(.data$value, 1),"%"),
+      y_labels = function(x) paste0(x, "%")
     ) +
     labs(
       title = title,
-      subtitle = "Refugee Victorians jobactive caseload, indexed March 2020",
+      subtitle = "Cumulative change in jobactive caseload since March 2020",
       caption = caption_jobactive()
     )
 }
