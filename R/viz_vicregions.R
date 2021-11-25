@@ -1558,8 +1558,6 @@ data_reg_jobactive_vic <- function(data = filter_dash_data(c(
         pattern = " ; ",
         n = 3
       ),
-      #        jobactive = .data$split_series[, 1],
-      #        indicator = .data$split_series[, 2],
       employment_region = .data$split_series[, 3]
     ) %>%
     dplyr::select(.data$date, .data$series, .data$value, .data$employment_region)
@@ -1583,7 +1581,7 @@ title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
     )
 
   paste0(
-    "The JobActive caseload across Victorian employment regions ranged from ",
+    "The jobactive caseload across Victorian employment regions ranged from ",
     scales::comma(high_low$min_value),
     " in ",
     high_low$min_er,
@@ -1649,7 +1647,7 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
       label = sprintf(
         "<strong>%s</strong><br/>%s: %.0f",
         mapdata$employment_region_name_2015, # region name displayed in label
-        "Total JobActive caseload",
+        "Total jobactive caseload",
         mapdata$value
       ) %>%
         lapply(shiny::HTML),
@@ -1669,7 +1667,7 @@ map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
       values = mapdata$value, # fill data
       bins = 3,
       labFormat = leaflet::labelFormat(transform = identity),
-      title = "JobActive cases",
+      title = "jobactive cases",
       opacity = 1,
     )
 

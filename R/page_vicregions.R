@@ -130,7 +130,7 @@ page_vicregions <- function(...) {
       )
     ),
     br(),
-    h2(br(), "JobActive caseload by employment region"),
+    h2(br(), "jobactive caseload by employment region"),
     uiOutput("title_reg_jobactive_vic"),
     fluidRow(
       column(
@@ -143,6 +143,8 @@ page_vicregions <- function(...) {
         plotOutput("reg_jobactive_vic_bar")
       )
     ),
+    br(),
+    br(),
     htmlOutput("vicregions_footnote")
   )
 }
