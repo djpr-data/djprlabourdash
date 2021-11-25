@@ -130,6 +130,21 @@ page_vicregions <- function(...) {
       )
     ),
     br(),
+    h2(br(), "jobactive caseload by employment region"),
+    uiOutput("title_reg_jobactive_vic"),
+    fluidRow(
+      column(
+        6,
+        leaflet::leafletOutput("map_reg_jobactive_vic") %>%
+          djpr_with_spinner()
+      ),
+      column(
+        6,
+        plotOutput("reg_jobactive_vic_bar")
+      )
+    ),
+    br(),
+    br(),
     htmlOutput("vicregions_footnote")
   )
 }
