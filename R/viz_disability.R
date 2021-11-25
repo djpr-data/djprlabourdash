@@ -63,45 +63,42 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::mutate(
       value = 100 * (.data$value
-        / .data$value[.data$date == as.Date("2020-03-31")]),
+        / .data$value[.data$date == as.Date("2020-03-31")]-1),
       tooltip = paste0(
         .data$indicator, "\n",
         format(.data$date, "%b %Y"), "\n",
-        round2(.data$value, 1)
+        round2(.data$value, 1),"%"
       )
     )
-  # titl_df <- df %>%
-  # dplyr::group_by(.data$indicator) %>%
-  # dplyr::mutate(value =  ((.data$value[date == as.Date(max(.data$date))] -.data$value[date == as.Date("2020-03-01")])))
 
-  latest_values <- df %>%
-    dplyr::filter(date == max(.data$date)) %>%
-    dplyr::select(-.data$tooltip) %>%
-    dplyr::mutate(
-      value = round2(.data$value, 1),
-      date = format(.data$date, "%B %Y")
+  latest_PWD <- df %>%
+    dplyr::filter(
+      .data$indicator == "People with disabilities",
+      .data$date == max(.data$date)
     ) %>%
-    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
+    dplyr::pull(.data$value) %>%
+    round2(1)
 
-
-  title <- dplyr::case_when(
-    latest_values$`People with disabilities` > latest_values$Others ~
-    paste0("Victoria's people with disabilities jobactive caseload in ", latest_values$date, " was higher than other Victorians "),
-    latest_values$`People with disabilities` < latest_values$Others ~
-    paste0("Victoria's people with disabilities jobactive caseload in ", latest_values$date, " was lower than other Victorians"),
-    latest_values$`People with disabilities` < latest_values$Others ~
-    paste0("Victoria's People with disabilities jobactive caseload in ", latest_values$date, " was the same as  other Victorians "),
-    TRUE ~ "Jobactive caseload for People with disabilities and other Victorians"
+  title <- paste0(
+    "Victoria's people with disabilities jobactive caseload is ",
+    dplyr::case_when(
+      latest_PWD > 0 ~ paste0(abs(latest_PWD), " per cent higher than "),
+      latest_PWD == 0 ~ "the same as ",
+      latest_PWD < 0 ~ paste0(abs(latest_PWD), " per cent lower than ")
+    ),
+    "it was in March 2020"
   )
+
 
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
-      label_num = paste0(round2(.data$value, 1)),
+      label_num = paste0(round2(.data$value, 1),"%"),
+      y_labels = function(x) paste0(x, "%")
     ) +
     labs(
       title = title,
-      subtitle = "People with disabilities and Others Victorians jobactive caseload, indexed March 2020",
+      subtitle = "Cumulative change in jobactive caseload since March 2020",
       caption = caption_jobactive()
     )
 }
