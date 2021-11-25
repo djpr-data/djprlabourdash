@@ -1491,9 +1491,20 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
+  table_data <- table_data %>%
+    dplyr::group_by(
+      .data$date,
+      .data$frequency, .data$unit, .data$table_no
+    ) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::mutate(series = "jobactive_total_refugees",
+                  series_id = "jobactive_total_refugees",
+                  indicator = "Refugees jobactive caseload") %>%
+    dplyr::bind_rows(table_data)
 
   make_table(table_data,
     row_order = c(
+      "jobactive_total_refugees",
       "jobactive_refugee_ballarat",
       "jobactive_refugee_bendigo",
       "jobactive_refugee_barwon",
@@ -1507,6 +1518,7 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
       "jobactive_refugee_western melbourne",
       "jobactive_refugee_wimmera mallee"
     ),
+    highlight_rows = "jobactive_total_refugees",
     title = title,
     destination = destination,
     rename_indicators = FALSE,
