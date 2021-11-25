@@ -1131,9 +1131,11 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_total",
-                  series_id = "jobactive_total_total",
-                  indicator = "Total jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_total",
+      series_id = "jobactive_total_total",
+      indicator = "Total jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,
@@ -1157,7 +1159,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
     destination = destination,
     rename_indicators = FALSE,
     pretty_round = FALSE
-    )
+  )
 }
 
 
@@ -1201,9 +1203,11 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_aboriginal",
-                  series_id = "jobactive_total_aboriginal",
-                  indicator = "Aboriginal jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_aboriginal",
+      series_id = "jobactive_total_aboriginal",
+      indicator = "Aboriginal jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
 
@@ -1276,9 +1280,11 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_mature",
-                  series_id = "jobactive_total_mature",
-                  indicator = "Mature age (50+) jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_mature",
+      series_id = "jobactive_total_mature",
+      indicator = "Mature age (50+) jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,
@@ -1350,9 +1356,11 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_pwd",
-                  series_id = "jobactive_total_pwd",
-                  indicator = "People with disability jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_pwd",
+      series_id = "jobactive_total_pwd",
+      indicator = "People with disability jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,
@@ -1423,9 +1431,11 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_female",
-                  series_id = "jobactive_total_female",
-                  indicator = "Female jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_female",
+      series_id = "jobactive_total_female",
+      indicator = "Female jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,
@@ -1497,9 +1507,11 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_refugees",
-                  series_id = "jobactive_total_refugees",
-                  indicator = "Refugees jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_refugees",
+      series_id = "jobactive_total_refugees",
+      indicator = "Refugees jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,
@@ -1570,9 +1582,11 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
       .data$frequency, .data$unit, .data$table_no
     ) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
-    dplyr::mutate(series = "jobactive_total_youth",
-                  series_id = "jobactive_total_youth",
-                  indicator = "Youth (15-24) jobactive caseload") %>%
+    dplyr::mutate(
+      series = "jobactive_total_youth",
+      series_id = "jobactive_total_youth",
+      indicator = "Youth (15-24) jobactive caseload"
+    ) %>%
     dplyr::bind_rows(table_data)
 
   make_table(table_data,

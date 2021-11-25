@@ -1,34 +1,34 @@
 # Functions to create the graphs for the 'Disability' subpage on the dashboard.
 
 viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
-                                                     "jobactive_pwd_ballarat",
-                                                     "jobactive_pwd_bendigo",
-                                                     "jobactive_pwd_barwon",
-                                                     "jobactive_pwd_gippsland",
-                                                     "jobactive_pwd_goulburn/murray",
-                                                     "jobactive_pwd_inner metropolitan melbourne",
-                                                     "jobactive_pwd_north eastern melbourne",
-                                                     "jobactive_pwd_north western melbourne",
-                                                     "jobactive_pwd_south coast of victoria",
-                                                     "jobactive_pwd_south eastern melbourne and peninsula",
-                                                     "jobactive_pwd_western melbourne",
-                                                     "jobactive_pwd_wimmera mallee",
-                                                     "jobactive_total_ballarat",
-                                                     "jobactive_total_bendigo",
-                                                     "jobactive_total_barwon",
-                                                     "jobactive_total_gippsland",
-                                                     "jobactive_total_goulburn/murray",
-                                                     "jobactive_total_inner metropolitan melbourne",
-                                                     "jobactive_total_north eastern melbourne",
-                                                     "jobactive_total_north western melbourne",
-                                                     "jobactive_total_south coast of victoria",
-                                                     "jobactive_total_south eastern melbourne and peninsula",
-                                                     "jobactive_total_western melbourne",
-                                                     "jobactive_total_wimmera mallee"
-                                                   ),
-                                                   df = dash_data
-                                                   ) %>%
-                                                     dplyr::filter(date >= as.Date("2019-03-31"))) {
+                                                "jobactive_pwd_ballarat",
+                                                "jobactive_pwd_bendigo",
+                                                "jobactive_pwd_barwon",
+                                                "jobactive_pwd_gippsland",
+                                                "jobactive_pwd_goulburn/murray",
+                                                "jobactive_pwd_inner metropolitan melbourne",
+                                                "jobactive_pwd_north eastern melbourne",
+                                                "jobactive_pwd_north western melbourne",
+                                                "jobactive_pwd_south coast of victoria",
+                                                "jobactive_pwd_south eastern melbourne and peninsula",
+                                                "jobactive_pwd_western melbourne",
+                                                "jobactive_pwd_wimmera mallee",
+                                                "jobactive_total_ballarat",
+                                                "jobactive_total_bendigo",
+                                                "jobactive_total_barwon",
+                                                "jobactive_total_gippsland",
+                                                "jobactive_total_goulburn/murray",
+                                                "jobactive_total_inner metropolitan melbourne",
+                                                "jobactive_total_north eastern melbourne",
+                                                "jobactive_total_north western melbourne",
+                                                "jobactive_total_south coast of victoria",
+                                                "jobactive_total_south eastern melbourne and peninsula",
+                                                "jobactive_total_western melbourne",
+                                                "jobactive_total_wimmera mallee"
+                                              ),
+                                              df = dash_data
+                                              ) %>%
+                                                dplyr::filter(date >= as.Date("2019-03-31"))) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
