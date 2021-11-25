@@ -1270,9 +1270,20 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     ) %>%
     dplyr::select(-.data$split_series, -.data$total, -.data$jobactive)
 
+  table_data <- table_data %>%
+    dplyr::group_by(
+      .data$date,
+      .data$frequency, .data$unit, .data$table_no
+    ) %>%
+    dplyr::summarise(value = sum(.data$value)) %>%
+    dplyr::mutate(series = "jobactive_total_mature",
+                  series_id = "jobactive_total_mature",
+                  indicator = "Mature age (50+) jobactive caseload") %>%
+    dplyr::bind_rows(table_data)
 
   make_table(table_data,
     row_order = c(
+      "jobactive_total_mature",
       "jobactive_mature age (50+)_ballarat",
       "jobactive_mature age (50+)_bendigo",
       "jobactive_mature age (50+)_barwon",
@@ -1288,6 +1299,7 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     ),
     title = title,
     destination = destination,
+    highlight_rows = "jobactive_total_mature",
     rename_indicators = FALSE,
     pretty_round = FALSE
   )
