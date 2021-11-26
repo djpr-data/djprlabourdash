@@ -563,7 +563,7 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     round2(1)
 
   title <- paste0(
-    "Female Victorians jobactive caseload is ",
+    "The number of Victorian women receiving jobactive assistance is ",
     dplyr::case_when(
       latest_female > 0 ~ paste0(abs(latest_female), " per cent higher than "),
       latest_female == 0 ~ "the same as ",
@@ -581,7 +581,7 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Female and male Victorians jobactive caseload, indexed March 2020",
+      subtitle = "Victorian jobactive caseload, by sex, cumulative change since March 2020",
       caption = caption_jobactive()
     )
 }
