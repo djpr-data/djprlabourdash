@@ -80,7 +80,7 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     round2(1)
 
   title <- paste0(
-    "Victoria's people with disabilities jobactive caseload is ",
+    "The jobactive caseload for Victorian people with disabilities is ",
     dplyr::case_when(
       latest_PWD > 0 ~ paste0(abs(latest_PWD), " per cent higher than "),
       latest_PWD == 0 ~ "the same as ",
