@@ -1554,8 +1554,8 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
       names_from = .data$indicator,
       values_from = .data$value
     ) %>%
-    dplyr::mutate("25-49 Age" = .data$Total - .data$`Mature Age (50+)` - .data$`Youth (15-24)`) %>%
-    dplyr::select(.data$date, .data$`25-49 Age`, .data$`Mature Age (50+)`, .data$`Youth (15-24)`) %>%
+    dplyr::mutate("Aged 25-49" = .data$Total - .data$`Mature Age (50+)` - .data$`Youth (15-24)`) %>%
+    dplyr::select(.data$date, .data$`Aged 25-49`, .data$`Mature Age (50+)`, .data$`Youth (15-24)`) %>%
     tidyr::pivot_longer(
       cols = !.data$date,
       names_to = "indicator",
@@ -1581,7 +1581,7 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
     round2(1)
 
   title <- paste0(
-    "Mature Age (50+) Victorians jobactive caseload is ",
+    "Mature age (50+) Victorians jobactive caseload is ",
     dplyr::case_when(
       latest_mature_age > 0 ~ paste0(abs(latest_mature_age), " per cent higher than "),
       latest_mature_age == 0 ~ "the same as ",
@@ -1589,8 +1589,6 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
     ),
     "it was in March 2020"
   )
-
-
 
   df %>%
     djpr_ts_linechart(
@@ -1600,7 +1598,7 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Victorians jobactive caseload by age since  March 2020",
+      subtitle = "Cumulative change in jobactive caseload, by age, since March 2020",
       caption = caption_jobactive()
     )
 }
