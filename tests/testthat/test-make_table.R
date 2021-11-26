@@ -37,6 +37,8 @@ test_that("make_table() works with data that starts after Nov 2014", {
 })
 
 test_that("make_table()'s output has not changed", {
+  skip_on_ci()
+
   to_june_2020 <- filter_dash_data(series_ids = c(
     "A84423354L",
     "A84423242V",
