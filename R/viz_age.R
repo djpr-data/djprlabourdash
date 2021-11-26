@@ -1781,6 +1781,11 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
 
   # draw bar chart for all employment regions
   df %>%
+    dplyr::mutate(
+      region = gsub("South Eastern Melbourne",
+                    "SE Melbourne",
+                    .data$region)
+    ) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -1790,8 +1795,11 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
       aes(fill = -.data$value)
     ) +
     geom_text(
-      nudge_y = 0.1,
-      aes(label = paste0(round2(.data$value, 1))),
+      nudge_y = 50,
+      aes(label = paste0(
+        scales::comma(round2(.data$value, 1),
+                      accuracy = 1)
+          )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -1809,7 +1817,7 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Youth (15-24) Victorians jobactive caseload by region, ",
+        "Victorian youth (15-24) jobactive caseload by region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
