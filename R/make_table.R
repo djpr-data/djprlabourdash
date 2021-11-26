@@ -15,6 +15,10 @@
 #' when `destination` is "briefing".
 #' @param rename_indicators logical; default is `TRUE`. If `TRUE`, the
 #' `rename_indicators()` function will be used to rename certain indicators.
+#' @param pretty_round Logical; `TRUE` by default. If `TRUE`, figures will be
+#' rounded using `pretty_round()`. This means (for eg.) figures below 50
+#' will be rounded to 0. If `FALSE`, figures will not be rounded with
+#' `pretty_round()`.
 #' @examples
 #' # dash_data <- load_dash_data()
 #' \dontrun{
@@ -41,7 +45,8 @@ make_table <- function(data,
                        highlight_rows = NULL,
                        notes = NULL,
                        title = "",
-                       rename_indicators = TRUE) {
+                       rename_indicators = TRUE,
+                       pretty_round = TRUE) {
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
@@ -55,7 +60,8 @@ make_table <- function(data,
 
   # Create a summary dataframe with one row per unique indicator
   summary_df <- create_summary_df(df,
-    years_in_sparklines = years_in_sparklines
+    years_in_sparklines = years_in_sparklines,
+    pretty_round = pretty_round
   )
 
   # Reorder dataframe if row_order is specified
@@ -98,9 +104,18 @@ make_table <- function(data,
 
   names(summary_df) <- toupper(names(summary_df))
 
+  # Define columns to include in output table
+  cols_to_include <- names(summary_df)[names(summary_df) != "SERIES_ID"]
+
+  # Drop "Change during govt" column if all values are NA
+  # This occurs if all data series in the table commenced after Nov 2014
+  if (all(is.na(summary_df$`SINCE NOV 2014`))) {
+    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
+  }
+
   # Create a basic flextable using the supplied dataframe
   flex <- summary_df %>%
-    flextable::flextable(col_keys = names(summary_df)[names(summary_df) != "SERIES_ID"])
+    flextable::flextable(col_keys = cols_to_include)
 
   if (destination == "dashboard") {
     # Define cell colours ----
@@ -108,7 +123,23 @@ make_table <- function(data,
     # Note we do not use the dashboard-level ts_summ for this, as we want to ensure
     # any data pre-processing (such as rolling averages) are captured
 
-    df_summ <- djprshiny::ts_summarise(data)
+    df_summ_data <- data %>%
+      dplyr::mutate(indicator = dplyr::if_else(grepl(
+        "jobactive",
+        .data$series_id
+      ),
+      "Jobactive caseload",
+      .data$indicator
+      ))
+
+    df_summ <- djprshiny::ts_summarise(df_summ_data) %>%
+      dplyr::mutate(up_is_good = dplyr::if_else(grepl(
+        "jobactive",
+        .data$series_id
+      ),
+      FALSE,
+      .data$up_is_good
+      ))
 
     # Full palette for table
     full_pal <- grDevices::colorRampPalette(c("#E95A6A", "white", "#62BB46"))(100)
@@ -213,9 +244,12 @@ make_table <- function(data,
     "Current figures",
     "Change in latest period",
     "Change in past year",
-    "Change since COVID",
-    "Change during govt"
+    "Change since COVID"
   )
+
+  if ("SINCE NOV 2014" %in% cols_to_include) {
+    header_row <- c(header_row, "Change during govt")
+  }
 
   flex <- flex %>%
     flextable::add_header_row(values = header_row)

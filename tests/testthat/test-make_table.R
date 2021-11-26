@@ -19,8 +19,9 @@ test_that("make_table() makes tables", {
   t_o_final_col <- t_o$body$dataset$`SINCE NOV 2014`
   expect_type(t_o_final_col, "character")
   expect_true(all(nchar(t_o_final_col) >= 1))
+})
 
-  # Test that table works with data that starts after Nov 2014
+test_that("make_table() works with data that starts after Nov 2014", {
   recent_table <- make_table(
     data = filter_dash_data(series_ids = c(
       "A84423354L",
@@ -33,4 +34,33 @@ test_that("make_table() makes tables", {
   expect_s3_class(recent_table, "flextable")
   recent_table_last_col <- recent_table$body$dataset$`SINCE NOV 2014`
   expect_true(all(recent_table_last_col == "-"))
+})
+
+test_that("make_table()'s output has not changed", {
+  skip_on_ci()
+
+  to_june_2020 <- filter_dash_data(series_ids = c(
+    "A84423354L",
+    "A84423242V",
+    "A84423466F"
+  )) %>%
+    dplyr::filter(.data$date <= as.Date("2020-06-01"))
+
+
+  save_my_table <- function(df) {
+    x <- make_table(df,
+      destination = "briefing"
+    )
+    path <- tempfile(fileext = ".png")
+    flextable::save_as_image(x,
+      path = path,
+      webshot = "webshot2"
+    )
+    path
+  }
+
+  expect_snapshot_file(
+    save_my_table(to_june_2020),
+    "table_test.png"
+  )
 })

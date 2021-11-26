@@ -20,6 +20,7 @@ caption_auto <- function(data,
           frequency == "Month" ~ "ABS Labour Force detailed monthly",
         cat_no == "6291" &
           frequency != "Month" ~ "ABS Labour Force detailed quarterly",
+        cat_no == "joba" ~ "Commonwealth Jobactive caseload data",
         TRUE ~ "."
       ),
       pretty_month = format(.data$date, "%B %Y"),

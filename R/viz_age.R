@@ -1488,47 +1488,47 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
     labs(title = "")
 }
 
-viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
-                                                     "jobactive_youth (15-24)_ballarat",
-                                                     "jobactive_youth (15-24)_bendigo",
-                                                     "jobactive_youth (15-24)_barwon",
-                                                     "jobactive_youth (15-24)_gippsland",
-                                                     "jobactive_youth (15-24)_goulburn/murray",
-                                                     "jobactive_youth (15-24)_inner metropolitan melbourne",
-                                                     "jobactive_youth (15-24)_north eastern melbourne",
-                                                     "jobactive_youth (15-24)_north western melbourne",
-                                                     "jobactive_youth (15-24)_south coast of victoria",
-                                                     "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-                                                     "jobactive_youth (15-24)_north western melbourne",
-                                                     "jobactive_youth (15-24)_wimmera mallee",
-                                                     "jobactive_mature age (50+)_ballarat",
-                                                     "jobactive_mature age (50+)_bendigo",
-                                                     "jobactive_mature age (50+)_barwon",
-                                                     "jobactive_mature age (50+)_gippsland",
-                                                     "jobactive_mature age (50+)_goulburn/murray",
-                                                     "jobactive_mature age (50+)_inner metropolitan melbourne",
-                                                     "jobactive_mature age (50+)_north eastern melbourne",
-                                                     "jobactive_mature age (50+)_north western melbourne",
-                                                     "jobactive_mature age (50+)_south coast of victoria",
-                                                     "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-                                                     "jobactive_mature age (50+)_north western melbourne",
-                                                     "jobactive_mature age (50+)_wimmera mallee",
-                                                     "jobactive_total_ballarat",
-                                                     "jobactive_total_bendigo",
-                                                     "jobactive_total_barwon",
-                                                     "jobactive_total_gippsland",
-                                                     "jobactive_total_goulburn/murray",
-                                                     "jobactive_total_inner metropolitan melbourne",
-                                                     "jobactive_total_north eastern melbourne",
-                                                     "jobactive_total_north western melbourne",
-                                                     "jobactive_total_south coast of victoria",
-                                                     "jobactive_total_south eastern melbourne and peninsula",
-                                                     "jobactive_total_north western melbourne",
-                                                     "jobactive_total_wimmera mallee"
-                                                   ),
-                                                   df = dash_data
-                                                   ) %>%
-                                                     dplyr::filter(date >= as.Date("2019-03-31"))) {
+viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
+                                                    "jobactive_youth (15-24)_ballarat",
+                                                    "jobactive_youth (15-24)_bendigo",
+                                                    "jobactive_youth (15-24)_barwon",
+                                                    "jobactive_youth (15-24)_gippsland",
+                                                    "jobactive_youth (15-24)_goulburn/murray",
+                                                    "jobactive_youth (15-24)_inner metropolitan melbourne",
+                                                    "jobactive_youth (15-24)_north eastern melbourne",
+                                                    "jobactive_youth (15-24)_north western melbourne",
+                                                    "jobactive_youth (15-24)_south coast of victoria",
+                                                    "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                                                    "jobactive_youth (15-24)_western melbourne",
+                                                    "jobactive_youth (15-24)_wimmera mallee",
+                                                    "jobactive_mature age (50+)_ballarat",
+                                                    "jobactive_mature age (50+)_bendigo",
+                                                    "jobactive_mature age (50+)_barwon",
+                                                    "jobactive_mature age (50+)_gippsland",
+                                                    "jobactive_mature age (50+)_goulburn/murray",
+                                                    "jobactive_mature age (50+)_inner metropolitan melbourne",
+                                                    "jobactive_mature age (50+)_north eastern melbourne",
+                                                    "jobactive_mature age (50+)_north western melbourne",
+                                                    "jobactive_mature age (50+)_south coast of victoria",
+                                                    "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                                                    "jobactive_mature age (50+)_western melbourne",
+                                                    "jobactive_mature age (50+)_wimmera mallee",
+                                                    "jobactive_total_ballarat",
+                                                    "jobactive_total_bendigo",
+                                                    "jobactive_total_barwon",
+                                                    "jobactive_total_gippsland",
+                                                    "jobactive_total_goulburn/murray",
+                                                    "jobactive_total_inner metropolitan melbourne",
+                                                    "jobactive_total_north eastern melbourne",
+                                                    "jobactive_total_north western melbourne",
+                                                    "jobactive_total_south coast of victoria",
+                                                    "jobactive_total_south eastern melbourne and peninsula",
+                                                    "jobactive_total_western melbourne",
+                                                    "jobactive_total_wimmera mallee"
+                                                  ),
+                                                  df = dash_data
+                                                  ) %>%
+                                                    dplyr::filter(date >= as.Date("2019-03-31"))) {
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -1554,8 +1554,8 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
       names_from = .data$indicator,
       values_from = .data$value
     ) %>%
-    dplyr::mutate("25-49 Age" = .data$Total - .data$`Mature Age (50+)` - .data$`Youth (15-24)`) %>%
-    dplyr::select(.data$date, .data$`25-49 Age`, .data$`Mature Age (50+)`, .data$`Youth (15-24)`) %>%
+    dplyr::mutate("Aged 25-49" = .data$Total - .data$`Mature Age (50+)` - .data$`Youth (15-24)`) %>%
+    dplyr::select(.data$date, .data$`Aged 25-49`, .data$`Mature Age (50+)`, .data$`Youth (15-24)`) %>%
     tidyr::pivot_longer(
       cols = !.data$date,
       names_to = "indicator",
@@ -1563,41 +1563,263 @@ viz_gr_age_jobact_sincecovidindex_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::mutate(
       value = 100 * (.data$value
-        / .data$value[.data$date == as.Date("2020-03-31")]),
+        / .data$value[.data$date == as.Date("2020-03-31")] - 1),
       tooltip = paste0(
         .data$indicator, "\n",
         format(.data$date, "%b %Y"), "\n",
-        round2(.data$value, 1)
+        round2(.data$value, 1), "%"
       )
     )
 
-  # titl_df <- df %>%
-  #   dplyr::group_by(.data$indicator) %>%
-  #   tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
-  #   dplyr::mutate(value = ((.data$value[date == as.Date(max(.data$date))] - .data$value[date == as.Date("2020-03-31")])))
 
-  latest_date <- df %>%
-    dplyr::filter(.data$date == max(.data$date)) %>%
-    dplyr::pull(.data$date)
-  round2(1)
-
-  latest_values <- df %>%
-    dplyr::filter(date == max(.data$date)) %>%
-    dplyr::select(-.data$tooltip) %>%
-    dplyr::mutate(
-      value = round2(.data$value, 1),
-      date = format(.data$date, "%B %Y")
+  latest_mature_age <- df %>%
+    dplyr::filter(
+      .data$indicator == "Mature Age (50+)",
+      .data$date == max(.data$date)
     ) %>%
-    tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value)
+    dplyr::pull(.data$value) %>%
+    round2(1)
+
+  title <- paste0(
+    "Mature age (50+) Victorians jobactive caseload is ",
+    dplyr::case_when(
+      latest_mature_age > 0 ~ paste0(abs(latest_mature_age), " per cent higher than "),
+      latest_mature_age == 0 ~ "the same as ",
+      latest_mature_age < 0 ~ paste0(abs(latest_mature_age), " per cent lower than ")
+    ),
+    "it was in March 2020"
+  )
 
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
-      label_num = paste0(round2(.data$value, 1)),
+      label_num = paste0(round2(.data$value, 1), "%"),
+      y_labels = function(x) paste0(x, "%")
     ) +
     labs(
-      title = "title",
-      subtitle = "Victorians Jobactive Caseload by age, Indexed March 2020",
+      title = title,
+      subtitle = "Cumulative change in jobactive caseload, by age, since March 2020",
+      caption = caption_jobactive()
+    )
+}
+
+
+viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
+                                              "jobactive_mature age (50+)_ballarat",
+                                              "jobactive_mature age (50+)_bendigo",
+                                              "jobactive_mature age (50+)_barwon",
+                                              "jobactive_mature age (50+)_gippsland",
+                                              "jobactive_mature age (50+)_goulburn/murray",
+                                              "jobactive_mature age (50+)_inner metropolitan melbourne",
+                                              "jobactive_mature age (50+)_north eastern melbourne",
+                                              "jobactive_mature age (50+)_north western melbourne",
+                                              "jobactive_mature age (50+)_south coast of victoria",
+                                              "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                                              "jobactive_mature age (50+)_western melbourne",
+                                              "jobactive_mature age (50+)_wimmera mallee"
+                                            ),
+                                            df = dash_data
+                                            )) {
+  df <- data %>%
+    dplyr::select(
+      .data$date, .data$series,
+      .data$unit, .data$value
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      jobactive = .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$series, -.data$jobactive, -.data$indicator) %>%
+    dplyr::mutate(
+      value = .data$value * 1000
+    )
+
+  df <- df %>%
+    dplyr::group_by(.data$region, ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
+  # value = scales::comma(.data$value * 1000),
+  high_low <- df %>%
+    summarise(
+      min_region = .data$region[.data$value == min(.data$value)],
+      min_caseload = .data$value[.data$value == min(.data$value)],
+      max_region = .data$region[.data$value == max(.data$value)],
+      max_caseload = .data$value[.data$value == max(.data$value)],
+      date = max(.data$date)
+    )
+
+  title <- paste0(
+    "The number of mature age Victorians receiving jobactive services range from ",
+    scales::comma(round2(high_low$min_caseload, 1),
+                  accuracy = 1),
+    " for mature age (50+) in ",
+    high_low$min_region,
+    " to ",
+    scales::comma(round2(high_low$max_caseload, 1),
+                  accuracy = 1),
+    " for mature age(50+) in ",
+    high_low$ max_region,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
+
+  # draw bar chart for all employment regions
+  df %>%
+    dplyr::mutate(region = gsub("South Eastern Melbourne",
+                                "SE Melbourne",
+                                .data$region)) %>%
+    ggplot(aes(
+      x = stats::reorder(.data$region, .data$value),
+      y = .data$value
+    )) +
+    geom_col(
+      col = "grey85",
+      aes(fill = -.data$value)
+    ) +
+    geom_text(
+      nudge_y = 0.1,
+      aes(label = paste0(
+        scales::comma(round2(.data$value, 0),
+                      accuracy = 1)
+        )),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+    coord_flip(clip = "off") +
+    scale_fill_distiller(palette = "Blues") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(
+      title = title,
+      subtitle = paste0(
+        "Mature age (50+) Victorians jobactive caseload by region, ",
+        format(max(data$date), "%B %Y")
+      ),
+      caption = caption_jobactive()
+    )
+}
+
+
+viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
+                                         "jobactive_youth (15-24)_ballarat",
+                                         "jobactive_youth (15-24)_bendigo",
+                                         "jobactive_youth (15-24)_barwon",
+                                         "jobactive_youth (15-24)_gippsland",
+                                         "jobactive_youth (15-24)_goulburn/murray",
+                                         "jobactive_youth (15-24)_inner metropolitan melbourne",
+                                         "jobactive_youth (15-24)_north eastern melbourne",
+                                         "jobactive_youth (15-24)_north western melbourne",
+                                         "jobactive_youth (15-24)_south coast of victoria",
+                                         "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                                         "jobactive_youth (15-24)_western melbourne",
+                                         "jobactive_youth (15-24)_wimmera mallee"
+                                       ),
+                                       df = dash_data
+                                       )) {
+  df <- data %>%
+    dplyr::select(
+      .data$date, .data$series,
+      .data$unit, .data$value
+    ) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      jobactive = .data$split_series[, 1],
+      indicator = .data$split_series[, 2],
+      region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(-.data$split_series, -.data$series, -.data$jobactive, -.data$indicator) %>%
+    dplyr::mutate(
+      value = .data$value * 1000
+    )
+
+  df <- df %>%
+    dplyr::group_by(.data$region, ) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::ungroup()
+
+  # value = scales::comma(.data$value * 1000),
+  high_low <- df %>%
+    group_by(.data$date) %>%
+    summarise(
+      min_region = .data$region[.data$value == min(.data$value)],
+      min_caseload = .data$value[.data$value == min(.data$value)],
+      max_region = .data$region[.data$value == max(.data$value)],
+      max_caseload = .data$value[.data$value == max(.data$value)],
+      date = max(.data$date)
+    )
+
+  title <- paste0(
+    " Across Victoria youth (15-24) jobactive caseload ranged from ",
+    round2(high_low$min_caseload, 1),
+    " for youth (15-24) in ",
+    high_low$min_region,
+    " to ",
+    round2(high_low$max_caseload, 1),
+    " for youth (15-24) in ",
+    high_low$ max_region,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
+
+
+
+  # draw bar chart for all employment regions
+  df %>%
+    dplyr::mutate(
+      region = gsub("South Eastern Melbourne",
+                    "SE Melbourne",
+                    .data$region)
+    ) %>%
+    ggplot(aes(
+      x = stats::reorder(.data$region, .data$value),
+      y = .data$value
+    )) +
+    geom_col(
+      col = "grey85",
+      aes(fill = -.data$value)
+    ) +
+    geom_text(
+      nudge_y = 50,
+      aes(label = paste0(
+        scales::comma(round2(.data$value, 1),
+                      accuracy = 1)
+          )),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+    coord_flip(clip = "off") +
+    scale_fill_distiller(palette = "Blues") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(
+      title = title,
+      subtitle = paste0(
+        "Victorian youth (15-24) jobactive caseload by region, ",
+        format(max(data$date), "%B %Y")
+      ),
       caption = caption_jobactive()
     )
 }

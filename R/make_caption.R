@@ -51,6 +51,6 @@ caption_jobactive <- function(df = dash_data,
   caption_make(
     df = df,
     series_for_date = series_for_date,
-    release_name = "Commonwealth Jobactive Caseload data"
+    release_name = "Commonwealth jobactive caseload data"
   )
 }
