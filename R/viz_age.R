@@ -1657,22 +1657,25 @@ viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
     )
 
   title <- paste0(
-    " Across Victoria jobactive caseload ranged from ",
-    round2(high_low$min_caseload, 1),
+    "The number of mature age Victorians receiving jobactive services range from ",
+    scales::comma(round2(high_low$min_caseload, 1),
+                  accuracy = 1),
     " for mature age (50+) in ",
     high_low$min_region,
     " to ",
-    round2(high_low$max_caseload, 1),
+    scales::comma(round2(high_low$max_caseload, 1),
+                  accuracy = 1),
     " for mature age(50+) in ",
     high_low$ max_region,
     " as at ",
     format(high_low$date, "%B %Y")
   )
 
-
-
   # draw bar chart for all employment regions
   df %>%
+    dplyr::mutate(region = gsub("South Eastern Melbourne",
+                                "SE Melbourne",
+                                .data$region)) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -1683,7 +1686,10 @@ viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = paste0(round2(.data$value, 0))),
+      aes(label = paste0(
+        scales::comma(round2(.data$value, 0),
+                      accuracy = 1)
+        )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
