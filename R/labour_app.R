@@ -694,6 +694,13 @@ labour_server <- function(input, output, session) {
     width_percent = 45
   )
 
+  # jobactive data by age
+  output$table_jobactive_mature_age <- renderUI({
+    table_jobactive_mature_age() %>%
+      flextable::htmltools_value()
+  })
+
+
   # Long-term unemployment ------
 
   djpr_plot_server("gr_ltunemp_line",
