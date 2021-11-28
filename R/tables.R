@@ -1095,7 +1095,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
                                       unset = "dashboard"
                                     ),
                                     title = paste0(
-                                      "Total jobactive caseload by employment regions, ",
+                                      "Total jobactive caseload by Victorian employment regions, ",
                                       format(max(data$date), "%B %Y")
                                     )) {
   data <- filter_dash_data(c(
