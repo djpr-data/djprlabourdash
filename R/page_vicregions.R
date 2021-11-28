@@ -145,6 +145,11 @@ page_vicregions <- function(...) {
     ),
     br(),
     br(),
+    br(),
+    uiOutput("table_jobactive_regions") %>%
+      djpr_with_spinner(),
+    br(),
+    br(),
     htmlOutput("vicregions_footnote")
   )
 }

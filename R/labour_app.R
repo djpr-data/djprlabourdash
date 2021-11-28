@@ -1037,6 +1037,12 @@ labour_server <- function(input, output, session) {
     viz_reg_jobactive_vic_bar(data = data_reg_jobactive_vic())
   })
 
+  output$table_jobactive_regions <- renderUI({
+    table_jobactive_regions() %>%
+      flextable::htmltools_value()
+  })
+
+
 
   # Australian Regions -----------
 
