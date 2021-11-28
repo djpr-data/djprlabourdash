@@ -746,6 +746,11 @@ labour_server <- function(input, output, session) {
 
   # Aboriginal ------
 
+  output$table_jobactive_aboriginal <- renderUI({
+    table_jobactive_aboriginal() %>%
+      flextable::htmltools_value()
+  })
+
   # Disability ------
 
   # Migration ------
