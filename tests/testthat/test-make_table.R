@@ -37,7 +37,6 @@ test_that("make_table() works with data that starts after Nov 2014", {
 })
 
 test_that("make_table()'s output has not changed", {
-  skip_on_ci()
 
   to_june_2020 <- filter_dash_data(series_ids = c(
     "A84423354L",
@@ -46,21 +45,29 @@ test_that("make_table()'s output has not changed", {
   )) %>%
     dplyr::filter(.data$date <= as.Date("2020-06-01"))
 
-
-  save_my_table <- function(df) {
-    x <- make_table(df,
+  table <- make_table(to_june_2020,
       destination = "briefing"
     )
-    path <- tempfile(fileext = ".png")
-    flextable::save_as_image(x,
-      path = path,
-      webshot = "webshot2"
-    )
-    path
-  }
 
-  expect_snapshot_file(
-    save_my_table(to_june_2020),
-    "table_test.png"
-  )
+  expect_s3_class(table, "flextable")
+
+  table_df <- table$body$dataset
+  expect_s3_class(table_df, "data.frame")
+  expect_equal(names(table_df),
+               c(" ",
+                 "LAST 3 YEARS",
+                 "SERIES_ID",
+                 "JUN 2020",
+                 "SINCE MAY 2020",
+                 "SINCE JUN 2019",
+                 "SINCE MAR 2020",
+                 "SINCE NOV 2014"))
+
+  lapply(table_df$`LAST 3 YEARS`,
+         expect_s3_class,
+         class = "gg")
+
+  table_without_sparklines <- dplyr::select(table_df,
+                                            -`LAST 3 YEARS`)
+  expect_snapshot_output(table_without_sparklines)
 })
