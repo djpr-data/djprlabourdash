@@ -639,12 +639,14 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
   title <- paste0(
     "The number of women receiving jobactive assistance ranged from ",
     scales::comma(round2(high_low$min_caseload, 1),
-                  accuracy = 1),
+      accuracy = 1
+    ),
     " in ",
     high_low$min_region,
     " to ",
     scales::comma(round2(high_low$max_caseload, 1),
-                  accuracy = 1),
+      accuracy = 1
+    ),
     " in ",
     high_low$ max_region,
     " as at ",
@@ -653,9 +655,11 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
 
   # draw bar chart for all employment regions
   df %>%
-    dplyr::mutate(region = gsub("South Eastern Melbourne",
-                                "SE Melbourne",
-                                .data$region)) %>%
+    dplyr::mutate(region = gsub(
+      "South Eastern Melbourne",
+      "SE Melbourne",
+      .data$region
+    )) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -668,8 +672,9 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
       nudge_y = 5,
       aes(label = paste0(
         scales::comma(round2(.data$value, 0),
-                      accuracy = 1)
-        )),
+          accuracy = 1
+        )
+      )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt

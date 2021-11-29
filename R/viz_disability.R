@@ -158,12 +158,14 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
   title <- paste0(
     " Across Victoria, jobactive caseload for people with disabilities ranged from ",
     scales::comma(round2(high_low$min_caseload, 1),
-                  accuracy = 1),
+      accuracy = 1
+    ),
     " in ",
     high_low$min_region,
     " to ",
     scales::comma(round2(high_low$max_caseload, 1),
-                  accuracy = 1),
+      accuracy = 1
+    ),
     " in ",
     high_low$ max_region,
     " as at ",
@@ -191,8 +193,9 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
       nudge_y = 0.1,
       aes(label = paste0(
         scales::comma(round2(.data$value, 1),
-                      accuracy = 1)
-                         )),
+          accuracy = 1
+        )
+      )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt

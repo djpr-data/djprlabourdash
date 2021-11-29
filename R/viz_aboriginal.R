@@ -181,9 +181,11 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
 
   # draw bar chart for all employment regions
   df %>%
-    dplyr::mutate(region = gsub("South Eastern Melbourne",
-                                "SE Melbourne",
-                                .data$region)) %>%
+    dplyr::mutate(region = gsub(
+      "South Eastern Melbourne",
+      "SE Melbourne",
+      .data$region
+    )) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -196,8 +198,9 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
       nudge_y = 5,
       aes(label = paste0(
         scales::comma(round2(.data$value, 1),
-                      accuracy = 1)
-        )),
+          accuracy = 1
+        )
+      )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
