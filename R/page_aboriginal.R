@@ -4,7 +4,7 @@ page_aboriginal <- function(...) {
     br(),
     paste0("This section explores the labour force status for Aboriginal Victorians."),
     br(),
-    h2(br(), "Agoriginal Victorians: jobactive caseload"),
+    h2(br(), "Aboriginal Victorians: jobactive caseload"),
     uiOutput("table_jobactive_aboriginal") %>%
       djpr_with_spinner(),
     br(),
