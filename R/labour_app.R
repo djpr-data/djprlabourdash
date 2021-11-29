@@ -633,7 +633,6 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-
   djpr_plot_server("gr_youth_full_part_line",
     plot_function = viz_gr_youth_full_part_line,
     data = filter_dash_data(c(
@@ -815,6 +814,30 @@ labour_server <- function(input, output, session) {
                   ) %>%
                     dplyr::filter(date >= as.Date("2019-03-31")),
                     date_slider = FALSE
+  )
+
+  djpr_plot_server("gr_mature_age_jobactive_bar",
+                  viz_gr_mature_age_jobactive_bar,
+                  data = filter_dash_data(c(
+                    "jobactive_mature age (50+)_ballarat",
+                    "jobactive_mature age (50+)_bendigo",
+                    "jobactive_mature age (50+)_barwon",
+                    "jobactive_mature age (50+)_gippsland",
+                    "jobactive_mature age (50+)_goulburn/murray",
+                    "jobactive_mature age (50+)_inner metropolitan melbourne",
+                    "jobactive_mature age (50+)_north eastern melbourne",
+                    "jobactive_mature age (50+)_north western melbourne",
+                    "jobactive_mature age (50+)_south coast of victoria",
+                    "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                    "jobactive_mature age (50+)_western melbourne",
+                    "jobactive_mature age (50+)_wimmera mallee"
+                  ),
+                  df = dash_data
+                  ),
+                  plt_change = plt_change,
+                  date_slider = FALSE,
+                  download_button = FALSE,
+                  width_percent = 75
   )
 
 

@@ -1601,7 +1601,6 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
     )
 }
 
-
 viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
                                               "jobactive_mature age (50+)_ballarat",
                                               "jobactive_mature age (50+)_bendigo",
@@ -1653,15 +1652,15 @@ viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
     )
 
   title <- paste0(
-    "The number of mature age Victorians receiving jobactive services range from ",
+    "The number of mature age Victorians receiving jobactive services ranged from ",
     scales::comma(round2(high_low$min_caseload, 1),
                   accuracy = 1),
-    " for mature age (50+) in ",
+    " in ",
     high_low$min_region,
     " to ",
     scales::comma(round2(high_low$max_caseload, 1),
                   accuracy = 1),
-    " for mature age(50+) in ",
+    " in ",
     high_low$ max_region,
     " as at ",
     format(high_low$date, "%B %Y")
@@ -1703,13 +1702,12 @@ viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Mature age (50+) Victorians jobactive caseload by region, ",
+        "Mature age (50+) Victorians jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
     )
 }
-
 
 viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
                                          "jobactive_youth (15-24)_ballarat",
