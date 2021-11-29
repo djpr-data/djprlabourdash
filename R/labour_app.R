@@ -387,6 +387,13 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 5)
   )
 
+  # Jobactive by sex
+  output$table_jobactive_female <- renderUI({
+    table_jobactive_female() %>%
+      flextable::htmltools_value()
+  })
+
+
   # Age ----
 
   output$table_gr_youth_summary <- renderUI({

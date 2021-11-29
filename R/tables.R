@@ -1391,7 +1391,7 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                      unset = "dashboard"
                                    ),
                                    title = paste0(
-                                     "Total jobactive caseload for mature age Victorians, ",
+                                     "Total jobactive caseload for female Victorians, ",
                                      format(max(data$date), "%B %Y")
                                    )) {
   data <- filter_dash_data(c(
@@ -1434,7 +1434,7 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     dplyr::mutate(
       series = "jobactive_total_female",
       series_id = "jobactive_total_female",
-      indicator = "Female jobactive caseload"
+      indicator = "Female jobactive caseload, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 

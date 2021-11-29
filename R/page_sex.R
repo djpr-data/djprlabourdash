@@ -13,6 +13,10 @@ page_sex <- function(...) {
     h2(br(), "Employment to population ratio by sex"),
     djpr_plot_ui("gr_gen_emppopratio_line"),
     h2(br(), "Participation rate by sex"),
-    djpr_plot_ui("gr_gen_partrate_line")
+    djpr_plot_ui("gr_gen_partrate_line"),
+    h2(br(), "Jobactive caseload by sex"),
+    uiOutput("table_jobactive_female") %>%
+      djpr_with_spinner(),
+    br()
   )
 }
