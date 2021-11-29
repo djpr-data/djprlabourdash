@@ -17,6 +17,8 @@ page_sex <- function(...) {
     h2(br(), "Jobactive caseload by sex"),
     uiOutput("table_jobactive_female") %>%
       djpr_with_spinner(),
+    djpr_plot_ui("gr_female_jobact_sincecovid_line"),
+    br(),
     br()
   )
 }

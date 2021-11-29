@@ -553,7 +553,6 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
       )
     )
 
-
   latest_female <- df %>%
     dplyr::filter(
       .data$indicator == "Female",
@@ -571,7 +570,6 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ),
     "it was in March 2020"
   )
-
 
   df %>%
     djpr_ts_linechart(
