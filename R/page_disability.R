@@ -11,6 +11,8 @@ page_disability <- function(...) {
     br(),
     djpr_plot_ui("gr_pwd_jobact_sincecovid_line"),
     br(),
+    djpr_plot_ui("gr_pwd_jobactive_bar"),
+    br(),
     htmlOutput("disability_footnote"),
     br()
   )

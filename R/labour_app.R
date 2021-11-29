@@ -1023,6 +1023,29 @@ labour_server <- function(input, output, session) {
                      date_slider = FALSE
   )
 
+  djpr_plot_server("gr_pwd_jobactive_bar",
+                   viz_gr_pwd_jobactive_bar,
+                   data = filter_dash_data(c(
+                     "jobactive_pwd_ballarat",
+                     "jobactive_pwd_bendigo",
+                     "jobactive_pwd_barwon",
+                     "jobactive_pwd_gippsland",
+                     "jobactive_pwd_goulburn/murray",
+                     "jobactive_pwd_inner metropolitan melbourne",
+                     "jobactive_pwd_north eastern melbourne",
+                     "jobactive_pwd_north western melbourne",
+                     "jobactive_pwd_south coast of victoria",
+                     "jobactive_pwd_south eastern melbourne and peninsula",
+                     "jobactive_pwd_western melbourne",
+                     "jobactive_pwd_wimmera mallee"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE,
+                   download_button = FALSE,
+                   width_percent = 75
+  )
 
   # Migration ------
 
