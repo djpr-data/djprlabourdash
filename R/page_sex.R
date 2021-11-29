@@ -19,6 +19,7 @@ page_sex <- function(...) {
       djpr_with_spinner(),
     djpr_plot_ui("gr_female_jobact_sincecovid_line"),
     br(),
+    djpr_plot_ui("gr_female_jobactive_bar"),
     br()
   )
 }

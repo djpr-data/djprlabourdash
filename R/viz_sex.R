@@ -619,7 +619,6 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
       value = .data$value * 1000
     )
 
-
   # reduce to only latest month
   df <- df %>%
     dplyr::group_by(.data$region, ) %>%
@@ -637,7 +636,6 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
       date = max(.data$date)
     )
 
-
   title <- paste0(
     "The number of women receiving jobactive assistance ranged from ",
     scales::comma(round2(high_low$min_caseload, 1),
@@ -652,9 +650,6 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
     " as at ",
     format(high_low$date, "%B %Y")
   )
-
-
-
 
   # draw bar chart for all employment regions
   df %>%
@@ -692,7 +687,7 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Female Victorians jobactive caseload by region, ",
+        "Female Victorians jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()

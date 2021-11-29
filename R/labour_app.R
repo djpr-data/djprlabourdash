@@ -428,6 +428,30 @@ labour_server <- function(input, output, session) {
       date_slider = FALSE
   )
 
+  djpr_plot_server("gr_female_jobactive_bar",
+                   viz_gr_female_jobactive_bar,
+                   data = filter_dash_data(c(
+                     "jobactive_female_ballarat",
+                     "jobactive_female_bendigo",
+                     "jobactive_female_barwon",
+                     "jobactive_female_gippsland",
+                     "jobactive_female_goulburn/murray",
+                     "jobactive_female_inner metropolitan melbourne",
+                     "jobactive_female_north eastern melbourne",
+                     "jobactive_female_north western melbourne",
+                     "jobactive_female_south coast of victoria",
+                     "jobactive_female_south eastern melbourne and peninsula",
+                     "jobactive_female_western melbourne",
+                     "jobactive_female_wimmera mallee"
+                   ),
+                   df = dash_data
+                   ),
+                   plt_change = plt_change,
+                   date_slider = FALSE,
+                   download_button = FALSE,
+                   width_percent = 75
+  )
+
   # Age ----
 
   output$table_gr_youth_summary <- renderUI({
