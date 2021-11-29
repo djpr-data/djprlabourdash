@@ -65,5 +65,6 @@ Suggests:
     rmarkdown,
     officedown,
     blastula,
-    covr
+    covr,
+    webshot
 Config/testthat/edition: 3

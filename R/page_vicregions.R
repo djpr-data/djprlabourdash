@@ -20,12 +20,12 @@ page_vicregions <- function(...) {
       ),
       selected = "unemp_rate"
     ),
-    djpr_plot_title(textOutput("title_unemp_emppop_partrate_vic")),
-    djpr_plot_subtitle(textOutput("subtitle_unemp_emppop_partrate_vic")),
+    djpr_plot_title(textOutput("title_reg_unemp_emppop_partrate_vic")),
+    djpr_plot_subtitle(textOutput("subtitle_reg_unemp_emppop_partrate_vic")),
     fluidRow(
       column(
         6,
-        leaflet::leafletOutput("map_unemp_emppop_partrate_vic") %>%
+        leaflet::leafletOutput("map_reg_unemp_emppop_partrate_vic") %>%
           djpr_with_spinner()
       ),
       column(
