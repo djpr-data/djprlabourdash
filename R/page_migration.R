@@ -10,6 +10,8 @@ page_migration <- function(...) {
     br(),
     djpr_plot_ui("gr_refugee_jobact_sincecovid_line"),
     br(),
+    djpr_plot_ui("gr_refugee_jobactive_bar"),
+    br(),
     htmlOutput("migration_footnote"),
     br()
   )
