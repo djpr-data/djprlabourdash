@@ -8,6 +8,8 @@ page_aboriginal <- function(...) {
     uiOutput("table_jobactive_aboriginal") %>%
       djpr_with_spinner(),
     br(),
+    djpr_plot_ui("gr_abor_jobactive_sincecovid_line"),
+    br(),
     htmlOutput("aboriginal_footnote"),
     br()
   )
