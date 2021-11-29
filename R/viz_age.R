@@ -1545,7 +1545,6 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
     ) %>%
     dplyr::select(-.data$split_series, -.data$series, -.data$jobactive)
 
-
   df <- df %>%
     dplyr::group_by(.data$indicator, .data$date) %>%
     dplyr::summarise(value = sum(.data$value)) %>%
@@ -1570,7 +1569,6 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
         round2(.data$value, 1), "%"
       )
     )
-
 
   latest_mature_age <- df %>%
     dplyr::filter(
@@ -1598,7 +1596,7 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Cumulative change in jobactive caseload, by age, since March 2020",
+      subtitle = "Cumulative change in jobactive caseload by age, since March 2020",
       caption = caption_jobactive()
     )
 }

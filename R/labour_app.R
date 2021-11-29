@@ -746,6 +746,53 @@ labour_server <- function(input, output, session) {
       flextable::htmltools_value()
   })
 
+  djpr_plot_server("gr_age_jobactive_since_covid_line",
+                  viz_gr_age_jobactive_since_covid_line,
+                  plt_change = plt_change,
+                  data = filter_dash_data(c(
+                    "jobactive_youth (15-24)_ballarat",
+                    "jobactive_youth (15-24)_bendigo",
+                    "jobactive_youth (15-24)_barwon",
+                    "jobactive_youth (15-24)_gippsland",
+                    "jobactive_youth (15-24)_goulburn/murray",
+                    "jobactive_youth (15-24)_inner metropolitan melbourne",
+                    "jobactive_youth (15-24)_north eastern melbourne",
+                    "jobactive_youth (15-24)_north western melbourne",
+                    "jobactive_youth (15-24)_south coast of victoria",
+                    "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                    "jobactive_youth (15-24)_western melbourne",
+                    "jobactive_youth (15-24)_wimmera mallee",
+                    "jobactive_mature age (50+)_ballarat",
+                    "jobactive_mature age (50+)_bendigo",
+                    "jobactive_mature age (50+)_barwon",
+                    "jobactive_mature age (50+)_gippsland",
+                    "jobactive_mature age (50+)_goulburn/murray",
+                    "jobactive_mature age (50+)_inner metropolitan melbourne",
+                    "jobactive_mature age (50+)_north eastern melbourne",
+                    "jobactive_mature age (50+)_north western melbourne",
+                    "jobactive_mature age (50+)_south coast of victoria",
+                    "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                    "jobactive_mature age (50+)_western melbourne",
+                    "jobactive_mature age (50+)_wimmera mallee",
+                    "jobactive_total_ballarat",
+                    "jobactive_total_bendigo",
+                    "jobactive_total_barwon",
+                    "jobactive_total_gippsland",
+                    "jobactive_total_goulburn/murray",
+                    "jobactive_total_inner metropolitan melbourne",
+                    "jobactive_total_north eastern melbourne",
+                    "jobactive_total_north western melbourne",
+                    "jobactive_total_south coast of victoria",
+                    "jobactive_total_south eastern melbourne and peninsula",
+                    "jobactive_total_western melbourne",
+                    "jobactive_total_wimmera mallee"
+                  ),
+                  df = dash_data
+                  ) %>%
+                    dplyr::filter(date >= as.Date("2019-03-31")),
+                    date_slider = FALSE
+  )
+
 
   # Long-term unemployment ------
 

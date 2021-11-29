@@ -579,7 +579,7 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Victorian jobactive caseload, by sex, cumulative change since March 2020",
+      subtitle = "Victorian jobactive caseload by sex, cumulative change since March 2020",
       caption = caption_jobactive()
     )
 }

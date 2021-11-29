@@ -88,7 +88,7 @@ page_age <- function(...) {
     br(),
     uiOutput("table_jobactive_youth") %>%
       djpr_with_spinner(),
+    djpr_plot_ui("gr_age_jobactive_since_covid_line"),
     br()
-
   )
 }
