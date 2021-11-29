@@ -1316,7 +1316,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
                                   unset = "dashboard"
                                 ),
                                 title = paste0(
-                                  "Total jobactive caseload for people withdisabilities Victorians",
+                                  "Jobactive caseload for Victorians with disabilities",
                                   format(max(data$date), "%B %Y")
                                 )) {
   data <- filter_dash_data(c(
@@ -1359,7 +1359,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     dplyr::mutate(
       series = "jobactive_total_pwd",
       series_id = "jobactive_total_pwd",
-      indicator = "People with disability jobactive caseload"
+      indicator = "People with disabilities, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 

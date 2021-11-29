@@ -760,6 +760,11 @@ labour_server <- function(input, output, session) {
 
   # Disability ------
 
+  output$table_jobactive_pwd <- renderUI({
+    table_jobactive_pwd() %>%
+      flextable::htmltools_value()
+  })
+
   # Migration ------
 
   # Regions ------
