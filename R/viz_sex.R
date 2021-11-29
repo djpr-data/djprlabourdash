@@ -553,7 +553,6 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
       )
     )
 
-
   latest_female <- df %>%
     dplyr::filter(
       .data$indicator == "Female",
@@ -572,7 +571,6 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     "it was in March 2020"
   )
 
-
   df %>%
     djpr_ts_linechart(
       col_var = .data$indicator,
@@ -581,7 +579,7 @@ viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     ) +
     labs(
       title = title,
-      subtitle = "Victorian jobactive caseload, by sex, cumulative change since March 2020",
+      subtitle = "Victorian jobactive caseload by sex, cumulative change since March 2020",
       caption = caption_jobactive()
     )
 }
@@ -621,7 +619,6 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
       value = .data$value * 1000
     )
 
-
   # reduce to only latest month
   df <- df %>%
     dplyr::group_by(.data$region, ) %>%
@@ -639,30 +636,30 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
       date = max(.data$date)
     )
 
-
   title <- paste0(
     "The number of women receiving jobactive assistance ranged from ",
     scales::comma(round2(high_low$min_caseload, 1),
-                  accuracy = 1),
+      accuracy = 1
+    ),
     " in ",
     high_low$min_region,
     " to ",
     scales::comma(round2(high_low$max_caseload, 1),
-                  accuracy = 1),
+      accuracy = 1
+    ),
     " in ",
     high_low$ max_region,
     " as at ",
     format(high_low$date, "%B %Y")
   )
 
-
-
-
   # draw bar chart for all employment regions
   df %>%
-    dplyr::mutate(region = gsub("South Eastern Melbourne",
-                                "SE Melbourne",
-                                .data$region)) %>%
+    dplyr::mutate(region = gsub(
+      "South Eastern Melbourne",
+      "SE Melbourne",
+      .data$region
+    )) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -675,8 +672,9 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
       nudge_y = 5,
       aes(label = paste0(
         scales::comma(round2(.data$value, 0),
-                      accuracy = 1)
-        )),
+          accuracy = 1
+        )
+      )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -694,7 +692,7 @@ viz_gr_female_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Female Victorians jobactive caseload by region, ",
+        "Female Victorians jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()

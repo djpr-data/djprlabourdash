@@ -387,6 +387,71 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365.25 * 5)
   )
 
+  # Jobactive by sex
+  output$table_jobactive_female <- renderUI({
+    table_jobactive_female() %>%
+      flextable::htmltools_value()
+  })
+
+  djpr_plot_server("gr_female_jobact_sincecovid_line",
+    viz_gr_female_jobact_sincecovid_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "jobactive_female_ballarat",
+      "jobactive_female_bendigo",
+      "jobactive_female_barwon",
+      "jobactive_female_gippsland",
+      "jobactive_female_goulburn/murray",
+      "jobactive_female_inner metropolitan melbourne",
+      "jobactive_female_north eastern melbourne",
+      "jobactive_female_north western melbourne",
+      "jobactive_female_south coast of victoria",
+      "jobactive_female_south eastern melbourne and peninsula",
+      "jobactive_female_western melbourne",
+      "jobactive_female_wimmera mallee",
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-03-31")),
+    date_slider = FALSE
+  )
+
+  djpr_plot_server("gr_female_jobactive_bar",
+    viz_gr_female_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_female_ballarat",
+      "jobactive_female_bendigo",
+      "jobactive_female_barwon",
+      "jobactive_female_gippsland",
+      "jobactive_female_goulburn/murray",
+      "jobactive_female_inner metropolitan melbourne",
+      "jobactive_female_north eastern melbourne",
+      "jobactive_female_north western melbourne",
+      "jobactive_female_south coast of victoria",
+      "jobactive_female_south eastern melbourne and peninsula",
+      "jobactive_female_western melbourne",
+      "jobactive_female_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
+
   # Age ----
 
   output$table_gr_youth_summary <- renderUI({
@@ -568,7 +633,6 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
-
   djpr_plot_server("gr_youth_full_part_line",
     plot_function = viz_gr_youth_full_part_line,
     data = filter_dash_data(c(
@@ -694,6 +758,113 @@ labour_server <- function(input, output, session) {
     width_percent = 45
   )
 
+  # jobactive data by age
+
+  output$table_jobactive_youth <- renderUI({
+    table_jobactive_youth() %>%
+      flextable::htmltools_value()
+  })
+
+  djpr_plot_server("gr_youth_jobactive_bar",
+    viz_gr_youth_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_youth (15-24)_ballarat",
+      "jobactive_youth (15-24)_bendigo",
+      "jobactive_youth (15-24)_barwon",
+      "jobactive_youth (15-24)_gippsland",
+      "jobactive_youth (15-24)_goulburn/murray",
+      "jobactive_youth (15-24)_inner metropolitan melbourne",
+      "jobactive_youth (15-24)_north eastern melbourne",
+      "jobactive_youth (15-24)_north western melbourne",
+      "jobactive_youth (15-24)_south coast of victoria",
+      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+      "jobactive_youth (15-24)_western melbourne",
+      "jobactive_youth (15-24)_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
+
+  djpr_plot_server("gr_age_jobactive_since_covid_line",
+    viz_gr_age_jobactive_since_covid_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "jobactive_youth (15-24)_ballarat",
+      "jobactive_youth (15-24)_bendigo",
+      "jobactive_youth (15-24)_barwon",
+      "jobactive_youth (15-24)_gippsland",
+      "jobactive_youth (15-24)_goulburn/murray",
+      "jobactive_youth (15-24)_inner metropolitan melbourne",
+      "jobactive_youth (15-24)_north eastern melbourne",
+      "jobactive_youth (15-24)_north western melbourne",
+      "jobactive_youth (15-24)_south coast of victoria",
+      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+      "jobactive_youth (15-24)_western melbourne",
+      "jobactive_youth (15-24)_wimmera mallee",
+      "jobactive_mature age (50+)_ballarat",
+      "jobactive_mature age (50+)_bendigo",
+      "jobactive_mature age (50+)_barwon",
+      "jobactive_mature age (50+)_gippsland",
+      "jobactive_mature age (50+)_goulburn/murray",
+      "jobactive_mature age (50+)_inner metropolitan melbourne",
+      "jobactive_mature age (50+)_north eastern melbourne",
+      "jobactive_mature age (50+)_north western melbourne",
+      "jobactive_mature age (50+)_south coast of victoria",
+      "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+      "jobactive_mature age (50+)_western melbourne",
+      "jobactive_mature age (50+)_wimmera mallee",
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-03-31")),
+    date_slider = FALSE
+  )
+
+  output$table_jobactive_mature_age <- renderUI({
+    table_jobactive_mature_age() %>%
+      flextable::htmltools_value()
+  })
+
+  djpr_plot_server("gr_mature_age_jobactive_bar",
+    viz_gr_mature_age_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_mature age (50+)_ballarat",
+      "jobactive_mature age (50+)_bendigo",
+      "jobactive_mature age (50+)_barwon",
+      "jobactive_mature age (50+)_gippsland",
+      "jobactive_mature age (50+)_goulburn/murray",
+      "jobactive_mature age (50+)_inner metropolitan melbourne",
+      "jobactive_mature age (50+)_north eastern melbourne",
+      "jobactive_mature age (50+)_north western melbourne",
+      "jobactive_mature age (50+)_south coast of victoria",
+      "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+      "jobactive_mature age (50+)_western melbourne",
+      "jobactive_mature age (50+)_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
+
   # Long-term unemployment ------
 
   djpr_plot_server("gr_ltunemp_line",
@@ -746,9 +917,201 @@ labour_server <- function(input, output, session) {
 
   # Aboriginal ------
 
+  output$table_jobactive_aboriginal <- renderUI({
+    table_jobactive_aboriginal() %>%
+      flextable::htmltools_value()
+  })
+
+  djpr_plot_server("gr_abor_jobactive_sincecovid_line",
+    viz_gr_abor_jobactive_sincecovid_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "jobactive_indigenous_ballarat",
+      "jobactive_indigenous_bendigo",
+      "jobactive_indigenous_barwon",
+      "jobactive_indigenous_gippsland",
+      "jobactive_indigenous_goulburn/murray",
+      "jobactive_indigenous_inner metropolitan melbourne",
+      "jobactive_indigenous_north eastern melbourne",
+      "jobactive_indigenous_north western melbourne",
+      "jobactive_indigenous_south coast of victoria",
+      "jobactive_indigenous_south eastern melbourne and peninsula",
+      "jobactive_indigenous_western melbourne",
+      "jobactive_indigenous_wimmera mallee",
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-03-31")),
+    date_slider = FALSE
+  )
+
+  djpr_plot_server("gr_abor_jobactive_bar",
+    viz_gr_abor_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_indigenous_ballarat",
+      "jobactive_indigenous_bendigo",
+      "jobactive_indigenous_barwon",
+      "jobactive_indigenous_gippsland",
+      "jobactive_indigenous_goulburn/murray",
+      "jobactive_indigenous_inner metropolitan melbourne",
+      "jobactive_indigenous_north eastern melbourne",
+      "jobactive_indigenous_north western melbourne",
+      "jobactive_indigenous_south coast of victoria",
+      "jobactive_indigenous_south eastern melbourne and peninsula",
+      "jobactive_indigenous_western melbourne",
+      "jobactive_indigenous_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
+
   # Disability ------
 
+  output$table_jobactive_pwd <- renderUI({
+    table_jobactive_pwd() %>%
+      flextable::htmltools_value()
+  })
+
+  djpr_plot_server("gr_pwd_jobact_sincecovid_line",
+    viz_gr_pwd_jobact_sincecovid_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "jobactive_pwd_ballarat",
+      "jobactive_pwd_bendigo",
+      "jobactive_pwd_barwon",
+      "jobactive_pwd_gippsland",
+      "jobactive_pwd_goulburn/murray",
+      "jobactive_pwd_inner metropolitan melbourne",
+      "jobactive_pwd_north eastern melbourne",
+      "jobactive_pwd_north western melbourne",
+      "jobactive_pwd_south coast of victoria",
+      "jobactive_pwd_south eastern melbourne and peninsula",
+      "jobactive_pwd_western melbourne",
+      "jobactive_pwd_wimmera mallee",
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-03-31")),
+    date_slider = FALSE
+  )
+
+  djpr_plot_server("gr_pwd_jobactive_bar",
+    viz_gr_pwd_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_pwd_ballarat",
+      "jobactive_pwd_bendigo",
+      "jobactive_pwd_barwon",
+      "jobactive_pwd_gippsland",
+      "jobactive_pwd_goulburn/murray",
+      "jobactive_pwd_inner metropolitan melbourne",
+      "jobactive_pwd_north eastern melbourne",
+      "jobactive_pwd_north western melbourne",
+      "jobactive_pwd_south coast of victoria",
+      "jobactive_pwd_south eastern melbourne and peninsula",
+      "jobactive_pwd_western melbourne",
+      "jobactive_pwd_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
+
   # Migration ------
+
+  output$table_jobactive_refugees <- renderUI({
+    table_jobactive_refugees() %>%
+      flextable::htmltools_value()
+  })
+
+  djpr_plot_server("gr_refugee_jobact_sincecovid_line",
+    viz_gr_refugee_jobact_sincecovid_line,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "jobactive_refugee_ballarat",
+      "jobactive_refugee_bendigo",
+      "jobactive_refugee_barwon",
+      "jobactive_refugee_gippsland",
+      "jobactive_refugee_goulburn/murray",
+      "jobactive_refugee_inner metropolitan melbourne",
+      "jobactive_refugee_north eastern melbourne",
+      "jobactive_refugee_north western melbourne",
+      "jobactive_refugee_south coast of victoria",
+      "jobactive_refugee_south eastern melbourne and peninsula",
+      "jobactive_refugee_western melbourne",
+      "jobactive_refugee_wimmera mallee",
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-03-31")),
+    date_slider = FALSE
+  )
+
+  djpr_plot_server("gr_refugee_jobactive_bar",
+    viz_gr_refugee_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_refugee_ballarat",
+      "jobactive_refugee_bendigo",
+      "jobactive_refugee_barwon",
+      "jobactive_refugee_gippsland",
+      "jobactive_refugee_goulburn/murray",
+      "jobactive_refugee_inner metropolitan melbourne",
+      "jobactive_refugee_north eastern melbourne",
+      "jobactive_refugee_north western melbourne",
+      "jobactive_refugee_south coast of victoria",
+      "jobactive_refugee_south eastern melbourne and peninsula",
+      "jobactive_refugee_western melbourne",
+      "jobactive_refugee_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
 
   # Regions ------
 
@@ -1036,6 +1399,12 @@ labour_server <- function(input, output, session) {
   output$reg_jobactive_vic_bar <- renderPlot({
     viz_reg_jobactive_vic_bar(data = data_reg_jobactive_vic())
   })
+
+  output$table_jobactive_regions <- renderUI({
+    table_jobactive_regions() %>%
+      flextable::htmltools_value()
+  })
+
 
 
   # Australian Regions -----------

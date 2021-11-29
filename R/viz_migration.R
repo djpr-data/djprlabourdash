@@ -157,25 +157,29 @@ viz_gr_refugee_jobactive_bar <- function(data = filter_dash_data(c(
 
   title <- paste0(
     "The number of refugees receiving jobactive assistance ranged from ",
-    round2(high_low$min_caseload, 1),
-    " refugees in ",
+    scales::comma(round2(high_low$min_caseload, 1),
+      accuracy = 1
+    ),
+    " in ",
     high_low$min_region,
     " to ",
-    round2(high_low$max_caseload, 1),
-    " refugees in ",
+    scales::comma(round2(high_low$max_caseload, 1),
+      accuracy = 1
+    ),
+    " in ",
     high_low$ max_region,
     " as at ",
     format(high_low$date, "%B %Y")
   )
 
-
-
   # draw bar chart for all employment regions
   df %>%
     dplyr::mutate(
-      region = gsub("South Eastern Melbourne",
-                    "SE Melbourne",
-                    .data$region)
+      region = gsub(
+        "South Eastern Melbourne",
+        "SE Melbourne",
+        .data$region
+      )
     ) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
@@ -189,9 +193,9 @@ viz_gr_refugee_jobactive_bar <- function(data = filter_dash_data(c(
       nudge_y = 0.1,
       aes(label = paste0(
         scales::comma(round2(.data$value, 1),
-                      accuracy = 1)
+          accuracy = 1
         )
-          ),
+      )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -209,7 +213,7 @@ viz_gr_refugee_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Refugee Victorians jobactive caseload by region, ",
+        "Jobactive caseload for refugees in Victoria by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()

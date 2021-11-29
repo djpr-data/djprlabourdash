@@ -1095,7 +1095,7 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
                                       unset = "dashboard"
                                     ),
                                     title = paste0(
-                                      "Total jobactive caseload by employment regions, ",
+                                      "Jobactive caseload by Victorian employment regions, ",
                                       format(max(data$date), "%B %Y")
                                     )) {
   data <- filter_dash_data(c(
@@ -1167,7 +1167,7 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
                                          unset = "dashboard"
                                        ),
                                        title = paste0(
-                                         "Total jobactive caseload for Aboriginal Victorians, ",
+                                         "Jobactive caseload for Aboriginal Victorians, ",
                                          format(max(data$date), "%B %Y")
                                        )) {
   data <- filter_dash_data(c(
@@ -1240,7 +1240,7 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
                                          unset = "dashboard"
                                        ),
                                        title = paste0(
-                                         "Total jobactive caseload for mature age Victorians, ",
+                                         "Jobactive caseload for mature age Victorians, ",
                                          format(max(data$date), "%B %Y")
                                        )) {
   data <- filter_dash_data(c(
@@ -1283,7 +1283,7 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
     dplyr::mutate(
       series = "jobactive_total_mature",
       series_id = "jobactive_total_mature",
-      indicator = "Mature age (50+) jobactive caseload"
+      indicator = "Mature age (50+) jobactive caseload, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 
@@ -1316,7 +1316,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
                                   unset = "dashboard"
                                 ),
                                 title = paste0(
-                                  "Total jobactive caseload for people withdisabilities Victorians",
+                                  "Jobactive caseload for Victorians with disabilities",
                                   format(max(data$date), "%B %Y")
                                 )) {
   data <- filter_dash_data(c(
@@ -1359,7 +1359,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     dplyr::mutate(
       series = "jobactive_total_pwd",
       series_id = "jobactive_total_pwd",
-      indicator = "People with disability jobactive caseload"
+      indicator = "People with disabilities, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 
@@ -1391,7 +1391,7 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
                                      unset = "dashboard"
                                    ),
                                    title = paste0(
-                                     "Total jobactive caseload for mature age Victorians, ",
+                                     "Jobactive caseload for female Victorians, ",
                                      format(max(data$date), "%B %Y")
                                    )) {
   data <- filter_dash_data(c(
@@ -1434,7 +1434,7 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     dplyr::mutate(
       series = "jobactive_total_female",
       series_id = "jobactive_total_female",
-      indicator = "Female jobactive caseload"
+      indicator = "Female jobactive caseload, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 
@@ -1467,7 +1467,7 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
                                        unset = "dashboard"
                                      ),
                                      title = paste0(
-                                       "Total jobactive caseload for mature age Victorians, ",
+                                       "Victorian jobactive caseload for refugees, ",
                                        format(max(data$date), "%B %Y")
                                      )) {
   data <- filter_dash_data(c(
@@ -1510,7 +1510,7 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     dplyr::mutate(
       series = "jobactive_total_refugees",
       series_id = "jobactive_total_refugees",
-      indicator = "Refugees jobactive caseload"
+      indicator = "Refugees jobactive caseload, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 
@@ -1542,7 +1542,7 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
                                     unset = "dashboard"
                                   ),
                                   title = paste0(
-                                    "Total jobactive caseload for mature age Victorians, ",
+                                    "Jobactive caseload for Victorian youth, ",
                                     format(max(data$date), "%B %Y")
                                   )) {
   data <- filter_dash_data(c(
@@ -1585,7 +1585,7 @@ table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
     dplyr::mutate(
       series = "jobactive_total_youth",
       series_id = "jobactive_total_youth",
-      indicator = "Youth (15-24) jobactive caseload"
+      indicator = "Youth (15-24) jobactive caseload, Victorian total"
     ) %>%
     dplyr::bind_rows(table_data)
 

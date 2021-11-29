@@ -94,8 +94,6 @@ viz_gr_abor_jobactive_sincecovid_line <- function(data = filter_dash_data(c(
     "it was in March 2020"
   )
 
-
-
   latest_values <- df %>%
     dplyr::filter(date == max(.data$date)) %>%
     dplyr::select(-.data$tooltip) %>%
@@ -181,13 +179,13 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
     format(high_low$date, "%B %Y")
   )
 
-
-
   # draw bar chart for all employment regions
   df %>%
-    dplyr::mutate(region = gsub("South Eastern Melbourne",
-                                "SE Melbourne",
-                                .data$region)) %>%
+    dplyr::mutate(region = gsub(
+      "South Eastern Melbourne",
+      "SE Melbourne",
+      .data$region
+    )) %>%
     ggplot(aes(
       x = stats::reorder(.data$region, .data$value),
       y = .data$value
@@ -200,8 +198,9 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
       nudge_y = 5,
       aes(label = paste0(
         scales::comma(round2(.data$value, 1),
-                      accuracy = 1)
-        )),
+          accuracy = 1
+        )
+      )),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
@@ -219,7 +218,7 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Aboriginal person jobactive caseload by region, ",
+        "Aboriginal person jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
