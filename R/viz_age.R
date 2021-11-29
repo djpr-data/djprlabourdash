@@ -1761,19 +1761,19 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
     )
 
   title <- paste0(
-    " Across Victoria youth (15-24) jobactive caseload ranged from ",
-    round2(high_low$min_caseload, 1),
-    " for youth (15-24) in ",
+    "Victorian youth (15-24) jobactive caseload ranged from ",
+    scales::comma(round2(high_low$min_caseload, 1),
+                  accuracy = 1),
+    " in ",
     high_low$min_region,
     " to ",
-    round2(high_low$max_caseload, 1),
-    " for youth (15-24) in ",
+    scales::comma(round2(high_low$max_caseload, 1),
+                  accuracy = 1),
+    " in ",
     high_low$ max_region,
     " as at ",
     format(high_low$date, "%B %Y")
   )
-
-
 
   # draw bar chart for all employment regions
   df %>%
@@ -1813,7 +1813,7 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Victorian youth (15-24) jobactive caseload by region, ",
+        "Victorian youth (15-24) jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
