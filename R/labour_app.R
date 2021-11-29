@@ -886,6 +886,29 @@ labour_server <- function(input, output, session) {
     date_slider = FALSE
   )
 
+  djpr_plot_server("gr_abor_jobactive_bar",
+    viz_gr_abor_jobactive_bar,
+    data = filter_dash_data(c(
+      "jobactive_indigenous_ballarat",
+      "jobactive_indigenous_bendigo",
+      "jobactive_indigenous_barwon",
+      "jobactive_indigenous_gippsland",
+      "jobactive_indigenous_goulburn/murray",
+      "jobactive_indigenous_inner metropolitan melbourne",
+      "jobactive_indigenous_north eastern melbourne",
+      "jobactive_indigenous_north western melbourne",
+      "jobactive_indigenous_south coast of victoria",
+      "jobactive_indigenous_south eastern melbourne and peninsula",
+      "jobactive_indigenous_western melbourne",
+      "jobactive_indigenous_wimmera mallee"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider = FALSE,
+    download_button = FALSE,
+    width_percent = 75
+  )
 
   # Disability ------
 
