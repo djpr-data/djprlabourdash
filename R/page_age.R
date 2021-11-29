@@ -85,6 +85,10 @@ page_age <- function(...) {
     h2(br(), "Jobactive caseload by age"),
     uiOutput("table_jobactive_mature_age") %>%
       djpr_with_spinner(),
+    br(),
+    uiOutput("table_jobactive_youth") %>%
+      djpr_with_spinner(),
     br()
+
   )
 }

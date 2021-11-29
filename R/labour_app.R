@@ -707,6 +707,11 @@ labour_server <- function(input, output, session) {
       flextable::htmltools_value()
   })
 
+  output$table_jobactive_youth <- renderUI({
+    table_jobactive_youth() %>%
+      flextable::htmltools_value()
+  })
+
 
   # Long-term unemployment ------
 
