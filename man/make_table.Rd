@@ -12,7 +12,8 @@ make_table(
   highlight_rows = NULL,
   notes = NULL,
   title = "",
-  rename_indicators = TRUE
+  rename_indicators = TRUE,
+  pretty_round = TRUE
 )
 }
 \arguments{
@@ -39,6 +40,11 @@ when \code{destination} is "briefing".}
 
 \item{rename_indicators}{logical; default is \code{TRUE}. If \code{TRUE}, the
 \code{rename_indicators()} function will be used to rename certain indicators.}
+
+\item{pretty_round}{Logical; \code{TRUE} by default. If \code{TRUE}, figures will be
+rounded using \code{pretty_round()}. This means (for eg.) figures below 50
+will be rounded to 0. If \code{FALSE}, figures will not be rounded with
+\code{pretty_round()}.}
 }
 \description{
 Create a table for the dashboard or a briefing document

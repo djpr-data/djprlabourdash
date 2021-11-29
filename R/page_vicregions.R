@@ -128,6 +128,27 @@ page_vicregions <- function(...) {
         uiOutput("table_region_focus") %>%
           djpr_with_spinner()
       )
-    )
+    ),
+    br(),
+    h2(br(), "Victorian jobactive caseload by employment region"),
+    uiOutput("title_reg_jobactive_vic"),
+    fluidRow(
+      column(
+        6,
+        leaflet::leafletOutput("map_reg_jobactive_vic") %>%
+          djpr_with_spinner()
+      ),
+      column(
+        6,
+        plotOutput("reg_jobactive_vic_bar")
+      )
+    ),
+    br(),
+    br(),
+    br(),
+    uiOutput("table_jobactive_regions") %>%
+      djpr_with_spinner(),
+    br(),
+    htmlOutput("vicregions_footnote")
   )
 }

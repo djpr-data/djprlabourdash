@@ -2,6 +2,10 @@
 #' @param data Dataframe of input data
 #' @param years_in_sparklines Number of years worth of data to include in
 #' sparkline
+#' @param pretty_round Logical; `TRUE` by default. If `TRUE`, figures will be
+#' rounded using `pretty_round()`. This means (for eg.) figures below 50
+#' will be rounded to 0. If `FALSE`, figures will not be rounded with
+#' `pretty_round()`.
 #' @examples
 #' \dontrun{
 #' dash_data <- load_dash_data()
@@ -15,7 +19,8 @@
 #' )))
 #' }
 create_summary_df <- function(data,
-                              years_in_sparklines = 3) {
+                              years_in_sparklines = 3,
+                              pretty_round = TRUE) {
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   freq <- unique(data$frequency)
@@ -46,11 +51,13 @@ create_summary_df <- function(data,
 
   summary_df <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
-    dplyr::filter(.data$date <= as.Date("2020-03-14")) %>%
+    dplyr::filter(.data$date <= as.Date("2020-03-31")) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::ungroup() %>%
-    dplyr::select(pre_covid_date = .data$date,
-                  .data$series_id) %>%
+    dplyr::select(
+      pre_covid_date = .data$date,
+      .data$series_id
+    ) %>%
     dplyr::right_join(summary_df, by = "series_id")
 
   summary_df <- summary_df %>%
@@ -70,38 +77,48 @@ create_summary_df <- function(data,
       changesincecovid = .data$value - .data$value[.data$date == .data$pre_covid_date],
       changesincecovidpc = (.data$changesincecovid / .data$value[.data$date == .data$pre_covid_date]) * 100,
       changesince14 = ifelse(.data$min_date >= as.Date("2014-11-01"),
-                                     NA_real_,
-                                     (.data$value - .data$value[.data$date == as.Date("2014-11-01")]))
+        NA_real_,
+        (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
+      )
     ) %>%
     dplyr::select(-.data$min_date) %>%
     dplyr::filter(.data$date >= startdate) %>%
     dplyr::ungroup()
 
+  rounding_function <- function(x, pretty_round) {
+    if (pretty_round) {
+      pretty_round(x)
+    } else {
+      scales::comma(round2(x, 1), accuracy = 1)
+    }
+  }
+
   # Reformat columns -----
   summary_df <- summary_df %>%
     dplyr::mutate(
       across(
-      c(dplyr::ends_with("pc")),
-      ~ dplyr::if_else(.data$is_level,
-        paste0(round2(.x, 1), "%"),
-        "-"
+        c(dplyr::ends_with("pc")),
+        ~ dplyr::if_else(.data$is_level,
+          paste0(round2(.x, 1), "%"),
+          "-"
+        )
+      ),
+      across(
+        c(.data$changeinmonth, .data$changeinyear, .data$changesincecovid, .data$changesince14),
+        ~ dplyr::if_else(.data$is_level,
+          rounding_function(.x, pretty_round),
+          sprintf("%.1f ppts", .x)
+        )
+      ),
+      latest_value = dplyr::if_else(
+        .data$is_level,
+        rounding_function(.data$value, pretty_round),
+        sprintf("%.1f%%", .data$value)
       )
-    ),
-    across(
-      c(.data$changeinmonth, .data$changeinyear, .data$changesincecovid, .data$changesince14),
-      ~ dplyr::if_else(.data$is_level,
-        pretty_round(.x),
-        sprintf("%.1f ppts", .x)
-      )
-    ),
-    latest_value = dplyr::if_else(
-      .data$is_level,
-      pretty_round(.data$value),
-      sprintf("%.1f%%", .data$value)
     )
-    ) %>%
+
+  summary_df <- summary_df %>%
     dplyr::mutate(changesince14 = ifelse(.data$changesince14 == "NA ppts", "-", .data$changesince14)) %>%
-    dplyr::ungroup() %>%
     dplyr::select(-.data$unit, .data$is_level, .data$pre_covid_date)
 
   # If a rounded number is -0.0, change to 0.0

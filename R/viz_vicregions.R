@@ -1319,16 +1319,16 @@ table_region_focus <- function(data = filter_dash_data(
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
-  "A84600144J",
-  "A84600078W",
-  "A84595516F",
-  "A84595471L"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-  dplyr::filter(!is.na(.data$value))) {
+                                  "A84600144J",
+                                  "A84600078W",
+                                  "A84595516F",
+                                  "A84595471L"
+                                ),
+                                df = dash_data
+                                ) %>%
+                                  dplyr::group_by(.data$series_id) %>%
+                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                  dplyr::filter(!is.na(.data$value))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1352,7 +1352,7 @@ df = dash_data
   data <- data %>%
     mutate(
       gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
-                             fixed = TRUE
+        fixed = TRUE
       )
     )
 
@@ -1390,4 +1390,182 @@ df = dash_data
       subtitle = "Employment to population ratio and unemployment rate in Greater Melbourne and the rest of Victoria",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
+}
+
+data_reg_jobactive_vic <- function(data = filter_dash_data(c(
+                                     "jobactive_total_ballarat",
+                                     "jobactive_total_barwon",
+                                     "jobactive_total_bendigo",
+                                     "jobactive_total_gippsland",
+                                     "jobactive_total_goulburn/murray",
+                                     "jobactive_total_inner metropolitan melbourne",
+                                     "jobactive_total_north eastern melbourne",
+                                     "jobactive_total_north western melbourne",
+                                     "jobactive_total_south coast of victoria",
+                                     "jobactive_total_south eastern melbourne and peninsula",
+                                     "jobactive_total_western melbourne",
+                                     "jobactive_total_wimmera mallee"
+                                   ),
+                                   df = dash_data
+                                   )) {
+
+  # data manipulations of data frame for regional jobactive title / map and bar chart
+
+  # only latest date
+  df <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      employment_region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(.data$date, .data$series, .data$value, .data$employment_region)
+
+  df$value <- df$value * 1000
+
+  df
+}
+
+title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
+
+  # create title for regional jobactive map  / bar chart
+  high_low <- data %>%
+    dplyr::ungroup() %>%
+    summarise(
+      min_er = .data$employment_region[.data$value == min(.data$value)],
+      min_value = .data$value[.data$value == min(.data$value)],
+      max_er = .data$employment_region[.data$value == max(.data$value)],
+      max_value = .data$value[.data$value == max(.data$value)],
+      date = unique(.data$date)
+    )
+
+  paste0(
+    "The jobactive caseload across Victorian employment regions ranged from ",
+    scales::comma(high_low$min_value),
+    " in ",
+    high_low$min_er,
+    " to ",
+    scales::comma(high_low$max_value),
+    " in ",
+    high_low$max_er,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
+}
+
+map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
+                                  zoom = 6) {
+
+  # Get map data for Victorian employment regions
+  map <- employment_regions2015 %>%
+    dplyr::filter(.data$employment_region_name_2015 %in% c(
+      "Ballarat",
+      "Barwon",
+      "Bendigo",
+      "Gippsland",
+      "Goulburn/Murray",
+      "Inner Metropolitan Melbourne",
+      "South Eastern Melbourne and Peninsula",
+      "Western Melbourne",
+      "North Western Melbourne",
+      "North Eastern Melbourne",
+      "Wimmera Mallee",
+      "South Coast of Victoria"
+    ))
+
+  # Join together mapping data and caseload data
+  map_joined <- map %>%
+    dplyr::left_join(data, by = c("employment_region_name_2015" = "employment_region"))
+
+  mapdata <- map_joined %>%
+    sf::st_transform("+proj=longlat +datum=WGS84")
+
+  # Create colour palette
+  pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
+
+  # Create the map
+  map <- mapdata %>%
+    leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
+    leaflet::setView(
+      lng = 145.4657, lat = -36.41472, # coordinates of map at first view
+      zoom = zoom
+    ) %>%
+    # size of map at first view
+    leaflet::addPolygons(
+      color = "grey", # colour of boundary lines, 'transparent' for no lines
+      weight = 1, # thickness of boundary lines
+      fillColor = ~ pal(mapdata$value), # pre-defined above
+      fillOpacity = 1.0, # strength of fill colour
+      smoothFactor = 0.5, # smoothing between region
+      stroke = T,
+      highlightOptions = leaflet::highlightOptions( # to highlight regions as you hover over them
+        color = "black", # boundary colour of region you hover over
+        weight = 2, # thickness of region boundary
+        bringToFront = FALSE
+      ), # FALSE = metro outline remains
+      label = sprintf(
+        "<strong>%s</strong><br/>%s: %.0f",
+        mapdata$employment_region_name_2015, # region name displayed in label
+        "Total jobactive caseload",
+        mapdata$value
+      ) %>%
+        lapply(shiny::HTML),
+      labelOptions = leaflet::labelOptions( # label options
+        style = list(
+          "font-weight" = "normal", # "bold" makes it so
+          padding = "3px 8px"
+        ),
+        textsize = "12px", # text size of label
+        noHide = FALSE, # TRUE makes labels permanently visible (messy)
+        direction = "auto"
+      ) # text box flips from side to side as needed
+    ) %>%
+    leaflet::addLegend(
+      position = "topright", # options: topright, bottomleft etc.
+      pal = pal, # colour palette as defined
+      values = mapdata$value, # fill data
+      bins = 3,
+      labFormat = leaflet::labelFormat(transform = identity),
+      title = "jobactive cases",
+      opacity = 1,
+    )
+
+  map
+}
+
+viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
+
+  # create bar chart next to map
+
+  data %>%
+    dplyr::mutate(employment_region = stringr::str_wrap(.data$employment_region, 20)) %>%
+    ggplot(aes(
+      x = stats::reorder(.data$employment_region, .data$value),
+      y = .data$value
+    )) +
+    geom_col(
+      col = "grey85",
+      aes(fill = -.data$value)
+    ) +
+    geom_text(
+      nudge_y = 0.1,
+      aes(label = paste0(round2(.data$value, 0))),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+    coord_flip(clip = "off") +
+    scale_fill_distiller(palette = "Blues") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(title = "")
 }
