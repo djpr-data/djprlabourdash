@@ -774,6 +774,11 @@ labour_server <- function(input, output, session) {
 
   # Migration ------
 
+  output$table_jobactive_refugees <- renderUI({
+    table_jobactive_refugees() %>%
+      flextable::htmltools_value()
+  })
+
   # Regions ------
 
   # Victorian Regions -------
