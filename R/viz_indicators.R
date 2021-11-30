@@ -1011,3 +1011,20 @@ viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
       caption = caption_lfs()
     )
 }
+
+viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
+                                            "A84423350C",
+                                            "A84423351F",
+                                            "A84423354L"),
+                                            df = dash_data
+                                          ) %>%
+                                            dplyr::filter(date >= as.Date("2020-01-01"))) {
+
+}
+
+
+
+
+
+
+
