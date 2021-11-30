@@ -1018,7 +1018,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
                                             "A84423354L"),
                                             df = dash_data
                                           ) %>%
-                                            dplyr::filter(date >= as.Date("2020-01-01"))) {
+                                            dplyr::filter(date >= as.Date("2019-06-01"))) {
 
 }
 
