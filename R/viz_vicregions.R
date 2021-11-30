@@ -1552,7 +1552,7 @@ viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
     ) +
     geom_text(
       nudge_y = 0.1,
-      aes(label = paste0(round2(.data$value, 0))),
+      aes(label = scales::comma(accuracy = 1, .data$value)),
       colour = "black",
       hjust = 0,
       size = 12 / .pt
