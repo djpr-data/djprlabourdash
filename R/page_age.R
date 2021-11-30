@@ -79,8 +79,20 @@ page_age <- function(...) {
       ),
       column(
         6,
-        djpr_plot_ui("gr_youth_unemp_emppop_partrate_bar")
+        plotOutput("gr_youth_unemp_emppop_partrate_bar")
       )
-    )
+    ),
+    h2(br(), "Jobactive caseload by age"),
+    uiOutput("table_jobactive_youth") %>%
+      djpr_with_spinner(),
+    br(),
+    djpr_plot_ui("gr_youth_jobactive_bar"),
+    br(),
+    djpr_plot_ui("gr_age_jobactive_since_covid_line"),
+    br(),
+    uiOutput("table_jobactive_mature_age") %>%
+      djpr_with_spinner(),
+    djpr_plot_ui("gr_mature_age_jobactive_bar"),
+    br()
   )
 }

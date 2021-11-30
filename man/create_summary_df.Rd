@@ -4,13 +4,18 @@
 \alias{create_summary_df}
 \title{Create a summary dataframe for use in a table}
 \usage{
-create_summary_df(data, years_in_sparklines = 3)
+create_summary_df(data, years_in_sparklines = 3, pretty_round = TRUE)
 }
 \arguments{
 \item{data}{Dataframe of input data}
 
 \item{years_in_sparklines}{Number of years worth of data to include in
 sparkline}
+
+\item{pretty_round}{Logical; \code{TRUE} by default. If \code{TRUE}, figures will be
+rounded using \code{pretty_round()}. This means (for eg.) figures below 50
+will be rounded to 0. If \code{FALSE}, figures will not be rounded with
+\code{pretty_round()}.}
 }
 \description{
 Create a summary dataframe for use in a table

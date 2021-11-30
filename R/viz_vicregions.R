@@ -1,67 +1,60 @@
 #' @importFrom rlang `:=`
-
-title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
-                                              "A84599659L",
-                                              "A84600019W",
-                                              "A84600187J",
-                                              "A84599557X",
-                                              "A84600115W",
-                                              "A84599851L",
-                                              "A84599923L",
-                                              "A84600025T",
-                                              "A84600193C",
-                                              "A84599665J",
-                                              "A84600031L",
-                                              "A84599671C",
-                                              "A84599677T",
-                                              "A84599683L",
-                                              "A84599929A",
-                                              "A84600121T",
-                                              "A84600037A",
-                                              "A84599658K",
-                                              "A84599660W",
-                                              "A84600018V",
-                                              "A84600020F",
-                                              "A84600186F",
-                                              "A84600188K",
-                                              "A84599556W",
-                                              "A84599558A",
-                                              "A84600114V",
-                                              "A84600116X",
-                                              "A84599850K",
-                                              "A84599852R",
-                                              "A84599922K",
-                                              "A84599924R",
-                                              "A84600024R",
-                                              "A84600026V",
-                                              "A84600192A",
-                                              "A84600194F",
-                                              "A84599664F",
-                                              "A84599666K",
-                                              "A84600030K",
-                                              "A84600032R",
-                                              "A84599670A",
-                                              "A84599672F",
-                                              "A84599676R",
-                                              "A84599678V",
-                                              "A84599682K",
-                                              "A84599684R",
-                                              "A84599928X",
-                                              "A84599930K",
-                                              "A84600120R",
-                                              "A84600122V",
-                                              "A84600036X",
-                                              "A84600038C"
-                                            ),
-                                            df = dash_data
-                                            ),
-                                            selected_indicator = "unemp_rate") {
-  indic_long <- dplyr::case_when(
-    selected_indicator == "unemp_rate" ~ "Unemployment rate",
-    selected_indicator == "part_rate" ~ "Participation rate",
-    selected_indicator == "emp_pop" ~ "Employment to population ratio",
-    TRUE ~ NA_character_
-  )
+data_reg_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
+    "A84599659L",
+    "A84600019W",
+    "A84600187J",
+    "A84599557X",
+    "A84600115W",
+    "A84599851L",
+    "A84599923L",
+    "A84600025T",
+    "A84600193C",
+    "A84599665J",
+    "A84600031L",
+    "A84599671C",
+    "A84599677T",
+    "A84599683L",
+    "A84599929A",
+    "A84600121T",
+    "A84600037A",
+    "A84599658K",
+    "A84599660W",
+    "A84600018V",
+    "A84600020F",
+    "A84600186F",
+    "A84600188K",
+    "A84599556W",
+    "A84599558A",
+    "A84600114V",
+    "A84600116X",
+    "A84599850K",
+    "A84599852R",
+    "A84599922K",
+    "A84599924R",
+    "A84600024R",
+    "A84600026V",
+    "A84600192A",
+    "A84600194F",
+    "A84599664F",
+    "A84599666K",
+    "A84600030K",
+    "A84600032R",
+    "A84599670A",
+    "A84599672F",
+    "A84599676R",
+    "A84599678V",
+    "A84599682K",
+    "A84599684R",
+    "A84599928X",
+    "A84599930K",
+    "A84600120R",
+    "A84600122V",
+    "A84600036X",
+    "A84600038C"
+  ),
+  df = dash_data
+  ),
+  selected_indicator = "unemp_rate") {
 
   df <- data %>%
     mutate(indicator_short = dplyr::case_when(
@@ -78,12 +71,20 @@ title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   df <- df %>%
     group_by(.data$series_id) %>%
     mutate(value = slider::slide_mean(.data$value,
-      before = 2,
-      complete = TRUE
+                                      before = 2,
+                                      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
-  high_low <- df %>%
+  df
+
+}
+
+
+title_reg_unemp_emppop_partrate_vic <- function(data = data_reg_unemp_emppop_partrate_vic(),
+                                            selected_indicator = "unemp_rate") {
+
+  high_low <- data %>%
     dplyr::ungroup() %>%
     summarise(
       min_sa4 = .data$sa4[.data$value == min(.data$value)],
@@ -92,6 +93,13 @@ title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
       max_ur = .data$value[.data$value == max(.data$value)],
       date = unique(.data$date)
     )
+
+  indic_long <- dplyr::case_when(
+    selected_indicator == "unemp_rate" ~ "Unemployment rate",
+    selected_indicator == "part_rate" ~ "Participation rate",
+    selected_indicator == "emp_pop" ~ "Employment to population ratio",
+    TRUE ~ NA_character_
+  )
 
   paste0(
     indic_long,
@@ -108,61 +116,7 @@ title_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   )
 }
 
-map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
-                                            "A84599659L",
-                                            "A84600019W",
-                                            "A84600187J",
-                                            "A84599557X",
-                                            "A84600115W",
-                                            "A84599851L",
-                                            "A84599923L",
-                                            "A84600025T",
-                                            "A84600193C",
-                                            "A84599665J",
-                                            "A84600031L",
-                                            "A84599671C",
-                                            "A84599677T",
-                                            "A84599683L",
-                                            "A84599929A",
-                                            "A84600121T",
-                                            "A84600037A",
-                                            "A84599658K",
-                                            "A84599660W",
-                                            "A84600018V",
-                                            "A84600020F",
-                                            "A84600186F",
-                                            "A84600188K",
-                                            "A84599556W",
-                                            "A84599558A",
-                                            "A84600114V",
-                                            "A84600116X",
-                                            "A84599850K",
-                                            "A84599852R",
-                                            "A84599922K",
-                                            "A84599924R",
-                                            "A84600024R",
-                                            "A84600026V",
-                                            "A84600192A",
-                                            "A84600194F",
-                                            "A84599664F",
-                                            "A84599666K",
-                                            "A84600030K",
-                                            "A84600032R",
-                                            "A84599670A",
-                                            "A84599672F",
-                                            "A84599676R",
-                                            "A84599678V",
-                                            "A84599682K",
-                                            "A84599684R",
-                                            "A84599928X",
-                                            "A84599930K",
-                                            "A84600120R",
-                                            "A84600122V",
-                                            "A84600036X",
-                                            "A84600038C"
-                                          ),
-                                          df = dash_data
-                                          ),
+map_reg_unemp_emppop_partrate_vic <- function(data = data_reg_unemp_emppop_partrate_vic(),
                                           selected_indicator = "unemp_rate",
                                           zoom = 6) {
   indic_long <- dplyr::case_when(
@@ -172,25 +126,6 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     TRUE ~ NA_character_
   )
 
-  df <- data %>%
-    mutate(indicator_short = dplyr::case_when(
-      .data$indicator == "Unemployment rate" ~ "unemp_rate",
-      .data$indicator == "Participation rate" ~ "part_rate",
-      .data$indicator == "Employment to population ratio" ~ "emp_pop"
-    ))
-
-  # Reduce to selected_indicator
-  df <- df %>%
-    dplyr::filter(.data$indicator_short == selected_indicator)
-
-  # 3 month smoothing
-  df <- df %>%
-    group_by(.data$series_id) %>%
-    mutate(value = slider::slide_mean(.data$value,
-      before = 2,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
 
   # Call SA4 shape file, but only load Victoria and exclude 'weird' areas (migratory and other one)
   sa4_shp <- sa42016 %>%
@@ -198,7 +133,7 @@ map_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sa4_code_2016 < 297)
 
   # Fix issue with different naming for North West region in Victoria
-  df <- df %>%
+  df <- data %>%
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
         "North West",
@@ -560,83 +495,10 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_unemp_emppop_partrate_bar <- function(data = filter_dash_data(c(
-                                                "A84599659L",
-                                                "A84600019W",
-                                                "A84600187J",
-                                                "A84599557X",
-                                                "A84600115W",
-                                                "A84599851L",
-                                                "A84599923L",
-                                                "A84600025T",
-                                                "A84600193C",
-                                                "A84599665J",
-                                                "A84600031L",
-                                                "A84599671C",
-                                                "A84599677T",
-                                                "A84599683L",
-                                                "A84599929A",
-                                                "A84600121T",
-                                                "A84600037A",
-                                                "A84599658K",
-                                                "A84599660W",
-                                                "A84600018V",
-                                                "A84600020F",
-                                                "A84600186F",
-                                                "A84600188K",
-                                                "A84599556W",
-                                                "A84599558A",
-                                                "A84600114V",
-                                                "A84600116X",
-                                                "A84599850K",
-                                                "A84599852R",
-                                                "A84599922K",
-                                                "A84599924R",
-                                                "A84600024R",
-                                                "A84600026V",
-                                                "A84600192A",
-                                                "A84600194F",
-                                                "A84599664F",
-                                                "A84599666K",
-                                                "A84600030K",
-                                                "A84600032R",
-                                                "A84599670A",
-                                                "A84599672F",
-                                                "A84599676R",
-                                                "A84599678V",
-                                                "A84599682K",
-                                                "A84599684R",
-                                                "A84599928X",
-                                                "A84599930K",
-                                                "A84600120R",
-                                                "A84600122V",
-                                                "A84600036X",
-                                                "A84600038C"
-                                              ),
-                                              df = dash_data
-                                              ),
+viz_reg_unemp_emppop_partrate_bar <- function(data = data_reg_unemp_emppop_partrate_vic(),
                                               selected_indicator = "unemp_rate") {
+
   df <- data %>%
-    mutate(indicator_short = dplyr::case_when(
-      .data$indicator == "Unemployment rate" ~ "unemp_rate",
-      .data$indicator == "Participation rate" ~ "part_rate",
-      .data$indicator == "Employment to population ratio" ~ "emp_pop"
-    ))
-
-  # Reduce to selected_indicator
-  df <- df %>%
-    dplyr::filter(.data$indicator_short == selected_indicator)
-
-  # 3 month smoothing
-  df <- df %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value,
-      before = 2,
-      complete = TRUE
-    )) %>%
-    dplyr::filter(.data$date == max(.data$date))
-
-  df <- df %>%
     dplyr::filter(.data$sa4 != "") %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
       "Warrnambool & S. West",
@@ -1457,16 +1319,16 @@ table_region_focus <- function(data = filter_dash_data(
 }
 
 viz_reg_melvic_line <- function(data = filter_dash_data(c(
-  "A84600144J",
-  "A84600078W",
-  "A84595516F",
-  "A84595471L"
-),
-df = dash_data
-) %>%
-  dplyr::group_by(.data$series_id) %>%
-  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-  dplyr::filter(!is.na(.data$value))) {
+                                  "A84600144J",
+                                  "A84600078W",
+                                  "A84595516F",
+                                  "A84595471L"
+                                ),
+                                df = dash_data
+                                ) %>%
+                                  dplyr::group_by(.data$series_id) %>%
+                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                  dplyr::filter(!is.na(.data$value))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1490,7 +1352,7 @@ df = dash_data
   data <- data %>%
     mutate(
       gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
-                             fixed = TRUE
+        fixed = TRUE
       )
     )
 
@@ -1528,4 +1390,182 @@ df = dash_data
       subtitle = "Employment to population ratio and unemployment rate in Greater Melbourne and the rest of Victoria",
       caption = paste0(caption_lfs_det_m(), " Data not seasonally adjusted. Smoothed using a 3 month rolling average.")
     )
+}
+
+data_reg_jobactive_vic <- function(data = filter_dash_data(c(
+                                     "jobactive_total_ballarat",
+                                     "jobactive_total_barwon",
+                                     "jobactive_total_bendigo",
+                                     "jobactive_total_gippsland",
+                                     "jobactive_total_goulburn/murray",
+                                     "jobactive_total_inner metropolitan melbourne",
+                                     "jobactive_total_north eastern melbourne",
+                                     "jobactive_total_north western melbourne",
+                                     "jobactive_total_south coast of victoria",
+                                     "jobactive_total_south eastern melbourne and peninsula",
+                                     "jobactive_total_western melbourne",
+                                     "jobactive_total_wimmera mallee"
+                                   ),
+                                   df = dash_data
+                                   )) {
+
+  # data manipulations of data frame for regional jobactive title / map and bar chart
+
+  # only latest date
+  df <- data %>%
+    dplyr::group_by(.data$series) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    dplyr::mutate(
+      split_series = stringr::str_split_fixed(.data$series,
+        pattern = " ; ",
+        n = 3
+      ),
+      employment_region = .data$split_series[, 3]
+    ) %>%
+    dplyr::select(.data$date, .data$series, .data$value, .data$employment_region)
+
+  df$value <- df$value * 1000
+
+  df
+}
+
+title_reg_jobactive_vic <- function(data = data_reg_jobactive_vic()) {
+
+  # create title for regional jobactive map  / bar chart
+  high_low <- data %>%
+    dplyr::ungroup() %>%
+    summarise(
+      min_er = .data$employment_region[.data$value == min(.data$value)],
+      min_value = .data$value[.data$value == min(.data$value)],
+      max_er = .data$employment_region[.data$value == max(.data$value)],
+      max_value = .data$value[.data$value == max(.data$value)],
+      date = unique(.data$date)
+    )
+
+  paste0(
+    "The jobactive caseload across Victorian employment regions ranged from ",
+    scales::comma(high_low$min_value),
+    " in ",
+    high_low$min_er,
+    " to ",
+    scales::comma(high_low$max_value),
+    " in ",
+    high_low$max_er,
+    " as at ",
+    format(high_low$date, "%B %Y")
+  )
+}
+
+map_reg_jobactive_vic <- function(data = data_reg_jobactive_vic(),
+                                  zoom = 6) {
+
+  # Get map data for Victorian employment regions
+  map <- employment_regions2015 %>%
+    dplyr::filter(.data$employment_region_name_2015 %in% c(
+      "Ballarat",
+      "Barwon",
+      "Bendigo",
+      "Gippsland",
+      "Goulburn/Murray",
+      "Inner Metropolitan Melbourne",
+      "South Eastern Melbourne and Peninsula",
+      "Western Melbourne",
+      "North Western Melbourne",
+      "North Eastern Melbourne",
+      "Wimmera Mallee",
+      "South Coast of Victoria"
+    ))
+
+  # Join together mapping data and caseload data
+  map_joined <- map %>%
+    dplyr::left_join(data, by = c("employment_region_name_2015" = "employment_region"))
+
+  mapdata <- map_joined %>%
+    sf::st_transform("+proj=longlat +datum=WGS84")
+
+  # Create colour palette
+  pal <- leaflet::colorNumeric("Blues", c(min(mapdata$value), max(mapdata$value)), alpha = T)
+
+  # Create the map
+  map <- mapdata %>%
+    leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
+    leaflet::setView(
+      lng = 145.4657, lat = -36.41472, # coordinates of map at first view
+      zoom = zoom
+    ) %>%
+    # size of map at first view
+    leaflet::addPolygons(
+      color = "grey", # colour of boundary lines, 'transparent' for no lines
+      weight = 1, # thickness of boundary lines
+      fillColor = ~ pal(mapdata$value), # pre-defined above
+      fillOpacity = 1.0, # strength of fill colour
+      smoothFactor = 0.5, # smoothing between region
+      stroke = T,
+      highlightOptions = leaflet::highlightOptions( # to highlight regions as you hover over them
+        color = "black", # boundary colour of region you hover over
+        weight = 2, # thickness of region boundary
+        bringToFront = FALSE
+      ), # FALSE = metro outline remains
+      label = sprintf(
+        "<strong>%s</strong><br/>%s: %.0f",
+        mapdata$employment_region_name_2015, # region name displayed in label
+        "Total jobactive caseload",
+        mapdata$value
+      ) %>%
+        lapply(shiny::HTML),
+      labelOptions = leaflet::labelOptions( # label options
+        style = list(
+          "font-weight" = "normal", # "bold" makes it so
+          padding = "3px 8px"
+        ),
+        textsize = "12px", # text size of label
+        noHide = FALSE, # TRUE makes labels permanently visible (messy)
+        direction = "auto"
+      ) # text box flips from side to side as needed
+    ) %>%
+    leaflet::addLegend(
+      position = "topright", # options: topright, bottomleft etc.
+      pal = pal, # colour palette as defined
+      values = mapdata$value, # fill data
+      bins = 3,
+      labFormat = leaflet::labelFormat(transform = identity),
+      title = "jobactive cases",
+      opacity = 1,
+    )
+
+  map
+}
+
+viz_reg_jobactive_vic_bar <- function(data = data_reg_jobactive_vic()) {
+
+  # create bar chart next to map
+
+  data %>%
+    dplyr::mutate(employment_region = stringr::str_wrap(.data$employment_region, 20)) %>%
+    ggplot(aes(
+      x = stats::reorder(.data$employment_region, .data$value),
+      y = .data$value
+    )) +
+    geom_col(
+      col = "grey85",
+      aes(fill = -.data$value)
+    ) +
+    geom_text(
+      nudge_y = 0.1,
+      aes(label = paste0(round2(.data$value, 0))),
+      colour = "black",
+      hjust = 0,
+      size = 12 / .pt
+    ) +
+    coord_flip(clip = "off") +
+    scale_fill_distiller(palette = "Blues") +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +
+    djprtheme::theme_djpr(flipped = TRUE) +
+    theme(
+      axis.title.x = element_blank(),
+      panel.grid = element_blank(),
+      axis.text.y = element_text(size = 12),
+      axis.text.x = element_blank()
+    ) +
+    labs(title = "")
 }
