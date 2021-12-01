@@ -1023,7 +1023,14 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
                                             df = dash_data
                                           ) %>%
                                             dplyr::filter(date >= as.Date("2019-06-01"))) {
-
+  df <- data %>%
+    dplyr::filter(series_id %in% c("did not work (0 hours)")) %>%
+    dplyr::group_by(date) %>%
+    dplyr::summarise(emp_zero_hours = .data$value) %>%
+    dplyr::mutate(emp_zero_hours = slider::slide_mean(emp_zero_hours,
+                                                      before = 2L,
+                                                      complete = TRUE)) %>%
+    dplyr::filter(!is.na(emp_zero_hours))
 }
 
 
