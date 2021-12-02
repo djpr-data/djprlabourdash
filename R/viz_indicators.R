@@ -1023,14 +1023,46 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
                                             df = dash_data
                                           ) %>%
                                             dplyr::filter(date >= as.Date("2019-06-01"))) {
-  df <- data %>%
-    dplyr::filter(series_id %in% c("did not work (0 hours)")) %>%
-    dplyr::group_by(date) %>%
-    dplyr::summarise(emp_zero_hours = .data$value) %>%
-    dplyr::mutate(emp_zero_hours = slider::slide_mean(emp_zero_hours,
-                                                      before = 2L,
-                                                      complete = TRUE)) %>%
-    dplyr::filter(!is.na(emp_zero_hours))
+
+  # split off em2b data and drop spare columns
+  em2b <- data %>%
+    dplyr::filter(series_id %in% c(
+      "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
+      "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria")) %>%
+    dplyr::select(.data$date, .data$series, .data$value)
+
+
+  # filter out those who worked 0 hours and apply 3 months average
+  # We are only interested in two reasons for working 0 hours: 'no work' and 'other reasons'
+  zero_hours <- em2b %>%
+    tidyr::pivot_wider(names_from = series,
+                values_from = value) %>%
+    dplyr::summarise(emp_zero_hours = sum(.data$'employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria' +
+                       .data$'employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria' +
+                       .data$'employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria' +
+                       .data$'employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria'))
+
+
+
+  # %>%
+  #   dplyr::mutate(emp_zero_hours = slider::slide_mean(emp_zero_hours,
+  #                                                     before = 2L,
+  #                                                     complete = TRUE)) %>%
+  #   dplyr::filter(!is.na(emp_zero_hours))
+
+  # clean up original data source
+  unemp <- data %>%
+    dplyr::select(.data$date, .data$series, .data$value) %>%
+    tidyr::pivot_wider(names_from = .data$series,
+                values_from = .data$value) %>%
+    dplyr::rename(unemp = starts_with("Unemployed"),
+           lf = starts_with("Labour force")) %>%
+    dplyr::select(.data$date, .data$unemp, .data$lf)
+
+
+
 }
 
 
