@@ -2,7 +2,9 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Key indicators"),
-    "This page contains key labour force indicators, focusing on Victoria as a whole.",
+    paste0(
+      "This page contains key labour force indicators, focusing on Victoria as a whole."
+    ),
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
@@ -22,14 +24,14 @@ page_indicators <- function(...) {
       djpr_with_spinner(hide.ui = TRUE),
     djpr_plot_ui("ind_unemprate_line"),
     h4(br(), "Effective unemployment rate"),
-    "People who are counted as ‘employed’ but have not been able to work any hours do not count ",
-    "towards the ‘headline’ unemployment rate. ‘Effective’ unemployment rate includes those people, ",
-    "as it reflects the number of persons working zero hours due to not enough work available, being ",
-    "stood down or ‘other reasons’, as well as those unemployed. ",
-    "‘Effective’ unemployment is thus defined as the sum of unemployed persons and persons who were unable ",
-    "to work any hours due to economic conditions or ‘other reasons’ divided by the labour force. ",
-    "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
-    "a 3-month rolling average of persons working zero hours for economic reasons or unstated reasons.",
+    paste0(
+      "People who are employed but have not been able to work any hours do not count ",
+      "towards the 'headline' unemployment rate. Effective unemployment rate includes these people ",
+      "and is defined as the sum of unemployed persons and persons who are employed but worked zero ",
+      "hours due to economic conditions or 'other reasons', divided by the labour force. ",
+      "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
+      "a three month average of persons working zero hours for economic or unstated reasons."
+    ),
     br(),
     djpr_plot_ui("ind_effective_unemprate_line"),
     br(),

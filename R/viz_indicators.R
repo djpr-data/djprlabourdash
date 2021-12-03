@@ -1028,7 +1028,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
   # split off em2b data and drop spare columns, filter out those who worked 0 hours and apply 3 months average
   # We are only interested in two reasons for working 0 hours: 'no work' and 'other reasons'
   zero_hours <- data %>%
-    dplyr::filter(series_id %in% c(
+    dplyr::filter(.data$series_id %in% c(
       "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
       "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
       "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
@@ -1036,19 +1036,19 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     )) %>%
     dplyr::select(.data$date, .data$series, .data$value) %>%
     tidyr::pivot_wider(
-      names_from = series,
-      values_from = value
+      names_from = .data$series,
+      values_from = .data$value
     ) %>%
     dplyr::mutate(emp_zero_hours = .data$"Employed full-time ; Did not work (0 hours) ; No work, not enough work available, or stood down ; Victoria" +
       .data$"Employed full-time ; Did not work (0 hours) ; Worked fewer hours than usual for other reasons ; Victoria" +
       .data$"Employed part-time ; Did not work (0 hours) ; No work, not enough work available, or stood down ; Victoria" +
       .data$"Employed part-time ; Did not work (0 hours) ; Worked fewer hours than usual for other reasons ; Victoria") %>%
     dplyr::select(.data$date, .data$emp_zero_hours) %>%
-    dplyr::mutate(emp_zero_hours = slider::slide_mean(emp_zero_hours,
+    dplyr::mutate(emp_zero_hours = slider::slide_mean(.data$emp_zero_hours,
       before = 2L,
       complete = TRUE
     )) %>%
-    dplyr::filter(!is.na(emp_zero_hours))
+    dplyr::filter(!is.na(.data$emp_zero_hours))
 
   # clean up original data source
   unemp <- data %>%
@@ -1069,19 +1069,19 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
 
   df <- df %>%
     dplyr::mutate(
-      `Unemployment rate` = 100 * (unemp / lf),
-      `Effective unemployment rate` = 100 * ((unemp + emp_zero_hours) / lf)
+      `Unemployment rate` = 100 * (.data$unemp / .data$lf),
+      `Effective unemployment rate` = 100 * ((.data$unemp + .data$emp_zero_hours) / .data$lf)
     ) %>%
-    dplyr::select(date, `Unemployment rate`, `Effective unemployment rate`) %>%
+    dplyr::select(.data$date, .data$`Unemployment rate`, .data$`Effective unemployment rate`) %>%
     tidyr::pivot_longer(
       names_to = "series",
       values_to = "value",
-      cols = !date
+      cols = !.data$date
     )
 
   # Visualise -----
   max_date <- df %>%
-    dplyr::filter(date == max(date))
+    dplyr::filter(date == max(.data$date))
 
   # lockdown dates for shading
   lockdown_dates <- tibble::tribble(
@@ -1097,7 +1097,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
 
   # line graph
   df %>%
-    ggplot(aes(x = date, y = value, col = series)) +
+    ggplot(aes(x = .data$date, y = .data$value, col = .data$series)) +
     geom_rect(
       data = lockdown_dates,
       aes(
@@ -1131,9 +1131,9 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     geom_text(
       data = max_date,
       aes(label = paste0(
-        stringr::str_wrap(series, 8),
+        stringr::str_wrap(.data$series, 8),
         " ",
-        round(value, 1),
+        round(.data$value, 1),
         "%"
       )),
       lineheight = 0.9,
