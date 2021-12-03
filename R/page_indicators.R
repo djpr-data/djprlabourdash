@@ -35,6 +35,7 @@ page_indicators <- function(...) {
     br(),
     h4(br(), "Unemployment rates by state"),
     uiOutput("table_ind_unemp_state"),
+    br(),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
     djpr_plot_ui("ind_underut_area",

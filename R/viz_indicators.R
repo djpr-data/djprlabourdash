@@ -1064,10 +1064,10 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     dplyr::select(.data$date, .data$unemp, .data$lf)
 
   # Combine data sources and calculate effective unemp rate -----
-  unemp <- unemp %>%
+  df <- unemp %>%
     dplyr::right_join(zero_hours, by = "date")
 
-  ur <- unemp %>%
+  df <- df %>%
     dplyr::mutate(
       `Unemployment rate` = 100 * (unemp / lf),
       `Effective unemployment rate` = 100 * ((unemp + emp_zero_hours) / lf)
@@ -1080,7 +1080,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     )
 
   # Visualise -----
-  max_date <- ur %>%
+  max_date <- df %>%
     dplyr::filter(date == max(date))
 
   # lockdown dates for shading
@@ -1096,7 +1096,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     dplyr::mutate(across(everything(), as.Date))
 
   # line graph
-  ur %>%
+  df %>%
     ggplot(aes(x = date, y = value, col = series)) +
     geom_rect(
       data = lockdown_dates,
@@ -1153,8 +1153,8 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
       date_labels = "%b\n%Y",
       breaks = djprtheme::breaks_right(
         limits = c(
-          min(ur$date),
-          max(ur$date)
+          min(df$date),
+          max(df$date)
         ),
         n_breaks = 5
       ),
