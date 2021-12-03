@@ -1054,8 +1054,91 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
            lf = starts_with("Labour force")) %>%
     dplyr::select(.data$date, .data$unemp, .data$lf)
 
+  # Combine data sources and calculate effective unemp rate -----
+  unemp <- unemp %>%
+    dplyr::right_join(zero_hours, by = "date")
 
+  ur <- unemp %>%
+    dplyr::mutate(`Unemployment rate` = 100 * (unemp / lf),
+           `Effective unemployment rate` = 100 * ((unemp + emp_zero_hours) / lf)) %>%
+    dplyr::select(date, `Unemployment rate`, `Effective unemployment rate`) %>%
+    tidyr::pivot_longer(names_to = "series",
+                        values_to = "value",
+                        cols = !date)
 
+  # Visualise -----
+  max_date <- ur %>%
+    dplyr::filter(date == max(date))
+
+  # lockdown dates for shading
+  lockdown_dates <- tibble::tribble(
+    ~start,         ~end,
+    "2020-03-31", "2020-05-12",
+    "2020-07-09", "2020-10-27",
+    "2021-02-13", "2021-02-17",
+    "2021-05-28", "2021-06-10",
+    "2021-07-16", "2021-07-27",
+    "2021-08-05", "2021-10-21"
+  ) %>%
+    dplyr::mutate(across(everything(), as.Date))
+
+  # line graph
+  ur %>%
+    ggplot(aes(x = date, y = value, col = series)) +
+    geom_rect(
+      data = lockdown_dates,
+      aes(xmin = start, xmax = end,
+      ymin = -Inf, ymax = Inf),
+      fill = "grey80",
+      colour = "grey80",
+      inherit.aes = F) +
+    geom_text(
+      data = filter(lockdown_dates,
+      start == min(start)) %>%
+      dplyr::mutate(
+        label = "Shutdowns"),
+        aes(x = start, y = 11, label = label),
+        hjust = 1,
+        size = 14 / .pt,
+        col = "grey80",
+        inherit.aes = F) +
+    geom_line() +
+    geom_point(
+      data = max_date,
+      fill = "white",
+      stroke = 1.5, size = 2.5, shape = 21) +
+    geom_text(
+      data = max_date,
+      aes(label = paste0(
+        stringr::str_wrap(series, 8),
+        " ",
+        round(value, 1),
+        "%")),
+        lineheight = 0.9,
+        nudge_x = 35,
+        size = 14 / .pt,
+        hjust = 0) +
+      theme_djpr() +
+      scale_colour_manual(palette = djpr_pal) +
+      scale_y_continuous(
+        limits = function(x) c(0, x[2]),
+        expand = expansion(add = c(0, 1)),
+        breaks = seq(0, 16, 2),
+        labels = function(x) paste0(x, "%")) +
+      scale_x_date(
+        date_labels = "%b\n%Y",
+        breaks = djprtheme::breaks_right(
+          limits = c(min(ur$date),
+          max(ur$date)),
+          n_breaks = 5),
+          expand = expansion(add = c(10, 160))
+        ) +
+      theme(axis.title.x = element_blank()) +
+    labs(
+      title = "Including zero-hours workers in the unemployment rate gives a clearer picture of the economic effects of COVID and lockdowns",
+      subtitle = "Unemployment rate, with and without people working zero hours (per cent of labour force)",
+      caption = paste0(caption_lfs_det_m(), "Zero-hours data smoothed using a 3 month rolling average.")
+    )
 }
 
 

@@ -185,6 +185,27 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: effective unemployment rate
+  djpr_plot_server("ind_effective_unemprate_line",
+    viz_ind_effective_unemprate_line,
+    data = filter_dash_data(c(
+      "A84423350C",
+      "A84423351F",
+      "A84423354L",
+      "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
+      "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-06-01")),
+    plt_change = plt_change,
+    width_percent = 100,
+    height_percent = 70,
+    date_slider = FALSE
+  )
+
   # Indicators: table of unemployment rates by state
   output$table_ind_unemp_state <- renderUI({
     table_ind_unemp_state() %>%
