@@ -711,14 +711,18 @@ labour_server <- function(input, output, session) {
   })
 
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
-    title_youth_unemp_emppop_partrate_vic(data = data_youth_map_bar_title(),
-                                          selected_indicator = input$youth_region_focus) %>%
+    title_youth_unemp_emppop_partrate_vic(
+      data = data_youth_map_bar_title(),
+      selected_indicator = input$youth_region_focus
+    ) %>%
       djpr_plot_title()
   })
 
   output$map_youth_unemp_emppop_partrate_vic <- leaflet::renderLeaflet({
-    map_youth_unemp_emppop_partrate_vic(data = data_youth_map_bar_title(),
-                                        selected_indicator = input$youth_region_focus)
+    map_youth_unemp_emppop_partrate_vic(
+      data = data_youth_map_bar_title(),
+      selected_indicator = input$youth_region_focus
+    )
   })
 
   output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
@@ -1116,7 +1120,8 @@ labour_server <- function(input, output, session) {
 
   output$title_reg_unemp_emppop_partrate_vic <- renderText({
     title_reg_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
-                                    selected_indicator = input$lf_status_region)
+      selected_indicator = input$lf_status_region
+    )
   })
 
   output$subtitle_reg_unemp_emppop_partrate_vic <- renderText({
@@ -1134,13 +1139,17 @@ labour_server <- function(input, output, session) {
 
   output$map_reg_unemp_emppop_partrate_vic <-
     leaflet::renderLeaflet({
-      map_reg_unemp_emppop_partrate_vic(data = data_reg_map_bar_title(),
-                                        selected_indicator = input$lf_status_region)
+      map_reg_unemp_emppop_partrate_vic(
+        data = data_reg_map_bar_title(),
+        selected_indicator = input$lf_status_region
+      )
     })
 
   output$reg_unemp_emppop_partrate_bar <- renderPlot({
-    viz_reg_unemp_emppop_partrate_bar(data = data_reg_map_bar_title(),
-                                 selected_indicator = input$lf_status_region)
+    viz_reg_unemp_emppop_partrate_bar(
+      data = data_reg_map_bar_title(),
+      selected_indicator = input$lf_status_region
+    )
   })
 
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",

@@ -1013,16 +1013,17 @@ viz_ind_gen_full_part_line <- function(data = filter_dash_data(c(
 }
 
 viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
-                                            "A84423350C",
-                                            "A84423351F",
-                                            "A84423354L",
-                                            "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
-                                            "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
-                                            "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
-                                            "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"),
-                                            df = dash_data
-                                          ) %>%
-                                            dplyr::filter(date >= as.Date("2019-06-01"))) {
+                                               "A84423350C",
+                                               "A84423351F",
+                                               "A84423354L",
+                                               "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+                                               "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+                                               "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
+                                               "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
+                                             ),
+                                             df = dash_data
+                                             ) %>%
+                                               dplyr::filter(date >= as.Date("2019-06-01"))) {
 
   # split off em2b data and drop spare columns, filter out those who worked 0 hours and apply 3 months average
   # We are only interested in two reasons for working 0 hours: 'no work' and 'other reasons'
@@ -1031,27 +1032,35 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
       "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
       "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
       "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
-      "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria")) %>%
+      "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
+    )) %>%
     dplyr::select(.data$date, .data$series, .data$value) %>%
-    tidyr::pivot_wider(names_from = series,
-                values_from = value) %>%
-    dplyr::mutate(emp_zero_hours = .data$'Employed full-time ; Did not work (0 hours) ; No work, not enough work available, or stood down ; Victoria' +
-                       .data$'Employed full-time ; Did not work (0 hours) ; Worked fewer hours than usual for other reasons ; Victoria' +
-                       .data$'Employed part-time ; Did not work (0 hours) ; No work, not enough work available, or stood down ; Victoria' +
-                       .data$'Employed part-time ; Did not work (0 hours) ; Worked fewer hours than usual for other reasons ; Victoria') %>%
+    tidyr::pivot_wider(
+      names_from = series,
+      values_from = value
+    ) %>%
+    dplyr::mutate(emp_zero_hours = .data$"Employed full-time ; Did not work (0 hours) ; No work, not enough work available, or stood down ; Victoria" +
+      .data$"Employed full-time ; Did not work (0 hours) ; Worked fewer hours than usual for other reasons ; Victoria" +
+      .data$"Employed part-time ; Did not work (0 hours) ; No work, not enough work available, or stood down ; Victoria" +
+      .data$"Employed part-time ; Did not work (0 hours) ; Worked fewer hours than usual for other reasons ; Victoria") %>%
     dplyr::select(.data$date, .data$emp_zero_hours) %>%
     dplyr::mutate(emp_zero_hours = slider::slide_mean(emp_zero_hours,
-                                               before = 2L,
-                                               complete = TRUE)) %>%
+      before = 2L,
+      complete = TRUE
+    )) %>%
     dplyr::filter(!is.na(emp_zero_hours))
 
   # clean up original data source
   unemp <- data %>%
     dplyr::select(.data$date, .data$series, .data$value) %>%
-    tidyr::pivot_wider(names_from = .data$series,
-                values_from = .data$value) %>%
-    dplyr::rename(unemp = starts_with("Unemployed"),
-           lf = starts_with("Labour force")) %>%
+    tidyr::pivot_wider(
+      names_from = .data$series,
+      values_from = .data$value
+    ) %>%
+    dplyr::rename(
+      unemp = starts_with("Unemployed"),
+      lf = starts_with("Labour force")
+    ) %>%
     dplyr::select(.data$date, .data$unemp, .data$lf)
 
   # Combine data sources and calculate effective unemp rate -----
@@ -1059,12 +1068,16 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     dplyr::right_join(zero_hours, by = "date")
 
   ur <- unemp %>%
-    dplyr::mutate(`Unemployment rate` = 100 * (unemp / lf),
-           `Effective unemployment rate` = 100 * ((unemp + emp_zero_hours) / lf)) %>%
+    dplyr::mutate(
+      `Unemployment rate` = 100 * (unemp / lf),
+      `Effective unemployment rate` = 100 * ((unemp + emp_zero_hours) / lf)
+    ) %>%
     dplyr::select(date, `Unemployment rate`, `Effective unemployment rate`) %>%
-    tidyr::pivot_longer(names_to = "series",
-                        values_to = "value",
-                        cols = !date)
+    tidyr::pivot_longer(
+      names_to = "series",
+      values_to = "value",
+      cols = !date
+    )
 
   # Visualise -----
   max_date <- ur %>%
@@ -1072,7 +1085,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
 
   # lockdown dates for shading
   lockdown_dates <- tibble::tribble(
-    ~start,         ~end,
+    ~start, ~end,
     "2020-03-31", "2020-05-12",
     "2020-07-09", "2020-10-27",
     "2021-02-13", "2021-02-17",
@@ -1087,63 +1100,70 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     ggplot(aes(x = date, y = value, col = series)) +
     geom_rect(
       data = lockdown_dates,
-      aes(xmin = start, xmax = end,
-      ymin = -Inf, ymax = Inf),
+      aes(
+        xmin = start, xmax = end,
+        ymin = -Inf, ymax = Inf
+      ),
       fill = "grey80",
       colour = "grey80",
-      inherit.aes = F) +
+      inherit.aes = F
+    ) +
     geom_text(
-      data = filter(lockdown_dates,
-      start == min(start)) %>%
-      dplyr::mutate(
-        label = "Shutdowns"),
-        aes(x = start, y = 11, label = label),
-        hjust = 1,
-        size = 14 / .pt,
-        col = "grey80",
-        inherit.aes = F) +
+      data = filter(
+        lockdown_dates,
+        start == min(start)
+      ) %>%
+        dplyr::mutate(
+          label = "Shutdowns"
+        ),
+      aes(x = start, y = 11, label = label),
+      hjust = 1,
+      size = 14 / .pt,
+      col = "grey80",
+      inherit.aes = F
+    ) +
     geom_line() +
     geom_point(
       data = max_date,
       fill = "white",
-      stroke = 1.5, size = 2.5, shape = 21) +
+      stroke = 1.5, size = 2.5, shape = 21
+    ) +
     geom_text(
       data = max_date,
       aes(label = paste0(
         stringr::str_wrap(series, 8),
         " ",
         round(value, 1),
-        "%")),
-        lineheight = 0.9,
-        nudge_x = 35,
-        size = 14 / .pt,
-        hjust = 0) +
-      theme_djpr() +
-      scale_colour_manual(palette = djpr_pal) +
-      scale_y_continuous(
-        limits = function(x) c(0, x[2]),
-        expand = expansion(add = c(0, 1)),
-        breaks = seq(0, 16, 2),
-        labels = function(x) paste0(x, "%")) +
-      scale_x_date(
-        date_labels = "%b\n%Y",
-        breaks = djprtheme::breaks_right(
-          limits = c(min(ur$date),
-          max(ur$date)),
-          n_breaks = 5),
-          expand = expansion(add = c(10, 160))
-        ) +
-      theme(axis.title.x = element_blank()) +
+        "%"
+      )),
+      lineheight = 0.9,
+      nudge_x = 35,
+      size = 14 / .pt,
+      hjust = 0
+    ) +
+    theme_djpr() +
+    scale_colour_manual(palette = djpr_pal) +
+    scale_y_continuous(
+      limits = function(x) c(0, x[2]),
+      expand = expansion(add = c(0, 1)),
+      breaks = seq(0, 16, 2),
+      labels = function(x) paste0(x, "%")
+    ) +
+    scale_x_date(
+      date_labels = "%b\n%Y",
+      breaks = djprtheme::breaks_right(
+        limits = c(
+          min(ur$date),
+          max(ur$date)
+        ),
+        n_breaks = 5
+      ),
+      expand = expansion(add = c(10, 160))
+    ) +
+    theme(axis.title.x = element_blank()) +
     labs(
       title = "Including zero-hours workers in the unemployment rate gives a clearer picture of the economic effects of COVID and lockdowns",
       subtitle = "Unemployment rate, with and without people working zero hours (per cent of labour force)",
       caption = paste0(caption_lfs_det_m(), "Zero-hours data smoothed using a 3 month rolling average.")
     )
 }
-
-
-
-
-
-
-

@@ -1007,61 +1007,61 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
 }
 
 data_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
-                                                "15-24_unemployed_melbourne - inner",
-                                                "15-24_unemployed_melbourne - inner east",
-                                                "15-24_unemployed_melbourne - inner south",
-                                                "15-24_unemployed_melbourne - north east",
-                                                "15-24_unemployed_melbourne - north west",
-                                                "15-24_unemployed_melbourne - outer east",
-                                                "15-24_unemployed_melbourne - south east",
-                                                "15-24_unemployed_melbourne - west",
-                                                "15-24_unemployed_mornington peninsula",
-                                                "15-24_unemployed_ballarat",
-                                                "15-24_unemployed_bendigo",
-                                                "15-24_unemployed_geelong",
-                                                "15-24_unemployed_hume",
-                                                "15-24_unemployed_latrobe - gippsland",
-                                                "15-24_unemployed_victoria - north west",
-                                                "15-24_unemployed_shepparton",
-                                                "15-24_unemployed_warrnambool and south west",
-                                                "15-24_employed_melbourne - inner",
-                                                "15-24_employed_melbourne - inner east",
-                                                "15-24_employed_melbourne - inner south",
-                                                "15-24_employed_melbourne - north east",
-                                                "15-24_employed_melbourne - north west",
-                                                "15-24_employed_melbourne - outer east",
-                                                "15-24_employed_melbourne - south east",
-                                                "15-24_employed_melbourne - west",
-                                                "15-24_employed_mornington peninsula",
-                                                "15-24_employed_ballarat",
-                                                "15-24_employed_bendigo",
-                                                "15-24_employed_geelong",
-                                                "15-24_employed_hume",
-                                                "15-24_employed_latrobe - gippsland",
-                                                "15-24_employed_victoria - north west",
-                                                "15-24_employed_shepparton",
-                                                "15-24_employed_warrnambool and south west",
-                                                "15-24_nilf_melbourne - inner",
-                                                "15-24_nilf_melbourne - inner east",
-                                                "15-24_nilf_melbourne - inner south",
-                                                "15-24_nilf_melbourne - north east",
-                                                "15-24_nilf_melbourne - north west",
-                                                "15-24_nilf_melbourne - outer east",
-                                                "15-24_nilf_melbourne - south east",
-                                                "15-24_nilf_melbourne - west",
-                                                "15-24_nilf_mornington peninsula",
-                                                "15-24_nilf_ballarat",
-                                                "15-24_nilf_bendigo",
-                                                "15-24_nilf_geelong",
-                                                "15-24_nilf_hume",
-                                                "15-24_nilf_latrobe - gippsland",
-                                                "15-24_nilf_victoria - north west",
-                                                "15-24_nilf_shepparton",
-                                                "15-24_nilf_warrnambool and south west"
-                                              ),
-                                              df = dash_data
-                                              ),
-                                              selected_indicator = "unemp_rate") {
+                                                   "15-24_unemployed_melbourne - inner",
+                                                   "15-24_unemployed_melbourne - inner east",
+                                                   "15-24_unemployed_melbourne - inner south",
+                                                   "15-24_unemployed_melbourne - north east",
+                                                   "15-24_unemployed_melbourne - north west",
+                                                   "15-24_unemployed_melbourne - outer east",
+                                                   "15-24_unemployed_melbourne - south east",
+                                                   "15-24_unemployed_melbourne - west",
+                                                   "15-24_unemployed_mornington peninsula",
+                                                   "15-24_unemployed_ballarat",
+                                                   "15-24_unemployed_bendigo",
+                                                   "15-24_unemployed_geelong",
+                                                   "15-24_unemployed_hume",
+                                                   "15-24_unemployed_latrobe - gippsland",
+                                                   "15-24_unemployed_victoria - north west",
+                                                   "15-24_unemployed_shepparton",
+                                                   "15-24_unemployed_warrnambool and south west",
+                                                   "15-24_employed_melbourne - inner",
+                                                   "15-24_employed_melbourne - inner east",
+                                                   "15-24_employed_melbourne - inner south",
+                                                   "15-24_employed_melbourne - north east",
+                                                   "15-24_employed_melbourne - north west",
+                                                   "15-24_employed_melbourne - outer east",
+                                                   "15-24_employed_melbourne - south east",
+                                                   "15-24_employed_melbourne - west",
+                                                   "15-24_employed_mornington peninsula",
+                                                   "15-24_employed_ballarat",
+                                                   "15-24_employed_bendigo",
+                                                   "15-24_employed_geelong",
+                                                   "15-24_employed_hume",
+                                                   "15-24_employed_latrobe - gippsland",
+                                                   "15-24_employed_victoria - north west",
+                                                   "15-24_employed_shepparton",
+                                                   "15-24_employed_warrnambool and south west",
+                                                   "15-24_nilf_melbourne - inner",
+                                                   "15-24_nilf_melbourne - inner east",
+                                                   "15-24_nilf_melbourne - inner south",
+                                                   "15-24_nilf_melbourne - north east",
+                                                   "15-24_nilf_melbourne - north west",
+                                                   "15-24_nilf_melbourne - outer east",
+                                                   "15-24_nilf_melbourne - south east",
+                                                   "15-24_nilf_melbourne - west",
+                                                   "15-24_nilf_mornington peninsula",
+                                                   "15-24_nilf_ballarat",
+                                                   "15-24_nilf_bendigo",
+                                                   "15-24_nilf_geelong",
+                                                   "15-24_nilf_hume",
+                                                   "15-24_nilf_latrobe - gippsland",
+                                                   "15-24_nilf_victoria - north west",
+                                                   "15-24_nilf_shepparton",
+                                                   "15-24_nilf_warrnambool and south west"
+                                                 ),
+                                                 df = dash_data
+                                                 ),
+                                                 selected_indicator = "unemp_rate") {
 
   # combining value for each date, sa4 and indicator
   df <- data %>%
@@ -1104,8 +1104,8 @@ data_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::group_by(.data$sa4, .data$indicator) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 11,
-                                             complete = TRUE
+      before = 11,
+      complete = TRUE
     )) %>%
     dplyr::filter(.data$date == max(.data$date))
 
@@ -1113,19 +1113,17 @@ data_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
   df <- df %>%
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "Victoria - North West",
-                           "North West",
-                           .data$sa4
+        "North West",
+        .data$sa4
       )
     )
 
   df
-
 }
 
 
 title_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_partrate_vic(),
                                                   selected_indicator = "unemp_rate") {
-
   high_low <- data %>%
     dplyr::ungroup() %>%
     summarise(
@@ -1161,7 +1159,6 @@ title_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop
 map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_partrate_vic(),
                                                 selected_indicator = "unemp_rate",
                                                 zoom = 6) {
-
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -1259,12 +1256,10 @@ map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_p
     )
 
   map
-
 }
 
 viz_gr_youth_unemp_emppop_partrate_bar <- function(data = data_youth_unemp_emppop_partrate_vic(selected_indicator = selected_indicator),
                                                    selected_indicator = "unemp_rate") {
-
   data %>%
     ggplot(aes(
       x = stats::reorder(.data$sa4, .data$value),
@@ -1292,7 +1287,6 @@ viz_gr_youth_unemp_emppop_partrate_bar <- function(data = data_youth_unemp_emppo
       axis.text.x = element_blank()
     ) +
     labs(title = "")
-
 }
 
 viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
