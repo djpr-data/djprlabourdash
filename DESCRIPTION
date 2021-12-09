@@ -48,7 +48,8 @@ Imports:
     slider,
     flextable,
     cachem,
-    shinyjs
+    shinyjs,
+    tibble
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
