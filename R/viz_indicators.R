@@ -1101,7 +1101,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     geom_rect(
       data = lockdown_dates,
       aes(
-        xmin = start, xmax = end,
+        xmin = .data$start, xmax = .data$end,
         ymin = -Inf, ymax = Inf
       ),
       fill = "grey80",
@@ -1111,12 +1111,12 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     geom_text(
       data = filter(
         lockdown_dates,
-        start == min(start)
+        start == min(.data$start)
       ) %>%
         dplyr::mutate(
           label = "Shutdowns"
         ),
-      aes(x = start, y = 11, label = label),
+      aes(x = .data$start, y = 11, label = .data$label),
       hjust = 1,
       size = 14 / .pt,
       col = "grey80",
