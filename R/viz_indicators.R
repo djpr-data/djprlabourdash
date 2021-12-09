@@ -1084,7 +1084,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     dplyr::filter(date == max(.data$date))
 
   # lockdown dates for shading
-  lockdown_dates <- tibble::tribble(
+  lockdown_dates <- dplyr::tribble(
     ~start, ~end,
     "2020-03-31", "2020-05-12",
     "2020-07-09", "2020-10-27",
