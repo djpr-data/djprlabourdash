@@ -781,7 +781,7 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(.data$`Unemployment rate`))
 
 
-  quadrants <- tibble(
+  quadrants <- dplyr::tibble(
     x = c(-0.5, 0.75, -0.5, 0.75),
     y = c(1.75, 1.75, -1.75, -1.75),
     label = c(
