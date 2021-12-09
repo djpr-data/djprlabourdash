@@ -1114,7 +1114,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
         start == min(.data$start)
       ) %>%
         dplyr::mutate(
-          label = "Shutdowns"
+          label = "Shutdowns "
         ),
       aes(x = .data$start, y = 11, label = .data$label),
       hjust = 1,
