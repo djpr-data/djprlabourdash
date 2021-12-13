@@ -2,7 +2,9 @@ page_indicators <- function(...) {
   djpr_tab_panel(
     title = "Indicators",
     h1("Key indicators"),
-    "This page contains key labour force indicators, focusing on Victoria as a whole.",
+    paste0(
+      "This page contains key labour force indicators, focusing on Victoria as a whole."
+    ),
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
@@ -21,8 +23,21 @@ page_indicators <- function(...) {
     uiOutput("ind_unemp_summary") %>%
       djpr_with_spinner(hide.ui = TRUE),
     djpr_plot_ui("ind_unemprate_line"),
+    h4(br(), "Effective unemployment rate"),
+    paste0(
+      "People who are employed but have not been able to work any hours do not count ",
+      "towards the 'headline' unemployment rate. Effective unemployment rate includes these people ",
+      "and is defined as the sum of unemployed persons and persons who are employed but worked zero ",
+      "hours due to economic conditions or 'other reasons', divided by the labour force. ",
+      "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
+      "a three month average of persons working zero hours for economic or unstated reasons."
+    ),
+    br(),
+    djpr_plot_ui("ind_effective_unemprate_line"),
+    br(),
     h4(br(), "Unemployment rates by state"),
     uiOutput("table_ind_unemp_state"),
+    br(),
     djpr_plot_ui("ind_unemp_states_dot"),
     br(),
     djpr_plot_ui("ind_underut_area",
