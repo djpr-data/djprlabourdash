@@ -1084,7 +1084,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     dplyr::filter(date == max(.data$date))
 
   # lockdown dates for shading
-  start = end = NULL
+#  start = end = NULL
 
   lockdown_dates <- dplyr::tibble(
     start = c("2020-03-31",
@@ -1118,7 +1118,7 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     geom_text(
       data = filter(
         lockdown_dates,
-        start == min(.data$start)
+        .data$start == min(.data$start)
       ) %>%
         dplyr::mutate(
           label = "Shutdowns "
