@@ -1084,21 +1084,25 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     dplyr::filter(date == max(.data$date))
 
   # lockdown dates for shading
-#  start = end = NULL
+  #  start = end = NULL
 
   lockdown_dates <- dplyr::tibble(
-    start = c("2020-03-31",
-              "2020-07-09",
-              "2021-02-13",
-              "2021-05-28",
-              "2021-07-16",
-              "2021-08-05"),
-    end = c(  "2020-05-12",
-              "2020-10-27",
-              "2021-02-17",
-              "2021-06-10",
-              "2021-07-27",
-              "2021-10-21")
+    start = c(
+      "2020-03-31",
+      "2020-07-09",
+      "2021-02-13",
+      "2021-05-28",
+      "2021-07-16",
+      "2021-08-05"
+    ),
+    end = c(
+      "2020-05-12",
+      "2020-10-27",
+      "2021-02-17",
+      "2021-06-10",
+      "2021-07-27",
+      "2021-10-21"
+    )
   ) %>%
     dplyr::mutate(across(everything(), as.Date))
 
