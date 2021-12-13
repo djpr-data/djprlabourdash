@@ -185,6 +185,27 @@ labour_server <- function(input, output, session) {
     plt_change = plt_change
   )
 
+  # Indicators: effective unemployment rate
+  djpr_plot_server("ind_effective_unemprate_line",
+    viz_ind_effective_unemprate_line,
+    data = filter_dash_data(c(
+      "A84423350C",
+      "A84423351F",
+      "A84423354L",
+      "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
+      "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-06-01")),
+    plt_change = plt_change,
+    width_percent = 100,
+    height_percent = 70,
+    date_slider = FALSE
+  )
+
   # Indicators: table of unemployment rates by state
   output$table_ind_unemp_state <- renderUI({
     table_ind_unemp_state() %>%
@@ -690,14 +711,18 @@ labour_server <- function(input, output, session) {
   })
 
   output$title_youth_unemp_emppop_partrate_vic <- renderUI({
-    title_youth_unemp_emppop_partrate_vic(data = data_youth_map_bar_title(),
-                                          selected_indicator = input$youth_region_focus) %>%
+    title_youth_unemp_emppop_partrate_vic(
+      data = data_youth_map_bar_title(),
+      selected_indicator = input$youth_region_focus
+    ) %>%
       djpr_plot_title()
   })
 
   output$map_youth_unemp_emppop_partrate_vic <- leaflet::renderLeaflet({
-    map_youth_unemp_emppop_partrate_vic(data = data_youth_map_bar_title(),
-                                        selected_indicator = input$youth_region_focus)
+    map_youth_unemp_emppop_partrate_vic(
+      data = data_youth_map_bar_title(),
+      selected_indicator = input$youth_region_focus
+    )
   })
 
   output$gr_youth_unemp_emppop_partrate_bar <- renderPlot({
@@ -1095,7 +1120,8 @@ labour_server <- function(input, output, session) {
 
   output$title_reg_unemp_emppop_partrate_vic <- renderText({
     title_reg_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
-                                    selected_indicator = input$lf_status_region)
+      selected_indicator = input$lf_status_region
+    )
   })
 
   output$subtitle_reg_unemp_emppop_partrate_vic <- renderText({
@@ -1113,13 +1139,17 @@ labour_server <- function(input, output, session) {
 
   output$map_reg_unemp_emppop_partrate_vic <-
     leaflet::renderLeaflet({
-      map_reg_unemp_emppop_partrate_vic(data = data_reg_map_bar_title(),
-                                        selected_indicator = input$lf_status_region)
+      map_reg_unemp_emppop_partrate_vic(
+        data = data_reg_map_bar_title(),
+        selected_indicator = input$lf_status_region
+      )
     })
 
   output$reg_unemp_emppop_partrate_bar <- renderPlot({
-    viz_reg_unemp_emppop_partrate_bar(data = data_reg_map_bar_title(),
-                                 selected_indicator = input$lf_status_region)
+    viz_reg_unemp_emppop_partrate_bar(
+      data = data_reg_map_bar_title(),
+      selected_indicator = input$lf_status_region
+    )
   })
 
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",
