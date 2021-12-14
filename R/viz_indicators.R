@@ -237,7 +237,6 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     )
 }
 
-# Annett changes
 viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
                                          "A84423272J",
                                          "A84423356T",
