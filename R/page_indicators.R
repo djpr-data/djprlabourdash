@@ -10,10 +10,9 @@ page_indicators <- function(...) {
     uiOutput("ind_emp_table") %>%
       djpr_with_spinner(hide.ui = TRUE),
     br(),
-    fluidRow(
-      column(6, djpr_plot_ui("ind_emppop_state_slope")),
-      column(6, djpr_plot_ui("ind_empgro_line"))
-    ),
+    djpr_plot_ui("ind_emppop_state_line"),
+    br(),
+    djpr_plot_ui("ind_empgro_line"),
     br(),
     fluidRow(
       column(6, djpr_plot_ui("ind_gen_full_part_line")),
