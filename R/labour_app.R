@@ -181,7 +181,6 @@ labour_server <- function(input, output, session) {
     )),
     date_slider_value_min = Sys.Date() - (365 * 5),
     plt_change = plt_change,
-    width_percent = 100,
     height_percent = 70
   )
 
