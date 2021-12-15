@@ -238,44 +238,38 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
 }
 
 viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
-                                         "A84423272J",
-                                         "A84423356T",
-                                         "A84423286W",
-                                         "A84423370L",
-                                         "A84423328J",
-                                         "A84423300F",
-                                         "A84423314V",
-                                         "A84423342C"
-                                         ),
-                                         df = dash_data
-                                         ) %>%
-                                         dplyr::mutate(
-                                           state = dplyr::case_when(
-                                             .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-                                               "Vic",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-                                               "NSW",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-                                               "QLD",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-                                               "NT",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-                                               "WA",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-                                               "SA",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-                                               "Tas",
-                                             .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-                                               "ACT",
-                                             TRUE ~ .data$state
-                                             )
-                                           )) {
-
-
-
-
-
-
+                                        "A84423272J",
+                                        "A84423356T",
+                                        "A84423286W",
+                                        "A84423370L",
+                                        "A84423328J",
+                                        "A84423300F",
+                                        "A84423314V",
+                                        "A84423342C"
+                                      ),
+                                      df = dash_data
+                                      ) %>%
+                                        dplyr::mutate(
+                                          state = dplyr::case_when(
+                                            .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
+                                            "Vic",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
+                                            "NSW",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
+                                            "QLD",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
+                                            "NT",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
+                                            "WA",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
+                                            "SA",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
+                                            "Tas",
+                                            .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
+                                            "ACT",
+                                            TRUE ~ .data$state
+                                          )
+                                        )) {
   df <- data %>%
     dplyr::mutate(
       state_group = dplyr::if_else(.data$state %in% c(
@@ -303,7 +297,7 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
     vic_rank == 2 ~ paste0(vic_level, " of Victorian adults are employed, the second highest ratio of any Australian state"),
     vic_rank == 3 ~ paste0(vic_level, " of Victorian adults are employed, the third highest ratio of any Australian state"),
     TRUE ~ "Victoria's employment to population ratio compared to other states and territories"
-    )
+  )
 
   other_colour <- "grey70"
 
@@ -331,7 +325,6 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
       subtitle = "Employment to population ratio in Australian states and territories",
       caption = caption_lfs()
     )
-
 }
 
 viz_ind_partrate_bar <- function(data = filter_dash_data(c(

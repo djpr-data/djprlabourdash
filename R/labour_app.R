@@ -134,21 +134,21 @@ labour_server <- function(input, output, session) {
       dplyr::mutate(
         state = dplyr::case_when(
           .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-            "Vic",
+          "Vic",
           .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-            "NSW",
+          "NSW",
           .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-            "QLD",
+          "QLD",
           .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-            "NT",
+          "NT",
           .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-            "WA",
+          "WA",
           .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-            "SA",
+          "SA",
           .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-            "Tas",
+          "Tas",
           .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-            "ACT",
+          "ACT",
           TRUE ~ .data$state
         )
       ),
