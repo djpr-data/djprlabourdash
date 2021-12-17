@@ -238,38 +238,38 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
 }
 
 viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
-                                        "A84423272J",
-                                        "A84423356T",
-                                        "A84423286W",
-                                        "A84423370L",
-                                        "A84423328J",
-                                        "A84423300F",
-                                        "A84423314V",
-                                        "A84423342C"
-                                      ),
-                                      df = dash_data
-                                      ) %>%
-                                        dplyr::mutate(
-                                          state = dplyr::case_when(
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-                                            "Vic",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-                                            "NSW",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-                                            "QLD",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-                                            "NT",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-                                            "WA",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-                                            "SA",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-                                            "Tas",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-                                            "ACT",
-                                            TRUE ~ .data$state
-                                          )
-                                        )) {
+  "A84423272J",
+  "A84423356T",
+  "A84423286W",
+  "A84423370L",
+  "A84423328J",
+  "A84423300F",
+  "A84423314V",
+  "A84423342C"
+),
+df = dash_data
+) %>%
+  dplyr::mutate(
+    state = dplyr::case_when(
+      .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
+        "Vic",
+      .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
+        "NSW",
+      .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
+        "QLD",
+      .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
+        "NT",
+      .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
+        "WA",
+      .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
+        "SA",
+      .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
+        "Tas",
+      .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
+        "ACT",
+      TRUE ~ .data$state
+    )
+  )) {
   df <- data %>%
     dplyr::mutate(
       state_group = dplyr::if_else(.data$state %in% c(
@@ -280,17 +280,33 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
       )
     )
 
-  latest <- df %>%
+  non_filtered_latest <- filter_dash_data(
+    df         = dash_data,
+    series_ids = c(
+      "A84423272J",
+      "A84423356T",
+      "A84423286W",
+      "A84423370L",
+      "A84423328J",
+      "A84423300F",
+      "A84423314V",
+      "A84423342C"
+    )
+  ) %>%
     dplyr::filter(
       .data$date == max(.data$date),
-      !.data$state %in% c("ACT", "NT")
+      !(.data$state %in% c(
+        "Northern Territory",
+        "Australian Capital Territory"
+      )
+      )
     ) %>%
-    dplyr::select(.data$state, .data$value) %>%
-    dplyr::mutate(rank = dplyr::min_rank(-.data$value))
+    dplyr::arrange(-.data$value)
 
-  vic_rank <- latest$rank[latest$state == "Vic"]
-  nsw_rank <- latest$rank[latest$state == "NSW"]
-  vic_level <- paste0(round2(latest$value[latest$state == "Vic"], 1), "%")
+  vic_rank <- which(non_filtered_latest$state == "Victoria")
+  vic_level <- non_filtered_latest %>%
+    dplyr::filter(.data$state == "Victoria") %>%
+    dplyr::pull(.data$value)
 
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(vic_level, " of Victorian adults are employed, the highest ratio of any Australian state"),
