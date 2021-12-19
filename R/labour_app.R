@@ -168,7 +168,29 @@ labour_server <- function(input, output, session) {
     date_slider_value_min = Sys.Date() - (365 * 5),
     width_percent = 100,
     height_percent = 70,
-    plt_change = plt_change
+    plt_change = plt_change,
+    non_filtered_latest = filter_dash_data(
+      df = dash_data,
+      series_ids = c(
+        "A84423272J",
+        "A84423356T",
+        "A84423286W",
+        "A84423370L",
+        "A84423328J",
+        "A84423300F",
+        "A84423314V",
+        "A84423342C"
+      )
+    ) %>%
+      dplyr::filter(
+        .data$date == max(.data$date),
+        !(.data$state %in% c(
+          "Northern Territory",
+          "Australian Capital Territory"
+        )
+        )
+      ) %>%
+      dplyr::arrange(-.data$value)
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
