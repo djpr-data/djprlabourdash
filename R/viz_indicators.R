@@ -306,7 +306,9 @@ df = dash_data
   vic_rank <- which(non_filtered_latest$state == "Victoria")
   vic_level <- non_filtered_latest %>%
     dplyr::filter(.data$state == "Victoria") %>%
-    dplyr::pull(.data$value)
+    dplyr::pull(.data$value) %>%
+    round(1) %>%
+    paste0("%")
 
   title <- dplyr::case_when(
     vic_rank == 1 ~ paste0(vic_level, " of Victorian adults are employed, the highest ratio of any Australian state"),
