@@ -116,13 +116,9 @@ labour_server <- function(input, output, session) {
   }) %>%
     bindCache(series_latestdates)
 
-  # Indicators: slopegraph of emp-pop ratios in states
-  djpr_plot_server("ind_emppop_state_slope",
-    viz_ind_emppop_state_slope,
-    date_slider = FALSE,
-    width_percent = 45,
-    height_percent = 70,
-    plt_change = plt_change,
+  # Indicators: line graph of emp-pop ratios in states, with state selector boxes
+  djpr_plot_server("ind_emppop_state_line",
+    viz_ind_emppop_state_line,
     data = filter_dash_data(c(
       "A84423272J",
       "A84423356T",
@@ -132,7 +128,69 @@ labour_server <- function(input, output, session) {
       "A84423300F",
       "A84423314V",
       "A84423342C"
-    ))
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::mutate(
+        state = dplyr::case_when(
+          .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
+          "Vic",
+          .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
+          "NSW",
+          .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
+          "QLD",
+          .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
+          "NT",
+          .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
+          "WA",
+          .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
+          "SA",
+          .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
+          "Tas",
+          .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
+          "ACT",
+          TRUE ~ .data$state
+        )
+      ),
+    check_box_options = c(
+      "Vic",
+      "NSW",
+      "SA",
+      "QLD",
+      "WA",
+      "NT",
+      "ACT",
+      "Tas"
+    ),
+    check_box_var = .data$state,
+    check_box_selected = c("NSW", "Vic"),
+    date_slider = TRUE,
+    date_slider_value_min = Sys.Date() - (365 * 5),
+    width_percent = 100,
+    height_percent = 70,
+    plt_change = plt_change,
+    non_filtered_latest = filter_dash_data(
+      df = dash_data,
+      series_ids = c(
+        "A84423272J",
+        "A84423356T",
+        "A84423286W",
+        "A84423370L",
+        "A84423328J",
+        "A84423300F",
+        "A84423314V",
+        "A84423342C"
+      )
+    ) %>%
+      dplyr::filter(
+        .data$date == max(.data$date),
+        !(.data$state %in% c(
+          "Northern Territory",
+          "Australian Capital Territory"
+        )
+        )
+      ) %>%
+      dplyr::arrange(-.data$value)
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
@@ -145,7 +203,6 @@ labour_server <- function(input, output, session) {
     )),
     date_slider_value_min = Sys.Date() - (365 * 5),
     plt_change = plt_change,
-    width_percent = 45,
     height_percent = 70
   )
 
