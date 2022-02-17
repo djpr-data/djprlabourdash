@@ -10,7 +10,7 @@ filter_dash_data <- function(series_ids, df = dash_data) {
 
   out <- subset(df, series_id %in% series_ids)
 
-  all_present <- all(.env$series_ids %in% out$series_id)
+  all_present <- all(series_ids %in% out$series_id)
 
   if (!all_present) {
     warning("Not all series IDs could be found")
