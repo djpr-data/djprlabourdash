@@ -1,30 +1,41 @@
 
 
+#' Create Text for SMS
+#'
+#' @param labour data.frame
+#'
+#' @import glue
+#' @import dplyr
+#' @import here
+#' @return character SMS text
+#' @export
+#'
+#' @examples
 sms <- function(labour){
 
   # 3 Define summary stats
   latest_dates <- labour %>%
-    group_by(series) %>%
-    summarise(date = max(date)) %>%
-    pull(date, name = series)
+    dplyr::group_by(series) %>%
+    dplyr::summarise(date = max(date)) %>%
+    dplyr::pull(date, name = series)
 
   latest_values <- labour %>%
-    arrange(date) %>%
-    group_by(series) %>%
-    summarise(value = last(value)) %>%
-    pull(value, name = series)
+    dplyr::arrange(date) %>%
+    dplyr::group_by(series) %>%
+    dplyr::summarise(value = last(value)) %>%
+    dplyr::pull(value, name = series)
 
   latest_values_lag1 <- labour %>%
-    arrange(date) %>%
-    group_by(series) %>%
-    summarise(value = nth(value, -2)) %>%
-    pull(value, name = series)
+    dplyr::arrange(date) %>%
+    dplyr::group_by(series) %>%
+    dplyr::summarise(value = nth(value, -2)) %>%
+    dplyr::pull(value, name = series)
 
   latest_delta <- labour %>%
-    arrange(date) %>%
-    group_by(series) %>%
-    summarise(delta = last(value - lag(value))) %>%
-    pull(delta, name = series)
+    dplyr::arrange(date) %>%
+    dplyr::group_by(series) %>%
+    dplyr::summarise(delta = last(value - lag(value))) %>%
+    dplyr::pull(delta, name = series)
 
 
 
@@ -52,8 +63,8 @@ sms <- function(labour){
   messgae_unemploy_template <- "UN rate {direction} from {last_rate} ({last_month}) to {this_rate} ({this_month})"
   messgae_regional_unemploy_template <- "ABS Regional Labour Force {this_month} (3 month average)\nRegional UN rate {direction} from {last_rate} ({last_month}) to {this_rate} ({this_month})"
 
-  message_emp_stock <- case_when(
-    latest_delta["vic total employed"] > 100 ~ glue(
+  message_emp_stock <- dplyr::case_when(
+    latest_delta["vic total employed"] > 100 ~ glue::glue(
       message_emp_stock_template,
       this_month = format(latest_dates["vic total employed"], "%B"),
       direction  = "up",
@@ -61,7 +72,7 @@ sms <- function(labour){
       to         = " to",
       stock      = num_format(latest_values['vic total employed'])
     ),
-    latest_delta["vic total employed"] < -100 ~ glue(
+    latest_delta["vic total employed"] < -100 ~ glue::glue(
       message_emp_stock_template,
       this_month = format(latest_dates["vic total employed"], "%B"),
       direction  = "down",
@@ -69,7 +80,7 @@ sms <- function(labour){
       to         = " to",
       stock      = num_format(latest_values['vic total employed'])
     ),
-    TRUE ~ glue(
+    TRUE ~ glue::glue(
       message_emp_stock_template,
       this_month = format(latest_dates["vic total employed"], "%B"),
       direction  = "unchanged",
@@ -79,8 +90,8 @@ sms <- function(labour){
     )
   )
 
-  message_unemploy_rate <- case_when(
-    latest_delta["vic unemployment rate"] > 0.01 ~ glue(
+  message_unemploy_rate <- dplyr::case_when(
+    latest_delta["vic unemployment rate"] > 0.01 ~ glue::glue(
       messgae_unemploy_template,
       this_month = format(latest_dates["vic unemployment rate"], "%B"),
       last_month = format(latest_dates["vic unemployment rate"] - months(1), "%B"),
@@ -88,7 +99,7 @@ sms <- function(labour){
       this_rate  = num_format(latest_values['vic unemployment rate']),
       last_rate  = num_format(latest_values_lag1['vic unemployment rate'])
     ),
-    latest_delta["vic unemployment rate"] < -0.01 ~ glue(
+    latest_delta["vic unemployment rate"] < -0.01 ~ glue::glue(
       messgae_unemploy_template,
       this_month = format(latest_dates["vic unemployment rate"], "%B"),
       last_month = format(latest_dates["vic unemployment rate"] - months(1), "%B"),
@@ -96,7 +107,7 @@ sms <- function(labour){
       this_rate  = num_format(latest_values['vic unemployment rate']),
       last_rate  = num_format(latest_values_lag1['vic unemployment rate'])
     ),
-    TRUE ~ glue(
+    TRUE ~ glue::glue(
       messgae_unemploy_template,
       this_month = format(latest_dates["vic unemployment rate"], "%B"),
       last_month = format(latest_dates["vic unemployment rate"] - months(1), "%B"),
@@ -106,8 +117,8 @@ sms <- function(labour){
     )
   )
 
-  message_regional_unemploy <- case_when(
-    latest_delta["regional vic unemployment rate"] > 0.01 ~ glue(
+  message_regional_unemploy <- dplyr::case_when(
+    latest_delta["regional vic unemployment rate"] > 0.01 ~ glue::glue(
       messgae_regional_unemploy_template,
       this_month = format(latest_dates["regional vic unemployment rate"], "%B"),
       last_month = format(latest_dates["regional vic unemployment rate"] - months(1), "%B"),
@@ -115,7 +126,7 @@ sms <- function(labour){
       this_rate  = num_format(latest_values['regional vic unemployment rate']),
       last_rate  = num_format(latest_values_lag1['regional vic unemployment rate'])
     ),
-    latest_delta["regional vic unemployment rate"] < -0.01 ~ glue(
+    latest_delta["regional vic unemployment rate"] < -0.01 ~ glue::glue(
       messgae_regional_unemploy_template,
       this_month = format(latest_dates["regional vic unemployment rate"], "%B"),
       last_month = format(latest_dates["regional vic unemployment rate"] - months(1), "%B"),
@@ -123,7 +134,7 @@ sms <- function(labour){
       this_rate  = num_format(latest_values['regional vic unemployment rate']),
       last_rate  = num_format(latest_values_lag1['regional vic unemployment rate'])
     ),
-    TRUE ~ glue(
+    TRUE ~ glue::glue(
       messgae_regional_unemploy_template,
       this_month = format(latest_dates["regional vic unemployment rate"], "%B"),
       last_month = format(latest_dates["regional vic unemployment rate"] - months(1), "%B"),
@@ -152,35 +163,4 @@ sms <- function(labour){
 
 
 
-reference_dates <- function(){
 
-  url = 'https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release#media-releases'
-
-  pub_dates <- read_html(url) |>
-    html_table() |>
-    purrr::keep(~ 'Publication' %in% colnames(.x)) |>
-    purrr::flatten_df()
-
-  pub_dates_out <- pub_dates |>
-    dplyr::filter(grepl(pattern = lubridate::month(Sys.Date(),
-                                                   label = TRUE,
-                                                   abbr = FALSE),
-                        .data$Publication)) |>
-    dplyr::mutate(across(everything(), ~ stringr::str_replace(.x, ' 2022', '')))
-
-  pub_dates_text <- pub_dates_out |>
-    dplyr::mutate(period = paste0(`Start of Reference Week`,
-                                  ' to ',
-                                  `End of Reference Week`)) |>
-    dplyr::pull(period)
-
-  preamble <- paste0('The ABS released the latest detailed',
-                     ' Labour Force figures at 11:30am today. This data was ',
-                     'collected for the period ',
-                     pub_dates_text,
-                     ' {lubridate::year(Sys.Date())}.')
-
-  return(list(dates = pub_dates_out,
-              preamble = preamble))
-
-}
