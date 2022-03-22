@@ -1,11 +1,23 @@
+#' Edit SMS before Sending
+#'
+#' @param labour data.frame used for testing, not required by addin
+#'
+#' @importFrom shinyWidgets switchInput updateSwitchInput
+#' @import glue
+#' @return
+#' @export
+#'
+#' @examples
 editSMS <- function(labour = NULL) {
 
-  ui <- miniPage(
-    gadgetTitleBar("Edit SMS"),
-    miniContentPanel(
-      textAreaInput('sms_text', 'SMS Content', rows = 8, width = '550px', height = '100%'),
-      miniButtonBlock(
-        div(shiny::actionButton('send', 'Send SMS', value = FALSE, icon = icon('paper-plane'))
+  ui <- miniUI::miniPage(
+    miniUI::gadgetTitleBar("Edit SMS"),
+    miniUI::miniContentPanel(
+      shiny::textInput('to', 'Send To', value = Sys.getenv()[['USEREMAIL']], width = '100%'),
+      shinyWidgets::switchInput('live', 'Enable', value = FALSE, onStatus = "success", offStatus = "danger"),
+      shiny::textAreaInput('sms_text', 'SMS Content', rows = 8, width = '550px', height = '100%'),
+      miniUI::miniButtonBlock(
+        shiny::div(shiny::actionButton('send', 'Send SMS', value = FALSE, icon = icon('paper-plane'))
       )
     )
   ))
@@ -28,7 +40,7 @@ editSMS <- function(labour = NULL) {
       recode_series <- names(req_series)
       names(recode_series) <- req_series
 
-      labour <- read_abs_series(req_series, show_progress_bars = F) %>%
+      labour <- readabs::read_abs_series(req_series, show_progress_bars = F) %>%
         mutate(
           series = recode(series_id, !!!recode_series),
           value  = ifelse(unit == "000", value * 1000, value),
@@ -65,9 +77,8 @@ editSMS <- function(labour = NULL) {
 
       send <- emayili::envelope(
         from = "spp-data@ecodev.vic.gov.au",
-        #to = "labour-force@groups.smsglobal.com",
-        to = "matthew.johnson@ecodev.vic.gov.au",
-        subject = glue("LF SMS: {format(Sys.Date(), '%B-%Y')} ",
+        to = input$to,
+        subject = glue::glue("LF SMS: {format(Sys.Date(), '%B-%Y')} ",
                        "(not used by SMS Global, this is recommended for record keeping)")) |>
         emayili::text(.open = '{{', .close = '}}',
                       "{sms}
@@ -79,16 +90,22 @@ editSMS <- function(labour = NULL) {
 
     })
 
-
+    observeEvent(input$live, {
+      if (input$live) {
+        shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['SMS_LABOURFORCE']])
+      } else {
+        shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['USEREMAIL']])
+      }
+    })
 
     observeEvent(input$send, {
 
       tryCatch({
         smtp(to_send(), verbose = TRUE)
-        showNotification("SMS Has Been Sent", type = 'message', duration = 5)
+        shiny::showNotification("SMS Has Been Sent", type = 'message', duration = 5)
       },
        error = function(e){
-         showNotification("SMS FAILED", type = 'error', duration = 5)
+         shiny::showNotification("SMS FAILED", type = 'error', duration = 5)
        })
 
     })
@@ -103,7 +120,7 @@ editSMS <- function(labour = NULL) {
 
   }
 
-  viewer <- paneViewer(300)
-  runGadget(ui, server, viewer = viewer)
+  viewer <- shiny::paneViewer(400)
+  shiny::runGadget(ui, server, viewer = viewer)
 
 }
