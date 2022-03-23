@@ -81,8 +81,8 @@ editSMS <- function(labour = NULL) {
         subject = glue::glue("LF SMS: {format(Sys.Date(), '%B-%Y')} ",
                        "(not used by SMS Global, this is recommended for record keeping)")) |>
         emayili::text(.open = '{{', .close = '}}',
-                      "{sms}
-                      {{input$sms_text}}
+                      "{sms}\r\n
+                      {{gsub('\n','\r\n', input$sms_text)}}\r\n
                       {/sms}")
       print('email ready')
 
@@ -94,7 +94,7 @@ editSMS <- function(labour = NULL) {
       if (input$live) {
         shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['SMS_LABOURFORCE']])
       } else {
-        shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['USEREMAIL']])
+        shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['SMS_LABOURFORCE_TEST']])
       }
     })
 

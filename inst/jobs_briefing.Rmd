@@ -238,7 +238,7 @@ writeLines(dot_points, 'dotpoints.md')
 
 ### Victorian employment summary, January 2022
 
-```{r}
+```{r, results='asis'}
 table_overview() 
 ```
 
