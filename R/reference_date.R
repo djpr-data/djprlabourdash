@@ -3,6 +3,7 @@
 #'
 #' @import rvest
 #' @import httr
+#' @import lubridate
 #'
 #' @return list
 #' @export
@@ -18,7 +19,7 @@ reference_dates <- function(){
     purrr::flatten_df()
 
   pub_dates_out <- pub_dates |>
-    dplyr::filter(grepl(pattern = lubridate::month(Sys.Date(),
+    dplyr::filter(grepl(pattern = lubridate::month(Sys.Date() %m-% months(1),
                                                    label = TRUE,
                                                    abbr = FALSE),
                         .data$Publication)) |>
