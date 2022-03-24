@@ -12,6 +12,8 @@
 #' @examples
 editEMAIL <- function() {
 
+  stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject()))
+
   email_lists_url <- file.path(Sys.getenv()[['R_USER_HOME']],
                                'VicGov',
                                'Economic Modelling Team - Documents',

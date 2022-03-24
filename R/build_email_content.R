@@ -9,6 +9,7 @@
 #' @examples
 build_email_content <- function(){
 
+  stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject()))
 
   writeLines(c(readLines('inst/preamble.md'),
                "",

@@ -10,6 +10,11 @@
 #' @examples
 editSMS <- function(labour = NULL) {
 
+
+  stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject()))
+  #shell("git checkout main")
+
+
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Edit SMS"),
     miniUI::miniContentPanel(
