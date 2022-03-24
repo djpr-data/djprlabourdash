@@ -66,30 +66,33 @@ editEMAIL <- function() {
 
   server <- function(input, output, session) {
 
+    to <- reactiveValues(
+      recipient = email_lists$Test$email
+    )
 
     observeEvent(input$addresses_type, {
       shinyWidgets::updatePickerInput(session = session, 'all_addresses', choices = email_lists[[input$addresses_type]]$email)
+      isolate(to$recipient <- email_lists$Test$email)
     })
 
     observeEvent(input$all_addresses, {
       output$selected <- renderText({
         glue::glue('selected {length(input$all_addresses)} of {nrow(email_lists[[input$addresses_type]])}')
       })
+      isolate(to$recipient <- input$all_addresses)
     })
 
 
-    to <- reactiveValues(
-      recipient = Sys.getenv()[['USEREMAIL']]
-    )
+
 
     observeEvent(input$live, {
       if (input$live) {
         isolate(to$recipient <- input$all_addresses)
       } else {
-        isolate(to$recipient <- Sys.getenv()[['USEREMAIL']])
+        isolate(to$recipient <- email_lists$Test$email)
       }
 
-      message('sending to: ', to$recipient)
+      message('selected recipients: ', to$recipient)
     })
 
 
@@ -169,17 +172,23 @@ editEMAIL <- function() {
                                     username = Sys.getenv()[['USERNAME']])
       )
 
-      message('sending...')
+      if (input$live | input$addresses_type == 'Test') {
 
-      tryCatch({
-        smtp(to_send(), verbose = TRUE)
-        shiny::showNotification("Email Has Been Sent", type = 'message', duration = 5)
-      },
-       error = function(e){
-         shiny::showNotification("Email FAILED", type = 'error', duration = 5)
-       })
+        message('sending...')
+        #shiny::showNotification("sending SMTP commented out", type = 'message', duration = 5)
+        tryCatch({
+          smtp(to_send(), verbose = TRUE)
+          shiny::showNotification("Email Has Been Sent", type = 'message', duration = 5)
+        },
+        error = function(e){
+          shiny::showNotification("Email FAILED", type = 'error', duration = 5)
+        })
 
-      rm(smtp)
+        rm(smtp)
+
+      } else {
+        shiny::showNotification("You can't send when active is OFF unless testing", type = 'error', duration = 5)
+      }
 
     })
 
