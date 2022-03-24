@@ -9,34 +9,10 @@ library(httr)
 library(emayili)
 library(shiny)
 library(miniUI)
-shell("git checkout main")
 
 
 
 
-
-
-
-
-
-# 6 Update data
-stop("Make sure djprdashdata has updated")
-source("data-raw/internal_data.R")
-
-
-
-
-# 7 Clear cache
-unlink("app-cache/*")
-
-
-
-
-# 8 Make briefing
-pkgload::load_all(".")
-knit_briefing() %>%
-  normalizePath() %>%
-  shell.exec()
 
 
 
@@ -53,10 +29,6 @@ shell("git git commit -m \"Manual update\"")
 # shell("git push")
 
 
-
-
-# Make email (to be completed)
-temp_email <- paste(temp_dir, "Jobs brefing SMS.txt", sep = "/")
 
 
 
