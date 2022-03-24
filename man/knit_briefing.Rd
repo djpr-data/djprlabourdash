@@ -7,13 +7,13 @@ This function knits a briefing document that uses tables generated in this
 package to create a Word document. It knits the RMarkdown file
 \code{jobs_briefing.Rmd} that lives in the \code{inst} folder of \code{djprlabourdash}.}
 \usage{
-knit_briefing(path = tempdir(), quietly = FALSE)
+knit_briefing(path = here::here("inst"), quietly = FALSE)
 }
 \arguments{
 \item{path}{Path to directory where
 the knitted Word document should be created.}
 
-\item{quietly}{Passd to \code{rmarkdown::render()}'s \code{quiet} argument. \code{FALSE} by
+\item{quietly}{Passed to \code{rmarkdown::render()}'s \code{quiet} argument. \code{FALSE} by
 default.}
 }
 \description{
