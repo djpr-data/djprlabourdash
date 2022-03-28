@@ -14,7 +14,7 @@
 knit_briefing <- function(path = here::here('inst'),
                           quietly = FALSE) {
 
-  stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject()))
+  #stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject())) #crashes tests
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
