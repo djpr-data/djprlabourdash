@@ -56,7 +56,10 @@ Imports:
     rvest,
     httr,
     readabs,
-    glue
+    glue,
+    here, 
+    lubridate, 
+    readxl
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
