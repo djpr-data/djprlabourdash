@@ -1,0 +1,21 @@
+Name: Send SMS Report
+Description: Automatically generate SMS text with ability to edit before sending
+Binding: editSMS
+Interactive: true
+
+Name: Update data and Render Word Report
+Description: Automatically update the package data, delete the app-cache and generate MS Word Report
+Binding: update_data_and_knit
+Interactive: false
+
+Name: Create Email Content
+Description: Merge Message Contents into Single Document
+Binding: build_email_content
+Interactive: false
+
+Name: Send Email Report
+Description: Automatically generate EMAIL and modify recipients before sending
+Binding: editEMAIL
+Interactive: true
+
+

@@ -27,6 +27,7 @@ filter_dash_data <- function(series_ids, df = dash_data) {
 #' @param df Data frame containing time series summarised with
 #' `djprshiny::ts_summarise()`.
 #'
+#' @export
 #' @examples
 #' \dontrun{
 #' ts_summ <- dash_data %>%

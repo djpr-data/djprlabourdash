@@ -28,7 +28,9 @@ editor_options:
 ```{r setup, include=FALSE}
 library(officedown)
 library(flextable)
-pkgload::load_all()
+library(djprlabourdash)
+library(djprshiny)
+#pkgload::load_all()
 
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -134,10 +136,22 @@ summ_dot_point <- function(series_id) {
   out
 }
 
+
+
+dot_points <- c(
+  glue::glue("-   Victoria's unemployment rate {summ_dot_point(\"A84423354L\")};"),
+  glue::glue("-   The number of people employed in Victoria {summ_dot_point(\"A84423349V\")};")
+)
+
+
+
 ```
 
--   Victoria's unemployment rate `r summ_dot_point("A84423354L")`;
--   The number of people employed in Victoria `r summ_dot_point("A84423349V")`;
+
+
+
+
+
 
 ```{r ft-emp-dot-points}
 ftemp_raw_diff <- get_summ("A84423357V", d_period_abs, summ_data)
@@ -165,12 +179,22 @@ ptemp_text <- dplyr::case_when(
   ptemp_sign == 1 ~ paste0(" rose by ", ptemp_pretty_diff, " workers (",
                             ptemp_perc_diff, "%)")
 )
+
+dot_points <- c(
+  dot_points,
+  glue::glue("    -   Full-time employment {ftemp_text};"),
+  glue::glue("    -   Part-time employment {ptemp_text};"),
+  glue::glue("-   The number of unemployed people in Victoria {summ_dot_point(\"A84423350C\") %>% gsub(\"workers\", \"people\", .)};"),
+  glue::glue("-   Victoria's participation rate {summ_dot_point(\"A84423355R\")};")
+)
+
+
+
 ```
 
-    -   Full-time employment `r ftemp_text`;
-    -   Part-time employment `r ptemp_text`;
--   The number of unemployed people in Victoria `r summ_dot_point("A84423350C") %>% gsub("workers", "people", .)`;
--   Victoria's participation rate `r summ_dot_point("A84423355R")`;
+
+
+
 ```{r hours-worked}
 hours_change <- get_summ("A84426256L", d_period_perc, summ_data) %>%
   round2(1)
@@ -180,15 +204,43 @@ hours_text <- dplyr::case_when(
   hours_sign == -1 ~ paste0(" fell by ", abs(hours_change), "%"),
   hours_sign == 1 ~ paste0(" rose by ", abs(hours_change), "%")
 )
+
+
+dot_points <- c(
+  dot_points,
+  glue::glue("-   The total number of hours worked in Victoria {hours_text};"),
+  glue::glue("-   Victoria's underemployment rate {summ_dot_point(\"A85223450L\")};"),
+  glue::glue("-   The youth unemployment rate in Victoria ",
+             summ_dot_point("smoothed_youth_unemp"),
+             " (smoothed using a 12-month rolling average);"),
+  glue::glue("-   The unsmoothed, original youth unemployment rate is ",
+             get_summ("A84424691V", latest_value, summ_data) %>% round2(1),
+             " percent, compared to ",
+             get_summ("A84424691V", prev_value, summ_data) %>% round2(1),
+             " percent a month earlier.")
+)
+
+
+
 ```
--   The total number of hours worked in Victoria `r hours_text`;
--   Victoria's underemployment rate `r summ_dot_point("A85223450L")`;
--   The youth unemployment rate in Victoria `r summ_dot_point("smoothed_youth_unemp")` (smoothed using a 12-month rolling average);
--   The unsmoothed, original youth unemployment rate is `r get_summ("A84424691V", latest_value, summ_data) %>% round2(1)` per cent, compared to `r get_summ("A84424691V", prev_value, summ_data) %>% round2(1)` per cent a month earlier.
+
+
+
+
+```{r dotpoint render, results='asis'}
+cat(
+  paste(dot_points, collapse = '\n')
+)
+
+# save to md for inclusion in email
+writeLines(dot_points, 'dotpoints.md')
+```
 
 \newpage
 
-```{r}
+### Victorian employment summary, January 2022
+
+```{r, results='asis'}
 table_overview() 
 ```
 

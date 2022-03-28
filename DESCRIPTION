@@ -48,7 +48,18 @@ Imports:
     slider,
     flextable,
     cachem,
-    shinyjs
+    shinyjs,
+    miniUI,
+    emayili,
+    shinyWidgets,
+    purrr,
+    rvest,
+    httr,
+    readabs,
+    glue,
+    here, 
+    lubridate, 
+    readxl
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

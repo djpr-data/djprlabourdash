@@ -1,9 +1,7 @@
 #' @rdname tables
 #' Produce tables for LFS dashboard and associated briefing materials
-#' @param data A dataframe containing data to be summarised and displayed;
-#' a DF returned by `filter_dash_data()` is expected
+#' @export
 #' @noRd
-
 table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                              unset = "dashboard"
                            ),
@@ -97,6 +95,11 @@ table_overview <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST"
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                            unset = "dashboard"
                          ),
@@ -131,6 +134,11 @@ table_gr_sex <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                      unset = "dashboard"
                                    ),
@@ -180,6 +188,11 @@ table_gr_youth_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                           unset = "dashboard"
                                         ),
@@ -322,6 +335,11 @@ table_gr_youth_unemp_region <- function(destination = Sys.getenv("R_DJPRLABOURDA
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                   unset = "dashboard"
                                                 ),
@@ -366,6 +384,11 @@ table_reg_nonmetro_states_unemprate <- function(destination = Sys.getenv("R_DJPR
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                      unset = "dashboard"
                                    ),
@@ -424,6 +447,11 @@ table_reg_nonmetro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                        unset = "dashboard"
                                      ),
@@ -482,6 +510,11 @@ table_reg_nonmetro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                            unset = "dashboard"
                                          ),
@@ -540,6 +573,11 @@ table_reg_nonmetro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURD
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                           unset = "dashboard"
                                         ),
@@ -598,6 +636,11 @@ table_reg_nonmetro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDA
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                                unset = "dashboard"
                                              ),
@@ -642,6 +685,11 @@ table_reg_metro_states_unemprate <- function(destination = Sys.getenv("R_DJPRLAB
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                   unset = "dashboard"
                                 ),
@@ -702,6 +750,11 @@ table_reg_metro_emp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                     unset = "dashboard"
                                   ),
@@ -762,6 +815,11 @@ table_reg_metro_unemp <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                         unset = "dashboard"
                                       ),
@@ -822,6 +880,11 @@ table_reg_metro_unemprate <- function(destination = Sys.getenv("R_DJPRLABOURDASH
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                        unset = "dashboard"
                                      ),
@@ -882,6 +945,11 @@ table_reg_metro_partrate <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
     )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                     unset = "dashboard"
                                   ),
@@ -921,6 +989,11 @@ table_ind_unemp_state <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TAB
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                    unset = "dashboard"
                                  )) {
@@ -957,6 +1030,11 @@ table_ind_employment <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABL
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                       unset = "dashboard"
                                     )) {
@@ -1003,6 +1081,11 @@ table_ind_unemp_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                       unset = "dashboard"
                                     )) {
@@ -1021,6 +1104,11 @@ table_ind_hours_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                        unset = "dashboard"
                                      ),
@@ -1091,6 +1179,11 @@ table_industries_summary <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                       unset = "dashboard"
                                     ),
@@ -1163,6 +1256,10 @@ table_jobactive_regions <- function(destination = Sys.getenv("R_DJPRLABOURDASH_T
 }
 
 
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                          unset = "dashboard"
                                        ),
@@ -1236,6 +1333,10 @@ table_jobactive_aboriginal <- function(destination = Sys.getenv("R_DJPRLABOURDAS
 }
 
 
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                          unset = "dashboard"
                                        ),
@@ -1312,6 +1413,10 @@ table_jobactive_mature_age <- function(destination = Sys.getenv("R_DJPRLABOURDAS
 }
 
 
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                   unset = "dashboard"
                                 ),
@@ -1387,6 +1492,11 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                      unset = "dashboard"
                                    ),
@@ -1463,6 +1573,10 @@ table_jobactive_female <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TA
 }
 
 
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                        unset = "dashboard"
                                      ),
@@ -1538,6 +1652,11 @@ table_jobactive_refugees <- function(destination = Sys.getenv("R_DJPRLABOURDASH_
   )
 }
 
+
+#' @rdname tables
+#' Produce tables for LFS dashboard and associated briefing materials
+#' @export
+#' @noRd
 table_jobactive_youth <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLEDEST",
                                     unset = "dashboard"
                                   ),
