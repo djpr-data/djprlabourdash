@@ -5,7 +5,7 @@ page_overview <- function(...) {
     br(),
     br(),
     br(),
-    centred_row(h4(" Loading data, please wait..."))
+    djprshiny::centred_row(h4(" Loading data, please wait..."))
   )
 
   main_content <- shinyjs::hidden(
@@ -15,18 +15,18 @@ page_overview <- function(...) {
       br(),
       br(),
       br(),
-      centred_row(
+      djprshiny::centred_row(
         span("DJPR Jobs Dashboard",
           style = "font-size: 40px; color: #1F1547; font-family: 'Roboto Slab'"
         )
       ),
       br(),
-      centred_row(
+      djprshiny::centred_row(
         uiOutput("main_table", height = "800px") %>%
           djpr_with_spinner(hide.ui = TRUE)
       ),
       br(),
-      centred_row(htmlOutput("overview_footnote")),
+      djprshiny::centred_row(htmlOutput("overview_footnote")),
       br(),
       br()
     )

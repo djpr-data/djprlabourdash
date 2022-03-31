@@ -1,19 +1,21 @@
-#' Create a Word document containing briefing tables
-#' This function knits a briefing document that uses tables generated in this
+#' @title Create a Word document containing briefing tables
+#' @description This function knits a briefing document that uses tables generated in this
 #' package to create a Word document. It knits the RMarkdown file
 #' `jobs_briefing.Rmd` that lives in the `inst` folder of `djprlabourdash`.
 #' @param path Path to directory where
 #' the knitted Word document should be created.
-#' @param quietly Passd to `rmarkdown::render()`'s `quiet` argument. `FALSE` by
+#' @param quietly Passed to `rmarkdown::render()`'s `quiet` argument. `FALSE` by
 #' default.
 #' @examples
 #' \dontrun{
 #' knit_briefing(quietly = TRUE)
 #' }
 #' @export
-
-knit_briefing <- function(path = tempdir(),
+knit_briefing <- function(path = here::here('inst'),
                           quietly = FALSE) {
+
+  #stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject())) #crashes tests
+
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
       "knit_briefing() requires the rmarkdown package.\n",
@@ -38,6 +40,9 @@ knit_briefing <- function(path = tempdir(),
     output_file = out_path,
     quiet = quietly
   )
+
+  normalizePath(out_path) %>%
+    shell.exec()
 
   return(out_path)
 }
