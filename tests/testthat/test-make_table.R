@@ -21,6 +21,36 @@ test_that("make_table() makes tables", {
   expect_true(all(nchar(t_o_final_col) >= 1))
 })
 
+test_that("make_table() returns correct columns for destination", {
+  withr::with_envvar(c(R_DJPRLABOURDASH_TABLEDEST = "briefing"), {
+    expect_equal(
+      as.character(table_ind_employment()$header$dataset[1, , drop = T]),
+      c(
+        "",
+        "Recent trend",
+        "Current figures",
+        "Change in latest period",
+        "Change in past year",
+        "Change since COVID",
+        "Change during govt"
+      )
+    )
+  })
+  withr::with_envvar(c(R_DJPRLABOURDASH_TABLEDEST = "dashboard"), {
+    expect_equal(
+      as.character(table_ind_employment()$header$dataset[1, , drop = T]),
+      c(
+        "",
+        "Recent trend",
+        "Current figures",
+        "Change in latest period",
+        "Change in past year",
+        "Change since COVID"
+      )
+    )
+  })
+})
+
 test_that("make_table() works with data that starts after Nov 2014", {
   recent_table <- make_table(
     data = filter_dash_data(series_ids = c(

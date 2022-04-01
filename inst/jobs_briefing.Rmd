@@ -28,9 +28,14 @@ editor_options:
 ```{r setup, include=FALSE}
 library(officedown)
 library(flextable)
-library(djprlabourdash)
+
+# Load working directory if package is not installed into R's library -- this
+# reduces development iteration time
+if (!library(djprlabourdash, logical.return = T)) {
+  pkgload::load_all()
+}
 library(djprshiny)
-#pkgload::load_all()
+# pkgload::load_all()
 
 knitr::opts_chunk$set(
   echo = FALSE,

@@ -107,9 +107,9 @@ make_table <- function(data,
   # Define columns to include in output table
   cols_to_include <- names(summary_df)[names(summary_df) != "SERIES_ID"]
 
-  # Drop "Change during govt" column if all values are NA
+  # Drop "Change during govt" column if going into dashboard or all values are NA
   # This occurs if all data series in the table commenced after Nov 2014
-  if (all(is.na(summary_df$`SINCE NOV 2014`))) {
+  if (destination == "dashboard" || all(is.na(summary_df$`SINCE NOV 2014`))) {
     cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
   }
 
