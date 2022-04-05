@@ -19,26 +19,18 @@ load_and_hide <- function(branch = "main") {
   df
 }
 
-data_is_current <- function() {
-  # Load a file that tells us when the data on GitHub was last updated
-  temp_loc <- tempfile(fileext = ".rds")
-  remote_url <- "https://github.com/djpr-data/djprdashdata/blob/main/data-raw/last_updated.rds?raw=true"
-  utils::download.file(
-    url = remote_url,
-    destfile = temp_loc,
-    mode = "wb",
-    quiet = TRUE
+# Load a file that tells us when the data on GitHub was last updated
+# Avoid hard-coding the remote URL in multiple places
+check_remote_updated <- function() {
+  readLines(
+    "https://github.com/djpr-data/djprdashdata/raw/main/data-raw/last_updated.txt"
   )
-  remote_updated <- readRDS(temp_loc) %>%
-    as.POSIXct()
+}
 
+data_is_current <- function() {
   # dash_data_updated is an internal data object that tells us when the
   # data in djprlabourdash was last updated
-  if (remote_updated == dash_data_updated) {
-    TRUE
-  } else {
-    FALSE
-  }
+  check_remote_updated() == dash_data_updated
 }
 
 #' Load data for the DJPR Labour Dashboard

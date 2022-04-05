@@ -12,19 +12,10 @@ if (requireNamespace("absmapsdata", quietly = TRUE)) {
 
 
 # Load data from djprdashdata if it has been updated
-temp_loc <- tempfile(fileext = ".rds")
-utils::download.file(
-  url = "https://github.com/djpr-data/djprdashdata/blob/main/data-raw/last_updated.rds?raw=true",
-  destfile = temp_loc
-)
-
-
-remote_updated <- readRDS(temp_loc)
-remote_updated <- as.POSIXct(remote_updated)
-
-dash_data_updated <- dash_data_updated
-
-if (dash_data_updated != remote_updated) {
+remote_updated <- check_remote_updated()
+# Exists check is because `dash_data_updated` will not exist if `sysdata.rda`
+# has been cleared.
+if (!exists("dash_data_updated") || (dash_data_updated != remote_updated)) {
   dash_data <- load_dash_data()
   stopifnot(inherits(dash_data, "tbl_df"))
   stopifnot(nrow(dash_data) > 800)
