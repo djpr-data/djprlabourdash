@@ -4,7 +4,6 @@
 #' @description This Rstudio addin will run the code to update data,
 #' clean the app-cache and then render the Monthly report
 #'
-#' @import crayon
 #' @return
 #' @export
 #'

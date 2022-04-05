@@ -2,10 +2,7 @@
 % Please edit documentation in R/knit_briefing.R
 \name{knit_briefing}
 \alias{knit_briefing}
-\title{Create a Word document containing briefing tables
-This function knits a briefing document that uses tables generated in this
-package to create a Word document. It knits the RMarkdown file
-\code{jobs_briefing.Rmd} that lives in the \code{inst} folder of \code{djprlabourdash}.}
+\title{Create a Word document containing briefing tables}
 \usage{
 knit_briefing(path = here::here("inst"), quietly = FALSE)
 }
@@ -17,7 +14,6 @@ the knitted Word document should be created.}
 default.}
 }
 \description{
-Create a Word document containing briefing tables
 This function knits a briefing document that uses tables generated in this
 package to create a Word document. It knits the RMarkdown file
 \code{jobs_briefing.Rmd} that lives in the \code{inst} folder of \code{djprlabourdash}.
