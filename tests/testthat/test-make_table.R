@@ -1,4 +1,7 @@
 test_that("make_table() makes tables", {
+  # Clear any leftover environmental variables from earlier tests
+  Sys.unsetenv("R_DJPRLABOURDASH_TABLEDEST")
+
   t_o <- table_overview()
   expect_s3_class(t_o, "flextable")
 
@@ -21,33 +24,34 @@ test_that("make_table() makes tables", {
 })
 
 test_that("make_table() returns correct columns for destination", {
-  withr::with_envvar(c(R_DJPRLABOURDASH_TABLEDEST = "briefing"), {
-    expect_equal(
-      as.character(table_ind_employment()$header$dataset[1, , drop = T]),
-      c(
-        "",
-        "Recent trend",
-        "Current figures",
-        "Change in latest period",
-        "Change in past year",
-        "Change since COVID",
-        "Change during govt"
-      )
+  Sys.setenv(R_DJPRLABOURDASH_TABLEDEST = "briefing")
+  expect_equal(
+    as.character(table_ind_employment()$header$dataset[1, , drop = T]),
+    c(
+      "",
+      "Recent trend",
+      "Current figures",
+      "Change in latest period",
+      "Change in past year",
+      "Change since COVID",
+      "Change during govt"
     )
-  })
-  withr::with_envvar(c(R_DJPRLABOURDASH_TABLEDEST = "dashboard"), {
-    expect_equal(
-      as.character(table_ind_employment()$header$dataset[1, , drop = T]),
-      c(
-        "",
-        "Recent trend",
-        "Current figures",
-        "Change in latest period",
-        "Change in past year",
-        "Change since COVID"
-      )
+  )
+
+  Sys.setenv(R_DJPRLABOURDASH_TABLEDEST = "dashboard")
+  expect_equal(
+    as.character(table_ind_employment()$header$dataset[1, , drop = T]),
+    c(
+      "",
+      "Recent trend",
+      "Current figures",
+      "Change in latest period",
+      "Change in past year",
+      "Change since COVID"
     )
-  })
+  )
+
+  Sys.unsetenv("R_DJPRLABOURDASH_TABLEDEST")
 })
 
 test_that("make_table() works with data that starts after Nov 2014", {
