@@ -59,7 +59,8 @@ Imports:
     glue,
     here, 
     lubridate, 
-    readxl
+    readxl,
+    crayon
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
