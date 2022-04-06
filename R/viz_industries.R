@@ -578,37 +578,37 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
                                            "males_rest of vic._rental, hiring and real estate services_employed part-time",
                                            "males_rest of vic._retail trade_employed part-time",
                                            "males_rest of vic._transport, postal and warehousing_employed part-time",
-                                           "males_rest of vic._wholesale trade_employed part-time",
-                                           "A84423461V",
-                                           "A84423237A"
+                                           "males_rest of vic._wholesale trade_employed part-time"
                                          ), df = dash_data) %>%
                                            dplyr::group_by(.data$series) %>%
                                            dplyr::filter(.data$date == max(.data$date)) %>%
                                            dplyr::ungroup(),
                                          chosen_industry = "Agriculture, Forestry and Fishing") {
-  df <- data %>%
+  industry_total <- data %>%
+    dplyr::group_by(.data$sex, .data$date) %>%
+    dplyr::summarise(
+      value = sum(.data$value)
+    ) %>%
     dplyr::mutate(
-      industry = dplyr::if_else(.data$industry == "",
-        "Victoria, all industries",
-        .data$industry
-      )
+      industry = "Victoria, all industries"
     )
 
-
-  df <- df %>%
-    dplyr::filter(.data$industry %in% c("Victoria, all industries", .env$chosen_industry)) %>%
+  df <- data %>%
+    dplyr::filter(.data$industry == .env$chosen_industry) %>%
     dplyr::select(
       .data$date, .data$value, .data$series,
       .data$indicator, .data$sex, .data$industry, .data$gcc_restofstate
     )
 
   df <- df %>%
-    dplyr::group_by(.data$sex, .data$industry) %>%
+    dplyr::group_by(.data$sex, .data$industry, .data$date) %>%
     dplyr::summarise(
-      value = sum(.data$value),
-      date = max(.data$date)
+      value = sum(.data$value)
     ) %>%
     dplyr::ungroup()
+
+  df <- df %>%
+    dplyr::bind_rows(industry_total)
 
   df <- df %>%
     dplyr::group_by(.data$industry) %>%
