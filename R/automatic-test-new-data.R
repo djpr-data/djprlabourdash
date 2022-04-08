@@ -1,6 +1,8 @@
 
 
-add_series_row <- function(df, series_id, window = NULL){
+add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-01'){
+
+  message(series_id)
 
   series <- df |>
     select(date, contains(series_id)) |>
@@ -12,7 +14,8 @@ add_series_row <- function(df, series_id, window = NULL){
     )
 
   series <- series |>
-    rename_with(.cols = contains(series_id), .fn = ~ 'value')
+    rename_with(.cols = contains(series_id), .fn = ~ 'value') |>
+    filter(!is.na(value))
 
   if (!is.null(window)){
     series <- series |>
@@ -22,7 +25,7 @@ add_series_row <- function(df, series_id, window = NULL){
   last <- series |> slice_nth_date(1)
   last_month <- series |> slice_nth_date(2)
   last_year <- series |> slice_nth_date(13)
-  covid <- series |> filter(date == '2020-03-01')
+  covid <- series |> filter(date == covid_date)
   nov_2014 <- series |> filter(date == '2014-11-01')
 
   tibble(SERIES_ID = series_id,
@@ -60,12 +63,24 @@ get_test_data <- function(){
     '6202005\\.|6202016\\.|6202019\\.|6202023\\.'
   )
 
+  url_detailed <- djprdata:::get_latest_download_url(
+    'https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/latest-release',
+    '6291016\\.|6291005\\.|6291002\\.|RM1\\.|RQ1\\.'
+  )
+
+
+  urls <- c(url$url,
+            url_detailed$url)
+
+  not_normal <- grep('RM1\\.|RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
+
+
   #6202016 youth
   #6202019 hours worked
   #6202023 under-utilisation
 
 
-  all_df <- purrr::map(url$url, function(url){
+  all_df <- purrr::map(urls, function(url){
 
 
     suppressMessages({
@@ -76,21 +91,46 @@ get_test_data <- function(){
       sheets <- grep('data', sheets, ignore.case = TRUE, value = TRUE)
 
       sheet_data <- purrr::map(sheets, function(sht){
-        df <- readxl::read_excel(filename, sht) |>
-          rename(date = `...1`) |>
-          mutate(date = as.Date(as.integer(date), origin = "1899-12-30"))
-        colnames(df) <- c('date',
-                          paste(colnames(df), df[c(1:2,9),], sep = ' ; ')[2:ncol(df)])
-        df |>
-          filter(!is.na(date)) |>
-          mutate(across(-date, ~ as.numeric(.x)))
+
+
+        if (url %in% not_normal) {
+
+          df <- readxl::read_excel(filename, sht, skip = 3, col_types = c('numeric', rep('guess', 7))) |>
+            dplyr::rename(date = 1) |>
+            dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30")) |>
+            tidyr::pivot_longer(cols = c(starts_with('Employ'),
+                                         starts_with('Number'),
+                                         starts_with('Unemployed'),
+                                         contains('NILF')),
+                                names_to = 'data_type') |>
+            tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
+                               names_repair = 'minimal',
+                               values_from = 'value',
+                               names_sep = ';')
+
+        } else {
+
+          df <- readxl::read_excel(filename, sht)
+          df <- df |>
+            dplyr::rename(date = `...1`) |>
+            dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30"))
+          colnames(df) <- c('date',
+                            paste(colnames(df), df[c(1:2,9),], sep = ' ; ')[2:ncol(df)])
+          df <- df |>
+            dplyr::filter(!is.na(date)) |>
+            dplyr::mutate(across(-date, ~ as.numeric(.x)))
+
+        }
+
+        df
+
       })
 
-      sheet_data |> purrr::reduce(full_join, by = "date")
+      sheet_data |> purrr::reduce(dplyr::full_join, by = "date")
 
     })
 
-  }) |> purrr::reduce(full_join, by = "date")
+  }) |> purrr::reduce(dplyr::full_join, by = "date")
 
   all_df
 
@@ -102,54 +142,512 @@ clean_table <- function(df){
     mutate(across(-SERIES_ID, ~ stringr::str_replace_all(.x, '%|,|ppts|\\s*\\([^\\)]+\\)', '')),
            across(-SERIES_ID, ~ case_when(grepl('m', .x) ~ as.numeric(gsub('m', '', .x)) * 1e6,
                                           TRUE ~ as.numeric(.x))))
+}
+
+
+tests <- function(actual, test){
+
+  aj <- anti_join(test, actual) # get rows with errors
+
+  # sometimes numeric values aren't equal need to double check
+  if (nrow(aj) > 0) {
+    all.equal(aj,
+              actual |> filter(SERIES_ID == aj$SERIES_ID)) # id columns
+  } else {
+    TRUE
+  }
+
+}
+
+
+
+check_table_overview <- function(df){
+
+  actual <- djprlabourdash::table_overview()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- list(
+    employment = c("A84423354L",
+                   "A84423242V",
+                   "A84423466F",
+                   "A84423350C",
+                   "A84423349V",
+                   "A84423357V",
+                   #"pt_emp_vic",
+                   "A84423237A",
+                   "A84423461V",
+                   "A84423355R",
+                   "A84423243W",
+                   "A84423467J",
+                   "A84426256L",
+                   "A85223450L",
+                   "A85223451R",
+                   "A84423356T"),
+    youth =      c(#"A84433601W",  # in table_overview() but not exported
+                    "A84424691V",
+                    "A84424687C",
+                    "A84424692W"),
+    regional =     'A84600079X'
+  )
+
+  test <- dplyr::bind_rows(
+    purrr::map_dfr(series$employment, ~ add_series_row(df, .x)),
+    #purrr::map_dfr(series$regional, ~ add_series_row(df, .x, 2)),
+    purrr::map_dfr(series$youth, ~ add_series_row(df, .x, 11))
+  )
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_gr_sex <- function(df){
+
+  actual <- djprlabourdash::table_gr_sex()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  test <- purrr::map_dfr(
+    c("A84423237A",
+      "A84423461V",
+      "A84423238C",
+      "A84423462W",
+      "A84423242V",
+      "A84423466F",
+      "A84423243W",
+      "A84423467J"), ~ add_series_row(df, .x))
+
+  tests(actual, test)
+
+}
+
+
+check_table_ind_unemp_state <- function(df){
+
+  actual <- djprlabourdash::table_ind_unemp_state()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  test <- purrr::map_dfr(c("A84423270C",
+                              "A84423354L",
+                              "A84423284T",
+                              "A84423368A",
+                              "A84423326C",
+                              "A84423298F",
+                              "A84423050A"),
+                            ~ add_series_row(df, .x))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_ind_unemp_summary <- function(df){
+
+  actual <- djprlabourdash::table_ind_unemp_summary()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- list(
+    youth = "A84424691V",
+    rest = c(#"A84423050A",
+             "A84423354L", # Unemp rate
+             "A84423350C", # Unemp total
+             "A85223451R", # Underut rate
+             "A84423242V", # Male unemp
+             "A84423466F") # Female unemp
+  )
+
+  test <- bind_rows(
+    purrr::map_dfr(series$rest, ~ add_series_row(df, .x)),
+    purrr::map_dfr(series$youth, ~ add_series_row(df, .x, 11))
+  )
+
+  tests(actual, test)
 
 }
 
 
 
 
-df <- get_test_data()
+check_table_gr_youth_summary <- function(df){
 
-t1_actual <- djprlabourdash::table_overview()$body$dataset |>
-  clean_table() |> as_tibble()
+  actual <- djprlabourdash::table_gr_youth_summary()$body$dataset |>
+    clean_table() |> as_tibble()
 
+  series <- c(#"15-24_females_unemployment rate",
+              #"15-24_males_unemployment rate"
+              "A84424687C",
+              "A84424688F",
+              "A84424691V",
+              "A84424692W",
+              "A84424602F")
 
-youth <- c(#"A84433601W",  # in table_overview() but not exported
-           "A84424691V",
-           "A84424687C",
-           "A84424692W")
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 11))
 
-regional <- 'A84600079X'
+  tests(actual, test)
 
-t1_test <- dplyr::bind_rows(
-   c("A84423354L",
-     "A84423242V",
-     "A84423466F",
-     "A84423350C",
-     "A84423349V",
-     "A84423357V",
-     #"pt_emp_vic",
-     "A84423237A",
-     "A84423461V",
-     "A84423355R",
-     "A84423243W",
-     "A84423467J",
-     "A84426256L",
-     "A85223450L",
-     "A85223451R",
-     "A84423356T") |>
-  purrr::map_dfr(~ add_series_row(df, .x)),
-  #purrr::map_dfr(regional, ~ add_series_row(df, .x, 2)),
-  purrr::map_dfr(youth, ~ add_series_row(df, .x, 11))
-)
+}
 
 
-aj <- anti_join(t1_test, t1_actual) # get rows with errors
-#dplyr::all_equal(t1_test, t1_actual |> filter(SERIES_ID %in% t1_test$SERIES_ID))
 
-# sometimes numeric values aren't equal need to double check
-all.equal(aj,
-          t1_actual |> filter(SERIES_ID == aj$SERIES_ID)) # id columns
+check_table_gr_youth_unemp_region <- function(df){
+
+  #needs RM1.xlsx different transformation
+
+  actual <- djprlabourdash::table_gr_youth_unemp_region()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <-     c(
+    "15-24_employed_ballarat",
+    "15-24_employed_bendigo",
+    "15-24_employed_geelong",
+    "15-24_employed_hume",
+    "15-24_employed_latrobe - gippsland",
+    "15-24_employed_shepparton",
+    "15-24_employed_victoria - north west",
+    "15-24_employed_warrnambool and south west",
+    "15-24_employed_rest of vic.",
+    "15-24_unemployed_ballarat",
+    "15-24_unemployed_bendigo",
+    "15-24_unemployed_geelong",
+    "15-24_unemployed_hume",
+    "15-24_unemployed_latrobe - gippsland",
+    "15-24_unemployed_shepparton",
+    "15-24_unemployed_victoria - north west",
+    "15-24_unemployed_warrnambool and south west",
+    "15-24_unemployed_rest of vic.",
+    "15-24_employed_melbourne - inner",
+    "15-24_employed_melbourne - inner east",
+    "15-24_employed_melbourne - inner south",
+    "15-24_employed_melbourne - north east",
+    "15-24_employed_melbourne - north west",
+    "15-24_employed_melbourne - outer east",
+    "15-24_employed_melbourne - south east",
+    "15-24_employed_melbourne - west",
+    "15-24_employed_mornington peninsula",
+    "15-24_employed_greater melbourne",
+    "15-24_unemployed_melbourne - inner",
+    "15-24_unemployed_melbourne - inner east",
+    "15-24_unemployed_melbourne - inner south",
+    "15-24_unemployed_melbourne - north east",
+    "15-24_unemployed_melbourne - north west",
+    "15-24_unemployed_melbourne - outer east",
+    "15-24_unemployed_melbourne - south east",
+    "15-24_unemployed_melbourne - west",
+    "15-24_unemployed_mornington peninsula",
+    "15-24_unemployed_greater melbourne"
+  )
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 11))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_reg_metro_states_unemprate <- function(df){
+
+  actual <- djprlabourdash::table_reg_metro_states_unemprate()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84599623K",
+              "A84600145K",
+              "A84600151F",
+              "A84600157V",
+              "A84600241K",
+              "A84599791W")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+
+check_table_reg_metro_emp <- function(df){
+
+  actual <- djprlabourdash::table_reg_metro_emp()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84600141A",
+              "A84599655C",
+              "A84600015L",
+              "A84600183X",
+              "A84599553R",
+              "A84600111L",
+              "A84599847W",
+              "A84599919W",
+              "A84600021J",
+              "A84600189L")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+
+check_table_reg_metro_unemp <- function(df){
+
+  actual <- djprlabourdash::table_reg_metro_unemp()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84600142C",
+              "A84599656F",
+              "A84600016R",
+              "A84600184A",
+              "A84599554T",
+              "A84600112R",
+              "A84599848X",
+              "A84599920F",
+              "A84600022K",
+              "A84600190W")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_reg_metro_unemprate <- function(df){
+
+  actual <- djprlabourdash::table_reg_metro_unemprate()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84600145K",
+              "A84599659L",
+              "A84600019W",
+              "A84600187J",
+              "A84599557X",
+              "A84600115W",
+              "A84599851L",
+              "A84599923L",
+              "A84600025T",
+              "A84600193C")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+
+check_table_reg_metro_partrate <- function(df){
+
+  actual <- djprlabourdash::table_reg_metro_partrate()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84600146L",
+              "A84599660W",
+              "A84600020F",
+              "A84600188K",
+              "A84599558A",
+              "A84600116X",
+              "A84599852R",
+              "A84599924R",
+              "A84600026V",
+              "A84600194F")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+
+check_table_reg_nonmetro_states_unemprate <- function(df){
+
+  actual <- djprlabourdash::table_reg_nonmetro_states_unemprate()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84599629X",
+              "A84600079X",
+              "A84599785A",
+              "A84599719C",
+              "A84600247X",
+              "A84599635V")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_reg_nonmetro_emp <- function(df){
+
+  actual <- djprlabourdash::table_reg_nonmetro_emp()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84600075R",
+              "A84599661X",
+              "A84600027W",
+              "A84599667L",
+              "A84599673J",
+              "A84599679W",
+              "A84599925T",
+              "A84600117A",
+              "A84600033T")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_reg_nonmetro_unemp <- function(df){
+
+  actual <- djprlabourdash::table_reg_nonmetro_unemp()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84600076T",
+              "A84599662A",
+              "A84600028X",
+              "A84599668R",
+              "A84599674K",
+              "A84599680F",
+              "A84599926V",
+              "A84600118C",
+              "A84600034V")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_reg_nonmetro_unemprate <- function(df){
+
+  actual <- djprlabourdash::table_reg_nonmetro_unemprate()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84595471L",
+              "A84599665J",
+              "A84600031L",
+              "A84599671C",
+              "A84599677T",
+              "A84599683L",
+              "A84599929A",
+              "A84600121T",
+              "A84600037A")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_reg_nonmetro_partrate <- function(df){
+
+  actual <- djprlabourdash::table_reg_nonmetro_partrate()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84599666K",
+              "A84600032R",
+              "A84599672F",
+              "A84599678V",
+              "A84599684R",
+              "A84599930K",
+              "A84600122V",
+              "A84600038C",
+              "A84600080J")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 2))
+
+  tests(actual, test)
+
+}
+
+
+
+check_table_industries_summary <- function(df){
+
+  actual <- djprlabourdash::table_industries_summary()$body$dataset |>
+    clean_table() |> as_tibble()
+
+  series <- c("A84601662A",
+              "A84601680F",
+              "A84601683L",
+              "A84601686V",
+              "A84601665J",
+              "A84601704L",
+              "A84601707V",
+              "A84601710J",
+              "A84601638A",
+              "A84601653X",
+              "A84601689A",
+              "A84601656F",
+              "A84601713R",
+              "A84601668R",
+              "A84601695W",
+              "A84601698C",
+              "A84601650T",
+              "A84601671C",
+              "A84601641R",
+              "A84601716W")
+
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, covid_date = '2020-02-01'))
+
+  tests(actual, test)
+
+}
+
+
+
+
+
+
+run_checks <- function(){
+
+  df <- get_test_data()
+
+  check_table_overview(df)
+  check_table_gr_sex(df)
+  check_table_ind_unemp_state(df)
+  #check_table_gr_youth_unemp_region(df) #RM1
+  check_table_reg_metro_states_unemprate(df)
+  check_table_reg_metro_emp(df)
+  check_table_reg_metro_unemp(df)
+  check_table_reg_metro_unemprate(df)
+  check_table_reg_metro_partrate(df)
+  check_table_reg_nonmetro_states_unemprate(df)
+  check_table_reg_nonmetro_emp(df)
+  check_table_reg_nonmetro_unemp(df)
+  check_table_reg_nonmetro_unemprate(df)
+  #check_table_industries_summary(df)
+
+
+  check_table_ind_unemp_summary(df)
+
+
+
+
+
+}
+
+
+
+
+
+
 
 
 
