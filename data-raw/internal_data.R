@@ -1,30 +1,16 @@
 ## Create internal data
 pkgload::load_all()
 
-# Load absmapsdata object(s) to avoid dependency
-if (requireNamespace("absmapsdata", quietly = TRUE)) {
-  sa42016 <- absmapsdata::sa42016
-  employment_regions2015 <- absmapsdata::employment_regions2015
-} else {
-  sa42016 <- sa42016
-  employment_regions2015 <- employment_regions2015
-}
+dir.create("inst/extdata", showWarnings = F, recursive = T)
 
+# These don't change, but are fast enough to keep in the main script
+qs::qsave(absmapsdata::sa42016, "inst/extdata/sa42016.qs")
+qs::qsave(absmapsdata::employment_regions2015, "inst/extdata/employment_regions2015.qs")
 
-# Load data from djprdashdata if it has been updated
-remote_updated <- check_remote_updated()
-# Exists check is because `dash_data_updated` will not exist if `sysdata.rda`
-# has been cleared.
-if (!exists("dash_data_updated") || (dash_data_updated != remote_updated)) {
-  dash_data <- load_dash_data()
-  stopifnot(inherits(dash_data, "tbl_df"))
-  stopifnot(nrow(dash_data) > 800)
-  dash_data_updated <- remote_updated
-}
+dash_data <- get_dash_data(verbose = T)
+stopifnot(inherits(dash_data, "tbl_df"))
+stopifnot(nrow(dash_data) > 800)
+dash_data_updated <- attr(dash_data, "date_updated")
 
-usethis::use_data(sa42016,
-  employment_regions2015,
-  dash_data_updated,
-  dash_data,
-  internal = TRUE, overwrite = TRUE
-)
+qs::qsave(dash_data, "inst/extdata/dash_data.qs")
+qs::qsave(dash_data_updated, "inst/extdata/dash_data_updated.qs")

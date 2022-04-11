@@ -57,10 +57,11 @@ Imports:
     httr,
     readabs,
     glue,
-    here, 
-    lubridate, 
+    here,
+    lubridate,
     readxl,
-    crayon
+    crayon,
+    qs
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
