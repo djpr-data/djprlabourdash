@@ -6,13 +6,15 @@
 #' the knitted Word document should be created.
 #' @param quietly Passed to `rmarkdown::render()`'s `quiet` argument. `FALSE` by
 #' default.
+#' @param show Show knitted document when done?
 #' @examples
 #' \dontrun{
 #' knit_briefing(quietly = TRUE)
 #' }
 #' @export
 knit_briefing <- function(path = here::here('inst'),
-                          quietly = FALSE) {
+                          quietly = FALSE,
+                          show = TRUE) {
 
   #stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject())) #crashes tests
 
@@ -41,8 +43,10 @@ knit_briefing <- function(path = here::here('inst'),
     quiet = quietly
   )
 
-  normalizePath(out_path) %>%
-    shell.exec()
+  if(show) {
+    normalizePath(out_path) %>%
+      shell.exec()
+  }
 
   return(out_path)
 }

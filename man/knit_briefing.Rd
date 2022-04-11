@@ -4,7 +4,7 @@
 \alias{knit_briefing}
 \title{Create a Word document containing briefing tables}
 \usage{
-knit_briefing(path = here::here("inst"), quietly = FALSE)
+knit_briefing(path = here::here("inst"), quietly = FALSE, show = TRUE)
 }
 \arguments{
 \item{path}{Path to directory where
@@ -12,6 +12,8 @@ the knitted Word document should be created.}
 
 \item{quietly}{Passed to \code{rmarkdown::render()}'s \code{quiet} argument. \code{FALSE} by
 default.}
+
+\item{show}{Show knitted document when done?}
 }
 \description{
 This function knits a briefing document that uses tables generated in this
