@@ -10,9 +10,8 @@ labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
   Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
-  dash_data <- get_dash_data()
-  utils::assignInMyNamespace("dash_data", dash_data)
-  utils::assignInMyNamespace("dash_data_updated", attr(dash_data, "date_updated"))
+  dash_data <<- get_dash_data()
+  dash_data_updated <<- attr(dash_data, "date_updated")
   if (shiny::isRunning()) {
     shinyjs::hide("loading_page")
     shinyjs::show("main_content")
