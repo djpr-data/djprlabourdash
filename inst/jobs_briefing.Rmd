@@ -28,14 +28,8 @@ editor_options:
 ```{r setup, include=FALSE}
 library(officedown)
 library(flextable)
-
-# Load working directory if package is not installed into R's library -- this
-# reduces development iteration time
-if (!library(djprlabourdash, logical.return = T)) {
-  pkgload::load_all()
-}
 library(djprshiny)
-# pkgload::load_all()
+pkgload::load_all()
 
 knitr::opts_chunk$set(
   echo = FALSE,
@@ -48,8 +42,7 @@ knitr::opts_chunk$set(
 
 ```{r load-data}
 
-dash_data <- load_dash_data()
-
+dash_data <- get_dash_data()
 Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "briefing")
 ```
 
@@ -243,8 +236,6 @@ writeLines(dot_points, 'dotpoints.md')
 
 \newpage
 
-### Victorian employment summary, January 2022
-
 ```{r, results='asis'}
 table_overview() 
 ```
@@ -255,7 +246,6 @@ table_overview()
 table_gr_sex()
 ```
 
-<br>
 
 ```{r}
 table_ind_unemp_state()
