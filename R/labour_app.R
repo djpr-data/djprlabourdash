@@ -10,13 +10,13 @@ labour_server <- function(input, output, session) {
   # Load data and create persistent objects ----
 
   Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
-
-  myenv <- as.environment(1)
-
-  assign("dash_data",
-    load_and_hide(),
-    envir = myenv
-  )
+  dash_data <- get_dash_data()
+  utils::assignInMyNamespace("dash_data", dash_data)
+  utils::assignInMyNamespace("dash_data_updated", attr(dash_data, "date_updated"))
+  if (shiny::isRunning()) {
+    shinyjs::hide("loading_page")
+    shinyjs::show("main_content")
+  }
 
   series_latestdates <- dash_data %>%
     dplyr::group_by(.data$series_id) %>%
