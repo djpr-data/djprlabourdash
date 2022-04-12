@@ -3,9 +3,11 @@ pkgload::load_all()
 
 dir.create("inst/extdata", showWarnings = F, recursive = T)
 
-# These don't change, but are fast enough to keep in the main script
-qs::qsave(absmapsdata::sa42016, "inst/extdata/sa42016.qs")
-qs::qsave(absmapsdata::employment_regions2015, "inst/extdata/employment_regions2015.qs")
+if(requireNamespace("absmapsdata"), quietly = T) {
+  # These don't change, but are fast enough to keep in the main script
+  qs::qsave(absmapsdata::sa42016, "inst/extdata/sa42016.qs")
+  qs::qsave(absmapsdata::employment_regions2015, "inst/extdata/employment_regions2015.qs")
+}
 
 dash_data <- get_dash_data(verbose = T)
 stopifnot(inherits(dash_data, "tbl_df"))
