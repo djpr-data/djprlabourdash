@@ -63,10 +63,12 @@ Imports:
     crayon,
     qs,
     memoise,
-    utils
+    utils,
+    showtext,
+    sysfonts
 Remotes: 
-    djpr-data/djprshiny,
-    djpr-data/djprtheme,
+    djpr-data/djprshiny@vicfont,
+    djpr-data/djprtheme@vicfont,
     djpr-data/djprdashdata,
     mattcowgill/strayr,
     rstudio/webshot2

@@ -16,9 +16,7 @@ page_overview <- function(...) {
       br(),
       br(),
       djprshiny::centred_row(
-        span("DJPR Jobs Dashboard",
-          style = "font-size: 40px; color: #1F1547; font-family: 'Roboto Slab'"
-        )
+        h1("DJPR Jobs Dashboard")
       ),
       br(),
       djprshiny::centred_row(
