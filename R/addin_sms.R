@@ -9,31 +9,28 @@
 #'
 #' @examples
 editSMS <- function(labour = NULL) {
-
-
-  stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject()))
-  #shell("git checkout main")
+  stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
+  # shell("git checkout main")
 
 
   ui <- miniUI::miniPage(
     miniUI::gadgetTitleBar("Edit SMS"),
     miniUI::miniContentPanel(
-      shiny::textInput('to', 'Send To', value = Sys.getenv()[['USEREMAIL']], width = '100%'),
-      shinyWidgets::switchInput('live', 'Enable', value = FALSE, onStatus = "success", offStatus = "danger"),
-      shiny::textAreaInput('sms_text', 'SMS Content', rows = 8, width = '550px', height = '100%'),
+      shiny::textInput("to", "Send To", value = Sys.getenv()[["USEREMAIL"]], width = "100%"),
+      shinyWidgets::switchInput("live", "Enable", value = FALSE, onStatus = "success", offStatus = "danger"),
+      shiny::textAreaInput("sms_text", "SMS Content", rows = 8, width = "550px", height = "100%"),
       miniUI::miniButtonBlock(
-        shiny::div(shiny::actionButton('send', 'Send SMS', value = FALSE, icon = icon('paper-plane'))
+        shiny::div(shiny::actionButton("send", "Send SMS", value = FALSE, icon = icon("paper-plane")))
       )
     )
-  ))
+  )
 
   server <- function(input, output, session) {
-
-    if (is.null(labour)){
+    if (is.null(labour)) {
       ref_dates <- reference_dates()
 
       ref_start <- ref_dates$dates$`Start of Reference Week`
-      ref_end   <- ref_dates$dates$`End of Reference Week`
+      ref_end <- ref_dates$dates$`End of Reference Week`
 
       # 2 Get data
       req_series <- c(
@@ -64,68 +61,68 @@ editSMS <- function(labour = NULL) {
     }
 
     # build sms email
-    sms_content <- sms(labour) |> paste(collapse = '\n')
+    sms_content <- sms(labour) |> paste(collapse = "\n")
 
-    shiny::updateTextAreaInput(session = session, 'sms_text', value = sms_content)
+    shiny::updateTextAreaInput(session = session, "sms_text", value = sms_content)
 
     smtp <- emayili::server(
       host = "smtp.office365.com",
       port = 587,
-      username = Sys.getenv()[['USEREMAIL']],
-      password = keyring::key_get('user-passwd',
-                                  username = Sys.getenv()[['USERNAME']])
+      username = Sys.getenv()[["USEREMAIL"]],
+      password = keyring::key_get("user-passwd",
+        username = Sys.getenv()[["USERNAME"]]
+      )
     )
 
     to_send <- reactive({
-
-      print('create email')
+      print("create email")
 
       send <- emayili::envelope(
         from = "spp-data@ecodev.vic.gov.au",
         to = input$to,
-        subject = glue::glue("LF SMS: {format(Sys.Date(), '%B-%Y')} ",
-                       "(not used by SMS Global, this is recommended for record keeping)")) |>
-        emayili::text(.open = '{{', .close = '}}',
-                      "{sms}\r\n
+        subject = glue::glue(
+          "LF SMS: {format(Sys.Date(), '%B-%Y')} ",
+          "(not used by SMS Global, this is recommended for record keeping)"
+        )
+      ) |>
+        emayili::text(
+          .open = "{{", .close = "}}",
+          "{sms}\r\n
                       {{gsub('\n','\r\n', input$sms_text)}}\r\n
-                      {/sms}")
-      print('email ready')
+                      {/sms}"
+        )
+      print("email ready")
 
       send
-
     })
 
     observeEvent(input$live, {
       if (input$live) {
-        shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['SMS_LABOURFORCE']])
+        shinyWidgets::updateSwitchInput(session = session, "to", value = Sys.getenv()[["SMS_LABOURFORCE"]])
       } else {
-        shinyWidgets::updateSwitchInput(session = session, 'to', value = Sys.getenv()[['SMS_LABOURFORCE_TEST']])
+        shinyWidgets::updateSwitchInput(session = session, "to", value = Sys.getenv()[["SMS_LABOURFORCE_TEST"]])
       }
     })
 
     observeEvent(input$send, {
-
-      tryCatch({
-        smtp(to_send(), verbose = TRUE)
-        shiny::showNotification("SMS Has Been Sent", type = 'message', duration = 5)
-      },
-       error = function(e){
-         shiny::showNotification("SMS FAILED", type = 'error', duration = 5)
-       })
-
+      tryCatch(
+        {
+          smtp(to_send(), verbose = TRUE)
+          shiny::showNotification("SMS Has Been Sent", type = "message", duration = 5)
+        },
+        error = function(e) {
+          shiny::showNotification("SMS FAILED", type = "error", duration = 5)
+        }
+      )
     })
 
 
     # return geometry to file and object in console
     observeEvent(input$done, {
-
       stopApp({})
-
     })
-
   }
 
   viewer <- shiny::paneViewer(400)
   shiny::runGadget(ui, server, viewer = viewer)
-
 }

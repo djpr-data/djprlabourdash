@@ -27,9 +27,3 @@ app()
 shell("git add .")
 shell("git git commit -m \"Manual update\"")
 # shell("git push")
-
-
-
-
-
-

@@ -14,19 +14,19 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
                                                        dplyr::mutate(
                                                          state = dplyr::case_when(
                                                            .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-                                                           "Reg. Vic",
+                                                             "Reg. Vic",
                                                            .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-                                                           "Reg. NSW",
+                                                             "Reg. NSW",
                                                            .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-                                                           "Reg. QLD",
+                                                             "Reg. QLD",
                                                            .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-                                                           "Reg. NT",
+                                                             "Reg. NT",
                                                            .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-                                                           "Reg. WA",
+                                                             "Reg. WA",
                                                            .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-                                                           "Reg. SA",
+                                                             "Reg. SA",
                                                            .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-                                                           "Reg. Tas",
+                                                             "Reg. Tas",
                                                            TRUE ~ .data$state
                                                          )
                                                        )) {
@@ -457,31 +457,31 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     all(title_df$rank[title_df$geog == "Regional Vic."] == 1) ~
-    paste0(
-      "Regional Victoria had a lower ",
-      tolower(indic_long),
-      " than regional Australia across all age groups in ",
-      max_date
-    ),
+      paste0(
+        "Regional Victoria had a lower ",
+        tolower(indic_long),
+        " than regional Australia across all age groups in ",
+        max_date
+      ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 1 ~
-    paste0(
-      "Regional Victoria had a lower ",
-      tolower(indic_long),
-      " for young people than regional Australia in ",
-      max_date
-    ),
+      paste0(
+        "Regional Victoria had a lower ",
+        tolower(indic_long),
+        " for young people than regional Australia in ",
+        max_date
+      ),
     title_df$rank[title_df$geog == "Regional Vic." & title_df$age == "15-24"] == 2 ~
-    paste0(
-      "Regional Victoria had a higher ",
-      tolower(indic_long),
-      " for young people than regional Australia in ",
-      max_date
-    ),
+      paste0(
+        "Regional Victoria had a higher ",
+        tolower(indic_long),
+        " for young people than regional Australia in ",
+        max_date
+      ),
     TRUE ~
-    paste0(
-      "Regional ", indic_long, " by age by State and Territory, ",
-      max_date
-    )
+      paste0(
+        "Regional ", indic_long, " by age by State and Territory, ",
+        max_date
+      )
   )
 
   max_value <- max(df$value)

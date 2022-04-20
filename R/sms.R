@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-sms <- function(labour){
+sms <- function(labour) {
 
   # 3 Define summary stats
   latest_dates <- labour %>%
@@ -41,9 +41,8 @@ sms <- function(labour){
 
 
   # 4 Format numbers / sms messages
-  num_format <- function(x){
-    switch(
-      names(x),
+  num_format <- function(x) {
+    switch(names(x),
       `vic total employed` = x %>%
         `/`(1000) %>%
         round(0) %>%
@@ -68,17 +67,17 @@ sms <- function(labour){
       message_emp_stock_template,
       this_month = format(latest_dates["vic total employed"], "%B"),
       direction  = "up",
-      increment  = num_format(latest_delta['vic total employed']),
+      increment  = num_format(latest_delta["vic total employed"]),
       to         = " to",
-      stock      = num_format(latest_values['vic total employed'])
+      stock      = num_format(latest_values["vic total employed"])
     ),
     latest_delta["vic total employed"] < -100 ~ glue::glue(
       message_emp_stock_template,
       this_month = format(latest_dates["vic total employed"], "%B"),
       direction  = "down",
-      increment  = num_format(abs(latest_delta['vic total employed'])),
+      increment  = num_format(abs(latest_delta["vic total employed"])),
       to         = " to",
-      stock      = num_format(latest_values['vic total employed'])
+      stock      = num_format(latest_values["vic total employed"])
     ),
     TRUE ~ glue::glue(
       message_emp_stock_template,
@@ -86,7 +85,7 @@ sms <- function(labour){
       direction  = "unchanged",
       increment  = "",
       to         = " at",
-      stock      = num_format(latest_values['vic total employed'])
+      stock      = num_format(latest_values["vic total employed"])
     )
   )
 
@@ -96,24 +95,24 @@ sms <- function(labour){
       this_month = format(latest_dates["vic unemployment rate"], "%B"),
       last_month = format(latest_dates["vic unemployment rate"] - months(1), "%B"),
       direction  = "up",
-      this_rate  = num_format(latest_values['vic unemployment rate']),
-      last_rate  = num_format(latest_values_lag1['vic unemployment rate'])
+      this_rate  = num_format(latest_values["vic unemployment rate"]),
+      last_rate  = num_format(latest_values_lag1["vic unemployment rate"])
     ),
     latest_delta["vic unemployment rate"] < -0.01 ~ glue::glue(
       messgae_unemploy_template,
       this_month = format(latest_dates["vic unemployment rate"], "%B"),
       last_month = format(latest_dates["vic unemployment rate"] - months(1), "%B"),
       direction  = "down",
-      this_rate  = num_format(latest_values['vic unemployment rate']),
-      last_rate  = num_format(latest_values_lag1['vic unemployment rate'])
+      this_rate  = num_format(latest_values["vic unemployment rate"]),
+      last_rate  = num_format(latest_values_lag1["vic unemployment rate"])
     ),
     TRUE ~ glue::glue(
       messgae_unemploy_template,
       this_month = format(latest_dates["vic unemployment rate"], "%B"),
       last_month = format(latest_dates["vic unemployment rate"] - months(1), "%B"),
       direction  = "mostly unchanged",
-      this_rate  = num_format(latest_values['vic unemployment rate']),
-      last_rate  = num_format(latest_values_lag1['vic unemployment rate'])
+      this_rate  = num_format(latest_values["vic unemployment rate"]),
+      last_rate  = num_format(latest_values_lag1["vic unemployment rate"])
     )
   )
 
@@ -123,24 +122,24 @@ sms <- function(labour){
       this_month = format(latest_dates["regional vic unemployment rate"], "%B"),
       last_month = format(latest_dates["regional vic unemployment rate"] - months(1), "%B"),
       direction  = "up",
-      this_rate  = num_format(latest_values['regional vic unemployment rate']),
-      last_rate  = num_format(latest_values_lag1['regional vic unemployment rate'])
+      this_rate  = num_format(latest_values["regional vic unemployment rate"]),
+      last_rate  = num_format(latest_values_lag1["regional vic unemployment rate"])
     ),
     latest_delta["regional vic unemployment rate"] < -0.01 ~ glue::glue(
       messgae_regional_unemploy_template,
       this_month = format(latest_dates["regional vic unemployment rate"], "%B"),
       last_month = format(latest_dates["regional vic unemployment rate"] - months(1), "%B"),
       direction  = "down",
-      this_rate  = num_format(latest_values['regional vic unemployment rate']),
-      last_rate  = num_format(latest_values_lag1['regional vic unemployment rate'])
+      this_rate  = num_format(latest_values["regional vic unemployment rate"]),
+      last_rate  = num_format(latest_values_lag1["regional vic unemployment rate"])
     ),
     TRUE ~ glue::glue(
       messgae_regional_unemploy_template,
       this_month = format(latest_dates["regional vic unemployment rate"], "%B"),
       last_month = format(latest_dates["regional vic unemployment rate"] - months(1), "%B"),
       direction  = "mostly unchanged",
-      this_rate  = num_format(latest_values['regional vic unemployment rate']),
-      last_rate  = num_format(latest_values_lag1['regional vic unemployment rate'])
+      this_rate  = num_format(latest_values["regional vic unemployment rate"]),
+      last_rate  = num_format(latest_values_lag1["regional vic unemployment rate"])
     )
   )
 
@@ -153,14 +152,7 @@ sms <- function(labour){
     message_regional_unemploy
   )
 
-  writeLines(sms_template_labour, here::here('inst/sms.md'))
+  writeLines(sms_template_labour, here::here("inst/sms.md"))
 
   sms_template_labour
-
-
 }
-
-
-
-
-

@@ -68,9 +68,9 @@ labour_server <- function(input, output, session) {
         "a",
         dplyr::case_when(
           get_summ("A84423349V", .data$ptile_d_year_abs) < 0.33 ~
-          "relatively sluggish",
+            "relatively sluggish",
           get_summ("A84423349V", .data$ptile_d_year_abs) > 0.67 ~
-          "relatively rapid",
+            "relatively rapid",
           TRUE ~ "normal"
         ),
         "pace of growth for Victoria compared to historical trends.",
@@ -133,21 +133,21 @@ labour_server <- function(input, output, session) {
       dplyr::mutate(
         state = dplyr::case_when(
           .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-          "Vic",
+            "Vic",
           .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-          "NSW",
+            "NSW",
           .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-          "QLD",
+            "QLD",
           .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-          "NT",
+            "NT",
           .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-          "WA",
+            "WA",
           .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-          "SA",
+            "SA",
           .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-          "Tas",
+            "Tas",
           .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-          "ACT",
+            "ACT",
           TRUE ~ .data$state
         )
       ),
@@ -1183,11 +1183,11 @@ labour_server <- function(input, output, session) {
   output$subtitle_reg_unemp_emppop_partrate_vic <- renderText({
     indic_long <- dplyr::case_when(
       input$lf_status_region == "unemp_rate" ~
-      "Unemployment rate",
+        "Unemployment rate",
       input$lf_status_region == "part_rate" ~
-      "Participation rate",
+        "Participation rate",
       input$lf_status_region == "emp_pop" ~
-      "Employment to population"
+        "Employment to population"
     )
 
     paste0(indic_long, " by region (SA4), per cent")
@@ -1536,19 +1536,19 @@ labour_server <- function(input, output, session) {
       dplyr::mutate(
         state = dplyr::case_when(
           .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-          "Reg. Vic",
+            "Reg. Vic",
           .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-          "Reg. NSW",
+            "Reg. NSW",
           .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-          "Reg. QLD",
+            "Reg. QLD",
           .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-          "Reg. NT",
+            "Reg. NT",
           .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-          "Reg. WA",
+            "Reg. WA",
           .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-          "Reg. SA",
+            "Reg. SA",
           .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-          "Reg. Tas",
+            "Reg. Tas",
           TRUE ~ .data$state
         )
       ),

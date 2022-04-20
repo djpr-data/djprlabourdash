@@ -17,7 +17,7 @@
 get_dash_data <- function(refresh = c("auto", "always", "never"), branch = "main", verbose = F) {
   refresh <- match.arg(refresh)
 
-  if(refresh == "never" && exists("dash_data")) {
+  if (refresh == "never" && exists("dash_data")) {
     return(dash_data)
   }
 
@@ -27,16 +27,16 @@ get_dash_data <- function(refresh = c("auto", "always", "never"), branch = "main
 
   should_refresh <-
     (refresh == "always") ||
-    (!exists("dash_data_updated")) ||
-    (dash_data_updated != remote_updated)
+      (!exists("dash_data_updated")) ||
+      (dash_data_updated != remote_updated)
 
-  if(should_refresh) {
-    if(verbose) {
+  if (should_refresh) {
+    if (verbose) {
       message("Re-downloading dash data")
     }
     dash_data <- load_dash_data(branch)
   } else {
-    if(verbose) {
+    if (verbose) {
       message("Re-using loaded dash data")
     }
     # Copy global variable
