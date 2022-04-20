@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.1.0.902
+Version: 0.1.0.903
 Authors@R: 
     c(
     person(given = "Annett",
@@ -63,7 +63,9 @@ Imports:
     crayon,
     qs,
     memoise,
-    utils
+    utils,
+    showtext,
+    sysfonts
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
