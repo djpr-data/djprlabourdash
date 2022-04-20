@@ -248,9 +248,9 @@ title_reg_emp_regions_sincecovid_line <- function(data) {
   diff <- current$`Greater Melbourne` - current$`Rest of Vic.`
   case_when(
     abs(diff) < 0.1 ~
-    "Employment in Greater Melbourne has caught up with the rest of Victoria",
+      "Employment in Greater Melbourne has caught up with the rest of Victoria",
     sign(diff) == -1 ~
-    "Employment in Greater Melbourne has not kept pace with the rest of Victoria",
+      "Employment in Greater Melbourne has not kept pace with the rest of Victoria",
     TRUE ~ "Employment in Greater Melbourne has grown faster than the rest of Victoria"
   )
 }
@@ -401,9 +401,9 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
       line_col =
         dplyr::case_when(
           .data$is_vic ~
-          "Victoria",
+            "Victoria",
           grepl("Melbourne|Mornington", .data$sa4) ~
-          "Greater Melbourne",
+            "Greater Melbourne",
           TRUE ~ "Rest of Victoria"
         )
     )

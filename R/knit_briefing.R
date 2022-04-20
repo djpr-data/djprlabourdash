@@ -12,11 +12,11 @@
 #' knit_briefing(quietly = TRUE)
 #' }
 #' @export
-knit_briefing <- function(path = here::here('inst'),
+knit_briefing <- function(path = here::here("inst"),
                           quietly = FALSE,
                           show = TRUE) {
 
-  #stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject())) #crashes tests
+  # stopifnot(grepl('djprlabourdash', rstudioapi::getActiveProject())) #crashes tests
 
   if (!requireNamespace("rmarkdown", quietly = TRUE)) {
     stop(
@@ -43,7 +43,7 @@ knit_briefing <- function(path = here::here('inst'),
     quiet = quietly
   )
 
-  if(show) {
+  if (show) {
     normalizePath(out_path) %>%
       shell.exec()
   }
