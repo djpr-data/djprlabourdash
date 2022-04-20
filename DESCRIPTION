@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.1.0.902
+Version: 0.1.0.903
 Authors@R: 
     c(
     person(given = "Annett",
@@ -67,8 +67,8 @@ Imports:
     showtext,
     sysfonts
 Remotes: 
-    djpr-data/djprshiny@vicfont,
-    djpr-data/djprtheme@vicfont,
+    djpr-data/djprshiny,
+    djpr-data/djprtheme,
     djpr-data/djprdashdata,
     mattcowgill/strayr,
     rstudio/webshot2
