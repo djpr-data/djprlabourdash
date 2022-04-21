@@ -65,7 +65,7 @@ get_test_data <- function(){
 
   url_detailed <- djprdata:::get_latest_download_url(
     'https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/latest-release',
-    '6291016\\.|6291005\\.|6291002\\.|RM1\\.|RQ1\\.'
+    '6291016\\.|6291005\\.|6291002\\.|RQ1\\.'
   )
 
 
@@ -103,10 +103,26 @@ get_test_data <- function(){
                                          starts_with('Unemployed'),
                                          contains('NILF')),
                                 names_to = 'data_type') |>
+            dplyr::mutate(Age = stringr::str_sub(Age, start = 1, end = stringr::str_locate(Age, ' years')[,1] - 1),
+                          `Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
+                          value = dplyr::case_when(grepl('000',data_type) ~ value * 1000,
+                                            TRUE ~ value),
+                          data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
+                          data_type = dplyr::case_when(data_type == "not in the labour force (nilf)" ~ "nilf total",
+                                                TRUE ~ data_type)
+                          ) |>
+            tidyr::separate(col = data_type, sep = " ", into = c('employment_status', 'employment_type')) |>
+            dplyr::group_by(date, Age, `Labour market region (SA4): ASGS (2011)`, employment_status) |>
+              dplyr::summarise(value = sum(value)) |>
+            dplyr::mutate(id = stringr::str_c(Age, employment_status, `Labour market region (SA4): ASGS (2011)`, sep = "_"))
+
+
+            ## update ID naming here
+
             tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
                                names_repair = 'minimal',
                                values_from = 'value',
-                               names_sep = ';')
+                               names_sep = '_')
 
         } else {
 
