@@ -1794,9 +1794,7 @@ labour_server <- function(input, output, session) {
       "males_rest of vic._rental, hiring and real estate services_employed part-time",
       "males_rest of vic._retail trade_employed part-time",
       "males_rest of vic._transport, postal and warehousing_employed part-time",
-      "males_rest of vic._wholesale trade_employed part-time",
-      "A84423461V",
-      "A84423237A"
+      "males_rest of vic._wholesale trade_employed part-time"
     ), df = dash_data) %>%
       dplyr::group_by(.data$series) %>%
       dplyr::filter(.data$date == max(.data$date)) %>%
