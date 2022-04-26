@@ -65,7 +65,8 @@ Imports:
     memoise,
     utils,
     showtext,
-    sysfonts
+    sysfonts,
+    shinydashboard
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,

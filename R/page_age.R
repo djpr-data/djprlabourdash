@@ -1,25 +1,17 @@
 page_age <- function(...) {
-  djpr_tab_panel(
-    title = "Age",
-    br(),
-    h2(br(), "Overview"),
-    "Labour force data disaggregated by age can be volatile, and most of this data",
-    " is not seasonally adjusted by the ABS. DJPR smooths the data ",
-    "by using 12-month rolling averages. While this assists in removing noise",
-    " to focus on the underlying trends, it makes large month-to-month changes ",
-    "in underlying conditions less apparent.",
-    uiOutput("table_gr_youth_summary"),
-    fluidRow(
-      column(
-        6,
-        djpr_plot_ui("gr_yth_emp_sincecovid_line")
+  shiny::fluidRow(
+    shinydashboard::box(
+      title = "Overview",
+      width = 3,
+      p(
+        "Labour force data disaggregated by age can be volatile, and most of this data is not seasonally adjusted by the ABS. DJPR smooths the data by using 12-month rolling averages. While this assists in removing noise to focus on the underlying trends, it makes large month-to-month changes in underlying conditions less apparent."
+        )
       ),
-      column(
-        6,
-        djpr_plot_ui("gr_yth_lfpartrate_vicaus_line")
-      )
-    ),
-    br(),
+    uiOutput("table_gr_youth_summary") %>%
+      djpr_with_spinner() %>%
+      shinydashboard::box(width = 9),
+    djpr_plot_box("gr_yth_emp_sincecovid_line"),
+    djpr_plot_box("gr_yth_lfpartrate_vicaus_line"),
     focus_box(
       h2("Labour force status of Victorian youth"),
       shiny::selectInput("youth_focus",
@@ -51,10 +43,9 @@ page_age <- function(...) {
         djpr_plot_ui("gr_youth_vicaus_line")
       )
     ),
-    br(),
-    h2(br(), "Detailed labour force status of Victorian youth"),
-    djpr_plot_ui("gr_youth_full_part_line"),
-    djpr_plot_ui("gr_youth_eduemp_waterfall",
+    djpr_h2_box("Detailed labour force status of Victorian youth"),
+    djpr_plot_box("gr_youth_full_part_line"),
+    djpr_plot_box("gr_youth_eduemp_waterfall",
       interactive = FALSE
     ),
     djpr_plot_ui("gr_yth_mostvuln_line"),

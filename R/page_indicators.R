@@ -1,6 +1,5 @@
 page_indicators <- function(...) {
-  djpr_tab_panel(
-    title = "Indicators",
+  fluidRow(
     h1("Key indicators"),
     paste0(
       "This page contains key labour force indicators, focusing on Victoria as a whole."

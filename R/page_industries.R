@@ -1,6 +1,5 @@
 page_industries <- function(...) {
-  djpr_tab_panel(
-    title = "Industries",
+  fluidRow(
     h1("Victoria's industries"),
     br(),
     "On this page, we explore the economic and financial performance of Victorian industries. ",
