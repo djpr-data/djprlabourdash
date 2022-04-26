@@ -1,6 +1,5 @@
 page_ltunemp <- function(...) {
-  djpr_tab_panel(
-    title = "Long-term unemployed",
+  fluidRow(
     br(),
     paste0("Long-term unemployment is defined as a duration of unemployment of 12 months or more, "),
     paste0("calculated from the time a person either last worked in any job for two weeks or more, "),

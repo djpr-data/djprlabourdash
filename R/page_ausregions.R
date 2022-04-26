@@ -1,9 +1,5 @@
 page_ausregions <- function(...) {
-  djpr_tab_panel(
-    title = "Australian Regions",
-    # Unemployment by Australian Regions -------------
-    br(),
-    br(),
+  fluidRow(
     "This section explores labour force indicators in regional and metropolitan areas of Australia. ",
     br(),
     h2("Unemployment rate in Australian regional areas"),
