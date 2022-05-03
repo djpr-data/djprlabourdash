@@ -328,7 +328,7 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
       labels = function(x) paste0(x, "%")
     ) +
     scale_colour_manual(values = c(
-      "Vic" = djprtheme::djpr_royal_blue,
+      "Vic" = djprtheme::djpr_blue,
       "NSW" = djprtheme::djpr_green,
       "NT" = other_colour,
       "Tas" = other_colour,
@@ -430,7 +430,7 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     coord_flip(clip = "off") +
     scale_fill_manual(
       values = c(
-        "Vic" = djprtheme::djpr_royal_blue,
+        "Vic" = djprtheme::djpr_blue,
         "Aus" = djprtheme::djpr_green,
         "Other" = "grey70"
       )
@@ -577,12 +577,12 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
       colour = "black"
     ) +
     scale_fill_manual(values = c(
-      "Unemployment rate" = djprtheme::djpr_royal_blue,
+      "Unemployment rate" = djprtheme::djpr_blue,
       "Underemployment rate" = djprtheme::djpr_green,
       "Underutilisation rate" = "black"
     )) +
     scale_colour_manual(values = c(
-      "Unemployment rate" = djprtheme::djpr_royal_blue,
+      "Unemployment rate" = djprtheme::djpr_blue,
       "Underemployment rate" = djprtheme::djpr_green,
       "Underutilisation rate" = "black"
     )) +

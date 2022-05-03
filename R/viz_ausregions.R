@@ -123,7 +123,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
       labels = function(x) paste0(x, "%")
     ) +
     scale_colour_manual(values = c(
-      "Reg. Vic" = djprtheme::djpr_royal_blue,
+      "Reg. Vic" = djprtheme::djpr_blue,
       "Reg. NSW" = djprtheme::djpr_green,
       "Reg. NT" = other_colour,
       "Reg. Tas" = other_colour,
@@ -510,7 +510,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
       ) +
       scale_fill_manual(
         values = c(
-          "Rest of Vic." = djprtheme::djpr_royal_blue,
+          "Rest of Vic." = djprtheme::djpr_blue,
           "Rest of Aus." = djprtheme::djpr_green,
           "Other" = "grey75"
         )

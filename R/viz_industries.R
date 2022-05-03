@@ -399,7 +399,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(.data$value))
 
   colours <- c(
-    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_blue,
     djprtheme::djpr_green
   )
 
