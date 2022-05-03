@@ -316,7 +316,7 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
     TRUE ~ "Victoria's employment to population ratio compared to other states and territories"
   )
 
-  other_colour <- "grey70"
+  other_colour <- djprtheme::djpr_cool_grey_11
 
   df %>%
     djpr_ts_linechart(
@@ -432,7 +432,7 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
       values = c(
         "Vic" = djprtheme::djpr_blue,
         "Aus" = djprtheme::djpr_green,
-        "Other" = "grey70"
+        "Other" = djprtheme::djpr_cool_grey_11
       )
     ) +
     scale_y_continuous(expand = expansion(mult = c(0, 0.15))) +

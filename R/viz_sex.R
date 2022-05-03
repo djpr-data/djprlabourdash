@@ -73,7 +73,7 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     geom_col(
       position = "fill",
       alpha = 1,
-      col = "grey70"
+      col = djprtheme::djpr_cool_grey_11
     ) +
     geom_text(
       aes(y = .data$label_y, label = round2(.data$perc * 100, 1)),

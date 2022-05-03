@@ -654,7 +654,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     geom_col(
       position = "fill",
       alpha = 1,
-      col = "grey70"
+      col = djprtheme::djpr_cool_grey_11
     ) +
     geom_text(
       data = label_df,

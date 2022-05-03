@@ -110,7 +110,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
     " fastest of any Australian regional area"
   )
 
-  other_colour <- "grey70"
+  other_colour <- djprtheme::djpr_cool_grey_11
 
   df %>%
     djpr_ts_linechart(
