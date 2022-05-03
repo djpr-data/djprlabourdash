@@ -752,7 +752,7 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
     ) +
     scale_colour_manual(values = rev(c(
       djpr_pal(2),
-      "grey60"
+      djprtheme::djpr_cool_grey_11
     ))) +
     labs(
       subtitle = "Participation rate and unemployment rate for Victoria ",

@@ -158,9 +158,8 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
       y_labels = function(x) paste0(x * 100, "%"),
       label_num = paste0(round2(.data$value * 100, 1), "%")
     ) +
-    scale_colour_manual(values = suppressWarnings(
-      djpr_pal(10)[c(5, 10)]
-    )) +
+    scale_colour_manual(values = djpr_pal(2)
+    ) +
     labs(
       title = title,
       subtitle = paste0(stringr::str_to_sentence(indic_long), " for people aged 15-24"),
@@ -448,7 +447,7 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
       expand = expansion(add = 0.5)
     ) +
     scale_colour_manual(
-      values = suppressWarnings(djpr_pal(10)[c(1, 8)])
+      values = djpr_pal(2)
     ) +
     theme_djpr(flipped = T) +
     labs(
@@ -711,7 +710,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     theme_djpr() +
     scale_colour_manual(values = c(
       "Vulnerable" = djprtheme::djpr_blue,
-      "Other" = "grey65"
+      "Other" = djprtheme::djpr_cool_grey_11
     )) +
     djpr_y_continuous(expand_top = 0.075) +
     theme(

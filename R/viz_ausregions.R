@@ -293,7 +293,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c(
       expand = expansion(add = 0.5)
     ) +
     scale_colour_manual(
-      values = suppressWarnings(djpr_pal(10)[c(1, 8)])
+      values = djpr_pal(2)
     ) +
     theme_djpr(flipped = T) +
     labs(
@@ -512,7 +512,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
         values = c(
           "Rest of Vic." = djprtheme::djpr_blue,
           "Rest of Aus." = djprtheme::djpr_green,
-          "Other" = "grey75"
+          "Other" = djprtheme::djpr_cool_grey_11
         )
       ) +
       labs(subtitle = paste0("Age ", age)) +
