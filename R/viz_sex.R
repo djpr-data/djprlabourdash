@@ -51,9 +51,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     dplyr::filter(.data$sex == "Males") %>%
     dplyr::mutate(label_y = case_when(
       .data$indicator == "Employed part-time" ~
-        .data$label_y - 0.1,
+      .data$label_y - 0.1,
       .data$indicator == "Not in the labour force" ~
-        0.92,
+      0.92,
       TRUE ~ .data$label_y
     ))
 
@@ -143,25 +143,25 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     change_by_sex$Females > 0 & change_by_sex$Males > 0 ~
-      paste0(
-        "Labour force participation rose for both men and women in the year to ",
-        max_date
-      ),
+    paste0(
+      "Labour force participation rose for both men and women in the year to ",
+      max_date
+    ),
     change_by_sex$Females > 0 & change_by_sex$Males < 0 ~
-      paste0(
-        "Labour force participation rose for women but fell for men in the year to ",
-        max_date
-      ),
+    paste0(
+      "Labour force participation rose for women but fell for men in the year to ",
+      max_date
+    ),
     change_by_sex$Females < 0 & change_by_sex$Males < 0 ~
-      paste0(
-        "Labour force participation fell for both women and men in the year to ",
-        max_date
-      ),
+    paste0(
+      "Labour force participation fell for both women and men in the year to ",
+      max_date
+    ),
     change_by_sex$Females < 0 & change_by_sex$Males > 0 ~
-      paste0(
-        "Labour force participation rose for men but fell for women in the year to ",
-        max_date
-      )
+    paste0(
+      "Labour force participation rose for men but fell for women in the year to ",
+      max_date
+    )
   )
 
   df %>%
@@ -204,15 +204,15 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     current_ur$Females < current_ur$Males ~
-      paste0(
-        "The unemployment rate for women was lower than the rate for men in ",
-        max_date
-      ),
+    paste0(
+      "The unemployment rate for women was lower than the rate for men in ",
+      max_date
+    ),
     current_ur$Females > current_ur$Males ~
-      paste0(
-        "The unemployment rate for women was higher than the rate for men in ",
-        max_date
-      ),
+    paste0(
+      "The unemployment rate for women was higher than the rate for men in ",
+      max_date
+    ),
     TRUE ~ paste0(
       "The unemployment rate for men and women was around the same level in ",
       max_date
@@ -294,11 +294,11 @@ viz_gr_full_part_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     female_latest_f > male_latest_f ~
-      paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
+    paste0("Full-time employment grew faster for women than men in the year to ", latest_month),
     female_latest_f < male_latest_f ~
-      paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
+    paste0("Full-time employment grew faster for men than women in the year to ", latest_month),
     female_latest_f == male_latest_f ~
-      paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
+    paste0("Full-time employment grew at around the same pace for women and men in the year to ", latest_month),
     TRUE ~ paste0("Full-time and part-time annual employment growth for men and women")
   )
 

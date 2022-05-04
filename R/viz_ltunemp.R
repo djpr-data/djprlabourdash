@@ -58,11 +58,11 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
-      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
+    paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was higher than Australia's"),
     latest_values$Victoria < latest_values$Australia ~
-      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
+    paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was lower than Australia's"),
     latest_values$Victoria == latest_values$Australia ~
-      paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
+    paste0("Victoria's long-term unemployment rate in ", latest_values$date, " was the same as Australia's"),
     TRUE ~ "Long-term unemployment rate in Victoria and Australia"
   )
 
@@ -189,16 +189,16 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
   title <- dplyr::case_when(
     title_df$LT > 0 &
       title_df$ST > 0 ~
-      "The number of long-term and short-term unemployed Victorians both rose over the year to ",
+    "The number of long-term and short-term unemployed Victorians both rose over the year to ",
     title_df$LT < 0 &
       title_df$ST > 0 ~
-      "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
+    "The number of long-term unemployed Victorians fell, but the number of people unemployed short-term rose over the year to ",
     title_df$LT > 0 &
       title_df$ST < 0 ~
-      "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
+    "The number of short-term unemployed Victorians fell, but the number of people long-term unemployed rose over the year to ",
     title_df$LT < 0 &
       title_df$ST ~
-      "The number of long-term and short-term unemployed Victorians both fell over the year to ",
+    "The number of long-term and short-term unemployed Victorians both fell over the year to ",
     TRUE ~ "Long-term and short-term unemployment in Victoria over the year to "
   )
 
@@ -317,17 +317,17 @@ viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
       label_no_num =
         case_when(
           duration == "Under 4 weeks (under 1 month)" ~
-            "<1 month",
+          "<1 month",
           duration == "4 weeks and under 13 weeks (1-3 months)" ~
-            "1-3 months",
+          "1-3 months",
           duration == "13 weeks and under 26 weeks (3-6 months)" ~
-            "3-6 months",
+          "3-6 months",
           duration == "26 weeks and under 52 weeks (6-12 months)" ~
-            "6-12 months",
+          "6-12 months",
           duration == "52 weeks and under 104 weeks (1-2 years)" ~
-            "1-2 years",
+          "1-2 years",
           duration == "104 weeks and over (2 years and over)" ~
-            "2+ years",
+          "2+ years",
           TRUE ~ NA_character_
         ),
       label = paste0(
