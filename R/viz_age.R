@@ -709,7 +709,7 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     theme_djpr() +
     scale_colour_manual(values = c(
       "Vulnerable" = djprtheme::djpr_blue,
-      "Other" = "grey70"
+      "Other" = djprtheme::djpr_cool_grey_11
     )) +
     djpr_y_continuous(expand_top = 0.075) +
     theme(
@@ -978,7 +978,7 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
 
   subtitle <- paste0("Youth (age 15 to 24) ", tolower(indic_long), " by state")
 
-  other_colour <- "grey70"
+  other_colour <- djprtheme::djpr_cool_grey_11
 
   df %>%
     djpr_ts_linechart(

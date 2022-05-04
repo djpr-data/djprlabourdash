@@ -110,7 +110,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
     " fastest of any Australian regional area"
   )
 
-  other_colour <- "grey70"
+  other_colour <- djprtheme::djpr_cool_grey_11
 
   df %>%
     djpr_ts_linechart(
@@ -512,7 +512,7 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
         values = c(
           "Rest of Vic." = djprtheme::djpr_blue,
           "Rest of Aus." = djprtheme::djpr_green,
-          "Other" = "grey70"
+          "Other" = djprtheme::djpr_cool_grey_11
         )
       ) +
       labs(subtitle = paste0("Age ", age)) +
