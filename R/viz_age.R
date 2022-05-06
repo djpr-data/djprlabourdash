@@ -703,12 +703,12 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
     geom_label(
       data = data.frame(x = 1.55, y = 230, label = "Victorian youths most at risk of \n becoming long-term unemployed"),
       mapping = aes(x = .data$x, y = .data$y, label = .data$label),
-      size = 4.41, colour = djprtheme::djpr_blue, inherit.aes = FALSE,
+      size = 4.41, colour = djprtheme::djpr_royal_blue, inherit.aes = FALSE,
       label.size = 0
     ) +
     theme_djpr() +
     scale_colour_manual(values = c(
-      "Vulnerable" = djprtheme::djpr_blue,
+      "Vulnerable" = djprtheme::djpr_royal_blue,
       "Other" = "grey70"
     )) +
     djpr_y_continuous(expand_top = 0.075) +
