@@ -399,7 +399,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(.data$value))
 
   colours <- c(
-    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_blue,
     djprtheme::djpr_green
   )
 
@@ -637,11 +637,11 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     " industry, which is ",
     dplyr::case_when(
       chosen_industry_female_share > vic_female_share ~
-        "higher than",
+      "higher than",
       chosen_industry_female_share < vic_female_share ~
-        "lower than",
+      "lower than",
       chosen_industry_female_share == vic_female_share ~
-        "the same as"
+      "the same as"
     ),
     " the Victorian average"
   )
@@ -654,7 +654,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     geom_col(
       position = "fill",
       alpha = 1,
-      col = "grey70"
+      col = djprtheme::djpr_cool_grey_11
     ) +
     geom_text(
       data = label_df,

@@ -248,9 +248,9 @@ title_reg_emp_regions_sincecovid_line <- function(data) {
   diff <- current$`Greater Melbourne` - current$`Rest of Vic.`
   case_when(
     abs(diff) < 0.1 ~
-      "Employment in Greater Melbourne has caught up with the rest of Victoria",
+    "Employment in Greater Melbourne has caught up with the rest of Victoria",
     sign(diff) == -1 ~
-      "Employment in Greater Melbourne has not kept pace with the rest of Victoria",
+    "Employment in Greater Melbourne has not kept pace with the rest of Victoria",
     TRUE ~ "Employment in Greater Melbourne has grown faster than the rest of Victoria"
   )
 }
@@ -401,9 +401,9 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
       line_col =
         dplyr::case_when(
           .data$is_vic ~
-            "Victoria",
+          "Victoria",
           grepl("Melbourne|Mornington", .data$sa4) ~
-            "Greater Melbourne",
+          "Greater Melbourne",
           TRUE ~ "Rest of Victoria"
         )
     )
@@ -794,7 +794,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     ) +
     scale_colour_manual(values = c(
       "min_ur" = djprtheme::djpr_green,
-      "max_ur" = djprtheme::djpr_royal_blue,
+      "max_ur" = djprtheme::djpr_blue,
       "vic" = "black"
     )) +
     theme(
@@ -912,7 +912,7 @@ map_reg_sa4 <- function(sa4 = c(
     ggplot() +
     geom_sf(aes(alpha = .data$selected),
       size = 0.25,
-      fill = djprtheme::djpr_royal_blue,
+      fill = djprtheme::djpr_blue,
       colour = djprtheme::djpr_cool_grey_11
     ) +
     geom_curve(
@@ -1028,7 +1028,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
   )
 
   colours <- c(
-    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_blue,
     djprtheme::djpr_green
   )
 
