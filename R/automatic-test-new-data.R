@@ -5,51 +5,44 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
   message(series_id)
 
   series <- df |>
-    select(date, contains(series_id))
+    select(date, contains(series_id)) |>
+    select(1:2)
 
-  print(ncol(series))
-  print(series_id)
-
-  if (ncol(series) > 1){
-    unit <- case_when(
-      grepl('Percent', colnames(series)[2]) ~ 'percent',
-      grepl('000', colnames(series)[2]) ~ 'thousand',
+  unit <- case_when(
+    grepl('Percent', colnames(series)[2]) ~ 'percent',
+    grepl('000', colnames(series)[2]) ~ 'thousand',
     )
 
+  series <- series |>
+    rename_with(.cols = contains(series_id), .fn = ~ 'value') |>
+    filter(!is.na(value))
+
+  if (!is.null(window)){
     series <- series |>
-      select(1:2) |>
-      #rename_with(.cols = contains(series_id), .fn = ~ 'value') |>
-      rename(value = 2) |>
-      filter(!is.na(value))
+      mutate(value = slider::slide_mean(.data$value, before = .env$window, complete = TRUE))
+  }
 
-    if (!is.null(window)){
-      series <- series |>
-        mutate(value = slider::slide_mean(.data$value, before = .env$window, complete = TRUE))
-    }
+  last <- series |> slice_nth_date(1)
+  last_month <- series |> slice_nth_date(2)
+  last_year <- series |> slice_nth_date(13)
+  covid <- series |> filter(date == covid_date)
+  nov_2014 <- series |> filter(date == '2014-11-01')
 
-    last <- series |> slice_nth_date(1)
-    last_month <- series |> slice_nth_date(2)
-    last_year <- series |> slice_nth_date(13)
-    covid <- series |> filter(date == covid_date)
-    nov_2014 <- series |> filter(date == '2014-11-01')
-
-    series <- tibble(SERIES_ID = series_id,
-           !!toupper(format(max(series$date), '%b %Y')) := last |> pull(-1),
-           !!glue('SINCE {toupper(format(last_month$date, "%b %Y"))}') := last$value - last_month$value,
-           !!glue('SINCE {toupper(format(last_year$date, "%b %Y"))}') := last$value - last_year$value,
-           !!glue('SINCE {toupper(format(covid$date, "%b %Y"))}') := last$value - covid$value,
-           !!glue('SINCE {toupper(format(nov_2014$date, "%b %Y"))}') := last$value - nov_2014$value
-    ) |>
-      mutate(across(-SERIES_ID, ~ case_when(
+  tibble(SERIES_ID = series_id,
+         !!toupper(format(max(series$date), '%b %Y')) := last |> pull(-1),
+         !!glue('SINCE {toupper(format(last_month$date, "%b %Y"))}') := last$value - last_month$value,
+         !!glue('SINCE {toupper(format(last_year$date, "%b %Y"))}') := last$value - last_year$value,
+         !!glue('SINCE {toupper(format(covid$date, "%b %Y"))}') := last$value - covid$value,
+         !!glue('SINCE {toupper(format(nov_2014$date, "%b %Y"))}') := last$value - nov_2014$value
+         ) |>
+    mutate(across(-SERIES_ID, ~ case_when(
         unit == 'thousand' & .x < 1e3 ~ djprshiny::round2(.x, 1) * 1e3,
         unit == 'thousand' & .x >= 1e3 & .x < 1e5 ~ djprshiny::round2(.x, 0) * 1e3,
         unit == 'thousand' & .x >= 1e5 ~ signif(.x * 1e3, 4),
         TRUE ~ djprshiny::round2(.x, 1)
       ))
-      )
-  }
+    )
 
-  series
 }
 
 
@@ -72,14 +65,16 @@ get_test_data <- function(){
 
   url_detailed <- djprdata:::get_latest_download_url(
     'https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/latest-release',
-    '6291016\\.|6291005\\.|6291002\\.|RM1\\.'
+    '6291016\\.|6291005\\.|6291002\\.|RQ1\\.|RM1\\.'
   )
 
 
   urls <- c(url$url,
             url_detailed$url)
 
-  not_normal <- grep('RM1\\.|RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
+  rm1 <- grep('RM1\\.', urls, ignore.case = TRUE, value = TRUE)
+  rq1 <- grep('RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
+  #not_normal <- grep('RM1\\.|RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
 
 
   #6202016 youth
@@ -100,7 +95,7 @@ get_test_data <- function(){
       sheet_data <- purrr::map(sheets, function(sht){
 
 
-        if (url %in% not_normal) {
+        if (url == rm1) {
 
           df <- readxl::read_excel(filename, sht, skip = 3, col_types = c('numeric', rep('guess', 7))) |>
             dplyr::rename(date = 1) |>
@@ -121,14 +116,37 @@ get_test_data <- function(){
             tidyr::separate(col = data_type, sep = " ", into = c('employment_status', 'employment_type')) |>
             dplyr::group_by(date, Age, `Labour market region (SA4): ASGS (2011)`, employment_status) |>
             dplyr::summarise(value = sum(value)) |>
-            dplyr::mutate(id = stringr::str_c(Age, employment_status, `Labour market region (SA4): ASGS (2011)`, sep = "_"))
+            tidyr::pivot_wider(names_from = employment_status, values_from = value) |>
+            dplyr::mutate(unemploymentrate = unemployed / (employed + unemployed)) |>
+            tidyr::pivot_longer(cols = c("employed", "unemployed", "nilf", "unemploymentrate"), names_to = "statistic") |>
+            tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
+                               names_repair = 'minimal',
+                               values_from = 'value',
+                               names_sep = '_')
 
-            ## update ID naming here
-            df <- df |>
-              tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
-                                 names_repair = 'minimal',
-                                 values_from = 'value',
-                                 names_sep = '_')
+
+        } else if (url == rq1) {
+
+        df <- readxl::read_excel(filename, sht, skip = 3, col_types = c('numeric', rep('guess', 7))) |>
+          dplyr::rename(date = 1) |>
+          dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30")) |>
+          tidyr::pivot_longer(cols = c(starts_with('Employ'), starts_with('Number of hours')),
+                              names_to = 'data_type') |>
+          dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
+                        `Industry division of main job: ANZSIC (2006) Rev.2.0` = stringr::str_to_lower(`Industry division of main job: ANZSIC (2006) Rev.2.0`),
+                        value = dplyr::case_when(grepl('000',data_type) ~ value * 1000),
+                        data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
+                        data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
+                        data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
+                        data_type = stringr::str_replace(data_type, "number of hours actually worked in all jobs", "hours worked"),
+                        data_type = stringr::str_replace(data_type, " \\(employed ", " \\(")
+                        ) |>
+          dplyr::group_by(date, `Labour market region (SA4): ASGS (2011)`, `Industry division of main job: ANZSIC (2006) Rev.2.0`, data_type) |>
+          dplyr::summarise(value = sum(value)) |>
+          tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
+                           names_repair = 'minimal',
+                           values_from = 'value',
+                           names_sep = '_')
 
         } else {
 
@@ -143,7 +161,6 @@ get_test_data <- function(){
             dplyr::mutate(across(-date, ~ as.numeric(.x)))
 
         }
-
 
         df
 
@@ -361,9 +378,7 @@ check_table_gr_youth_unemp_region <- function(df){
     "15-24_unemployed_greater melbourne"
   )
 
-  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 11)) |>
-    filter(!is.na(SERIES_ID)) |>
-    select(-date)
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 11))
 
   tests(actual, test)
 
