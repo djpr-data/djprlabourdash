@@ -14,8 +14,8 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
     )
 
   series <- series |>
-    rename_with(.cols = contains(series_id), .fn = ~ 'value') |>
-    filter(!is.na(value))
+    rename_with(.cols = contains(series_id), .fn = ~ 'value') #|>
+    #filter(!is.na(value))
 
   if (!is.null(window)){
     series <- series |>
@@ -659,25 +659,34 @@ run_checks <- function(){
 
   df <- get_test_data()
 
-  check_table_overview(df)
-  check_table_gr_sex(df)
-  check_table_ind_unemp_state(df)
-  #check_table_gr_youth_unemp_region(df) #RM1
-  check_table_reg_metro_states_unemprate(df)
-  check_table_reg_metro_emp(df)
-  check_table_reg_metro_unemp(df)
-  check_table_reg_metro_unemprate(df)
-  check_table_reg_metro_partrate(df)
-  check_table_reg_nonmetro_states_unemprate(df)
-  check_table_reg_nonmetro_emp(df)
-  check_table_reg_nonmetro_unemp(df)
-  check_table_reg_nonmetro_unemprate(df)
-  #check_table_industries_summary(df)
+  check_table_overview(df) # table 1
+  check_table_gr_sex(df) # table 2
+  check_table_ind_unemp_state(df) # table 3
+
+  check_table_gr_youth_summary(df) # table 4 (missing 2 series)
 
 
-  check_table_ind_unemp_summary(df)
+
+  #check_table_gr_youth_unemp_region(df) #RM1 # table 5
 
 
+
+  check_table_reg_metro_states_unemprate(df) # table 6
+  check_table_reg_metro_emp(df) # table 7
+  check_table_reg_metro_unemp(df) # table 8
+  check_table_reg_metro_unemprate(df) # table 9
+  check_table_reg_metro_partrate(df) # table 10
+  check_table_reg_nonmetro_states_unemprate(df) # table 11
+  check_table_reg_nonmetro_emp(df) # table 12
+  check_table_reg_nonmetro_unemp(df) # table 13
+  check_table_reg_nonmetro_unemprate(df) # table 14
+
+  #check_table_reg_nonmetro_partrate(df) # table 15
+
+
+
+  check_table_industries_summary(df) # table 16
+  #check_table_ind_unemp_summary(df) # not in report
 
 
 
