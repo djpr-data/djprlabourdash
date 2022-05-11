@@ -13,9 +13,21 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
     grepl('000', colnames(series)[2]) ~ 'thousand',
     )
 
+  # identify quarterly data
+  LAST_YEAR_GAP <- 13
+
+  qrt <- series |>
+    group_by(year = lubridate::year(date)) |>
+    summarise(n = n())
+
+  if (max(qrt$n, na.rm = TRUE) == 4) {
+    LAST_YEAR_GAP <- 5
+  }
+
+
   series <- series |>
-    rename_with(.cols = contains(series_id), .fn = ~ 'value') #|>
-    #filter(!is.na(value))
+    rename_with(.cols = contains(series_id), .fn = ~ 'value') |>
+    filter(!is.na(value))
 
   if (!is.null(window)){
     series <- series |>
@@ -24,7 +36,7 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
 
   last <- series |> slice_nth_date(1)
   last_month <- series |> slice_nth_date(2)
-  last_year <- series |> slice_nth_date(13)
+  last_year <- series |> slice_nth_date(LAST_YEAR_GAP)
   covid <- series |> filter(date == covid_date)
   nov_2014 <- series |> filter(date == '2014-11-01')
 
