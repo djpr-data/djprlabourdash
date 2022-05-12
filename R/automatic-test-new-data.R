@@ -86,7 +86,7 @@ get_test_data <- function(){
 
   rm1 <- grep('RM1\\.', urls, ignore.case = TRUE, value = TRUE)
   rq1 <- grep('RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
-  lm2 <- grep('LM1\\.', urls, ignore.case = TRUE, value = TRUE)
+  lm1 <- grep('LM1\\.', urls, ignore.case = TRUE, value = TRUE)
   #not_normal <- grep('RM1\\.|RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
 
 
@@ -97,36 +97,44 @@ get_test_data <- function(){
 
   all_df <- purrr::map(urls, function(url){
 
+    message(glue::glue('processing {basename(url)}'))
 
     suppressMessages({
 
       filename <- djprdata::download_excel(url)
-
-      message(glue::glue('{basename(url)} download successful'))
 
       sheets <- readxl::excel_sheets(filename)
       sheets <- grep('data', sheets, ignore.case = TRUE, value = TRUE)
 
       sheet_data <- purrr::map(sheets, function(sht){
 
+        if (url == lm1) {
 
-        if (url == rm1) {
+          df <- read_labour_detailed(filename, sht, cols = 9) |>
+            dplyr::filter(`Greater capital city and rest of state (GCCSA): ASGS (2011)` %in% c("Greater Melbourne", "Rest of Vic."),
+                          Age %in% c("15-19", "20-24")) |>
+            dplyr::mutate(data_type = dplyr::case_when(
+              stringr::str_starts(data_type, 'employed') ~ 'employed',
+              stringr::str_starts(data_type, 'unemployed') ~ 'unemployed',
+              TRUE ~ data_type
+            )) |>
+            dplyr::group_by(date, Sex, data_type) |>
+            dplyr::summarise(value = sum(value)) |>
+            dplyr::mutate(Age = '15-24') |>
+            tidyr::pivot_wider(names_from = 'data_type', values_from = 'value') |>
+            dplyr::mutate(`unemployment rate` = (unemployed / (unemployed + employed)) * 100) |>
+            dplyr::select(date, Age, Sex, `unemployment rate`) |>
+            dplyr::mutate(Sex = paste0(tolower(Sex), '_unemployment rate')) |>
+            tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date", 'unemployment rate')),
+                               names_repair = 'minimal',
+                               values_from = 'unemployment rate',
+                               names_sep = '_')
 
-          df <- readxl::read_excel(filename, sht, skip = 3, col_types = c('numeric', rep('guess', 7))) |>
-            dplyr::rename(date = 1) |>
-            dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30")) |>
-            tidyr::pivot_longer(cols = c(dplyr::starts_with('Employ'),
-                                         dplyr::starts_with('Number'),
-                                         dplyr::starts_with('Unemployed'),
-                                         dplyr::contains('NILF')),
-                                names_to = 'data_type') |>
-            dplyr::mutate(Age = stringr::str_sub(Age, start = 1, end = stringr::str_locate(Age, ' years')[,1] - 1),
-                          `Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
-                          value = dplyr::case_when(grepl('000',data_type) ~ value * 1000,
-                                            TRUE ~ value),
-                          data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
-                          data_type = dplyr::case_when(data_type == "not in the labour force (nilf)" ~ "nilf total",
-                                                TRUE ~ data_type)
+
+        } else if (url == rm1) {
+
+          df <- read_labour_detailed(filename, sht) |>
+            dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5))
                           ) |>
             tidyr::separate(col = data_type, sep = " ", into = c('employment_status', 'employment_type')) |>
             dplyr::group_by(date, Age, `Labour market region (SA4): ASGS (2011)`, employment_status) |>
@@ -142,15 +150,9 @@ get_test_data <- function(){
 
         } else if (url == rq1) {
 
-        df <- readxl::read_excel(filename, sht, skip = 3, col_types = c('numeric', rep('guess', 7))) |>
-          dplyr::rename(date = 1) |>
-          dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30")) |>
-          tidyr::pivot_longer(cols = c(starts_with('Employ'), starts_with('Number of hours')),
-                              names_to = 'data_type') |>
+        df <- read_labour_detailed(filename, sht) |>
           dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
                         `Industry division of main job: ANZSIC (2006) Rev.2.0` = stringr::str_to_lower(`Industry division of main job: ANZSIC (2006) Rev.2.0`),
-                        value = dplyr::case_when(grepl('000',data_type) ~ value * 1000),
-                        data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
                         data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
                         data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
                         data_type = stringr::str_replace(data_type, "number of hours actually worked in all jobs", "hours worked"),
@@ -190,6 +192,31 @@ get_test_data <- function(){
   all_df
 
 }
+
+
+read_labour_detailed <- function(filename, sht, skip_rows = 3, cols = 7){
+  df <- readxl::read_excel(filename, sht, skip = skip_rows, col_types = c('numeric', rep('guess', cols))) |>
+    dplyr::rename(date = 1) |>
+    dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30")) |>
+    tidyr::pivot_longer(cols = c(dplyr::starts_with('Employ'),
+                                 dplyr::starts_with('Number'),
+                                 dplyr::starts_with('Unemployed'),
+                                 dplyr::contains('NILF')),
+                        names_to = 'data_type') |>
+    dplyr::mutate(value = dplyr::case_when(grepl('000', data_type) ~ value * 1000,
+                                           TRUE ~ value),
+                  data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
+                  data_type = dplyr::case_when(data_type == "not in the labour force (nilf)" ~ "nilf total",
+                                               TRUE ~ data_type))
+
+  if ('Age' %in% colnames(df)){
+    df <- df |>
+      dplyr::mutate(Age = stringr::str_sub(Age, start = 1, end = stringr::str_locate(Age, ' years')[,1] - 1))
+  }
+
+  return(df)
+}
+
 
 clean_table <- function(df){
   suppressWarnings({
@@ -234,7 +261,7 @@ check_table_overview <- function(df){
                    "A84423350C",
                    "A84423349V",
                    "A84423357V",
-                   #"pt_emp_vic",
+                   #"pt_emp_vic",  # in table_overview() but not exported
                    "A84423237A",
                    "A84423461V",
                    "A84423355R",
@@ -335,8 +362,8 @@ check_table_gr_youth_summary <- function(df){
   actual <- djprlabourdash::table_gr_youth_summary()$body$dataset |>
     clean_table() |> dplyr::as_tibble()
 
-  series <- c(#"15-24_females_unemployment rate",
-              #"15-24_males_unemployment rate",
+  series <- c("15-24_females_unemployment rate",
+              "15-24_males_unemployment rate",
               "A84424687C",
               "A84424688F",
               "A84424691V",
@@ -684,7 +711,7 @@ run_checks <- function(){
   check_table_gr_sex(df) # table 2
   check_table_ind_unemp_state(df) # table 3
 
-  check_table_gr_youth_summary(df) # table 4 (missing 2 series)
+  check_table_gr_youth_summary(df) # table 4
 
 
 
