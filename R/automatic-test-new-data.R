@@ -5,10 +5,10 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
   message(series_id)
 
   series <- df |>
-    select(date, contains(series_id)) |>
-    select(1:2)
+    dplyr::select(date, contains(series_id)) |>
+    dplyr::select(1:2)
 
-  unit <- case_when(
+  unit <- dplyr::case_when(
     grepl('Percent', colnames(series)[2]) ~ 'percent',
     grepl('000', colnames(series)[2]) ~ 'thousand',
     )
@@ -17,8 +17,8 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
   LAST_YEAR_GAP <- 13
 
   qrt <- series |>
-    group_by(year = lubridate::year(date)) |>
-    summarise(n = n())
+    dplyr::group_by(year = lubridate::year(date)) |>
+    dplyr::summarise(n = dplyr::n())
 
   if (max(qrt$n, na.rm = TRUE) == 4) {
     LAST_YEAR_GAP <- 5
@@ -26,28 +26,28 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
 
 
   series <- series |>
-    rename_with(.cols = contains(series_id), .fn = ~ 'value') |>
-    filter(!is.na(value))
+    dplyr::rename_with(.cols = dplyr::contains(series_id), .fn = ~ 'value') |>
+    dplyr::filter(!is.na(value))
 
   if (!is.null(window)){
     series <- series |>
-      mutate(value = slider::slide_mean(.data$value, before = .env$window, complete = TRUE))
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = .env$window, complete = TRUE))
   }
 
   last <- series |> slice_nth_date(1)
   last_month <- series |> slice_nth_date(2)
   last_year <- series |> slice_nth_date(LAST_YEAR_GAP)
-  covid <- series |> filter(date == covid_date)
-  nov_2014 <- series |> filter(date == '2014-11-01')
+  covid <- series |> dplyr::filter(date == covid_date)
+  nov_2014 <- series |> dplyr::filter(date == '2014-11-01')
 
-  tibble(SERIES_ID = series_id,
-         !!toupper(format(max(series$date), '%b %Y')) := last |> pull(-1),
-         !!glue('SINCE {toupper(format(last_month$date, "%b %Y"))}') := last$value - last_month$value,
-         !!glue('SINCE {toupper(format(last_year$date, "%b %Y"))}') := last$value - last_year$value,
-         !!glue('SINCE {toupper(format(covid$date, "%b %Y"))}') := last$value - covid$value,
-         !!glue('SINCE {toupper(format(nov_2014$date, "%b %Y"))}') := last$value - nov_2014$value
+  dplyr::tibble(SERIES_ID = series_id,
+         !!toupper(format(max(series$date), '%b %Y')) := last |> dplyr::pull(-1),
+         !!glue::glue('SINCE {toupper(format(last_month$date, "%b %Y"))}') := last$value - last_month$value,
+         !!glue::glue('SINCE {toupper(format(last_year$date, "%b %Y"))}') := last$value - last_year$value,
+         !!glue::glue('SINCE {toupper(format(covid$date, "%b %Y"))}') := last$value - covid$value,
+         !!glue::glue('SINCE {toupper(format(nov_2014$date, "%b %Y"))}') := last$value - nov_2014$value
          ) |>
-    mutate(across(-SERIES_ID, ~ case_when(
+    dplyr::mutate(dplyr::across(-SERIES_ID, ~ dplyr::case_when(
         unit == 'thousand' & .x < 1e3 ~ djprshiny::round2(.x, 1) * 1e3,
         unit == 'thousand' & .x >= 1e3 & .x < 1e5 ~ djprshiny::round2(.x, 0) * 1e3,
         unit == 'thousand' & .x >= 1e5 ~ signif(.x * 1e3, 4),
@@ -60,8 +60,8 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
 
 slice_nth_date <- function(df, n){
   df |>
-    slice_max(order_by = date, n = n) |>
-    slice_min(order_by = date)
+    dplyr::slice_max(order_by = date, n = n) |>
+    dplyr::slice_min(order_by = date)
 }
 
 
@@ -72,12 +72,12 @@ get_test_data <- function(){
 
   url <- djprdata:::get_latest_download_url(
     'https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release',
-    '6202005\\.|6202016\\.|6202019\\.|6202023\\.'
+    '6202001\\.|6202005\\.|6202016\\.|6202019\\.|6202023\\.'
   )
 
   url_detailed <- djprdata:::get_latest_download_url(
     'https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/latest-release',
-    '6291016\\.|6291005\\.|6291002\\.|RQ1\\.|RM1\\.'
+    '6291016\\.|6291005\\.|6291002\\.|RQ1\\.|RM1\\.|LM1\\.'
   )
 
 
@@ -86,6 +86,7 @@ get_test_data <- function(){
 
   rm1 <- grep('RM1\\.', urls, ignore.case = TRUE, value = TRUE)
   rq1 <- grep('RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
+  lm2 <- grep('LM1\\.', urls, ignore.case = TRUE, value = TRUE)
   #not_normal <- grep('RM1\\.|RQ1\\.', urls, ignore.case = TRUE, value = TRUE)
 
 
@@ -101,6 +102,8 @@ get_test_data <- function(){
 
       filename <- djprdata::download_excel(url)
 
+      message(glue::glue('{basename(url)} download successful'))
+
       sheets <- readxl::excel_sheets(filename)
       sheets <- grep('data', sheets, ignore.case = TRUE, value = TRUE)
 
@@ -112,10 +115,10 @@ get_test_data <- function(){
           df <- readxl::read_excel(filename, sht, skip = 3, col_types = c('numeric', rep('guess', 7))) |>
             dplyr::rename(date = 1) |>
             dplyr::mutate(date = as.Date(as.integer(date), origin = "1899-12-30")) |>
-            tidyr::pivot_longer(cols = c(starts_with('Employ'),
-                                         starts_with('Number'),
-                                         starts_with('Unemployed'),
-                                         contains('NILF')),
+            tidyr::pivot_longer(cols = c(dplyr::starts_with('Employ'),
+                                         dplyr::starts_with('Number'),
+                                         dplyr::starts_with('Unemployed'),
+                                         dplyr::contains('NILF')),
                                 names_to = 'data_type') |>
             dplyr::mutate(Age = stringr::str_sub(Age, start = 1, end = stringr::str_locate(Age, ' years')[,1] - 1),
                           `Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
@@ -131,7 +134,7 @@ get_test_data <- function(){
             tidyr::pivot_wider(names_from = employment_status, values_from = value) |>
             dplyr::mutate(unemploymentrate = unemployed / (employed + unemployed)) |>
             tidyr::pivot_longer(cols = c("employed", "unemployed", "nilf", "unemploymentrate"), names_to = "statistic") |>
-            tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
+            tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date",'value')),
                                names_repair = 'minimal',
                                values_from = 'value',
                                names_sep = '_')
@@ -155,7 +158,7 @@ get_test_data <- function(){
                         ) |>
           dplyr::group_by(date, `Labour market region (SA4): ASGS (2011)`, `Industry division of main job: ANZSIC (2006) Rev.2.0`, data_type) |>
           dplyr::summarise(value = sum(value)) |>
-          tidyr::pivot_wider(names_from = setdiff(everything(), one_of("date",'value')),
+          tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date",'value')),
                            names_repair = 'minimal',
                            values_from = 'value',
                            names_sep = '_')
@@ -170,7 +173,7 @@ get_test_data <- function(){
                             paste(colnames(df), df[c(1:2,9),], sep = ' ; ')[2:ncol(df)])
           df <- df |>
             dplyr::filter(!is.na(date)) |>
-            dplyr::mutate(across(-date, ~ as.numeric(.x)))
+            dplyr::mutate(dplyr::across(-date, ~ as.numeric(.x)))
 
         }
 
@@ -189,22 +192,28 @@ get_test_data <- function(){
 }
 
 clean_table <- function(df){
-  df |>
-    select(-1, -2) |>
-    mutate(across(-SERIES_ID, ~ stringr::str_replace_all(.x, '%|,|ppts|\\s*\\([^\\)]+\\)', '')),
-           across(-SERIES_ID, ~ case_when(grepl('m', .x) ~ as.numeric(gsub('m', '', .x)) * 1e6,
-                                          TRUE ~ as.numeric(.x))))
+  suppressWarnings({
+
+    df |>
+      dplyr::select(-1, -2) |>
+      dplyr::mutate(dplyr::across(-SERIES_ID, ~ stringr::str_replace_all(.x, '%|,|ppts|\\s*\\([^\\)]+\\)', '')),
+                    dplyr::across(-SERIES_ID, ~ dplyr::case_when(grepl('m', .x) ~ as.numeric(gsub('m', '', .x)) * 1e6,
+                                                                 TRUE ~ as.numeric(.x))))
+
+  })
 }
 
 
 tests <- function(actual, test){
 
-  aj <- anti_join(test, actual) # get rows with errors
+  suppressMessages({
+    aj <- dplyr::anti_join(test, actual) # get rows with errors
+  })
 
   # sometimes numeric values aren't equal need to double check
   if (nrow(aj) > 0) {
     all.equal(aj,
-              actual |> filter(SERIES_ID == aj$SERIES_ID)) # id columns
+              actual |> dplyr::filter(SERIES_ID %in% aj$SERIES_ID)) # id columns
   } else {
     TRUE
   }
@@ -216,7 +225,7 @@ tests <- function(actual, test){
 check_table_overview <- function(df){
 
   actual <- djprlabourdash::table_overview()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- list(
     employment = c("A84423354L",
@@ -257,7 +266,7 @@ check_table_overview <- function(df){
 check_table_gr_sex <- function(df){
 
   actual <- djprlabourdash::table_gr_sex()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   test <- purrr::map_dfr(
     c("A84423237A",
@@ -277,7 +286,7 @@ check_table_gr_sex <- function(df){
 check_table_ind_unemp_state <- function(df){
 
   actual <- djprlabourdash::table_ind_unemp_state()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   test <- purrr::map_dfr(c("A84423270C",
                               "A84423354L",
@@ -297,11 +306,11 @@ check_table_ind_unemp_state <- function(df){
 check_table_ind_unemp_summary <- function(df){
 
   actual <- djprlabourdash::table_ind_unemp_summary()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- list(
     youth = "A84424691V",
-    rest = c(#"A84423050A",
+    rest = c("A84423050A",
              "A84423354L", # Unemp rate
              "A84423350C", # Unemp total
              "A85223451R", # Underut rate
@@ -324,10 +333,10 @@ check_table_ind_unemp_summary <- function(df){
 check_table_gr_youth_summary <- function(df){
 
   actual <- djprlabourdash::table_gr_youth_summary()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c(#"15-24_females_unemployment rate",
-              #"15-24_males_unemployment rate"
+              #"15-24_males_unemployment rate",
               "A84424687C",
               "A84424688F",
               "A84424691V",
@@ -347,7 +356,7 @@ check_table_gr_youth_unemp_region <- function(df){
   #needs RM1.xlsx different transformation
 
   actual <- djprlabourdash::table_gr_youth_unemp_region()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <-     c(
     "15-24_employed_ballarat",
@@ -401,7 +410,7 @@ check_table_gr_youth_unemp_region <- function(df){
 check_table_reg_metro_states_unemprate <- function(df){
 
   actual <- djprlabourdash::table_reg_metro_states_unemprate()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84599623K",
               "A84600145K",
@@ -422,7 +431,7 @@ check_table_reg_metro_states_unemprate <- function(df){
 check_table_reg_metro_emp <- function(df){
 
   actual <- djprlabourdash::table_reg_metro_emp()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84600141A",
               "A84599655C",
@@ -447,7 +456,7 @@ check_table_reg_metro_emp <- function(df){
 check_table_reg_metro_unemp <- function(df){
 
   actual <- djprlabourdash::table_reg_metro_unemp()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84600142C",
               "A84599656F",
@@ -471,7 +480,7 @@ check_table_reg_metro_unemp <- function(df){
 check_table_reg_metro_unemprate <- function(df){
 
   actual <- djprlabourdash::table_reg_metro_unemprate()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84600145K",
               "A84599659L",
@@ -496,7 +505,7 @@ check_table_reg_metro_unemprate <- function(df){
 check_table_reg_metro_partrate <- function(df){
 
   actual <- djprlabourdash::table_reg_metro_partrate()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84600146L",
               "A84599660W",
@@ -521,7 +530,7 @@ check_table_reg_metro_partrate <- function(df){
 check_table_reg_nonmetro_states_unemprate <- function(df){
 
   actual <- djprlabourdash::table_reg_nonmetro_states_unemprate()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84599629X",
               "A84600079X",
@@ -541,7 +550,7 @@ check_table_reg_nonmetro_states_unemprate <- function(df){
 check_table_reg_nonmetro_emp <- function(df){
 
   actual <- djprlabourdash::table_reg_nonmetro_emp()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84600075R",
               "A84599661X",
@@ -564,7 +573,7 @@ check_table_reg_nonmetro_emp <- function(df){
 check_table_reg_nonmetro_unemp <- function(df){
 
   actual <- djprlabourdash::table_reg_nonmetro_unemp()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84600076T",
               "A84599662A",
@@ -587,7 +596,7 @@ check_table_reg_nonmetro_unemp <- function(df){
 check_table_reg_nonmetro_unemprate <- function(df){
 
   actual <- djprlabourdash::table_reg_nonmetro_unemprate()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84595471L",
               "A84599665J",
@@ -610,7 +619,7 @@ check_table_reg_nonmetro_unemprate <- function(df){
 check_table_reg_nonmetro_partrate <- function(df){
 
   actual <- djprlabourdash::table_reg_nonmetro_partrate()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84599666K",
               "A84600032R",
@@ -633,7 +642,7 @@ check_table_reg_nonmetro_partrate <- function(df){
 check_table_industries_summary <- function(df){
 
   actual <- djprlabourdash::table_industries_summary()$body$dataset |>
-    clean_table() |> as_tibble()
+    clean_table() |> dplyr::as_tibble()
 
   series <- c("A84601662A",
               "A84601680F",
