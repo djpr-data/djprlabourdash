@@ -77,7 +77,6 @@ page_indicatorsUI <- function(...) {
 
 
 page_indicators <- function(input, output, session, plt_change) {
-
   output$ind_empgrowth_sincecovid_text <- renderUI({
     text_active(
       paste(
@@ -95,8 +94,8 @@ page_indicators <- function(input, output, session, plt_change) {
         "Over the past year, employment across Australia grew by XX per cent.",
         "Employment in Victoria is XX per cent",
         dplyr::if_else(sign(get_summ("A84423349V", .data$d_year_perc)) > 0,
-                       "above",
-                       "below"
+          "above",
+          "below"
         ),
         "its level from a year earlier."
       ),
@@ -135,108 +134,108 @@ page_indicators <- function(input, output, session, plt_change) {
 
   # Indicators: line graph of emp-pop ratios in states, with state selector boxes
   djpr_plot_server("ind_emppop_state_line",
-                   viz_ind_emppop_state_line,
-                   data = filter_dash_data(c(
-                     "A84423272J",
-                     "A84423356T",
-                     "A84423286W",
-                     "A84423370L",
-                     "A84423328J",
-                     "A84423300F",
-                     "A84423314V",
-                     "A84423342C"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::mutate(
-                       state = dplyr::case_when(
-                         .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-                           "Vic",
-                         .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-                           "NSW",
-                         .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-                           "QLD",
-                         .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-                           "NT",
-                         .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-                           "WA",
-                         .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-                           "SA",
-                         .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-                           "Tas",
-                         .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-                           "ACT",
-                         TRUE ~ .data$state
-                       )
-                     ),
-                   check_box_options = c(
-                     "Vic",
-                     "NSW",
-                     "SA",
-                     "QLD",
-                     "WA",
-                     "NT",
-                     "ACT",
-                     "Tas"
-                   ),
-                   check_box_var = .data$state,
-                   check_box_selected = c("NSW", "Vic"),
-                   date_slider = TRUE,
-                   date_slider_value_min = Sys.Date() - (365 * 5),
-                   width_percent = 100,
-                   height_percent = 70,
-                   plt_change = plt_change,
-                   non_filtered_latest = filter_dash_data(
-                     df = dash_data,
-                     series_ids = c(
-                       "A84423272J",
-                       "A84423356T",
-                       "A84423286W",
-                       "A84423370L",
-                       "A84423328J",
-                       "A84423300F",
-                       "A84423314V",
-                       "A84423342C"
-                     )
-                   ) %>%
-                     dplyr::filter(
-                       .data$date == max(.data$date),
-                       !(.data$state %in% c(
-                         "Northern Territory",
-                         "Australian Capital Territory"
-                       )
-                       )
-                     ) %>%
-                     dplyr::arrange(-.data$value)
+    viz_ind_emppop_state_line,
+    data = filter_dash_data(c(
+      "A84423272J",
+      "A84423356T",
+      "A84423286W",
+      "A84423370L",
+      "A84423328J",
+      "A84423300F",
+      "A84423314V",
+      "A84423342C"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::mutate(
+        state = dplyr::case_when(
+          .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
+            "Vic",
+          .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
+            "NSW",
+          .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
+            "QLD",
+          .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
+            "NT",
+          .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
+            "WA",
+          .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
+            "SA",
+          .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
+            "Tas",
+          .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
+            "ACT",
+          TRUE ~ .data$state
+        )
+      ),
+    check_box_options = c(
+      "Vic",
+      "NSW",
+      "SA",
+      "QLD",
+      "WA",
+      "NT",
+      "ACT",
+      "Tas"
+    ),
+    check_box_var = .data$state,
+    check_box_selected = c("NSW", "Vic"),
+    date_slider = TRUE,
+    date_slider_value_min = Sys.Date() - (365 * 5),
+    width_percent = 100,
+    height_percent = 70,
+    plt_change = plt_change,
+    non_filtered_latest = filter_dash_data(
+      df = dash_data,
+      series_ids = c(
+        "A84423272J",
+        "A84423356T",
+        "A84423286W",
+        "A84423370L",
+        "A84423328J",
+        "A84423300F",
+        "A84423314V",
+        "A84423342C"
+      )
+    ) %>%
+      dplyr::filter(
+        .data$date == max(.data$date),
+        !(.data$state %in% c(
+          "Northern Territory",
+          "Australian Capital Territory"
+        )
+        )
+      ) %>%
+      dplyr::arrange(-.data$value)
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
 
   djpr_plot_server("ind_empgro_line",
-                   viz_ind_empgro_line,
-                   data = filter_dash_data(c(
-                     "A84423349V",
-                     "A84423043C"
-                   )),
-                   date_slider_value_min = Sys.Date() - (365 * 5),
-                   plt_change = plt_change,
-                   height_percent = 70
+    viz_ind_empgro_line,
+    data = filter_dash_data(c(
+      "A84423349V",
+      "A84423043C"
+    )),
+    date_slider_value_min = Sys.Date() - (365 * 5),
+    plt_change = plt_change,
+    height_percent = 70
   )
 
   # Indicators: cumulative change in PT / FT since COVID
   djpr_plot_server("ind_gen_full_part_line",
-                   plot_function = viz_ind_gen_full_part_line,
-                   data = filter_dash_data(c(
-                     "pt_emp_vic",
-                     "A84423357V"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::filter(date >= as.Date("2020-01-01")),
-                   plt_change = plt_change,
-                   width_percent = 45,
-                   height_percent = 70,
-                   date_slider = FALSE
+    plot_function = viz_ind_gen_full_part_line,
+    data = filter_dash_data(c(
+      "pt_emp_vic",
+      "A84423357V"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2020-01-01")),
+    plt_change = plt_change,
+    width_percent = 45,
+    height_percent = 70,
+    date_slider = FALSE
   )
 
   # Indicators: unemployment ------
@@ -248,36 +247,36 @@ page_indicators <- function(input, output, session, plt_change) {
 
   # Indicators: line chart of Aus v Vic
   djpr_plot_server("ind_unemprate_line",
-                   viz_ind_unemprate_line,
-                   data = filter_dash_data(c(
-                     "A84423354L",
-                     "A84423050A"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = as.Date("2000-01-01"),
-                   plt_change = plt_change
+    viz_ind_unemprate_line,
+    data = filter_dash_data(c(
+      "A84423354L",
+      "A84423050A"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = as.Date("2000-01-01"),
+    plt_change = plt_change
   )
 
   # Indicators: effective unemployment rate
   djpr_plot_server("ind_effective_unemprate_line",
-                   viz_ind_effective_unemprate_line,
-                   data = filter_dash_data(c(
-                     "A84423350C",
-                     "A84423351F",
-                     "A84423354L",
-                     "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
-                     "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
-                     "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
-                     "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::filter(date >= as.Date("2019-06-01")),
-                   plt_change = plt_change,
-                   width_percent = 100,
-                   height_percent = 70,
-                   date_slider = FALSE
+    viz_ind_effective_unemprate_line,
+    data = filter_dash_data(c(
+      "A84423350C",
+      "A84423351F",
+      "A84423354L",
+      "employed full-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
+      "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
+      "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::filter(date >= as.Date("2019-06-01")),
+    plt_change = plt_change,
+    width_percent = 100,
+    height_percent = 70,
+    date_slider = FALSE
   )
 
   # Indicators: table of unemployment rates by state
@@ -289,115 +288,114 @@ page_indicators <- function(input, output, session, plt_change) {
 
   # Indicators: dot plot of unemp rate by state
   djpr_plot_server("ind_unemp_states_dot",
-                   viz_ind_unemp_states_dot,
-                   data = filter_dash_data(
-                     c(
-                       "A84423354L",
-                       "A84423270C",
-                       "A84423368A",
-                       "A84423340X",
-                       "A84423326C",
-                       "A84423284T",
-                       "A84423312R",
-                       "A84423298F",
-                       "A84423050A"
-                     )
-                   ),
-                   date_slider = FALSE,
-                   plt_change = plt_change
+    viz_ind_unemp_states_dot,
+    data = filter_dash_data(
+      c(
+        "A84423354L",
+        "A84423270C",
+        "A84423368A",
+        "A84423340X",
+        "A84423326C",
+        "A84423284T",
+        "A84423312R",
+        "A84423298F",
+        "A84423050A"
+      )
+    ),
+    date_slider = FALSE,
+    plt_change = plt_change
   )
 
   djpr_plot_server("ind_underut_area",
-                   viz_ind_underut_area,
-                   data = filter_dash_data(c(
-                     "A85223450L",
-                     "A85223451R",
-                     "A84423354L"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = Sys.Date() - (10 * 365),
-                   plt_change = plt_change,
-                   interactive = FALSE
+    viz_ind_underut_area,
+    data = filter_dash_data(c(
+      "A85223450L",
+      "A85223451R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = Sys.Date() - (10 * 365),
+    plt_change = plt_change,
+    interactive = FALSE
   )
 
   # Indicators: hours worked ----
 
   djpr_plot_server("ind_hoursworked_line",
-                   viz_ind_hoursworked_line,
-                   data = filter_dash_data(c(
-                     "A84426256L",
-                     "A84426277X",
-                     "A84423689R",
-                     "A84423091W"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider_value_min = as.Date("2000-01-01")
+    viz_ind_hoursworked_line,
+    data = filter_dash_data(c(
+      "A84426256L",
+      "A84426277X",
+      "A84423689R",
+      "A84423091W"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = as.Date("2000-01-01")
   )
 
   # Indicators: participation ----
   djpr_plot_server("ind_partrate_bar",
-                   viz_ind_partrate_bar,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423271F",
-                     "A84423369C",
-                     "A84423341A",
-                     "A84423327F",
-                     "A84423285V",
-                     "A84423313T",
-                     "A84423299J",
-                     "A84423051C"
-                   ),
-                   df = dash_data
-                   ),
-                   height_percent = 75,
-                   plt_change = plt_change,
-                   date_slider = FALSE,
-                   interactive = FALSE
+    viz_ind_partrate_bar,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423271F",
+      "A84423369C",
+      "A84423341A",
+      "A84423327F",
+      "A84423285V",
+      "A84423313T",
+      "A84423299J",
+      "A84423051C"
+    ),
+    df = dash_data
+    ),
+    height_percent = 75,
+    plt_change = plt_change,
+    date_slider = FALSE,
+    interactive = FALSE
   )
 
   djpr_plot_server("ind_partrate_un_line",
-                   viz_ind_partrate_un_line,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423354L"
-                   ),
-                   df = dash_data
-                   ),
-                   plt_change = plt_change,
-                   date_slider_value_min = Sys.Date() - (10 * 365)
+    viz_ind_partrate_un_line,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    plt_change = plt_change,
+    date_slider_value_min = Sys.Date() - (10 * 365)
   )
 
   djpr_plot_server("ind_partrate_un_scatter",
-                   viz_ind_partrate_un_scatter,
-                   plt_change = plt_change,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423354L"
-                   ),
-                   df = dash_data
-                   ),
-                   selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
-                   date_slider = FALSE
+    viz_ind_partrate_un_scatter,
+    plt_change = plt_change,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+    ),
+    selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
+    date_slider = FALSE
   )
 
   djpr_plot_server("ind_partrate_line",
-                   plot_function = viz_ind_partrate_line,
-                   data = filter_dash_data(c(
-                     "A84423355R",
-                     "A84423051C"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = as.Date("2000-01-01"),
-                   plt_change = plt_change
+    plot_function = viz_ind_partrate_line,
+    data = filter_dash_data(c(
+      "A84423355R",
+      "A84423051C"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = as.Date("2000-01-01"),
+    plt_change = plt_change
   )
 
   observeEvent(input$link_indicators, {
     updateNavbarPage(session, "navbarpage", "tab-indicators")
   })
-
 }

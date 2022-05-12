@@ -155,22 +155,21 @@ page_vicregionsUI <- function(...) {
 
 
 page_vicregions <- function(input, output, session, plt_change) {
-
   djpr_plot_server("reg_melvic_line",
-                   viz_reg_melvic_line,
-                   plt_change = plt_change,
-                   date_slider_value_min = as.Date("2014-11-01"),
-                   data = filter_dash_data(c(
-                     "A84600144J",
-                     "A84600078W",
-                     "A84595516F",
-                     "A84595471L"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                     dplyr::filter(!is.na(.data$value))
+    viz_reg_melvic_line,
+    plt_change = plt_change,
+    date_slider_value_min = as.Date("2014-11-01"),
+    data = filter_dash_data(c(
+      "A84600144J",
+      "A84600078W",
+      "A84595516F",
+      "A84595471L"
+    ),
+    df = dash_data
+    ) %>%
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+      dplyr::filter(!is.na(.data$value))
   )
 
 
@@ -184,7 +183,7 @@ page_vicregions <- function(input, output, session, plt_change) {
 
   output$title_reg_unemp_emppop_partrate_vic <- renderText({
     title_reg_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
-                                        selected_indicator = input$lf_status_region
+      selected_indicator = input$lf_status_region
     )
   })
 
@@ -217,71 +216,71 @@ page_vicregions <- function(input, output, session, plt_change) {
   })
 
   djpr_plot_server("reg_unemp_emppop_partrate_multiline",
-                   viz_reg_unemp_emppop_partrate_multiline,
-                   date_slider = TRUE,
-                   interactive = FALSE,
-                   height_percent = 125,
-                   data = filter_dash_data(c(
-                     "A84600253V",
-                     "A84599659L",
-                     "A84600019W",
-                     "A84600187J",
-                     "A84599557X",
-                     "A84600115W",
-                     "A84599851L",
-                     "A84599923L",
-                     "A84600025T",
-                     "A84600193C",
-                     "A84599665J",
-                     "A84600031L",
-                     "A84599671C",
-                     "A84599677T",
-                     "A84599683L",
-                     "A84599929A",
-                     "A84600121T",
-                     "A84600037A",
-                     "A84599658K",
-                     "A84599660W",
-                     "A84600018V",
-                     "A84600020F",
-                     "A84600186F",
-                     "A84600188K",
-                     "A84599556W",
-                     "A84599558A",
-                     "A84600114V",
-                     "A84600116X",
-                     "A84599850K",
-                     "A84599852R",
-                     "A84599922K",
-                     "A84599924R",
-                     "A84600024R",
-                     "A84600026V",
-                     "A84600192A",
-                     "A84600194F",
-                     "A84599664F",
-                     "A84599666K",
-                     "A84600030K",
-                     "A84600032R",
-                     "A84599670A",
-                     "A84599672F",
-                     "A84599676R",
-                     "A84599678V",
-                     "A84599682K",
-                     "A84599684R",
-                     "A84599928X",
-                     "A84599930K",
-                     "A84600120R",
-                     "A84600122V",
-                     "A84600036X",
-                     "A84600038C",
-                     "A84600252T",
-                     "A84600254W"
-                   ),
-                   df = dash_data
-                   ),
-                   selected_indicator = reactive(input$lf_status_multiline),
-                   date_slider_value_min = as.Date("2018-01-01"),
-                   plt_change = plt_change
+    viz_reg_unemp_emppop_partrate_multiline,
+    date_slider = TRUE,
+    interactive = FALSE,
+    height_percent = 125,
+    data = filter_dash_data(c(
+      "A84600253V",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A",
+      "A84599658K",
+      "A84599660W",
+      "A84600018V",
+      "A84600020F",
+      "A84600186F",
+      "A84600188K",
+      "A84599556W",
+      "A84599558A",
+      "A84600114V",
+      "A84600116X",
+      "A84599850K",
+      "A84599852R",
+      "A84599922K",
+      "A84599924R",
+      "A84600024R",
+      "A84600026V",
+      "A84600192A",
+      "A84600194F",
+      "A84599664F",
+      "A84599666K",
+      "A84600030K",
+      "A84600032R",
+      "A84599670A",
+      "A84599672F",
+      "A84599676R",
+      "A84599678V",
+      "A84599682K",
+      "A84599684R",
+      "A84599928X",
+      "A84599930K",
+      "A84600120R",
+      "A84600122V",
+      "A84600036X",
+      "A84600038C",
+      "A84600252T",
+      "A84600254W"
+    ),
+    df = dash_data
+    ),
+    selected_indicator = reactive(input$lf_status_multiline),
+    date_slider_value_min = as.Date("2018-01-01"),
+    plt_change = plt_change
   )
 
   # output$text_emp_regions <- renderUI({
@@ -289,46 +288,46 @@ page_vicregions <- function(input, output, session, plt_change) {
   # })
 
   djpr_plot_server("reg_emp_regions_sincecovid_line",
-                   viz_reg_emp_regions_sincecovid_line,
-                   date_slider = FALSE,
-                   data = filter_dash_data(c(
-                     "A84600141A",
-                     "A84600075R"
-                   )) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                     dplyr::filter(.data$date >= as.Date("2020-01-01")),
-                   plt_change = plt_change
+    viz_reg_emp_regions_sincecovid_line,
+    date_slider = FALSE,
+    data = filter_dash_data(c(
+      "A84600141A",
+      "A84600075R"
+    )) %>%
+      dplyr::group_by(.data$series_id) %>%
+      dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+      dplyr::filter(.data$date >= as.Date("2020-01-01")),
+    plt_change = plt_change
   )
 
   djpr_plot_server("reg_unemprate_dispersion",
-                   viz_reg_unemprate_dispersion,
-                   interactive = FALSE,
-                   data = filter_dash_data(c(
-                     "A84600253V",
-                     "A84599659L",
-                     "A84600019W",
-                     "A84600187J",
-                     "A84599557X",
-                     "A84600115W",
-                     "A84599851L",
-                     "A84599923L",
-                     "A84600025T",
-                     "A84600193C",
-                     "A84599665J",
-                     "A84600031L",
-                     "A84599671C",
-                     "A84599677T",
-                     "A84599683L",
-                     "A84599929A",
-                     "A84600121T",
-                     "A84600037A"
-                   ),
-                   df = dash_data
-                   ),
-                   date_slider_value_min = as.Date("2014-11-01"),
-                   plt_change = plt_change,
-                   selected_indicator = reactive(input$sa4_type_dispersion)
+    viz_reg_unemprate_dispersion,
+    interactive = FALSE,
+    data = filter_dash_data(c(
+      "A84600253V",
+      "A84599659L",
+      "A84600019W",
+      "A84600187J",
+      "A84599557X",
+      "A84600115W",
+      "A84599851L",
+      "A84599923L",
+      "A84600025T",
+      "A84600193C",
+      "A84599665J",
+      "A84600031L",
+      "A84599671C",
+      "A84599677T",
+      "A84599683L",
+      "A84599929A",
+      "A84600121T",
+      "A84600037A"
+    ),
+    df = dash_data
+    ),
+    date_slider_value_min = as.Date("2014-11-01"),
+    plt_change = plt_change,
+    selected_indicator = reactive(input$sa4_type_dispersion)
   )
 
   # Regions: Focus box -----
@@ -402,5 +401,4 @@ page_vicregions <- function(input, output, session, plt_change) {
   observeEvent(input$link_vicregions, {
     updateNavbarPage(session, "navbarpage", "tab-vicregions")
   })
-
 }

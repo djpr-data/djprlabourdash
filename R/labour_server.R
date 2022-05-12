@@ -52,5 +52,4 @@ labour_server <- function(input, output, session) {
   page_vicregions(input, output, session, plt_change)
   page_ausregions(input, output, session, plt_change)
   page_industries(input, output, session, plt_change)
-
 }

@@ -42,7 +42,6 @@ page_overviewUI <- function(...) {
 }
 
 page_overview <- function(input, output, session, plt_change) {
-
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
@@ -53,5 +52,4 @@ page_overview <- function(input, output, session, plt_change) {
   observeEvent(input$link_overview, {
     updateNavbarPage(session, "navbarpage", "tab-overview")
   })
-
 }
