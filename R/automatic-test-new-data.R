@@ -13,26 +13,31 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
     grepl('000', colnames(series)[2]) ~ 'thousand',
     )
 
-  # identify quarterly data
-  LAST_YEAR_GAP <- 13
-
-  qrt <- series |>
-    dplyr::group_by(year = lubridate::year(date)) |>
-    dplyr::summarise(n = dplyr::n())
-
-  if (max(qrt$n, na.rm = TRUE) == 4) {
-    LAST_YEAR_GAP <- 5
-  }
-
-
   series <- series |>
     dplyr::rename_with(.cols = dplyr::contains(series_id), .fn = ~ 'value') |>
     dplyr::filter(!is.na(value))
+
+
+  # identify quarterly data
+  LAST_YEAR_GAP <- 13
+
+  report_pd <- series |>
+    filter(!is.na(value)) |>
+    group_by(year = lubridate::year(date)) |>
+    summarise(obs = n()) |>
+    ungroup() |>
+    summarise(period = max(obs))
+
+
+  if (report_pd == 4) {
+    LAST_YEAR_GAP <- 5
+  }
 
   if (!is.null(window)){
     series <- series |>
       dplyr::mutate(value = slider::slide_mean(.data$value, before = .env$window, complete = TRUE))
   }
+
 
   last <- series |> slice_nth_date(1)
   last_month <- series |> slice_nth_date(2)
@@ -133,19 +138,7 @@ get_test_data <- function(){
 
         } else if (url == rm1) {
 
-          df <- read_labour_detailed(filename, sht) |>
-            dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5))
-                          ) |>
-            tidyr::separate(col = data_type, sep = " ", into = c('employment_status', 'employment_type')) |>
-            dplyr::group_by(date, Age, `Labour market region (SA4): ASGS (2011)`, employment_status) |>
-            dplyr::summarise(value = sum(value)) |>
-            tidyr::pivot_wider(names_from = employment_status, values_from = value) |>
-            dplyr::mutate(unemploymentrate = unemployed / (employed + unemployed)) |>
-            tidyr::pivot_longer(cols = c("employed", "unemployed", "nilf", "unemploymentrate"), names_to = "statistic") |>
-            tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date",'value')),
-                               names_repair = 'minimal',
-                               values_from = 'value',
-                               names_sep = '_')
+          df <- process_rm1(filename, sht)
 
 
         } else if (url == rq1) {
@@ -192,6 +185,75 @@ get_test_data <- function(){
   all_df
 
 }
+
+
+
+process_rm1 <- function(filename, sht){
+
+  rovic <- c(
+    "ballarat",
+    "bendigo",
+    "geelong",
+    "hume",
+    "latrobe - gippsland",
+    "shepparton",
+    "victoria - north west",
+    "warrnambool and south west"
+  )
+
+  gmelb <- c(
+    "melbourne - inner",
+    "melbourne - inner east",
+    "melbourne - inner south",
+    "melbourne - north east",
+    "melbourne - north west",
+    "melbourne - outer east",
+    "melbourne - south east",
+    "melbourne - west",
+    "mornington peninsula"
+  )
+
+  df_in <- read_labour_detailed(filename, sht) |>
+    dplyr::mutate(Age = stringr::str_sub(Age, start = 1, end = stringr::str_locate(Age, ' years')[,1] - 1),
+                  `Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
+                  value = dplyr::case_when(grepl('000',data_type) ~ value * 1000,
+                                           TRUE ~ value),
+                  data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
+                  data_type = dplyr::case_when(data_type == "not in the labour force (nilf)" ~ "nilf total",
+                                               TRUE ~ data_type)
+    ) |>
+    tidyr::separate(col = data_type, sep = " ", into = c('employment_status', 'employment_type'))
+
+
+  df1 <- df_in |>
+    dplyr::group_by(date, Age, `Labour market region (SA4): ASGS (2011)`, employment_status) |>
+    dplyr::summarise(value = sum(value)) |>
+    dplyr::ungroup() |>
+    tidyr::pivot_wider(names_from = employment_status, values_from = value) |>
+    dplyr::mutate(`unemployment rate` = unemployed * 100 / (employed + unemployed)) |>
+    tidyr::pivot_longer(cols = c("employed", "unemployed", "nilf", "unemployment rate"), names_to = "statistic") |>
+    dplyr::mutate(id = stringr::str_c(Age, statistic,  `Labour market region (SA4): ASGS (2011)`, sep = "_")) |>
+    dplyr::select(date, id, value) |>
+    tidyr::pivot_wider(names_from = 'id', values_from = 'value')
+
+  df <- df_in |>
+    dplyr::mutate(region = case_when(`Labour market region (SA4): ASGS (2011)` %in% rovic ~ 'rest of vic.',
+                                     `Labour market region (SA4): ASGS (2011)` %in% gmelb ~ 'greater melbourne')) |>
+    dplyr::filter(!is.na(region)) |>
+    dplyr::group_by(date, Age, region, employment_status) |>
+    dplyr::summarise(value = sum(value)) |>
+    dplyr::ungroup() |>
+    tidyr::pivot_wider(names_from = employment_status, values_from = value) |>
+    dplyr::mutate(`unemployment rate` = unemployed * 100 / (employed + unemployed)) |>
+    tidyr::pivot_longer(cols = c("employed", "unemployed", "nilf", "unemployment rate"), names_to = "statistic") |>
+    dplyr::mutate(id = stringr::str_c(Age, statistic,  region, sep = "_")) |>
+    dplyr::select(date, id, value) |>
+    tidyr::pivot_wider(names_from = 'id', values_from = 'value') |>
+    dplyr::right_join(df1, by = 'date')
+
+  return(df)
+
+  }
 
 
 read_labour_detailed <- function(filename, sht, skip_rows = 3, cols = 7){
@@ -383,7 +445,10 @@ check_table_gr_youth_unemp_region <- function(df){
   #needs RM1.xlsx different transformation
 
   actual <- djprlabourdash::table_gr_youth_unemp_region()$body$dataset |>
-    clean_table() |> dplyr::as_tibble()
+    clean_table() |> dplyr::as_tibble() |>
+    dplyr::mutate(SERIES_ID = stringr::str_to_lower(SERIES_ID))
+
+
 
   series <-     c(
     "15-24_employed_ballarat",
@@ -394,7 +459,7 @@ check_table_gr_youth_unemp_region <- function(df){
     "15-24_employed_shepparton",
     "15-24_employed_victoria - north west",
     "15-24_employed_warrnambool and south west",
-    "15-24_employed_rest of vic.",
+    #"15-24_employed_rest of vic.",
     "15-24_unemployed_ballarat",
     "15-24_unemployed_bendigo",
     "15-24_unemployed_geelong",
@@ -403,7 +468,7 @@ check_table_gr_youth_unemp_region <- function(df){
     "15-24_unemployed_shepparton",
     "15-24_unemployed_victoria - north west",
     "15-24_unemployed_warrnambool and south west",
-    "15-24_unemployed_rest of vic.",
+    #"15-24_unemployed_rest of vic.",
     "15-24_employed_melbourne - inner",
     "15-24_employed_melbourne - inner east",
     "15-24_employed_melbourne - inner south",
@@ -413,7 +478,7 @@ check_table_gr_youth_unemp_region <- function(df){
     "15-24_employed_melbourne - south east",
     "15-24_employed_melbourne - west",
     "15-24_employed_mornington peninsula",
-    "15-24_employed_greater melbourne",
+    #"15-24_employed_greater melbourne",
     "15-24_unemployed_melbourne - inner",
     "15-24_unemployed_melbourne - inner east",
     "15-24_unemployed_melbourne - inner south",
@@ -422,9 +487,32 @@ check_table_gr_youth_unemp_region <- function(df){
     "15-24_unemployed_melbourne - outer east",
     "15-24_unemployed_melbourne - south east",
     "15-24_unemployed_melbourne - west",
-    "15-24_unemployed_mornington peninsula",
-    "15-24_unemployed_greater melbourne"
+    "15-24_unemployed_mornington peninsula"#,
+    #"15-24_unemployed_greater melbourne"
   )
+
+  series <-     c(
+    "15-24_unemployment rate_greater melbourne",
+    "15-24_unemployment rate_melbourne - inner",
+    "15-24_unemployment rate_melbourne - inner east",
+    "15-24_unemployment rate_melbourne - inner south",
+    "15-24_unemployment rate_melbourne - north east",
+    "15-24_unemployment rate_melbourne - north west",
+    "15-24_unemployment rate_melbourne - outer east",
+    "15-24_unemployment rate_melbourne - south east",
+    "15-24_unemployment rate_melbourne - west",
+    "15-24_unemployment rate_mornington peninsula",
+    "15-24_unemployment rate_rest of vic.",
+    "15-24_unemployment rate_ballarat",
+    "15-24_unemployment rate_bendigo",
+    "15-24_unemployment rate_geelong",
+    "15-24_unemployment rate_hume",
+    "15-24_unemployment rate_latrobe - gippsland",
+    "15-24_unemployment rate_shepparton",
+    "15-24_unemployment rate_victoria - north west",
+    "15-24_unemployment rate_warrnambool and south west"
+  )
+
 
   test <- purrr::map_dfr(series, ~ add_series_row(df, .x, 11))
 
@@ -669,7 +757,8 @@ check_table_reg_nonmetro_partrate <- function(df){
 check_table_industries_summary <- function(df){
 
   actual <- djprlabourdash::table_industries_summary()$body$dataset |>
-    clean_table() |> dplyr::as_tibble()
+    clean_table() |> dplyr::as_tibble() |>
+    dplyr::mutate(dplyr::across(where(is.numeric), round))
 
   series <- c("A84601662A",
               "A84601680F",
@@ -692,7 +781,8 @@ check_table_industries_summary <- function(df){
               "A84601641R",
               "A84601716W")
 
-  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, covid_date = '2020-02-01'))
+  test <- purrr::map_dfr(series, ~ add_series_row(df, .x, covid_date = '2020-02-01')) |>
+    dplyr::mutate(across(where(is.numeric), round))
 
   tests(actual, test)
 
@@ -710,15 +800,9 @@ run_checks <- function(){
   check_table_overview(df) # table 1
   check_table_gr_sex(df) # table 2
   check_table_ind_unemp_state(df) # table 3
-
   check_table_gr_youth_summary(df) # table 4
 
-
-
-  #check_table_gr_youth_unemp_region(df) #RM1 # table 5
-
-
-
+  check_table_gr_youth_unemp_region(df) #RM1 # table 5
   check_table_reg_metro_states_unemprate(df) # table 6
   check_table_reg_metro_emp(df) # table 7
   check_table_reg_metro_unemp(df) # table 8
@@ -728,12 +812,9 @@ run_checks <- function(){
   check_table_reg_nonmetro_emp(df) # table 12
   check_table_reg_nonmetro_unemp(df) # table 13
   check_table_reg_nonmetro_unemprate(df) # table 14
-
-  #check_table_reg_nonmetro_partrate(df) # table 15
-
-
-
+  check_table_reg_nonmetro_partrate(df) # table 15
   check_table_industries_summary(df) # table 16
+
   #check_table_ind_unemp_summary(df) # not in report
 
 
