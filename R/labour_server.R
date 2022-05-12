@@ -1,9 +1,6 @@
 
 labour_server <- function(input, output, session) {
 
-  plt_change <- reactive(input$plt_change) %>%
-    debounce(2)
-
   # Load data and create persistent objects ----
   Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
   dash_data <<- get_dash_data()
@@ -17,6 +14,9 @@ labour_server <- function(input, output, session) {
     dplyr::group_by(.data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
     dplyr::pull(.data$date)
+
+  plt_change <- reactive(input$plt_change) %>%
+    debounce(2)
 
   # Page Footnotes
   footnote <- reactive({
