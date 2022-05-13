@@ -2,7 +2,7 @@
 
 add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-01'){
 
-  message(series_id)
+  message(paste0('    ', series_id))
 
   series <- df |>
     dplyr::select(date, contains(series_id)) |>
@@ -22,11 +22,12 @@ add_series_row <- function(df, series_id, window = NULL, covid_date = '2020-03-0
   LAST_YEAR_GAP <- 13
 
   report_pd <- series |>
-    filter(!is.na(value)) |>
-    group_by(year = lubridate::year(date)) |>
-    summarise(obs = n()) |>
-    ungroup() |>
-    summarise(period = max(obs))
+    dplyr::filter(!is.na(value)) |>
+    dplyr::group_by(year = lubridate::year(date)) |>
+    dplyr::summarise(
+      obs = dplyr::n()) |>
+    dplyr::ungroup() |>
+    dplyr::summarise(period = max(obs))
 
 
   if (report_pd == 4) {
@@ -99,9 +100,11 @@ get_test_data <- function(){
   #6202019 hours worked
   #6202023 under-utilisation
 
+  message(crayon::green('processing: \n'))
+
   all_df <- furrr::future_map(urls, function(url){
 
-    message(glue::glue('processing {basename(url)}'))
+    message(glue::glue('       {basename(url)}'))
 
     suppressMessages({
 
@@ -807,32 +810,56 @@ check_table_industries_summary <- function(df){
 
 
 
+#' @title Check Report Tables
+#'
+#' @return list
+#' @export
+#'
+#' @examples
 run_checks <- function(){
 
-  #plan(multisession, workers = 4)
+  #future::plan(multisession, workers = 4)
+
+  message('get data from ABS, this will take a minute or two')
 
   df <- get_test_data()
 
-  check_table_overview(df) # table 1
-  check_table_gr_sex(df) # table 2
-  check_table_ind_unemp_state(df) # table 3
-  check_table_gr_youth_summary(df) # table 4
-  check_table_gr_youth_unemp_region(df) #RM1 # table 5
-  check_table_reg_metro_states_unemprate(df) # table 6
-  check_table_reg_metro_emp(df) # table 7
-  check_table_reg_metro_unemp(df) # table 8
-  check_table_reg_metro_unemprate(df) # table 9
-  check_table_reg_metro_partrate(df) # table 10
-  check_table_reg_nonmetro_states_unemprate(df) # table 11
-  check_table_reg_nonmetro_emp(df) # table 12
-  check_table_reg_nonmetro_unemp(df) # table 13
-  check_table_reg_nonmetro_unemprate(df) # table 14
-  check_table_reg_nonmetro_partrate(df) # table 15
-  check_table_industries_summary(df) # table 16
+  checks <- list(
+    'Table 1' = 'check_table_overview',
+    'Table 2' = 'check_table_gr_sex',
+    'Table 3' = 'check_table_ind_unemp_state',
+    'Table 4' = 'check_table_gr_youth_summary',
+    'Table 5' = 'check_table_gr_youth_unemp_region', #RM1
+    'Table 6' = 'check_table_reg_metro_states_unemprate',
+    'Table 7' = 'check_table_reg_metro_emp',
+    'Table 8' = 'check_table_reg_metro_unemp',
+    'Table 9' = 'check_table_reg_metro_unemprate',
+    'Table 10' = 'check_table_reg_metro_partrate',
+    'Table 11' = 'check_table_reg_nonmetro_states_unemprate',
+    'Table 12' = 'check_table_reg_nonmetro_emp',
+    'Table 13' = 'check_table_reg_nonmetro_unemp',
+    'Table 14' = 'check_table_reg_nonmetro_unemprate',
+    'Table 15' = 'check_table_reg_nonmetro_partrate',
+    'Table 16' = 'check_table_industries_summary'
+  )
 
-  #check_table_ind_unemp_summary(df) # not in report
+  message(crayon::green('Check all Tables'))
 
+  all_checks <- purrr::imap(checks, function(.x, .y){
+    check = do.call(.x, list(df = df))
+    if (check){
+      message(crayon::green(
+        glue::glue('{.y} passed')
+      ))
+    } else {
+      message(crayon::red(
+        glue::glue('{.y} FAILED')
+      ))
+    }
+    check
+  })
 
+  return(all_checks)
 
 }
 
