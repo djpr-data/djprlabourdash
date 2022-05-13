@@ -229,8 +229,7 @@ process_rm1 <- function(filename, sht){
   )
 
   df_in <- read_labour_detailed(filename, sht) |>
-    dplyr::mutate(Age = stringr::str_sub(Age, start = 1, end = stringr::str_locate(Age, ' years')[,1] - 1),
-                  `Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
+    dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
                   value = dplyr::case_when(grepl('000',data_type) ~ value * 1000,
                                            TRUE ~ value),
                   data_type = stringr::str_to_lower(stringr::str_remove_all(data_type, " \\('000\\)")),
@@ -818,7 +817,6 @@ run_checks <- function(){
   check_table_gr_sex(df) # table 2
   check_table_ind_unemp_state(df) # table 3
   check_table_gr_youth_summary(df) # table 4
-
   check_table_gr_youth_unemp_region(df) #RM1 # table 5
   check_table_reg_metro_states_unemprate(df) # table 6
   check_table_reg_metro_emp(df) # table 7
