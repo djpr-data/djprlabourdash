@@ -99,8 +99,7 @@ get_test_data <- function(){
   #6202019 hours worked
   #6202023 under-utilisation
 
-
-  all_df <- purrr::map(urls, function(url){
+  all_df <- furrr::future_map(urls, function(url){
 
     message(glue::glue('processing {basename(url)}'))
 
@@ -115,25 +114,7 @@ get_test_data <- function(){
 
         if (url == lm1) {
 
-          df <- read_labour_detailed(filename, sht, cols = 9) |>
-            dplyr::filter(`Greater capital city and rest of state (GCCSA): ASGS (2011)` %in% c("Greater Melbourne", "Rest of Vic."),
-                          Age %in% c("15-19", "20-24")) |>
-            dplyr::mutate(data_type = dplyr::case_when(
-              stringr::str_starts(data_type, 'employed') ~ 'employed',
-              stringr::str_starts(data_type, 'unemployed') ~ 'unemployed',
-              TRUE ~ data_type
-            )) |>
-            dplyr::group_by(date, Sex, data_type) |>
-            dplyr::summarise(value = sum(value)) |>
-            dplyr::mutate(Age = '15-24') |>
-            tidyr::pivot_wider(names_from = 'data_type', values_from = 'value') |>
-            dplyr::mutate(`unemployment rate` = (unemployed / (unemployed + employed)) * 100) |>
-            dplyr::select(date, Age, Sex, `unemployment rate`) |>
-            dplyr::mutate(Sex = paste0(tolower(Sex), '_unemployment rate')) |>
-            tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date", 'unemployment rate')),
-                               names_repair = 'minimal',
-                               values_from = 'unemployment rate',
-                               names_sep = '_')
+          df <- process_lm1(filename, sht)
 
 
         } else if (url == rm1) {
@@ -143,20 +124,7 @@ get_test_data <- function(){
 
         } else if (url == rq1) {
 
-        df <- read_labour_detailed(filename, sht) |>
-          dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
-                        `Industry division of main job: ANZSIC (2006) Rev.2.0` = stringr::str_to_lower(`Industry division of main job: ANZSIC (2006) Rev.2.0`),
-                        data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
-                        data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
-                        data_type = stringr::str_replace(data_type, "number of hours actually worked in all jobs", "hours worked"),
-                        data_type = stringr::str_replace(data_type, " \\(employed ", " \\(")
-                        ) |>
-          dplyr::group_by(date, `Labour market region (SA4): ASGS (2011)`, `Industry division of main job: ANZSIC (2006) Rev.2.0`, data_type) |>
-          dplyr::summarise(value = sum(value)) |>
-          tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date",'value')),
-                           names_repair = 'minimal',
-                           values_from = 'value',
-                           names_sep = '_')
+          df <- process_rq1(filename, sht)
 
         } else {
 
@@ -185,6 +153,53 @@ get_test_data <- function(){
   all_df
 
 }
+
+
+
+process_lm1 <- function(filename, sht){
+
+  read_labour_detailed(filename, sht, cols = 9) |>
+    dplyr::filter(`Greater capital city and rest of state (GCCSA): ASGS (2011)` %in% c("Greater Melbourne", "Rest of Vic."),
+                  Age %in% c("15-19", "20-24")) |>
+    dplyr::mutate(data_type = dplyr::case_when(
+      stringr::str_starts(data_type, 'employed') ~ 'employed',
+      stringr::str_starts(data_type, 'unemployed') ~ 'unemployed',
+      TRUE ~ data_type
+    )) |>
+    dplyr::group_by(date, Sex, data_type) |>
+    dplyr::summarise(value = sum(value)) |>
+    dplyr::mutate(Age = '15-24') |>
+    tidyr::pivot_wider(names_from = 'data_type', values_from = 'value') |>
+    dplyr::mutate(`unemployment rate` = (unemployed / (unemployed + employed)) * 100) |>
+    dplyr::select(date, Age, Sex, `unemployment rate`) |>
+    dplyr::mutate(Sex = paste0(tolower(Sex), '_unemployment rate')) |>
+    tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date", 'unemployment rate')),
+                       names_repair = 'minimal',
+                       values_from = 'unemployment rate',
+                       names_sep = '_')
+
+}
+
+
+process_rq1 <- function(filename, sht){
+
+  read_labour_detailed(filename, sht) |>
+    dplyr::mutate(`Labour market region (SA4): ASGS (2011)` = stringr::str_to_lower(stringr::str_sub(`Labour market region (SA4): ASGS (2011)`, start = 5)),
+                  `Industry division of main job: ANZSIC (2006) Rev.2.0` = stringr::str_to_lower(`Industry division of main job: ANZSIC (2006) Rev.2.0`),
+                  data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
+                  data_type = stringr::str_remove_all(data_type, " \\('000 hours\\)"),
+                  data_type = stringr::str_replace(data_type, "number of hours actually worked in all jobs", "hours worked"),
+                  data_type = stringr::str_replace(data_type, " \\(employed ", " \\(")
+    ) |>
+    dplyr::group_by(date, `Labour market region (SA4): ASGS (2011)`, `Industry division of main job: ANZSIC (2006) Rev.2.0`, data_type) |>
+    dplyr::summarise(value = sum(value)) |>
+    tidyr::pivot_wider(names_from = setdiff(dplyr::everything(), dplyr::one_of("date",'value')),
+                       names_repair = 'minimal',
+                       values_from = 'value',
+                       names_sep = '_')
+
+}
+
 
 
 
@@ -237,7 +252,7 @@ process_rm1 <- function(filename, sht){
     tidyr::pivot_wider(names_from = 'id', values_from = 'value')
 
   df <- df_in |>
-    dplyr::mutate(region = case_when(`Labour market region (SA4): ASGS (2011)` %in% rovic ~ 'rest of vic.',
+    dplyr::mutate(region = dplyr::case_when(`Labour market region (SA4): ASGS (2011)` %in% rovic ~ 'rest of vic.',
                                      `Labour market region (SA4): ASGS (2011)` %in% gmelb ~ 'greater melbourne')) |>
     dplyr::filter(!is.na(region)) |>
     dplyr::group_by(date, Age, region, employment_status) |>
@@ -794,6 +809,8 @@ check_table_industries_summary <- function(df){
 
 
 run_checks <- function(){
+
+  #plan(multisession, workers = 4)
 
   df <- get_test_data()
 
