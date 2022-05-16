@@ -1,4 +1,4 @@
-page_overview <- function(...) {
+page_overviewUI <- function(...) {
   loading_content <- div(
     id = "loading_page",
     br(),
@@ -39,4 +39,17 @@ page_overview <- function(...) {
     loading_content,
     main_content
   )
+}
+
+page_overview <- function(input, output, session, plt_change) {
+  output$main_table <- renderUI({
+    req(dash_data)
+    table_overview() %>%
+      flextable::htmltools_value()
+  }) %>%
+    bindCache(series_latestdates)
+
+  observeEvent(input$link_overview, {
+    updateNavbarPage(session, "navbarpage", "tab-overview")
+  })
 }

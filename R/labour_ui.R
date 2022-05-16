@@ -4,22 +4,22 @@ labour_ui <- function(...) {
     htmltools::tags$head(
       htmltools::tags$link(rel = "icon", href = "favicon.ico")
     ),
-    page_overview(),
-    page_indicators(),
+    page_overviewUI(),
+    page_indicatorsUI(),
     navbarMenu(
       "Groups",
-      page_sex(),
-      page_age(),
-      page_ltunemp(),
-      page_aboriginal(),
-      page_disability(),
-      page_migration()
+      page_sexUI(),
+      page_ageUI(),
+      page_ltunempUI(),
+      page_aboriginalUI(),
+      page_disabilityUI(),
+      page_migrationUI()
     ),
     navbarMenu(
       "Regions",
-      page_vicregions(),
-      page_ausregions()
+      page_vicregionsUI(),
+      page_ausregionsUI()
     ),
-    page_industries()
+    page_industriesUI()
   )
 }
