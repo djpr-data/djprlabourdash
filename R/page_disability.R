@@ -19,7 +19,7 @@ page_disabilityUI <- function(...) {
 }
 
 
-page_disability <- function(input, output, session, plt_change) {
+page_disability <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$table_jobactive_pwd <- renderUI({
     table_jobactive_pwd() %>%
       flextable::htmltools_value()

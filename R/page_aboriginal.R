@@ -18,7 +18,7 @@ page_aboriginalUI <- function(...) {
 }
 
 
-page_aboriginal <- function(input, output, session, plt_change) {
+page_aboriginal <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$table_jobactive_aboriginal <- renderUI({
     table_jobactive_aboriginal() %>%
       flextable::htmltools_value()

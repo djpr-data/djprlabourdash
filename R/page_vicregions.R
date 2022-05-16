@@ -154,7 +154,7 @@ page_vicregionsUI <- function(...) {
 }
 
 
-page_vicregions <- function(input, output, session, plt_change) {
+page_vicregions <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   djpr_plot_server("reg_melvic_line",
     viz_reg_melvic_line,
     plt_change = plt_change,

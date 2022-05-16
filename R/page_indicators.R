@@ -76,7 +76,7 @@ page_indicatorsUI <- function(...) {
 }
 
 
-page_indicators <- function(input, output, session, plt_change) {
+page_indicators <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$ind_empgrowth_sincecovid_text <- renderUI({
     text_active(
       paste(

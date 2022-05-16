@@ -97,7 +97,7 @@ page_ageUI <- function(...) {
   )
 }
 
-page_age <- function(input, output, session, plt_change) {
+page_age <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$table_gr_youth_summary <- renderUI({
     table_gr_youth_summary() %>%
       flextable::htmltools_value()

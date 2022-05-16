@@ -25,7 +25,7 @@ page_sexUI <- function(...) {
 }
 
 
-page_sex <- function(input, output, session, plt_change) {
+page_sex <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
       flextable::htmltools_value()

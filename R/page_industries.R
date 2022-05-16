@@ -60,7 +60,7 @@ page_industriesUI <- function(...) {
   )
 }
 
-page_industries <- function(input, output, session, plt_change) {
+page_industries <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$table_industries_summary <- renderUI({
     table_industries_summary() %>%
       flextable::htmltools_value()
