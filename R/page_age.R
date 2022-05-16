@@ -1,12 +1,17 @@
 page_age <- function(...) {
   shiny::fluidRow(
-    shinydashboard::box(
-      title = "Overview",
+    column(
       width = 3,
-      p(
-        "Labour force data disaggregated by age can be volatile, and most of this data is not seasonally adjusted by the ABS. DJPR smooths the data by using 12-month rolling averages. While this assists in removing noise to focus on the underlying trends, it makes large month-to-month changes in underlying conditions less apparent."
+      djpr_h2_box("Overview"),
+      shinydashboard::box(
+        width = 12,
+        height = "100%",
+        p(
+          "Labour force data disaggregated by age can be volatile, and most of this data is not seasonally adjusted by the ABS. DJPR smooths the data by using 12-month rolling averages. While this assists in removing noise to focus on the underlying trends, it makes large month-to-month changes in underlying conditions less apparent.",
+          style = "font-size:13px;"
         )
-      ),
+      )
+    ),
     uiOutput("table_gr_youth_summary") %>%
       djpr_with_spinner() %>%
       shinydashboard::box(width = 9),
@@ -25,22 +30,27 @@ page_age <- function(...) {
       ),
       column(
         6,
-        djpr_plot_ui("gr_youth_states_dot",
-          height = "640px"
+        djpr_plot_box("gr_youth_states_dot",
+          height = "640px",
+          width = 12
         )
       ),
       column(
         6,
-        djpr_plot_ui("gr_ages_line",
-          height = "200px"
+        djpr_plot_box("gr_ages_line",
+          height = "200px",
+          width = 12
         ),
-        djpr_plot_ui("gr_yth_melbvrest_line",
-          height = "200px"
+        djpr_plot_box("gr_yth_melbvrest_line",
+          height = "200px",
+          width = 12
         )
       ),
       column(
         12,
-        djpr_plot_ui("gr_youth_vicaus_line")
+        djpr_plot_box(
+          "gr_youth_vicaus_line",
+                      width = 12)
       )
     ),
     djpr_h2_box("Detailed labour force status of Victorian youth"),
@@ -48,10 +58,11 @@ page_age <- function(...) {
     djpr_plot_box("gr_youth_eduemp_waterfall",
       interactive = FALSE
     ),
-    djpr_plot_ui("gr_yth_mostvuln_line"),
-    h2(br(), "Youth unemployment rate by region"),
-    uiOutput("table_gr_youth_unemp_region"),
-    br(),
+    djpr_plot_box("gr_yth_mostvuln_line"),
+    djpr_h2_box("Youth unemployment rate by region"),
+    uiOutput("table_gr_youth_unemp_region") %>%
+      djpr_with_spinner(),
+
     focus_box(
       selectInput("youth_region_focus",
         "Select an indicator",
@@ -73,17 +84,16 @@ page_age <- function(...) {
         plotOutput("gr_youth_unemp_emppop_partrate_bar")
       )
     ),
-    h2(br(), "Jobactive caseload by age"),
+    djpr_h2_box("Jobactive caseload by age"),
     uiOutput("table_jobactive_youth") %>%
       djpr_with_spinner(),
-    br(),
-    djpr_plot_ui("gr_youth_jobactive_bar"),
-    br(),
-    djpr_plot_ui("gr_age_jobactive_since_covid_line"),
-    br(),
+
+    djpr_plot_box("gr_youth_jobactive_bar"),
+
+    djpr_plot_box("gr_age_jobactive_since_covid_line"),
+
     uiOutput("table_jobactive_mature_age") %>%
       djpr_with_spinner(),
-    djpr_plot_ui("gr_mature_age_jobactive_bar"),
-    br()
+    djpr_plot_box("gr_mature_age_jobactive_bar")
   )
 }
