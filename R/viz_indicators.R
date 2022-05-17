@@ -97,11 +97,11 @@ viz_ind_empgro_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     vic_latest > aus_latest ~
-    "Employment growth in Victoria outpaced Australia as a whole in the 12 months to ",
+      "Employment growth in Victoria outpaced Australia as a whole in the 12 months to ",
     vic_latest < aus_latest ~
-    "Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ",
+      "Employment growth in Victoria lagged behind Australia as a whole in the 12 months to ",
     vic_latest == aus_latest ~
-    "Employment in Victoria grew at the same pace as the Australian total in the 12 months to"
+      "Employment in Victoria grew at the same pace as the Australian total in the 12 months to"
   )
 
   title <- paste0(title, latest_month)
@@ -177,7 +177,7 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     vic_rank == 5 ~ "is the fourth lowest of all Australian states and territories",
     vic_rank < 5 &
       df_wide$max_date[df_wide$state == "Victoria"] < df_wide$min_date[df_wide$state == "Victoria"] ~
-    "has fallen over the past year",
+      "has fallen over the past year",
     TRUE ~ "compared to other states and territories"
   )
 
@@ -252,21 +252,21 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
                                         dplyr::mutate(
                                           state = dplyr::case_when(
                                             .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-                                            "Vic",
+                                              "Vic",
                                             .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-                                            "NSW",
+                                              "NSW",
                                             .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-                                            "QLD",
+                                              "QLD",
                                             .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-                                            "NT",
+                                              "NT",
                                             .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-                                            "WA",
+                                              "WA",
                                             .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-                                            "SA",
+                                              "SA",
                                             .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-                                            "Tas",
+                                              "Tas",
                                             .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-                                            "ACT",
+                                              "ACT",
                                             TRUE ~ .data$state
                                           )
                                         ),
@@ -470,11 +470,11 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
-    paste0("Victoria's unemployment rate in ", latest_values$date, " was higher than Australia's"),
+      paste0("Victoria's unemployment rate in ", latest_values$date, " was higher than Australia's"),
     latest_values$Victoria < latest_values$Australia ~
-    paste0("Victoria's unemployment rate in ", latest_values$date, " was lower than Australia's"),
+      paste0("Victoria's unemployment rate in ", latest_values$date, " was lower than Australia's"),
     latest_values$Victoria == latest_values$Australia ~
-    paste0("Victoria's unemployment rate in ", latest_values$date, " was the same as Australia's"),
+      paste0("Victoria's unemployment rate in ", latest_values$date, " was the same as Australia's"),
     TRUE ~ "Unemployment rate in Victoria and Australia"
   )
 
@@ -659,11 +659,11 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
-    paste0("Victorian adults worked more hours on average in ", latest_values$date, " than Australian adults"),
+      paste0("Victorian adults worked more hours on average in ", latest_values$date, " than Australian adults"),
     latest_values$Victoria < latest_values$Australia ~
-    paste0("Victorian adults worked fewer hours on average in ", latest_values$date, " than Australian adults"),
+      paste0("Victorian adults worked fewer hours on average in ", latest_values$date, " than Australian adults"),
     latest_values$Victoria == latest_values$Australia ~
-    paste0("In ", latest_values$date, ", Victorian and Australian adults worked the same number of hours on average"),
+      paste0("In ", latest_values$date, ", Victorian and Australian adults worked the same number of hours on average"),
     TRUE ~ "Monthly hours worked per civilian population in Victoria and Australia"
   )
 
@@ -733,11 +733,11 @@ viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` > 0 ~
-    paste0("Both the participation rate and the unemployment rate increased in ", latest_change$date),
+      paste0("Both the participation rate and the unemployment rate increased in ", latest_change$date),
     latest_change$`Participation rate` > 0 & latest_change$`Unemployment rate` < 0 ~
-    paste0("While the participation rate increased, the unemployment rate declined in ", latest_change$date),
+      paste0("While the participation rate increased, the unemployment rate declined in ", latest_change$date),
     latest_change$`Participation rate` < 0 & latest_change$`Unemployment rate` > 0 ~
-    paste0("While the participation rate declined, the unemployment rate increased in ", latest_change$date),
+      paste0("While the participation rate declined, the unemployment rate increased in ", latest_change$date),
     TRUE ~ "Unemployment and participation rates, Victoria"
   )
 
@@ -815,16 +815,16 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
   title <- case_when(
     latest_month$`Participation rate` > 0 &
       latest_month$`Unemployment rate` > 0 ~
-    "Unemployment and participation both rose in ",
+      "Unemployment and participation both rose in ",
     latest_month$`Participation rate` < 0 &
       latest_month$`Unemployment rate` < 0 ~
-    "Unemployment and participation both fell in ",
+      "Unemployment and participation both fell in ",
     latest_month$`Participation rate` > 0 &
       latest_month$`Unemployment rate` < 0 ~
-    "Unemployment fell even as participation rose in ",
+      "Unemployment fell even as participation rose in ",
     latest_month$`Participation rate` < 0 &
       latest_month$`Unemployment rate` > 0 ~
-    "Unemployment rose despite a fall in participation in "
+      "Unemployment rose despite a fall in participation in "
   )
 
   title <- paste0(
@@ -936,11 +936,11 @@ viz_ind_partrate_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     latest_values$Victoria > latest_values$Australia ~
-    paste0("Victoria's participation rate in ", latest_values$date, " was higher than Australia's"),
+      paste0("Victoria's participation rate in ", latest_values$date, " was higher than Australia's"),
     latest_values$Victoria < latest_values$Australia ~
-    paste0("Victoria's participation rate in ", latest_values$date, " was lower than Australia's"),
+      paste0("Victoria's participation rate in ", latest_values$date, " was lower than Australia's"),
     latest_values$Victoria == latest_values$Australia ~
-    paste0("Victoria's participation rate in ", latest_values$date, " was the same as Australia's"),
+      paste0("Victoria's participation rate in ", latest_values$date, " was the same as Australia's"),
     TRUE ~ "Labour force participation in Victoria and Australia"
   )
 

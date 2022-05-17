@@ -35,17 +35,17 @@ labour_ui <- function(...) {
       shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
       shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
       shinydashboard::tabItems(
-        shinydashboard::tabItem("overview",   page_overview()),
-        shinydashboard::tabItem("indicators", page_indicators()),
-        shinydashboard::tabItem("sex",        page_sex()),
-        shinydashboard::tabItem("age",        page_age()),
-        shinydashboard::tabItem("ltunemp",    page_ltunemp()),
-        shinydashboard::tabItem("aboriginal", page_aboriginal()),
-        shinydashboard::tabItem("disability", page_disability()),
-        shinydashboard::tabItem("migration",  page_migration()),
-        shinydashboard::tabItem("vicregions", page_vicregions()),
-        shinydashboard::tabItem("ausregions", page_ausregions()),
-        shinydashboard::tabItem("industries", page_industries())
+        shinydashboard::tabItem("overview",   page_overviewUI()),
+        shinydashboard::tabItem("indicators", page_indicatorsUI()),
+        shinydashboard::tabItem("sex",        page_sexUI()),
+        shinydashboard::tabItem("age",        page_ageUI()),
+        shinydashboard::tabItem("ltunemp",    page_ltunempUI()),
+        shinydashboard::tabItem("aboriginal", page_aboriginalUI()),
+        shinydashboard::tabItem("disability", page_disabilityUI()),
+        shinydashboard::tabItem("migration",  page_migrationUI()),
+        shinydashboard::tabItem("vicregions", page_vicregionsUI()),
+        shinydashboard::tabItem("ausregions", page_ausregionsUI()),
+        shinydashboard::tabItem("industries", page_industriesUI())
       )
     )
 

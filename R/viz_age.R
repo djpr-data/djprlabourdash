@@ -129,11 +129,11 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
     "The",
     dplyr::case_when(
       latest_values$`Greater Melbourne` > latest_values$`Rest of Vic.` ~
-      paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
+        paste0(" youth ", indic_long, " was higher in Greater Melbourne than in the rest of Victoria in "),
       latest_values$`Greater Melbourne` < latest_values$`Rest of Vic.` ~
-      paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
+        paste0(" youth ", indic_long, " was higher in rural and regional Victoria than in Greater Melbourne in "),
       latest_values$`Greater Melbourne` == latest_values$`Rest of Vic.` ~
-      paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
+        paste0(" youth ", indic_long, " was the same in Greater Melbourne and the rest of Victoria in "),
       TRUE ~ paste0(" youth ", indic_long, " in Greater Melbourne and the rest of Victoria in ")
     )
   )
@@ -772,11 +772,11 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(
 
   title_change <- dplyr::case_when(
     title_df$`Youth not in education` < title_df$`Youth in education` ~
-    "lower than",
+      "lower than",
     title_df$`Youth not in education` > title_df$`Youth in education` ~
-    "higher than",
+      "higher than",
     title_df$`Youth not in education` == title_df$`Youth in education` ~
-    "the same as"
+      "the same as"
   )
 
   title <- paste0(
@@ -864,11 +864,11 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
 
   title <- dplyr::case_when(
     title_df$`Employed part-time` > title_df$`Employed full-time` ~
-    "More Victorian youth were employed part-time than full-time in ",
+      "More Victorian youth were employed part-time than full-time in ",
     title_df$`Employed part-time` < title_df$`Employed full-time` ~
-    "More Victorian youth were employed full-time than part-time in ",
+      "More Victorian youth were employed full-time than part-time in ",
     title_df$`Employed part-time` == title_df$`Employed full-time` ~
-    "The same proportion of young Victorian workers were employed full-time and part-time"
+      "The same proportion of young Victorian workers were employed full-time and part-time"
   )
 
   title <- paste0(title, format(title_df$date, "%B %Y"))
