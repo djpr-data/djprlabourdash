@@ -27,10 +27,6 @@ editSMS <- function(labour = NULL) {
 
   server <- function(input, output, session) {
     if (is.null(labour)) {
-      ref_dates <- reference_dates()
-
-      ref_start <- ref_dates$dates$`Start of Reference Week`
-      ref_end <- ref_dates$dates$`End of Reference Week`
 
       # 2 Get data
       req_series <- c(
