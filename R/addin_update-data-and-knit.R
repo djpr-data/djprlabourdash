@@ -4,6 +4,7 @@
 #' @description This Rstudio addin will run the code to update data, and
 #' clean the app-cache
 #'
+#' @importFrom assertthat assert_that
 #' @return
 #' @export
 #'
@@ -12,7 +13,7 @@ update_data <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
 
   continue <- readline(prompt="Has the update to djprdashdata package completed? (y/n): ")
-  assert_that(tolower(continue) == 'y', msg = 'You need to wait for djprdashdata update!')
+  assertthat::assert_that(tolower(continue) == 'y', msg = 'You need to wait for djprdashdata update!')
 
   cat(crayon::yellow("Update Labour Force Data:\n"))
   tryCatch(
