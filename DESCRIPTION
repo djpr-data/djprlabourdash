@@ -79,6 +79,7 @@ Depends:
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
+    assertthat,
     pkgload,
     usethis,
     rmarkdown,
