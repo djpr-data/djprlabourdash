@@ -1,19 +1,19 @@
 
 
 #' @title Update Package Data and Knit Report
-#' @description This Rstudio addin will run the code to update data,
-#' clean the app-cache and then render the Monthly report
+#' @description This Rstudio addin will run the code to update data, and
+#' clean the app-cache
 #'
 #' @return
 #' @export
 #'
 #' @examples
-update_data_and_knit <- function() {
+update_data <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
 
-  continue <- readline(prompt="Has the update to djprdashdata completed? (y/n): ")
+  continue <- readline(prompt="Has the update to djprdashdata package completed? (y/n): ")
   assert_that(tolower(continue) == 'y', msg = 'You need to wait for djprdashdata update!')
-  
+
   cat(crayon::yellow("Update Labour Force Data:\n"))
   tryCatch(
     {
