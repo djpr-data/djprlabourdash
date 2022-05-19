@@ -40,6 +40,7 @@ editEMAIL <- function() {
         value = "OFFICIAL: DJPR Jobs Briefing: A record 64.3% of working age Victorians are employed ",
         width = "100%"
       ),
+      shiny::passwordInput('password', 'DJPR Password', placeholder = 'for authentication to email server'),
       fluidRow(
         column(
           6,
@@ -179,9 +180,7 @@ editEMAIL <- function() {
         host = "smtp.office365.com",
         port = 587,
         username = Sys.getenv()[["USEREMAIL"]],
-        password = keyring::key_get("user-passwd",
-          username = Sys.getenv()[["USERNAME"]]
-        )
+        password = input$password
       )
 
       if (input$live | input$addresses_type == "Test") {
