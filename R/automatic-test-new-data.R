@@ -312,14 +312,32 @@ clean_table <- function(df){
 
 tests <- function(actual, test){
 
+  # order test df
+  test <- test |>
+    dplyr::mutate(SERIES_ID = factor(SERIES_ID, levels = actual$SERIES_ID)) |>
+    dplyr::arrange(SERIES_ID) |>
+    dplyr::select(dplyr::one_of(colnames(actual)),
+                                dplyr::everything())
+
   suppressMessages({
     aj <- dplyr::anti_join(test, actual) # get rows with errors
   })
 
-  # sometimes numeric values aren't equal need to double check
+  # sometimes numeric values aren't precisely equal need to double check
   if (nrow(aj) > 0) {
-    all.equal(aj,
-              actual |> dplyr::filter(SERIES_ID %in% aj$SERIES_ID)) # id columns
+    print(aj)
+    error_report <- all.equal(aj,
+                             actual |>
+                               dplyr::filter(SERIES_ID %in% aj$SERIES_ID)) # id columns
+
+    list(
+      report_table = actual,
+      test_table = test,
+      error_rows = aj,
+      error_report = error_report,
+      error_columns = setdiff(colnames(test), colnames(actual))
+    )
+
   } else {
     TRUE
   }
@@ -340,7 +358,7 @@ check_table_overview <- function(df){
                    "A84423350C",
                    "A84423349V",
                    "A84423357V",
-                   #"pt_emp_vic",  # in table_overview() but not exported
+                   #"pt_emp_vic",  # needs to be calculated
                    "A84423237A",
                    "A84423461V",
                    "A84423355R",
@@ -359,7 +377,7 @@ check_table_overview <- function(df){
 
   test <- dplyr::bind_rows(
     purrr::map_dfr(series$employment, ~ add_series_row(df, .x)),
-    #purrr::map_dfr(series$regional, ~ add_series_row(df, .x, 2)),
+    purrr::map_dfr(series$regional, ~ add_series_row(df, .x, 2)),
     purrr::map_dfr(series$youth, ~ add_series_row(df, .x, 11))
   )
 
@@ -843,23 +861,24 @@ run_checks <- function(){
     'Table 16' = 'check_table_industries_summary'
   )
 
-  message(crayon::green('Check all Tables'))
+  message(crayon::green('\n\nCheck all Tables\n'))
 
   all_checks <- purrr::imap(checks, function(.x, .y){
-    check = do.call(.x, list(df = df))
-    if (check){
+    check <- do.call(.x, list(df = df))
+    if (isTRUE(check)){
       message(crayon::green(
-        glue::glue('{.y} passed')
+        glue::glue('{.y} passed\n\n')
       ))
     } else {
       message(crayon::red(
-        glue::glue('{.y} FAILED')
+        glue::glue('{.y} FAILED\n\n')
       ))
     }
     check
   })
 
-  return(all_checks)
+  return(list(checks = all_checks,
+              data = df))
 
 }
 
