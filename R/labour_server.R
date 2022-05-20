@@ -3,7 +3,13 @@ labour_server <- function(input, output, session) {
 
   # Load data and create persistent objects ----
   Sys.setenv("R_DJPRLABOURDASH_TABLEDEST" = "dashboard")
+
+  print('importing data')
+
   dash_data <<- get_dash_data()
+
+  print(dash_data)
+
   dash_data_updated <<- attr(dash_data, "date_updated")
   if (shiny::isRunning()) {
     shinyjs::hide("loading_page")
@@ -37,9 +43,18 @@ labour_server <- function(input, output, session) {
     )
   })
 
-  output$aboriginal_footnote <- output$vicregions_footnote <- output$disability_footnote <- output$migration_footnote <- output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
-    footnote()
-  })
+  output$aboriginal_footnote <-
+  output$vicregions_footnote <-
+  output$disability_footnote <-
+  output$migration_footnote <-
+  output$overview_footnote <-
+  output$indicators_footnote <-
+  output$inclusion_footnote <-
+  output$regions_footnote <-
+  output$industries_footnote <-
+    renderUI({
+        footnote()
+    })
 
   page_overview(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote)
   page_indicators(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote)
