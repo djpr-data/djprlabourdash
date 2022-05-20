@@ -42,7 +42,7 @@ page_ausregionsUI <- function(...) {
 }
 
 
-page_ausregions <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
+page_ausregions <- function(input, output, session, plt_change, series_latestdates, footnote) {
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
       flextable::htmltools_value()

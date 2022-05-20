@@ -58,7 +58,7 @@ page_overviewUI <- function(...) {
   )
 }
 
-page_overview <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
+page_overview <- function(input, output, session, plt_change, series_latestdates, footnote) {
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%

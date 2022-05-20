@@ -17,7 +17,7 @@ page_migrationUI <- function(...) {
 }
 
 
-page_migration <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
+page_migration <- function(input, output, session, plt_change, series_latestdates, footnote) {
   output$table_jobactive_refugees <- renderUI({
     table_jobactive_refugees() %>%
       flextable::htmltools_value()

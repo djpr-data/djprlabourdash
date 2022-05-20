@@ -20,7 +20,7 @@ page_ltunempUI <- function(...) {
   )
 }
 
-page_ltunemp <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
+page_ltunemp <- function(input, output, session, plt_change, series_latestdates, footnote) {
   djpr_plot_server("gr_ltunemp_line",
     viz_gr_ltunemp_line,
     data = filter_dash_data(c(
