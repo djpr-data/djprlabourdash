@@ -60,8 +60,11 @@ page_overviewUI <- function(...) {
 
 page_overview <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$main_table <- renderUI({
-    req(dash_data)
-    table_overview() %>%
+    make_table_mem(
+      data = table_overview(),
+      destination = "dashboard",
+      years_in_sparklines = 5,
+      ) %>%
       flextable::htmltools_value()
   }) %>%
     bindCache(series_latestdates)
@@ -70,7 +73,4 @@ page_overview <- function(input, output, session, plt_change = plt_change, serie
     updateNavbarPage(session, "navbarpage", "tab-overview")
   })
 
-  output$main_table <- shiny::renderUI({
-    make_table
-  })
 }
