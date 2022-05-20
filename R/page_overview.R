@@ -60,11 +60,8 @@ page_overviewUI <- function(...) {
 
 page_overview <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
   output$main_table <- renderUI({
-    make_table_mem(
-      data = table_overview(),
-      destination = "dashboard",
-      years_in_sparklines = 5,
-      ) %>%
+    req(dash_data)
+    table_overview() %>%
       flextable::htmltools_value()
   }) %>%
     bindCache(series_latestdates)
