@@ -1,19 +1,14 @@
 page_aboriginalUI <- function(...) {
-  djpr_tab_panel(
-    title = "Aboriginal Victorians",
-    br(),
-    paste0("This section explores the labour force status for Aboriginal Victorians."),
-    br(),
-    h2(br(), "Aboriginal Victorians: jobactive caseload"),
-    uiOutput("table_jobactive_aboriginal") %>%
-      djpr_with_spinner(),
-    br(),
-    djpr_plot_ui("gr_abor_jobactive_sincecovid_line"),
-    br(),
-    djpr_plot_ui("gr_abor_jobactive_bar"),
-    br(),
-    htmlOutput("aboriginal_footnote"),
-    br()
+  shiny::fluidRow(
+    djpr_h2_box("Aboriginal Victorians: jobactive caseload"),
+    shinydashboard::box(
+      uiOutput("table_jobactive_aboriginal") %>%
+                          djpr_with_spinner(),
+      width = 12
+      ),
+    djpr_plot_box("gr_abor_jobactive_sincecovid_line", width = 12),
+    djpr_plot_box("gr_abor_jobactive_bar", width = 12),
+    djpr_plot_box("aboriginal_footnote", width = 12)
   )
 }
 

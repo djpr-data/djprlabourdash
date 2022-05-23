@@ -1,6 +1,5 @@
 page_disabilityUI <- function(...) {
-  djpr_tab_panel(
-    title = "People with disabilities",
+  fluidRow(
     br(),
     paste0("This section explores the labour force status of people with disabilities."),
     br(),

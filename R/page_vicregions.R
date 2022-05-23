@@ -1,6 +1,5 @@
 page_vicregionsUI <- function(...) {
-  djpr_tab_panel(
-    title = "Victorian Regions",
+  fluidRow(
     h1("Regions of Victoria"),
     # Unemployment by region -----
     br(),

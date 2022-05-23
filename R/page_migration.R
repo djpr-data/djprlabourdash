@@ -1,6 +1,5 @@
 page_migrationUI <- function(...) {
-  djpr_tab_panel(
-    title = "Migrants",
+  fluidRow(
     br(),
     paste0("This section explores the labour force status of migrants in Australia."),
     br(),

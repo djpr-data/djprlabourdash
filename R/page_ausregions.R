@@ -1,6 +1,6 @@
+
 page_ausregionsUI <- function(...) {
-  djpr_tab_panel(
-    title = "Australian Regions",
+  fluidRow(
     # Unemployment by Australian Regions -------------
     br(),
     br(),

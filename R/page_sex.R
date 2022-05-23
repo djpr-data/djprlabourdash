@@ -1,6 +1,5 @@
 page_sexUI <- function(...) {
-  djpr_tab_panel(
-    title = "Sex",
+  fluidRow(
     br(),
     h2(br(), "Overview"),
     uiOutput("table_gr_sex"),

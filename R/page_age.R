@@ -1,6 +1,6 @@
+
 page_ageUI <- function(...) {
-  djpr_tab_panel(
-    title = "Age",
+  shiny::fluidRow(
     br(),
     h2(br(), "Overview"),
     "Labour force data disaggregated by age can be volatile, and most of this data",
@@ -19,7 +19,11 @@ page_ageUI <- function(...) {
         djpr_plot_ui("gr_yth_lfpartrate_vicaus_line")
       )
     ),
-    br(),
+    uiOutput("table_gr_youth_summary") %>%
+      djpr_with_spinner() %>%
+      shinydashboard::box(width = 9),
+    djpr_plot_box("gr_yth_emp_sincecovid_line"),
+    djpr_plot_box("gr_yth_lfpartrate_vicaus_line"),
     focus_box(
       h2("Labour force status of Victorian youth"),
       shiny::selectInput("youth_focus",
@@ -33,34 +37,39 @@ page_ageUI <- function(...) {
       ),
       column(
         6,
-        djpr_plot_ui("gr_youth_states_dot",
-          height = "640px"
+        djpr_plot_box("gr_youth_states_dot",
+          height = "640px",
+          width = 12
         )
       ),
       column(
         6,
-        djpr_plot_ui("gr_ages_line",
-          height = "200px"
+        djpr_plot_box("gr_ages_line",
+          height = "200px",
+          width = 12
         ),
-        djpr_plot_ui("gr_yth_melbvrest_line",
-          height = "200px"
+        djpr_plot_box("gr_yth_melbvrest_line",
+          height = "200px",
+          width = 12
         )
       ),
       column(
         12,
-        djpr_plot_ui("gr_youth_vicaus_line")
+        djpr_plot_box(
+          "gr_youth_vicaus_line",
+                      width = 12)
       )
     ),
-    br(),
-    h2(br(), "Detailed labour force status of Victorian youth"),
-    djpr_plot_ui("gr_youth_full_part_line"),
-    djpr_plot_ui("gr_youth_eduemp_waterfall",
+    djpr_h2_box("Detailed labour force status of Victorian youth"),
+    djpr_plot_box("gr_youth_full_part_line"),
+    djpr_plot_box("gr_youth_eduemp_waterfall",
       interactive = FALSE
     ),
-    djpr_plot_ui("gr_yth_mostvuln_line"),
-    h2(br(), "Youth unemployment rate by region"),
-    uiOutput("table_gr_youth_unemp_region"),
-    br(),
+    djpr_plot_box("gr_yth_mostvuln_line"),
+    djpr_h2_box("Youth unemployment rate by region"),
+    uiOutput("table_gr_youth_unemp_region") %>%
+      djpr_with_spinner(),
+
     focus_box(
       selectInput("youth_region_focus",
         "Select an indicator",
@@ -82,18 +91,17 @@ page_ageUI <- function(...) {
         plotOutput("gr_youth_unemp_emppop_partrate_bar")
       )
     ),
-    h2(br(), "Jobactive caseload by age"),
+    djpr_h2_box("Jobactive caseload by age"),
     uiOutput("table_jobactive_youth") %>%
       djpr_with_spinner(),
-    br(),
-    djpr_plot_ui("gr_youth_jobactive_bar"),
-    br(),
-    djpr_plot_ui("gr_age_jobactive_since_covid_line"),
-    br(),
+
+    djpr_plot_box("gr_youth_jobactive_bar"),
+
+    djpr_plot_box("gr_age_jobactive_since_covid_line"),
+
     uiOutput("table_jobactive_mature_age") %>%
       djpr_with_spinner(),
-    djpr_plot_ui("gr_mature_age_jobactive_bar"),
-    br()
+    djpr_plot_box("gr_mature_age_jobactive_bar")
   )
 }
 
