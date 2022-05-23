@@ -25,3 +25,29 @@ date_slider <- function(
     ...
   )
 }
+
+
+
+box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL){
+
+  stopifnot(width %in% 1:12)
+
+  shiny::div(
+    class = paste0("col-sm-", width),
+    shiny::div(
+      class = "box",
+      style = if(is.null(height)) NULL else paste0("height:", height,";"),
+      if(is.null(title)) NULL else shiny::div(class = "box-header", title),
+      ...,
+      if(is.null(footer)) NULL else shiny::div(class = "box-footer", footer)
+    )
+  )
+
+}
+
+
+column_nopad <- function(width = 6, ...){
+  shiny::column(width = width, ...) %>%
+    shiny::tagAppendAttributes(style = "padding:0px;")
+}
+
