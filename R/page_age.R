@@ -12,11 +12,11 @@ page_ageUI <- function(...) {
     fluidRow(
       column(
         6,
-        djpr_plot_ui("gr_yth_emp_sincecovid_line")
+        djpr_async_ui("gr_yth_emp_sincecovid_line", width = 12)
       ),
       column(
         6,
-        djpr_plot_ui("gr_yth_lfpartrate_vicaus_line")
+        djpr_async_ui("gr_yth_lfpartrate_vicaus_line", width = 12)
       )
     ),
 
@@ -34,25 +34,25 @@ page_ageUI <- function(...) {
       ),
       column(
         6,
-        djpr_plot_box("gr_youth_states_dot",
+        djpr_async_ui("gr_youth_states_dot",
           height = "640px",
           width = 12
         )
       ),
       column(
         6,
-        djpr_plot_box("gr_ages_line",
+        djpr_async_ui("gr_ages_line",
           height = "200px",
           width = 12
         ),
-        djpr_plot_box("gr_yth_melbvrest_line",
+        djpr_async_ui("gr_yth_melbvrest_line",
           height = "200px",
           width = 12
         )
       ),
       column(
         12,
-        djpr_plot_box(
+        djpr_async_ui(
           "gr_youth_vicaus_line",
                       width = 12)
       )
@@ -60,11 +60,11 @@ page_ageUI <- function(...) {
 
 
     djpr_h2_box("Detailed labour force status of Victorian youth"),
-    djpr_plot_box("gr_youth_full_part_line"),
-    djpr_plot_box("gr_youth_eduemp_waterfall",
+    djpr_async_ui("gr_youth_full_part_line"),
+    djpr_async_ui("gr_youth_eduemp_waterfall",
       interactive = FALSE
     ),
-    djpr_plot_box("gr_yth_mostvuln_line"),
+    djpr_async_ui("gr_yth_mostvuln_line"),
 
 
     djpr_h2_box("Youth unemployment rate by region"),
@@ -99,13 +99,13 @@ page_ageUI <- function(...) {
 
     uiOutput("table_jobactive_youth") %>% djpr_with_spinner(),
 
-    djpr_plot_box("gr_youth_jobactive_bar"),
+    djpr_async_ui("gr_youth_jobactive_bar"),
 
-    djpr_plot_box("gr_age_jobactive_since_covid_line"),
+    djpr_async_ui("gr_age_jobactive_since_covid_line"),
 
     uiOutput("table_jobactive_mature_age") %>% djpr_with_spinner(),
 
-    djpr_plot_box("gr_mature_age_jobactive_bar")
+    djpr_async_ui("gr_mature_age_jobactive_bar")
 
   )
 }
@@ -135,7 +135,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
       dplyr::filter(.data$date >= as.Date("2020-01-01")),
     date_slider = FALSE,
-    width_percent = 45
+    width_percent = 90
   )
 
   djpr_plot_server("gr_yth_lfpartrate_vicaus_line",
@@ -149,7 +149,8 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       dplyr::mutate(value = slider::slide_mean(.data$value,
         before = 11, complete = TRUE
       )),
-    width_percent = 45
+    date_slider = FALSE,
+    width_percent = 90
   )
 
   # Age: youth focus box -----
@@ -186,7 +187,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       "A84433560L"
     ), df = dash_data),
     plt_change = plt_change,
-    width_percent = 45,
+    width_percent = 90,
     height_percent = 160,
     date_slider = FALSE,
     download_button = T,
@@ -199,7 +200,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     viz_gr_ages_line,
     data = youth_focus_box_data(),
     plt_change = plt_change,
-    width_percent = 47,
+    width_percent = 90,
     height_percent = 50,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
@@ -223,7 +224,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       df = dash_data
     ),
     plt_change = plt_change,
-    width_percent = 47,
+    width_percent = 90,
     height_percent = 50,
     date_slider = TRUE,
     date_slider_value_min = as.Date("2014-11-01"),
@@ -287,6 +288,8 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     check_box_var = .data$state,
     check_box_selected = c("Aus", "Vic"),
     selected_indicator = reactive(input$youth_focus),
+    width_percent = 90,
+    date_slider = FALSE,
     plt_change = plt_change
   )
 
@@ -300,6 +303,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     df = dash_data
     ),
     plt_change = plt_change,
+    width_percent = 90,
     date_slider = TRUE
   )
 
@@ -318,6 +322,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     ),
     plt_change = plt_change,
     interactive = FALSE,
+    width_percent = 90,
     date_slider = FALSE
   )
 
@@ -331,6 +336,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       df = dash_data
     ),
     plt_change = plt_change,
+    width_percent = 90,
     date_slider_value_min = Sys.Date() - (365.25 * 10),
     date_slider = TRUE
   )
@@ -444,6 +450,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     df = dash_data
     ) %>%
       dplyr::filter(date >= as.Date("2019-03-31")),
+    width_percent = 90,
     date_slider = FALSE
   )
 
