@@ -2,7 +2,7 @@ name: refresh-data
 
 on:
   schedule:
-    - cron: '*/45 00-02 * * *'
+    - cron: '35 1 * * THU' # 1.35 am UTC is 11.30 melbourne time
   pull_request:
     branches:
       - main
