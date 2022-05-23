@@ -374,6 +374,8 @@ make_table <- function(data,
         j = 1,
         width = 2
       )
+  } else {
+    flex <- flextable::set_table_properties(flex, layout = "autofit", width = 1)
   }
 
   flex
