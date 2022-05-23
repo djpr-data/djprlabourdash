@@ -3,9 +3,8 @@ page_overviewUI <- function(...) {
   shiny::tagList(
 
     # No padding column with width = 4
-    div(
-      class = "col-sm-4",
-      style = "padding:0px;",
+    column_nopad(
+      width = 4,
 
       djprshiny::djpr_h2_box("DJPR Jobs Dashboard"),
 
@@ -16,16 +15,13 @@ page_overviewUI <- function(...) {
     ),
 
 
-    div(
-      class = "col-sm-8",
-      div(
-        class = "box",
-        shiny::uiOutput("main_table", height = "800px") %>%
-          djpr_with_spinner(proxy.height = "800px")
-      )
+    box(
+      width = 8,
+      shiny::uiOutput("main_table", height = "800px") %>%
+        djpr_with_spinner(proxy.height = "800px")
     ),
 
-    shinydashboard::box(
+    box(
       width = 12,
       shiny::uiOutput("overview_footnote")
     )
