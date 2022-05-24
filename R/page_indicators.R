@@ -1,9 +1,26 @@
 page_indicatorsUI <- function(...) {
-  fluidRow(
-    h1("Key indicators"),
-    paste0(
-      "This page contains key labour force indicators, focusing on Victoria as a whole."
+
+  shiny::tagList(
+
+    # No padding column with width = 4
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h2_box("Key indicators"),
+
+      shinydashboard::box(
+        width = 12,
+        "This page contains key labour force indicators, focusing on Victoria as a whole."
+      )
     ),
+
+    box(
+      width = 8,
+      shiny::uiOutput()
+    )
+  )
+
+
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
