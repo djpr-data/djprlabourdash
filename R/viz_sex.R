@@ -233,17 +233,11 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
 }
 
 # Full-time and part-time  employment growth pattern by gender
-viz_gr_full_part_line <- function(data = filter_dash_data(c(
-                                    "A84423237A",
-                                    "A84423461V",
-                                    "A84423245A",
-                                    "A84423469L"
-                                  ),
-                                  df = dash_data
-                                  )) {
+viz_gr_full_part_line <- function(data, dates) {
 
   # We calculate part time employment using total + FT employment
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$date, .data$sex, .data$indicator, .data$value) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
     dplyr::group_by(.data$sex) %>%
