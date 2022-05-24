@@ -27,7 +27,7 @@ labour_ui <- function(...) {
           shinydashboard::menuSubItem("Australian Regions", tabName = "ausregions")
           ),
         shinydashboard::menuItem("Industries", tabName = "industries"),
-        shinydashboard::menuItem("Methodolgy", tabName = "methodolgy")
+        shinydashboard::menuItem("Methodology", tabName = "methodology")
       ),
       width = "250px"
     ),
@@ -47,7 +47,7 @@ labour_ui <- function(...) {
         shinydashboard::tabItem("vicregions", page_vicregionsUI()),
         shinydashboard::tabItem("ausregions", page_ausregionsUI()),
         shinydashboard::tabItem("industries", page_industriesUI()),
-        shinydashboard::tabItem("methodolgy", page_methodologyUI())
+        shinydashboard::tabItem("methodology", page_methodologyUI())
       )
     )
 
