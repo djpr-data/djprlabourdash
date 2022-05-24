@@ -37,7 +37,7 @@ labour_server <- function(input, output, session) {
     )
   })
 
-  output$aboriginal_footnote <- output$vicregions_footnote <- output$disability_footnote <- output$migration_footnote <- output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
+  output$methodology_footnote <- output$aboriginal_footnote <- output$vicregions_footnote <- output$disability_footnote <- output$migration_footnote <- output$overview_footnote <- output$indicators_footnote <- output$inclusion_footnote <- output$regions_footnote <- output$industries_footnote <- renderUI({
     footnote()
   })
 
