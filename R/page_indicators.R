@@ -1,38 +1,24 @@
 page_indicatorsUI <- function(...) {
 
-  shiny::tagList(
-
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
-
-      djprshiny::djpr_h2_box("Key indicators"),
-
-      shinydashboard::box(
-        width = 12,
-        "This page contains key labour force indicators, focusing on Victoria as a whole."
-      )
+  shiny::fluidRow(
+    br(),
+    h1("Key indicators"),
+    paste0(
+      "This page contains key labour force indicators, focusing on Victoria as a whole."
     ),
-
-    box(
-      width = 8,
-      shiny::uiOutput()
-    )
-  )
-
-
     h2(br(), "Employment"),
     # htmlOutput("ind_empgrowth_sincecovid_text"),
     uiOutput("ind_emp_table") %>%
       djpr_with_spinner(hide.ui = TRUE),
     br(),
-    djpr_plot_ui("ind_emppop_state_line"),
-    br(),
-    djpr_plot_ui("ind_empgro_line"),
-    br(),
     fluidRow(
-      column(6, djpr_plot_ui("ind_gen_full_part_line")),
-      column(6, djpr_plot_ui("ind_emp_sincecovid_line"))
+      djpr_async_ui("ind_emppop_state_line", width = 6),
+      djpr_async_ui("ind_empgro_line", width = 6),
+    ),
+
+    fluidRow(
+      djpr_async_ui("ind_gen_full_part_line", width = 6),
+      djpr_async_ui("ind_emp_sincecovid_line", width = 6)
     ),
     h2(br(), "Unemployment & underemployment"),
     uiOutput("ind_unemp_summary") %>%
