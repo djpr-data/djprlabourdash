@@ -1,8 +1,9 @@
 page_indicatorsUI <- function(...) {
 
   fluidRow(
-    h1("Key indicators"),
-    paste0(
+    djpr_h2_box("Key indicators"),
+    shinydashboard::box(
+      width = 12,
       "This page contains key labour force indicators, focusing on Victoria as a whole."
     ),
 
@@ -52,7 +53,8 @@ page_indicatorsUI <- function(...) {
       ),
 
     h4(br(), "Effective unemployment rate"),
-    paste0(
+    shinydashboard::box(
+      width = 12,
       "People who are employed but have not been able to work any hours do not count ",
       "towards the 'headline' unemployment rate. Effective unemployment rate includes these people ",
       "and is defined as the sum of unemployed persons and persons who are employed but worked zero ",
@@ -94,13 +96,13 @@ page_indicatorsUI <- function(...) {
     fluidRow(
       djpr_async_ui("ind_partrate_un_line", width = 12)
     ),
-    paste0(
+
+    shinydashboard::box(
+      width = 12,
       "A fall in the unemployment rate can mean very different things depending on whether the participation rate is rising - more people have joined the labour force - or falling. ",
       "The chart below shows how the unemployment and participation rates changed over the last month or year, and how that compares to past changes in the Victorian labour market. ",
       "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."
     ),
-
-    #################
 
     shiny::selectInput("ind_partrate_un_scatter_selected_period",
       label = "Compare monthly or yearly change",
@@ -110,8 +112,8 @@ page_indicatorsUI <- function(...) {
         "Yearly" = "year"
       )
     ),
-    djpr_plot_ui("ind_partrate_un_scatter"),
-    br(),
+    djpr_async_ui("ind_partrate_un_scatter", width = 12),
+
     htmlOutput("indicators_footnote")
   )
 }
