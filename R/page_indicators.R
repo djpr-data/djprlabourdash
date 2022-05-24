@@ -214,7 +214,6 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
-
   djpr_async_server(
     id = "ind_empgro_line",
     plot_fun = viz_ind_empgro_line,
@@ -244,22 +243,22 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     bindCache(series_latestdates)
 
   # Indicators: line chart of Aus v Vic
-  djpr_plot_server("ind_unemprate_line",
-    viz_ind_unemprate_line,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_unemprate_line",
+    plot_fun = viz_ind_unemprate_line,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A84423354L",
-      "A84423050A"
-    ),
-    df = dash_data
-    ),
-    date_slider_value_min = as.Date("2000-01-01"),
-    plt_change = plt_change
+      "A84423050A")),
+    date >= as.Date("2000-01-01")
   )
 
   # Indicators: effective unemployment rate
-  djpr_plot_server("ind_effective_unemprate_line",
-    viz_ind_effective_unemprate_line,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_effective_unemprate_line",
+    plot_fun = viz_ind_effective_unemprate_line,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A84423350C",
       "A84423351F",
       "A84423354L",
@@ -267,14 +266,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
       "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
       "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
       "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
-    ),
-    df = dash_data
-    ) %>%
-      dplyr::filter(date >= as.Date("2019-06-01")),
-    plt_change = plt_change,
-    width_percent = 100,
-    height_percent = 70,
-    date_slider = FALSE
+    )),
+    date >= as.Date("2019-06-01")
   )
 
   # Indicators: table of unemployment rates by state
@@ -285,10 +278,11 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     bindCache(series_latestdates)
 
   # Indicators: dot plot of unemp rate by state
-  djpr_plot_server("ind_unemp_states_dot",
-    viz_ind_unemp_states_dot,
-    data = filter_dash_data(
-      c(
+  djpr_async_server(
+    id = "ind_unemp_states_dot",
+    plot_fun = viz_ind_unemp_states_dot,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
         "A84423354L",
         "A84423270C",
         "A84423368A",
@@ -299,45 +293,42 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
         "A84423298F",
         "A84423050A"
       )
-    ),
-    date_slider = FALSE,
-    plt_change = plt_change
+    )
   )
 
-  djpr_plot_server("ind_underut_area",
-    viz_ind_underut_area,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_underut_area",
+    plot_func = viz_ind_underut_area,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A85223450L",
       "A85223451R",
       "A84423354L"
-    ),
-    df = dash_data
-    ),
-    date_slider_value_min = Sys.Date() - (10 * 365),
-    plt_change = plt_change,
-    interactive = FALSE
+    )),
+    date = Sys.Date() - (10 * 365)
   )
 
   # Indicators: hours worked ----
-
-  djpr_plot_server("ind_hoursworked_line",
-    viz_ind_hoursworked_line,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_hoursworked_line",
+    plot_fun = viz_ind_hoursworked_line,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A84426256L",
       "A84426277X",
       "A84423689R",
       "A84423091W"
+    )
     ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider_value_min = as.Date("2000-01-01")
+    date >= as.Date("2000-01-01")
   )
 
   # Indicators: participation ----
-  djpr_plot_server("ind_partrate_bar",
-    viz_ind_partrate_bar,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_partrate_bar",
+    plot_fun = viz_ind_partrate_bar,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A84423355R",
       "A84423271F",
       "A84423369C",
@@ -347,14 +338,12 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
       "A84423313T",
       "A84423299J",
       "A84423051C"
-    ),
-    df = dash_data
-    ),
-    height_percent = 75,
-    plt_change = plt_change,
-    date_slider = FALSE,
-    interactive = FALSE
+    )
+    )
   )
+
+
+  ####### up to here  ##############
 
   djpr_plot_server("ind_partrate_un_line",
     viz_ind_partrate_un_line,
