@@ -11,9 +11,9 @@ The monthly Labour Force Survey (LFS) provides information about the labour mark
 
 Data from the monthly Labour Force Survey are released in two stages.
 
-- The initial release is Labour Force, Australia, which includes headline estimates of employment, unemployment, underemployment, participation and hours worked for Australia, and the states and territories. This is usually published 39 days after the beginning of interviews for that month, which is the third Thursday of the month following the reference month (e.g. estimates for March are published on the third Thursday in April). The exception is December, where estimates are published 46 days after.
+- The initial release is [Labour Force Australia](https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release),  which includes headline estimates of employment, unemployment, underemployment, participation and hours worked for Australia, and the states and territories. This is usually published 39 days after the beginning of interviews for that month, which is the third Thursday of the month following the reference month (e.g. estimates for March are published on the third Thursday in April). The exception is December, where estimates are published 46 days after.
 
-- The second release is Labour Force, Australia, Detailed, which includes more detailed monthly and quarterly data. The quarterly detailed data was previously published separately, in Labour Force, Australia, Detailed, Quarterly. The second release occurs 7 days after the first release (i.e. the fourth Thursday of the month).
+- The second release is [Labour Force, Australia, Detailed](https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia-detailed/latest-release), which includes more detailed monthly and quarterly data. The quarterly detailed data was previously published separately, in Labour Force, Australia, Detailed, Quarterly. The second release occurs 7 days after the first release (i.e. the fourth Thursday of the month).
 
 ### The LFS includes monthly information on:
 
@@ -34,7 +34,7 @@ Data from the monthly Labour Force Survey are released in two stages.
 
 ## Jobactive Data
 
-The **National Skills Commission** produces quarterly jobactive caseload data by Employment Region for the following cohorts:
+The **National Skills Commission** produces quarterly jobactive caseload data to the All Regions and by Employment Region. The data and the content is available on the [Labour Market Insight website](https://labourmarketinsights.gov.au/) for the following cohorts:
 
 - Employed (aged 15+);
 - Unemployment rate (aged 15+);

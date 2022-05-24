@@ -1,7 +1,7 @@
 page_methodologyUI <- function(...) {
   djpr_tab_panel(
-    title = "Notes",
-    value = "tab-notes",
+    # title = "Notes",
+    # value = "tab-notes",
     br(),
     shiny::includeMarkdown("R/methodology.md"),
     br(),
