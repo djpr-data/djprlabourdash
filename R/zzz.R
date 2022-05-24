@@ -10,4 +10,12 @@
     assign(var_name, qs::qread(fn), envir = myenv)
     NULL # don't collect unused result
   })
+
+  # Generate date summaries
+  dash_data %>%
+    dplyr::group_by(table_no) %>%
+    dplyr::summarise(min = min(date, na.rm = T), max = max(date, na.rm = T)) %>%
+    split(~table_no) %>%
+    assign("data_dates", ., envir = myenv)
+
 }

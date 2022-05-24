@@ -2,16 +2,28 @@
 # Shiny components
 date_slider <- function(
   id,
+  table_no = "6202012",
   label = "Dates",
-  min = dates$min,
-  max = dates$max,
-  value = c(dates$min, dates$max),
+  min = NULL,
+  max = NULL,
+  value = NULL,
   width = "90%",
   timeFormat = "%b %Y",
   dragRange = TRUE,
   ticks = FALSE,
   ...
 ){
+
+  if(!exists("data_dates")) stop(
+    "Cannot find data_dates. Have you run pkgload::load_all() ?"
+    )
+
+  if(is.null(min)){min <- data_dates[[table_no]]$min}
+  if(is.null(max)){max <- data_dates[[table_no]]$max}
+  if(is.null(value)){
+    value <- c(data_dates[[table_no]]$min, data_dates[[table_no]]$max)
+    }
+
   shiny::sliderInput(
     shiny::NS(id, "dates"),
     label = "Dates",
@@ -26,7 +38,23 @@ date_slider <- function(
   )
 }
 
-
+state_checkbox <- function(
+  id,
+  label = "jurisdiction",
+  choices = c("Vic", "NSW", "SA", "QLD", "WA", "NT", "ACT", "Tas"),
+  selected =  c("Vic", "NSW"),
+  inline = TRUE,
+  ...
+  ){
+  shinyWidgets::awesomeCheckboxGroup(
+    shiny::NS(id, "states"),
+    label = label,
+    choices = choices,
+    selected =  selected,
+    inline = TRUE,
+    ...
+  )
+}
 
 box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL){
 
