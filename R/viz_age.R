@@ -324,6 +324,9 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
                                       "A84433560L"
                                     ), df = dash_data),
                                     selected_indicator = "unemp_rate") {
+  print('start plot')
+  print(selected_indicator)
+
   df <- data %>%
     mutate(indicator_short = dplyr::case_when(
       .data$indicator == "Unemployment rate" ~ "unemp_rate",
@@ -821,7 +824,8 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
                                           "A84424696F"
                                         ),
                                         df = dash_data
-                                        )) {
+                                        ),
+                                        date_range = NULL) {
   df <- data %>%
     dplyr::select(.data$date, .data$value, .data$indicator)
 
@@ -924,13 +928,19 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
                                          ),
                                          state = strayr::clean_state(.data$state)
                                        ),
-                                     selected_indicator = "unemp_rate") {
+                                     selected_indicator = "unemp_rate",
+                                     state = NULL) {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
     selected_indicator == "emp_pop" ~ "Employment to population ratio",
     TRUE ~ NA_character_
   )
+
+  if (!is.null(state)) {
+    data <- data %>%
+      dplyr::filter(.data$state %in% .env$state)
+  }
 
   # Reduce to selected_indicator
   df <- data %>%
