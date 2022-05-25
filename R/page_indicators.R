@@ -300,7 +300,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
 
   djpr_async_server(
     id = "ind_underut_area",
-    plot_func = viz_ind_underut_area,
+    plot_fun = viz_ind_underut_area,
     data = dash_data %>%
       dplyr::filter(series_id %in% c(
       "A85223450L",
@@ -344,7 +344,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     )
   )
 
-  djpr_pasync_server(
+  djpr_async_server(
     id = "ind_partrate_un_line",
     plot_fun = viz_ind_partrate_un_line,
     data = dash_data %>%
@@ -370,7 +370,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
 
   djpr_async_server(
     id = "ind_partrate_line",
-    plot_func = viz_ind_partrate_line,
+    plot_fun = viz_ind_partrate_line,
     data = dash_data %>%
       dplyr::filter(series_id = c(
       "A84423355R",
