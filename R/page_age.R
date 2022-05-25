@@ -10,14 +10,14 @@ page_ageUI <- function(...) {
     "in underlying conditions less apparent.",
     uiOutput("table_gr_youth_summary"),
     fluidRow(
-        djpr_async_ui("gr_yth_emp_sincecovid_line", width = 6),
-        djpr_async_ui("gr_yth_lfpartrate_vicaus_line", width = 6)
+        djpr_async_ui("gr_yth_emp_sincecovid_line", width = 6, height = '400px'),
+        djpr_async_ui("gr_yth_lfpartrate_vicaus_line", width = 6, height = '400px')
     ),
 
 
     focus_box(
       h2("Labour force status of Victorian youth"),
-      shiny::selectInput("youth_focus",
+      shiny::selectInput("gr_youth_states_dot-youth_focus",
         "Select an indicator",
         choices = c(
           "Unemployment rate" = "unemp_rate",
@@ -35,7 +35,7 @@ page_ageUI <- function(...) {
         column(6,
                fluidRow(
                  djpr_async_ui("gr_ages_line",
-                                height = "200px",
+                                height = "320px",
                                 width = 12
                )),
                fluidRow(
@@ -47,16 +47,18 @@ page_ageUI <- function(...) {
       fluidRow(
         djpr_async_ui(
           "gr_youth_vicaus_line",
-          width = 12)
+          width = 12),
+        state_checkbox(id = 'gr_youth_vicaus_line-state')
       )
     ),
 
 
     djpr_h2_box("Detailed labour force status of Victorian youth"),
-    djpr_async_ui("gr_youth_full_part_line"),
-    djpr_async_ui("gr_youth_eduemp_waterfall",
-      interactive = FALSE
-    ),
+    box(
+      djpr_async_ui("gr_youth_full_part_line"),
+      date_slider('gr_youth_full_part_line-date')
+      ),
+    djpr_async_ui("gr_youth_eduemp_waterfall"),
     djpr_async_ui("gr_yth_mostvuln_line"),
 
 
@@ -178,12 +180,11 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
                   "A84433559C",
                   "A84433560L"
                 )),
+
     # width_percent = 90,
     # height_percent = 160,
-    download_button = TRUE,
-    selected_indicator = reactive({
-      input$youth_focus
-    })
+    # download_button = TRUE,
+    selected_indicator = input$youth_focus
   )
 
   djpr_async_server(
@@ -192,12 +193,10 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     data      =  youth_focus_box_data(),
     # width_percent = 90,
     # height_percent = 50,
-    date_slider = TRUE,
-    date_slider_value_min = as.Date("2014-11-01"),
-    download_button = TRUE,
-    selected_indicator = reactive({
-      input$youth_focus
-    })
+    # date_slider = TRUE,
+    # date_slider_value_min = as.Date("2014-11-01"),
+    # download_button = TRUE,
+    selected_indicator = input$youth_focus
   )
 
   djpr_async_server(
@@ -214,47 +213,47 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
                 )),
     # width_percent = 90,
     # height_percent = 50,
-    date_slider = TRUE,
-    date_slider_value_min = as.Date("2014-11-01"),
-    download_button = T,
-    selected_indicator = reactive({
-      input$youth_focus
-    })
+    # date_slider = TRUE,
+    # date_slider_value_min = as.Date("2014-11-01"),
+    # download_button = TRUE,
+    selected_indicator = input$youth_focus
   )
 
-  djpr_async_server("gr_youth_vicaus_line",
-    viz_gr_youth_vicaus_line,
-    data = filter_dash_data(c(
-      "A84433601W",
-      "A84433602X",
-      "A84433603A",
-      "A84433505W",
-      "A84433503T",
-      "A84433504V",
-      "A84433519K",
-      "A84433517F",
-      "A84433518J",
-      "A84433533F",
-      "A84433531A",
-      "A84433532C",
-      "A84433617R",
-      "A84433615K",
-      "A84433616L",
-      "A84433575C",
-      "A84433573X",
-      "A84433574A",
-      "A84433547V",
-      "A84433545R",
-      "A84433546T",
-      "A84433589T",
-      "A84433587L",
-      "A84433588R",
-      "A84433561R",
-      "A84433559C",
-      "A84433560L"
-    ),
-    df = dash_data
-    ) %>%
+
+
+  djpr_async_server(
+    id        =  "gr_youth_vicaus_line",
+    plot_fun  =  viz_gr_youth_vicaus_line,
+    data      =  dash_data %>%
+      filter(series_id %in%
+               c("A84433601W",
+                "A84433602X",
+                "A84433603A",
+                "A84433505W",
+                "A84433503T",
+                "A84433504V",
+                "A84433519K",
+                "A84433517F",
+                "A84433518J",
+                "A84433533F",
+                "A84433531A",
+                "A84433532C",
+                "A84433617R",
+                "A84433615K",
+                "A84433616L",
+                "A84433575C",
+                "A84433573X",
+                "A84433574A",
+                "A84433547V",
+                "A84433545R",
+                "A84433546T",
+                "A84433589T",
+                "A84433587L",
+                "A84433588R",
+                "A84433561R",
+                "A84433559C",
+                "A84433560L"
+              )) %>%
       dplyr::mutate(
         state = dplyr::if_else(.data$state == "",
           "Aus",
@@ -273,60 +272,52 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       "Vic",
       "SA"
     ),
-    check_box_var = .data$state,
-    check_box_selected = c("Aus", "Vic"),
-    selected_indicator = reactive(input$youth_focus),
-    width_percent = 90,
-    date_slider = FALSE,
-    plt_change = plt_change
+    # check_box_var = .data$state,
+    # check_box_selected = c("Aus", "Vic"),
+    #selected_indicator = input$youth_focus,
+    state = input$state
   )
 
-  djpr_plot_server("gr_youth_full_part_line",
-    plot_function = viz_gr_youth_full_part_line,
-    data = filter_dash_data(c(
-      "A84424687C",
-      "A84424695C",
-      "A84424696F"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    width_percent = 90,
-    date_slider = TRUE
+  djpr_async_server(
+    id        =  "gr_youth_full_part_line",
+    plot_fun  =  viz_gr_youth_full_part_line,
+    data      =  dash_data %>%
+      filter(series_id %in%
+               c("A84424687C",
+                  "A84424695C",
+                  "A84424696F"
+                ))#,
+    #date_slider = TRUE
   )
 
-  djpr_plot_server("gr_youth_eduemp_waterfall",
-    plot_function = viz_gr_youth_eduemp_waterfall,
-    data = filter_dash_data(c(
-      "A84424598A",
-      "A84424778K",
-      "A84424597X",
-      "A84424777J",
-      "A84424600A",
-      "A84424780W",
-      "A84424694A"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    interactive = FALSE,
-    width_percent = 90,
-    date_slider = FALSE
+
+  djpr_async_server(
+    id        =  "gr_youth_eduemp_waterfall",
+    plot_fun  =  viz_gr_youth_eduemp_waterfall,
+    data      =  dash_data %>%
+      filter(series_id %in%
+               c("A84424598A",
+                "A84424778K",
+                "A84424597X",
+                "A84424777J",
+                "A84424600A",
+                "A84424780W",
+                "A84424694A"
+              ))
   )
 
-  djpr_plot_server("gr_yth_mostvuln_line",
-    plot_function = viz_gr_yth_mostvuln_line,
-    data = filter_dash_data(
-      c(
-        "A84424601C",
-        "A84424781X"
-      ),
-      df = dash_data
-    ),
-    plt_change = plt_change,
-    width_percent = 90,
-    date_slider_value_min = Sys.Date() - (365.25 * 10),
-    date_slider = TRUE
+  djpr_async_server(
+    id        =  "gr_yth_mostvuln_line",
+    plot_fun  =  viz_gr_yth_mostvuln_line,
+    data      = dash_data %>%
+      filter(series_id %in%
+                c("A84424601C",
+                  "A84424781X"
+                ))
+
+    #width_percent = 90,
+    #date_slider_value_min = Sys.Date() - (365.25 * 10),
+
   )
 
   output$table_gr_youth_unemp_region <- renderUI({
@@ -370,76 +361,69 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       flextable::htmltools_value()
   })
 
-  djpr_plot_server("gr_youth_jobactive_bar",
-    viz_gr_youth_jobactive_bar,
-    data = filter_dash_data(c(
-      "jobactive_youth (15-24)_ballarat",
-      "jobactive_youth (15-24)_bendigo",
-      "jobactive_youth (15-24)_barwon",
-      "jobactive_youth (15-24)_gippsland",
-      "jobactive_youth (15-24)_goulburn/murray",
-      "jobactive_youth (15-24)_inner metropolitan melbourne",
-      "jobactive_youth (15-24)_north eastern melbourne",
-      "jobactive_youth (15-24)_north western melbourne",
-      "jobactive_youth (15-24)_south coast of victoria",
-      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-      "jobactive_youth (15-24)_western melbourne",
-      "jobactive_youth (15-24)_wimmera mallee"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider = FALSE,
-    download_button = FALSE,
-    width_percent = 75
+  djpr_async_server(
+    id        =  "gr_youth_jobactive_bar",
+    plot_fun  =  viz_gr_youth_jobactive_bar,
+    data      = dash_data %>%
+      filter(series_id %in%
+               c("jobactive_youth (15-24)_ballarat",
+                  "jobactive_youth (15-24)_bendigo",
+                  "jobactive_youth (15-24)_barwon",
+                  "jobactive_youth (15-24)_gippsland",
+                  "jobactive_youth (15-24)_goulburn/murray",
+                  "jobactive_youth (15-24)_inner metropolitan melbourne",
+                  "jobactive_youth (15-24)_north eastern melbourne",
+                  "jobactive_youth (15-24)_north western melbourne",
+                  "jobactive_youth (15-24)_south coast of victoria",
+                  "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                  "jobactive_youth (15-24)_western melbourne",
+                  "jobactive_youth (15-24)_wimmera mallee"
+                ))
   )
 
-  djpr_plot_server("gr_age_jobactive_since_covid_line",
-    viz_gr_age_jobactive_since_covid_line,
-    plt_change = plt_change,
-    data = filter_dash_data(c(
-      "jobactive_youth (15-24)_ballarat",
-      "jobactive_youth (15-24)_bendigo",
-      "jobactive_youth (15-24)_barwon",
-      "jobactive_youth (15-24)_gippsland",
-      "jobactive_youth (15-24)_goulburn/murray",
-      "jobactive_youth (15-24)_inner metropolitan melbourne",
-      "jobactive_youth (15-24)_north eastern melbourne",
-      "jobactive_youth (15-24)_north western melbourne",
-      "jobactive_youth (15-24)_south coast of victoria",
-      "jobactive_youth (15-24)_south eastern melbourne and peninsula",
-      "jobactive_youth (15-24)_western melbourne",
-      "jobactive_youth (15-24)_wimmera mallee",
-      "jobactive_mature age (50+)_ballarat",
-      "jobactive_mature age (50+)_bendigo",
-      "jobactive_mature age (50+)_barwon",
-      "jobactive_mature age (50+)_gippsland",
-      "jobactive_mature age (50+)_goulburn/murray",
-      "jobactive_mature age (50+)_inner metropolitan melbourne",
-      "jobactive_mature age (50+)_north eastern melbourne",
-      "jobactive_mature age (50+)_north western melbourne",
-      "jobactive_mature age (50+)_south coast of victoria",
-      "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-      "jobactive_mature age (50+)_western melbourne",
-      "jobactive_mature age (50+)_wimmera mallee",
-      "jobactive_total_ballarat",
-      "jobactive_total_bendigo",
-      "jobactive_total_barwon",
-      "jobactive_total_gippsland",
-      "jobactive_total_goulburn/murray",
-      "jobactive_total_inner metropolitan melbourne",
-      "jobactive_total_north eastern melbourne",
-      "jobactive_total_north western melbourne",
-      "jobactive_total_south coast of victoria",
-      "jobactive_total_south eastern melbourne and peninsula",
-      "jobactive_total_western melbourne",
-      "jobactive_total_wimmera mallee"
-    ),
-    df = dash_data
-    ) %>%
-      dplyr::filter(date >= as.Date("2019-03-31")),
-    width_percent = 90,
-    date_slider = FALSE
+  djpr_async_server(
+    id    =  "gr_age_jobactive_since_covid_line",
+    plot_fun  =  viz_gr_age_jobactive_since_covid_line,
+    data = dash_data %>%
+      filter(series_id %in%
+               c("jobactive_youth (15-24)_ballarat",
+                "jobactive_youth (15-24)_bendigo",
+                "jobactive_youth (15-24)_barwon",
+                "jobactive_youth (15-24)_gippsland",
+                "jobactive_youth (15-24)_goulburn/murray",
+                "jobactive_youth (15-24)_inner metropolitan melbourne",
+                "jobactive_youth (15-24)_north eastern melbourne",
+                "jobactive_youth (15-24)_north western melbourne",
+                "jobactive_youth (15-24)_south coast of victoria",
+                "jobactive_youth (15-24)_south eastern melbourne and peninsula",
+                "jobactive_youth (15-24)_western melbourne",
+                "jobactive_youth (15-24)_wimmera mallee",
+                "jobactive_mature age (50+)_ballarat",
+                "jobactive_mature age (50+)_bendigo",
+                "jobactive_mature age (50+)_barwon",
+                "jobactive_mature age (50+)_gippsland",
+                "jobactive_mature age (50+)_goulburn/murray",
+                "jobactive_mature age (50+)_inner metropolitan melbourne",
+                "jobactive_mature age (50+)_north eastern melbourne",
+                "jobactive_mature age (50+)_north western melbourne",
+                "jobactive_mature age (50+)_south coast of victoria",
+                "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                "jobactive_mature age (50+)_western melbourne",
+                "jobactive_mature age (50+)_wimmera mallee",
+                "jobactive_total_ballarat",
+                "jobactive_total_bendigo",
+                "jobactive_total_barwon",
+                "jobactive_total_gippsland",
+                "jobactive_total_goulburn/murray",
+                "jobactive_total_inner metropolitan melbourne",
+                "jobactive_total_north eastern melbourne",
+                "jobactive_total_north western melbourne",
+                "jobactive_total_south coast of victoria",
+                "jobactive_total_south eastern melbourne and peninsula",
+                "jobactive_total_western melbourne",
+                "jobactive_total_wimmera mallee"
+              )) %>%
+      dplyr::filter(date >= as.Date("2019-03-31"))
   )
 
   output$table_jobactive_mature_age <- renderUI({
@@ -447,28 +431,24 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       flextable::htmltools_value()
   })
 
-  djpr_plot_server("gr_mature_age_jobactive_bar",
-    viz_gr_mature_age_jobactive_bar,
-    data = filter_dash_data(c(
-      "jobactive_mature age (50+)_ballarat",
-      "jobactive_mature age (50+)_bendigo",
-      "jobactive_mature age (50+)_barwon",
-      "jobactive_mature age (50+)_gippsland",
-      "jobactive_mature age (50+)_goulburn/murray",
-      "jobactive_mature age (50+)_inner metropolitan melbourne",
-      "jobactive_mature age (50+)_north eastern melbourne",
-      "jobactive_mature age (50+)_north western melbourne",
-      "jobactive_mature age (50+)_south coast of victoria",
-      "jobactive_mature age (50+)_south eastern melbourne and peninsula",
-      "jobactive_mature age (50+)_western melbourne",
-      "jobactive_mature age (50+)_wimmera mallee"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider = FALSE,
-    download_button = FALSE,
-    width_percent = 75
+  djpr_async_server(
+    id        =  "gr_mature_age_jobactive_bar",
+    plot_fun  =  viz_gr_mature_age_jobactive_bar,
+    data      = dash_data %>%
+      filter(series_id %in%
+               c("jobactive_mature age (50+)_ballarat",
+                "jobactive_mature age (50+)_bendigo",
+                "jobactive_mature age (50+)_barwon",
+                "jobactive_mature age (50+)_gippsland",
+                "jobactive_mature age (50+)_goulburn/murray",
+                "jobactive_mature age (50+)_inner metropolitan melbourne",
+                "jobactive_mature age (50+)_north eastern melbourne",
+                "jobactive_mature age (50+)_north western melbourne",
+                "jobactive_mature age (50+)_south coast of victoria",
+                "jobactive_mature age (50+)_south eastern melbourne and peninsula",
+                "jobactive_mature age (50+)_western melbourne",
+                "jobactive_mature age (50+)_wimmera mallee"
+    ))
   )
 
   observeEvent(input$link_age, {
