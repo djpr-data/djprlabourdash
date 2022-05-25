@@ -15,7 +15,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("ind_emp_table") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
-    br(),
+
     fluidRow(
       djpr_async_ui("ind_emppop_state_line", width = 12)
 
@@ -52,7 +52,8 @@ page_indicatorsUI <- function(...) {
       djpr_async_ui("ind_unemprate_line", width = 12)
       ),
 
-    h4(br(), "Effective unemployment rate"),
+    djpr_h3_box("Effective unemployment rate"),
+
     shinydashboard::box(
       width = 12,
       "People who are employed but have not been able to work any hours do not count ",
@@ -62,11 +63,12 @@ page_indicatorsUI <- function(...) {
       "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
       "a three month average of persons working zero hours for economic or unstated reasons."
     ),
+
     fluidRow(
       djpr_async_ui("ind_effective_unemprate_line", width = 12)
       ),
 
-    h4(br(), "Unemployment rates by state"),
+    djpr_h3_box("Unemployment rates by state"),
 
     box(
       uiOutput("table_ind_unemp_state")
@@ -342,44 +344,40 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     )
   )
 
-
-  ####### up to here  ##############
-
-  djpr_plot_server("ind_partrate_un_line",
-    viz_ind_partrate_un_line,
-    data = filter_dash_data(c(
+  djpr_pasync_server(
+    id = "ind_partrate_un_line",
+    plot_fun = viz_ind_partrate_un_line,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A84423355R",
       "A84423354L"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider_value_min = Sys.Date() - (10 * 365)
+    )
+    )
+    #date_slider_value_min = Sys.Date() - (10 * 365)
   )
 
-  djpr_plot_server("ind_partrate_un_scatter",
-    viz_ind_partrate_un_scatter,
-    plt_change = plt_change,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_partrate_un_scatter",
+    plot_fun = viz_ind_partrate_un_scatter,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "A84423355R",
       "A84423354L"
-    ),
-    df = dash_data
-    ),
-    selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
-    date_slider = FALSE
+    )
+    )
+#    selected_period = reactive(input$ind_partrate_un_scatter_selected_period),
   )
 
-  djpr_plot_server("ind_partrate_line",
-    plot_function = viz_ind_partrate_line,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "ind_partrate_line",
+    plot_func = viz_ind_partrate_line,
+    data = dash_data %>%
+      dplyr::filter(series_id = c(
       "A84423355R",
       "A84423051C"
-    ),
-    df = dash_data
-    ),
-    date_slider_value_min = as.Date("2000-01-01"),
-    plt_change = plt_change
+    )
+    )
+#    date_slider_value_min = as.Date("2000-01-01"),
   )
 
   observeEvent(input$link_indicators, {
