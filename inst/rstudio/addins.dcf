@@ -8,7 +8,7 @@ Description: Automatically update the package data and delete the app-cache
 Binding: update_data
 Interactive: true
 
-Name: C - Update data and Render Word Report
+Name: C - Render Word Report
 Description: Generate MS Word Report
 Binding: generate_report
 Interactive: true
