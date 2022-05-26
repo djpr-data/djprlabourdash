@@ -48,6 +48,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)),
 
+    ### error: comparison (5) is possible only for atomic and list types
     fluidRow(
       djpr_async_ui("ind_unemprate_line", width = 12)
       ),
@@ -64,6 +65,7 @@ page_indicatorsUI <- function(...) {
       "a three month average of persons working zero hours for economic or unstated reasons."
     ),
 
+    ### error: comparison (5) is possible only for atomic and list types
     fluidRow(
       djpr_async_ui("ind_effective_unemprate_line", width = 12)
       ),
@@ -78,12 +80,14 @@ page_indicatorsUI <- function(...) {
       djpr_async_ui("ind_unemp_states_dot", width = 12)
       ),
 
+    ### error: unused argument (date = 15488)
     fluidRow(
       djpr_async_ui("ind_underut_area", width = 12)
       ),
 
     djpr_h2_box("Hours worked"),
 
+    ### error: comparison (5) is possible only for atomic and list types
     fluidRow(
       djpr_async_ui("ind_hoursworked_line", width = 12)
       ),
@@ -245,6 +249,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     bindCache(series_latestdates)
 
   # Indicators: line chart of Aus v Vic
+  ### error: comparison (5) is possible only for atomic and list types
   djpr_async_server(
     id = "ind_unemprate_line",
     plot_fun = viz_ind_unemprate_line,
@@ -256,6 +261,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   )
 
   # Indicators: effective unemployment rate
+  ### error: comparison (5) is possible only for atomic and list types
   djpr_async_server(
     id = "ind_effective_unemprate_line",
     plot_fun = viz_ind_effective_unemprate_line,
@@ -311,6 +317,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   )
 
   # Indicators: hours worked ----
+  ### error: comparison (5) is possible only for atomic and list types
   djpr_async_server(
     id = "ind_hoursworked_line",
     plot_fun = viz_ind_hoursworked_line,
@@ -372,7 +379,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     id = "ind_partrate_line",
     plot_fun = viz_ind_partrate_line,
     data = dash_data %>%
-      dplyr::filter(series_id = c(
+      dplyr::filter(series_id %in% c(
       "A84423355R",
       "A84423051C"
     )
