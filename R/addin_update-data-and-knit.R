@@ -11,6 +11,7 @@
 #' @examples
 update_data <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
+  stopifnot(addins_check_env())
 
   continue <- readline(prompt="Has the update to djprdashdata package completed? (y/n): ")
   assertthat::assert_that(tolower(continue) == 'y', msg = 'You need to wait for djprdashdata update!')

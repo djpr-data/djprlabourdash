@@ -9,6 +9,7 @@
 #' @examples
 build_email_content <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
+  stopifnot(addins_check_env())
 
   release_type <- readline(prompt="Labour Force `Detailed` release? (y/n): ") |>
     tolower() |>

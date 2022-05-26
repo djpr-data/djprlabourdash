@@ -10,6 +10,7 @@
 #' @examples
 editSMS <- function(labour = NULL) {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
+  stopifnot(addins_check_env())
   # shell("git checkout main")
 
 
@@ -17,6 +18,7 @@ editSMS <- function(labour = NULL) {
     miniUI::gadgetTitleBar("Edit SMS"),
     miniUI::miniContentPanel(
       shiny::textInput("to", "Send To", value = Sys.getenv()[["USEREMAIL"]], width = "100%"),
+      shiny::passwordInput('password', 'DJPR Password', placeholder = 'for authentication to email server'),
       shinyWidgets::switchInput("live", "Enable", value = FALSE, onStatus = "success", offStatus = "danger"),
       shiny::textAreaInput("sms_text", "SMS Content", rows = 8, width = "550px", height = "100%"),
       miniUI::miniButtonBlock(
@@ -65,9 +67,7 @@ editSMS <- function(labour = NULL) {
       host = "smtp.office365.com",
       port = 587,
       username = Sys.getenv()[["USEREMAIL"]],
-      password = keyring::key_get("user-passwd",
-        username = Sys.getenv()[["USERNAME"]]
-      )
+      password = input$password
     )
 
     to_send <- reactive({

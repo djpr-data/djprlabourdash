@@ -12,6 +12,7 @@
 #' @examples
 editEMAIL <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
+  stopifnot(addins_check_env())
 
   email_lists_url <- file.path(Sys.getenv()[["R_USER_HOME"]],
     "VicGov",
