@@ -79,3 +79,56 @@ column_nopad <- function(width = 6, ...){
     shiny::tagAppendAttributes(style = "padding:0px;")
 }
 
+
+focus_box <- function(
+  title,
+  inputs,
+  ...,
+  colour = "#00573f",
+  text_colour = "#FFFFFF",
+  width = 12,
+  title_width = 9
+  ){
+
+  # Checks
+  if(!(title_width %in% 1:11)) stop(
+    "Title width must be in 1:11 (bootstrap grid)\nTitle width cannot be 12 as space is needed for inputs"
+    )
+  if(!(width %in% 1:12)) stop(
+    "Focus box width must be in 1:12 (bootstrap grid)"
+  )
+
+  # Options
+  title_width <- round(title_width)
+  inputs_width <- 12L - title_width
+  box_style <- paste0("border: 3px solid ", colour, "; background: ", text_colour)
+  title_style <- paste0("background: ", colour, "; padding:10px; margin: 0;")
+
+  # Reformat title
+  title <- span(title, style = paste0("color: ", text_colour, ";"))
+
+  # Create box
+  box(
+    width = width,
+    style = box_style,
+
+    fluidRow(
+      style = title_style,
+      column(
+        title_width,
+        title
+      ),
+      column(
+        inputs_width,
+        inputs
+      )
+    ),
+
+    div(
+      style = "padding:15px;",
+      ...
+    )
+  )
+
+}
+
