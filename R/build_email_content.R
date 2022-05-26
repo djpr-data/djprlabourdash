@@ -50,3 +50,38 @@ build_email_content <- function() {
 
   rstudioapi::navigateToFile("inst/message.md")
 }
+
+
+
+
+
+#' Edit Distribution Lists
+#'
+#' @return
+#'
+#' @examples
+#' \dontrun{
+#' edit_email_lists()
+#' }
+edit_email_lists <- function(){
+
+  if (Sys.getenv()[['RSTUDIO_PROGRAM_MODE']] == 'desktop'){
+    email_lists_url <- file.path(Sys.getenv()[["R_USER_HOME"]],
+                                 "VicGov",
+                                 "Economic Modelling Team - Documents",
+                                 "Modelling research projects",
+                                 "Labour market dashboard",
+                                 "Jobs dashboard circulation list.xlsx",
+                                 fsep = .Platform$file.sep
+    )
+    shell.exec(email_lists_url)
+  } else {
+
+    url <- 'https://vicgov.sharepoint.com/:x:/r/sites/VG001671/Documents/Modelling%20research%20projects/Labour%20market%20dashboard/Jobs%20dashboard%20circulation%20list.xlsx?d=w157b0eb871c64a77abd2c086c5103221&csf=1&web=1&e=HaULVh'
+    browseURL(url)
+
+  }
+
+
+
+}
