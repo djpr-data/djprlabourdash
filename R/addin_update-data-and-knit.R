@@ -60,7 +60,7 @@ generate_report <- function() {
 
   # ensure data is up to date
   dash_data_date <- readLines('https://raw.githubusercontent.com/djpr-data/djprdashdata/main/data-raw/last_updated.txt')
-  assertthat::assert_that(dash_data_date == djprlabourdash::dash_data_updated,
+  assertthat::assert_that(dash_data_date == djprlabourdash:::dash_data_updated,
                           msg = 'something went wrong with the data update please redo')
 
   show_output <- switch(Sys.getenv()[['RSTUDIO_PROGRAM_MODE']],
