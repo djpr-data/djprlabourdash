@@ -734,7 +734,15 @@ viz_gr_yth_mostvuln_line <- function(data = filter_dash_data(
                                          "A84424781X"
                                        ),
                                        df = dash_data
-                                     )) {
+                                     ),
+                                     date_range = NULL) {
+
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   # select the necessary column
   df <- data %>%
     dplyr::select(.data$date, .data$series_id, .data$value)
@@ -826,6 +834,12 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
                                         df = dash_data
                                         ),
                                         date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::select(.data$date, .data$value, .data$indicator)
 
