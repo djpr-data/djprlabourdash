@@ -352,7 +352,8 @@ viz_reg_unemp_emppop_partrate_multiline <- function(
     df = dash_data
   ),
   selected_indicator = "unemp_rate",
-  dates = c(data_dates$`6202016`$min, data_dates$`6202016`$max)
+  dates = c(data_dates$`6202016`$min, data_dates$`6202016`$max),
+  n_col
   ){
 
   indic_long <- dplyr::case_when(
@@ -481,7 +482,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(
       size = 12 / .pt
     ) +
     geom_line(data = vic) +
-    facet_wrap(~ factor(sa4), ncol = 6, scales = "free_x") +
+    facet_wrap(~ factor(sa4), ncol = n_col, scales = "free_x") +
     scale_x_date(
       date_labels = "%Y",
       breaks = scales::breaks_pretty(n = 3)
@@ -1290,8 +1291,8 @@ table_region_focus <- function(data = filter_dash_data(
     ) %>%
     # flextable::autofit(add_w = 0, add_h = 0) %>%
     flextable::set_table_properties("autofit", width = 1) %>%
-    flextable::font(part = "body", fontname = "VIC-font") %>%
-    flextable::font(part = "header", fontname = "VIC-font") %>%
+    flextable::font(part = "body", fontname = "VIC-regular") %>%
+    flextable::font(part = "header", fontname = "VIC-regular") %>%
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
 
@@ -1307,7 +1308,7 @@ table_region_focus <- function(data = filter_dash_data(
       part = "footer"
     ) %>%
     flextable::italic(part = "footer") %>%
-    flextable::font(fontname = "VIC-font") %>%
+    flextable::font(fontname = "VIC-regular") %>%
     flextable::fontsize(
       size = 9 * 0.85,
       part = "footer"
@@ -1324,17 +1325,21 @@ table_region_focus <- function(data = filter_dash_data(
   out
 }
 
-viz_reg_melvic_line <- function(data = filter_dash_data(c(
-                                  "A84600144J",
-                                  "A84600078W",
-                                  "A84595516F",
-                                  "A84595471L"
-                                ),
-                                df = dash_data
-                                ) %>%
-                                  dplyr::group_by(.data$series_id) %>%
-                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                                  dplyr::filter(!is.na(.data$value))) {
+viz_reg_melvic_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84600144J",
+      "A84600078W",
+      "A84595516F",
+      "A84595471L"
+    ),
+    df = dash_data
+  ) %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+    dplyr::filter(!is.na(.data$value)),
+  dates = dates
+) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1360,7 +1365,8 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
         fixed = TRUE
       )
-    )
+    ) %>%
+    filter(date >= dates[1], date <= dates[2])
 
   max_date <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
