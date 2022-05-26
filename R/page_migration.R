@@ -1,18 +1,24 @@
 page_migrationUI <- function(...) {
+
   fluidRow(
-    br(),
-    paste0("This section explores the labour force status of migrants in Australia."),
-    br(),
-    h2(br(), "Jobactive caseload for refugees"),
+    shinydashboard::box(
+      width = 12,
+      "This section explores the labour force status of migrants in Australia."
+  ),
+
+  djpr_h2_box("Jobactive caseload for migrants"),
+
+  box(
     uiOutput("table_jobactive_refugees") %>%
-      djpr_with_spinner(),
-    br(),
-    djpr_plot_ui("gr_refugee_jobact_sincecovid_line"),
-    br(),
-    djpr_plot_ui("gr_refugee_jobactive_bar"),
-    br(),
-    htmlOutput("migration_footnote"),
-    br()
+      djpr_with_spinner()
+  ),
+
+  fluidRow(
+    djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
+    djpr_async_ui("gr_refugee_jobactive_bar", width = 6)
+    ),
+
+  htmlOutput("migration_footnote"),
   )
 }
 
@@ -23,10 +29,11 @@ page_migration <- function(input, output, session, plt_change, series_latestdate
       flextable::htmltools_value()
   })
 
-  djpr_plot_server("gr_refugee_jobact_sincecovid_line",
-    viz_gr_refugee_jobact_sincecovid_line,
-    plt_change = plt_change,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "gr_refugee_jobact_sincecovid_line",
+    plot_fun = viz_gr_refugee_jobact_sincecovid_line,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "jobactive_refugee_ballarat",
       "jobactive_refugee_bendigo",
       "jobactive_refugee_barwon",
@@ -51,16 +58,16 @@ page_migration <- function(input, output, session, plt_change, series_latestdate
       "jobactive_total_south eastern melbourne and peninsula",
       "jobactive_total_western melbourne",
       "jobactive_total_wimmera mallee"
-    ),
-    df = dash_data
+    )
     ) %>%
-      dplyr::filter(date >= as.Date("2019-03-31")),
-    date_slider = FALSE
+      dplyr::filter(date >= as.Date("2019-03-31"))
   )
 
-  djpr_plot_server("gr_refugee_jobactive_bar",
-    viz_gr_refugee_jobactive_bar,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "gr_refugee_jobactive_bar",
+    plot_fun = viz_gr_refugee_jobactive_bar,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "jobactive_refugee_ballarat",
       "jobactive_refugee_bendigo",
       "jobactive_refugee_barwon",
@@ -73,12 +80,8 @@ page_migration <- function(input, output, session, plt_change, series_latestdate
       "jobactive_refugee_south eastern melbourne and peninsula",
       "jobactive_refugee_western melbourne",
       "jobactive_refugee_wimmera mallee"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider = FALSE,
-    download_button = FALSE,
-    width_percent = 75
+    )
+    )
+#    download_button = FALSE,
   )
 }
