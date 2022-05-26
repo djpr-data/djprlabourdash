@@ -48,7 +48,6 @@ page_indicatorsUI <- function(...) {
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)),
 
-    ### error: comparison (5) is possible only for atomic and list types
     fluidRow(
       djpr_async_ui("ind_unemprate_line", width = 12)
       ),
@@ -65,7 +64,6 @@ page_indicatorsUI <- function(...) {
       "a three month average of persons working zero hours for economic or unstated reasons."
     ),
 
-    ### error: comparison (5) is possible only for atomic and list types
     fluidRow(
       djpr_async_ui("ind_effective_unemprate_line", width = 12)
       ),
@@ -86,7 +84,6 @@ page_indicatorsUI <- function(...) {
 
     djpr_h2_box("Hours worked"),
 
-    ### error: comparison (5) is possible only for atomic and list types
     fluidRow(
       djpr_async_ui("ind_hoursworked_line", width = 12)
       ),
@@ -248,19 +245,17 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     bindCache(series_latestdates)
 
   # Indicators: line chart of Aus v Vic
-  ### error: comparison (5) is possible only for atomic and list types
   djpr_async_server(
     id = "ind_unemprate_line",
     plot_fun = viz_ind_unemprate_line,
     data = dash_data %>%
       dplyr::filter(series_id %in% c(
       "A84423354L",
-      "A84423050A")),
-    date >= as.Date("2000-01-01")
+      "A84423050A"))
+#    date >= as.Date("2000-01-01")
   )
 
   # Indicators: effective unemployment rate
-  ### error: comparison (5) is possible only for atomic and list types
   djpr_async_server(
     id = "ind_effective_unemprate_line",
     plot_fun = viz_ind_effective_unemprate_line,
@@ -273,8 +268,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
       "employed part-time_did not work (0 hours)_no work, not enough work available, or stood down_victoria",
       "employed full-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria",
       "employed part-time_did not work (0 hours)_worked fewer hours than usual for other reasons_victoria"
-    )),
-    date >= as.Date("2019-06-01")
+    ))
+#    date >= as.Date("2019-06-01")
   )
 
   # Indicators: table of unemployment rates by state
@@ -316,7 +311,6 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   )
 
   # Indicators: hours worked ----
-  ### error: comparison (5) is possible only for atomic and list types
   djpr_async_server(
     id = "ind_hoursworked_line",
     plot_fun = viz_ind_hoursworked_line,
@@ -327,8 +321,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
       "A84423689R",
       "A84423091W"
     )
-    ),
-    date >= as.Date("2000-01-01")
+    )
+#    date >= as.Date("2000-01-01")
   )
 
   # Indicators: participation ----
