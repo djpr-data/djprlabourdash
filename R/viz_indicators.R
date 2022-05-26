@@ -295,19 +295,11 @@ viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
                                       date_filter = NULL,
                                       state_filter = NULL) {
 
-  if(!is.null(date_filter)) {
-    data = data %>%
-      dplyr::filter(.data$date >= .env$date_filter[1],
-                    .data$date <= .env$date_filter[2]
-                    )
-  }
-
-  if(!is.null(state_filter)) {
-    data = data %>%
-      dplyr::filter(.data$state %in% .env$state_filter)
-  }
-
   df <- data %>%
+    dplyr::filter(.data$state %in% .env$state_filter) %>%
+    dplyr::filter(.data$date >= .env$date_filter[1],
+                  .data$date <= .env$date_filter[2]
+    ) %>%
     dplyr::mutate(
       state_group = dplyr::if_else(.data$state %in% c(
         "Vic", "NSW"
