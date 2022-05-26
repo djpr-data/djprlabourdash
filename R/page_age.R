@@ -54,12 +54,11 @@ page_ageUI <- function(...) {
 
 
     djpr_h2_box("Detailed labour force status of Victorian youth"),
-    box(
-      djpr_async_ui("gr_youth_full_part_line"),
-      date_slider('gr_youth_full_part_line-date')
-      ),
+    djpr_async_ui("gr_youth_full_part_line",
+                  date_slider('gr_youth_full_part_line')),
     djpr_async_ui("gr_youth_eduemp_waterfall"),
-    djpr_async_ui("gr_yth_mostvuln_line"),
+    djpr_async_ui("gr_yth_mostvuln_line",
+                  date_slider('gr_yth_mostvuln_line')),
 
 
     djpr_h2_box("Youth unemployment rate by region"),
@@ -286,8 +285,8 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
                c("A84424687C",
                   "A84424695C",
                   "A84424696F"
-                ))#,
-    #date_slider = TRUE
+                )),
+    date_range = input$range
   )
 
 
@@ -313,7 +312,8 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
       filter(series_id %in%
                 c("A84424601C",
                   "A84424781X"
-                ))
+                )),
+    date_range = input$dates
 
     #width_percent = 90,
     #date_slider_value_min = Sys.Date() - (365.25 * 10),
