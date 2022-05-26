@@ -344,7 +344,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     )
   )
 
-  djpr_pasync_server(
+  djpr_async_server(
     id = "ind_partrate_un_line",
     plot_fun = viz_ind_partrate_un_line,
     data = dash_data %>%
