@@ -80,7 +80,6 @@ page_indicatorsUI <- function(...) {
       djpr_async_ui("ind_unemp_states_dot", width = 12)
       ),
 
-    ### error: unused argument (date = 15488)
     fluidRow(
       djpr_async_ui("ind_underut_area", width = 12)
       ),
@@ -312,8 +311,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
       "A85223450L",
       "A85223451R",
       "A84423354L"
-    )),
-    date = Sys.Date() - (10 * 365)
+    ))
+#    date = Sys.Date() - (10 * 365)
   )
 
   # Indicators: hours worked ----
