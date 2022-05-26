@@ -1,30 +1,45 @@
 page_sexUI <- function(...) {
   fluidRow(
-    br(),
-    h2(br(), "Overview"),
-    uiOutput("table_gr_sex"),
-    br(),
-    h2(br(), "Labour force status by sex"),
-    djpr_plot_ui("gr_gen_emp_bar", interactive = FALSE),
-    djpr_plot_ui("gr_full_part_line"),
-    h2(br(), "Unemployment by sex"),
+
+    djpr_h2_box("Overview"),
+    box(
+      width = 12,
+      uiOutput("table_gr_sex") %>%
+        djpr_with_spinner()
+      ),
+
+    djpr_h2_box( "Labour force status by sex"),
+    djpr_async_ui(width = 12, "gr_gen_emp_bar"),
+
+    djpr_async_ui(
+      width = 12,
+      id = "gr_full_part_line",
+      date_slider("gr_full_part_line", table_no = "6202012")
+      ),
+
+    # EMMA - start here
+
+    djpr_h2_box( "Unemployment by sex"),
     djpr_plot_ui("gr_gen_unemp_line"),
-    h2(br(), "Employment to population ratio by sex"),
+
+    djpr_h2_box( "Employment to population ratio by sex"),
     djpr_plot_ui("gr_gen_emppopratio_line"),
-    h2(br(), "Participation rate by sex"),
+
+    djpr_h2_box( "Participation rate by sex"),
     djpr_plot_ui("gr_gen_partrate_line"),
-    h2(br(), "Jobactive caseload by sex"),
+
+    djpr_h2_box( "Jobactive caseload by sex"),
     uiOutput("table_jobactive_female") %>%
       djpr_with_spinner(),
     djpr_plot_ui("gr_female_jobact_sincecovid_line"),
-    br(),
-    djpr_plot_ui("gr_female_jobactive_bar"),
-    br()
+
+    djpr_plot_ui("gr_female_jobactive_bar")
   )
 }
 
 
 page_sex <- function(input, output, session, plt_change, series_latestdates, footnote) {
+
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
       flextable::htmltools_value()
@@ -46,11 +61,9 @@ page_sex <- function(input, output, session, plt_change, series_latestdates, foo
 
   # Bar chart: LF status by sex, latest month
 
-  djpr_plot_server("gr_gen_emp_bar",
-    viz_gr_gen_emp_bar,
-    date_slider = F,
-    plt_change = plt_change,
-    interactive = FALSE,
+  djpr_async_server(
+    id = "gr_gen_emp_bar",
+    plot_fun = viz_gr_gen_emp_bar,
     data = filter_dash_data(c(
       "A84423469L",
       "A84423245A",
@@ -95,9 +108,10 @@ page_sex <- function(input, output, session, plt_change, series_latestdates, foo
     date_slider_value_min = Sys.Date() - (365.25 * 10)
   )
 
-  djpr_plot_server("gr_full_part_line",
-    viz_gr_full_part_line,
-    plt_change = plt_change,
+  djpr_async_server(
+    id = "gr_full_part_line",
+    plot_fun = viz_gr_full_part_line,
+    dates = input$dates,
     data = filter_dash_data(c(
       "A84423237A",
       "A84423461V",
@@ -105,8 +119,7 @@ page_sex <- function(input, output, session, plt_change, series_latestdates, foo
       "A84423469L"
     ),
     df = dash_data
-    ),
-    date_slider_value_min = Sys.Date() - (365.25 * 5)
+    )
   )
 
   # Jobactive by sex
