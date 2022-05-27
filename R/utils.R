@@ -21,7 +21,7 @@ date_slider <- function(
   if(is.null(min)){min <- data_dates[[table_no]]$min}
   if(is.null(max)){max <- data_dates[[table_no]]$max}
   if(is.null(value)){
-    value <- c(data_dates[[table_no]]$min, data_dates[[table_no]]$max)
+    value <- c(min, max)
     }
 
   shiny::sliderInput(
