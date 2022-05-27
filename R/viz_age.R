@@ -12,7 +12,14 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                            ) %>%
                                              dplyr::group_by(.data$series_id) %>%
                                              dplyr::mutate(value = slider::slide_mean(.data$value, before = 11, complete = TRUE)) %>%
-                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
+                                             dplyr::filter(.data$date >= as.Date("2020-01-01")),
+                                           date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
@@ -67,7 +74,14 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
                                         ),
                                         df = dash_data
                                       ),
-                                      selected_indicator = "unemp_rate") {
+                                      selected_indicator = "unemp_rate",
+                                      date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::filter(.data$age == "15-24") %>%
     dplyr::select(
@@ -228,7 +242,14 @@ youth_focus_box_data <- function() {
 }
 
 viz_gr_ages_line <- function(data = youth_focus_box_data(),
-                             selected_indicator = "unemp_rate") {
+                             selected_indicator = "unemp_rate",
+                             date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::rename(value = selected_indicator) %>%
     dplyr::select(.data$date, .data$age, .data$value)
@@ -323,7 +344,14 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
                                       "A84433559C",
                                       "A84433560L"
                                     ), df = dash_data),
-                                    selected_indicator = "unemp_rate") {
+                                    selected_indicator = "unemp_rate",
+                                    date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   print('start plot')
   print(selected_indicator)
 
@@ -467,7 +495,14 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
                                                 dplyr::group_by(.data$series_id) %>%
                                                 dplyr::mutate(value = slider::slide_mean(.data$value,
                                                   before = 11, complete = TRUE
-                                                ))) {
+                                                )),
+                                              date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -523,7 +558,14 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
                                                before = 11,
                                                complete = TRUE
                                              )) %>%
-                                             dplyr::filter(.data$date >= as.Date("2020-01-01"))) {
+                                             dplyr::filter(.data$date >= as.Date("2020-01-01")),
+                                           date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   data <- data %>%
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
@@ -576,7 +618,14 @@ viz_gr_youth_eduemp_waterfall <- function(data = filter_dash_data(c(
                                             "A84424694A"
                                           ),
                                           df = dash_data
-                                          )) {
+                                          ),
+                                          date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   # select the necessary column
   df <- data %>%
     dplyr::select(.data$date, .data$series, .data$value)
@@ -943,7 +992,14 @@ viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
                                          state = strayr::clean_state(.data$state)
                                        ),
                                      selected_indicator = "unemp_rate",
-                                     state = NULL) {
+                                     state = NULL,
+                                     date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -1083,7 +1139,14 @@ data_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
                                                  ),
                                                  df = dash_data
                                                  ),
-                                                 selected_indicator = "unemp_rate") {
+                                                 selected_indicator = "unemp_rate",
+                                                 date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
 
   # combining value for each date, sa4 and indicator
   df <- data %>%
@@ -1145,7 +1208,14 @@ data_youth_unemp_emppop_partrate_vic <- function(data = filter_dash_data(c(
 
 
 title_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_partrate_vic(),
-                                                  selected_indicator = "unemp_rate") {
+                                                  selected_indicator = "unemp_rate",
+                                                  date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   high_low <- data %>%
     dplyr::ungroup() %>%
     summarise(
@@ -1180,7 +1250,14 @@ title_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop
 
 map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_partrate_vic(),
                                                 selected_indicator = "unemp_rate",
-                                                zoom = 6) {
+                                                zoom = 6,
+                                                date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -1281,7 +1358,14 @@ map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_p
 }
 
 viz_gr_youth_unemp_emppop_partrate_bar <- function(data = data_youth_unemp_emppop_partrate_vic(selected_indicator = selected_indicator),
-                                                   selected_indicator = "unemp_rate") {
+                                                   selected_indicator = "unemp_rate",
+                                                   date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   data %>%
     ggplot(aes(
       x = stats::reorder(.data$sa4, .data$value),
@@ -1351,7 +1435,14 @@ viz_gr_age_jobactive_since_covid_line <- function(data = filter_dash_data(c(
                                                   ),
                                                   df = dash_data
                                                   ) %>%
-                                                    dplyr::filter(date >= as.Date("2019-03-31"))) {
+                                                    dplyr::filter(date >= as.Date("2019-03-31")),
+                                                  date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -1439,7 +1530,14 @@ viz_gr_mature_age_jobactive_bar <- function(data = filter_dash_data(c(
                                               "jobactive_mature age (50+)_wimmera mallee"
                                             ),
                                             df = dash_data
-                                            )) {
+                                            ),
+                                            date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
@@ -1552,7 +1650,14 @@ viz_gr_youth_jobactive_bar <- function(data = filter_dash_data(c(
                                          "jobactive_youth (15-24)_wimmera mallee"
                                        ),
                                        df = dash_data
-                                       )) {
+                                       ),
+                                       date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::select(
       .data$date, .data$series,
