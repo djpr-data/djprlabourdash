@@ -114,14 +114,9 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
 }
 
 # Line chart -- LF participation by sex -----
-viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
-                                       "A84423355R",
-                                       "A84423243W",
-                                       "A84423467J"
-                                     ),
-                                     df = dash_data
-                                     )) {
+viz_gr_gen_partrate_line <- function(data, dates) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
       tooltip = paste0(
@@ -178,14 +173,10 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
 }
 
 # Line chart -- unemployment rate by sex ------
-viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
-                                    "A84423354L",
-                                    "A84423242V",
-                                    "A84423466F"
-                                  ),
-                                  df = dash_data
-                                  )) {
+viz_gr_gen_unemp_line <- function(data,dates) {
+
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
       tooltip = paste0(
@@ -312,13 +303,9 @@ viz_gr_full_part_line <- function(data, dates) {
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
 
-viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
-                                          "A84423244X",
-                                          "A84423468K"
-                                        ),
-                                        df = dash_data
-                                        )) {
+viz_gr_gen_emppopratio_line <- function(data,dates ) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$date, .data$value, .data$sex, .data$indicator) %>%
     dplyr::mutate(series = .data$indicator)
 
