@@ -16,22 +16,24 @@ page_indicatorsUI <- function(...) {
         djpr_with_spinner(hide.ui = TRUE)
     ),
 
-    fluidRow(
-      djpr_async_ui("ind_emppop_state_line", width = 12)
-
-    ),
-
-    fluidRow(
-      column(width = 6,
-             date_slider(
-               id = "ind_emppop_state_line_date-date_filter",
-               table_no = "6202023")
+    djpr_async_ui(
+      "ind_emppop_state_line",
+      width = 12,
+      fluidRow(
+        column(width = 6,
+               date_slider(
+                 id = "ind_emppop_state_line",
+                 table_no = "6202023",
+                 value = c(Sys.Date() - years(5), data_dates$`6202023`$max)
+                 )
+        ),
+        column(width = 6,
+               state_checkbox(
+                 id = "ind_emppop_state_line"
+               ))
+      )
       ),
-      column(width = 6,
-             state_checkbox(
-               id = "ind_emppop_state_line_state"
-             ))
-    ),
+
 
     fluidRow(
       djpr_async_ui("ind_empgro_line", width = 12)
@@ -179,40 +181,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   djpr_async_server(
     id = "ind_emppop_state_line",
     plot_fun = viz_ind_emppop_state_line,
-    data = dash_data %>%
-      dplyr::filter(series_id %in% c(
-      "A84423272J",
-      "A84423356T",
-      "A84423286W",
-      "A84423370L",
-      "A84423328J",
-      "A84423300F",
-      "A84423314V",
-      "A84423342C"
-    )) %>%
-      dplyr::mutate(
-        state = dplyr::case_when(
-          .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-            "Vic",
-          .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-            "NSW",
-          .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-            "QLD",
-          .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-            "NT",
-          .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-            "WA",
-          .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-            "SA",
-          .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-            "Tas",
-          .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-            "ACT",
-          TRUE ~ .data$state
-        )
-      ),
-    date_filter = input$date_filter,
-    state_filter = input$ind_emppop_state_line_state
+    date_filter = input$dates,
+    state_filter = input$states
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus

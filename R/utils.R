@@ -133,6 +133,20 @@ focus_box <- function(
 }
 
 
+# no background box
+async_no_background <- function(djpr_async_ui){
+  djpr_async_ui$children[[1]] <- tagAppendAttributes(
+    djpr_async_ui$children[[1]],
+    style = "background:transparent;box-shadow:none;"
+  )
+  djpr_async_ui$children[[1]]$children <- lapply(
+    djpr_async_ui$children[[1]]$children,
+    tagAppendAttributes,
+    style = "background:transparent;"
+  )
+
+  djpr_async_ui
+}
 
 
 
@@ -172,10 +186,7 @@ djpr_girafe_box <- function(id, ggobj, widget, ...){
     ),
     djpr_ruler_container()
   )
-
 }
-
-
 
 djpr_ruler_container <- function(id){
 
@@ -213,3 +224,4 @@ $(document).on("shiny:inputchanged", function(e) {
     )
   )
 }
+

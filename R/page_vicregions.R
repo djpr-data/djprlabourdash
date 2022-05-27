@@ -1,5 +1,7 @@
 page_vicregionsUI <- function(...) {
   fluidRow(
+
+
     # Unemployment by region -----
     djpr_h2_box("Labour force status by region"),
 
@@ -46,7 +48,7 @@ page_vicregionsUI <- function(...) {
 
     djpr_async_ui(
       id = "reg_unemp_emppop_partrate_multiline",
-      height = "500px",
+      height = "600px",
       width = 12,
       fluidRow(
         style = "padding-top:15px;",
@@ -75,22 +77,9 @@ page_vicregionsUI <- function(...) {
     ),
 
 
-
-
-
-    "The unemployment rate always varies substantially across Victoria. The amount of ",
-    "variation across the regions of Victoria changes over time - the gap between the ",
-    "highest and lowest unemployment rate in the state grows and shrinks. ",
-    "The graphs below explore the level of that dispersion (i.e. the ",
-    "difference between minimum and maximum) of unemployment rates over time", "
-    in different regions in Victoria. The breakdown of regions is by ",
-    shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4"),
-
-
-
     djpr_async_ui(
       id = "reg_unemprate_dispersion",
-      width = 12,
+      width = 10,
       fluidRow(
         column(
           6,
@@ -116,11 +105,32 @@ page_vicregionsUI <- function(...) {
       )
     ),
 
+    box(
+      width = 2,
+      style = "padding: 15px;font-size: 15px;background: #71c5e8;",
+      div("<", style = "font-size: 40px;"),
+      "The unemployment rate always varies substantially across Victoria. The amount of ",
+      "variation across the regions of Victoria changes over time - the gap between the ",
+      "highest and lowest unemployment rate in the state grows and shrinks. ",
+      "The graphs below explore the level of that dispersion (i.e. the ",
+      "difference between minimum and maximum) of unemployment rates over time",
+      "in different regions in Victoria. The breakdown of regions is by ",
+      shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4")
+    ),
+
 
     # Regional Vic vs Greater Melb -----
-    djpr_h2_box( "Regional Victoria and Greater Melbourne"),
-    djpr_plot_ui("reg_melvic_line"),
-    djpr_plot_ui("reg_emp_regions_sincecovid_line"),
+    djpr_h2_box("Regional Victoria and Greater Melbourne"),
+    djpr_async_ui(
+      id = "reg_melvic_line",
+      width = 12,
+      date_slider(
+        id = "reg_melvic_line",
+        table_no = "6291002",
+        value = c(as.Date("2014-11-01"), data_dates$`6291002`$max)
+        )
+    ),
+    djpr_async_ui("reg_emp_regions_sincecovid_line", width = 12),
 
 
 
@@ -128,67 +138,77 @@ page_vicregionsUI <- function(...) {
     djpr_h2_box( "Regional Victoria"),
     # Box for regional focus
     focus_box(
-      h4("Compare regions of Victoria"),
-      selectInput("focus_region",
-                  label = "Choose a region of Victoria",
-                  selected = "Ballarat",
-                  width = "100%",
-                  choices = c(
-                    "Ballarat",
-                    "Bendigo",
-                    "Geelong",
-                    "Hume",
-                    "Latrobe - Gippsland",
-                    "Melbourne - Inner",
-                    "Melbourne - Inner East",
-                    "Melbourne - Inner South",
-                    "Melbourne - North East",
-                    "Melbourne - North West",
-                    "Melbourne - Outer East",
-                    "Melbourne - South East",
-                    "Melbourne - West",
-                    "Mornington Peninsula",
-                    "North West",
-                    "Shepparton",
-                    "Warrnambool and South West"
-                  )
+      title = h3("Compare regions of Victoria"),
+      inputs =
+        tagList(
+          selectInput(
+            "focus_region",
+            label = span("Choose a region of Victoria", style="color:#FFFFFF;"),
+            selected = "Ballarat",
+            width = "100%",
+            choices = c(
+              "Ballarat",
+              "Bendigo",
+              "Geelong",
+              "Hume",
+              "Latrobe - Gippsland",
+              "Melbourne - Inner",
+              "Melbourne - Inner East",
+              "Melbourne - Inner South",
+              "Melbourne - North East",
+              "Melbourne - North West",
+              "Melbourne - Outer East",
+              "Melbourne - South East",
+              "Melbourne - West",
+              "Mornington Peninsula",
+              "North West",
+              "Shepparton",
+              "Warrnambool and South West"
+            )
+          )
       ),
-      column(
-        6,
-        plotOutput("reg_sa4", height = 280) %>%
-          djpr_with_spinner(),
-
-        htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
-          djpr_with_spinner(),
-        plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
-          djpr_with_spinner(),
-      ),
-      column(
-        6,
-
-        uiOutput("table_region_focus") %>%
-          djpr_with_spinner()
+      fluidRow(
+        column(
+          6,
+          plotOutput("reg_sa4", height = 280) %>%
+            djpr_with_spinner()
+        ),
+        column(
+          6,
+          htmlOutput("reg_sa4unemp_cf_broadregion_title", inline = FALSE) %>%
+            djpr_with_spinner(proxy.height = "30px"),
+          plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
+            djpr_with_spinner()
+        ),
+        column(
+          12,
+          uiOutput("table_region_focus") %>%
+            djpr_with_spinner()
+        )
       )
+
     ),
 
-    djpr_h2_box( "Victorian jobactive caseload by employment region"),
-    uiOutput("title_reg_jobactive_vic"),
-    fluidRow(
-      column(
-        6,
-        leaflet::leafletOutput("map_reg_jobactive_vic") %>%
-          djpr_with_spinner()
+    djpr_h2_box("Victorian jobactive caseload by employment region"),
+    focus_box(
+      title = h3(uiOutput("title_reg_jobactive_vic")),
+      inputs = NULL,
+      title_width = 11,
+      fluidRow(
+        column(
+          6,
+          leaflet::leafletOutput("map_reg_jobactive_vic") %>%
+            djpr_with_spinner()
+        ),
+        column(
+          6,
+          plotOutput("reg_jobactive_vic_bar")%>%
+            djpr_with_spinner()
+        )
       ),
-      column(
-        6,
-        plotOutput("reg_jobactive_vic_bar")
-      )
+      uiOutput("table_jobactive_regions") %>%
+        djpr_with_spinner()
     ),
-
-
-
-    uiOutput("table_jobactive_regions") %>%
-      djpr_with_spinner(),
 
     htmlOutput("vicregions_footnote")
   )
@@ -196,21 +216,10 @@ page_vicregionsUI <- function(...) {
 
 
 page_vicregions <- function(input, output, session, plt_change, series_latestdates, footnote) {
-  djpr_plot_server("reg_melvic_line",
-                   viz_reg_melvic_line,
-                   plt_change = plt_change,
-                   date_slider_value_min = as.Date("2014-11-01"),
-                   data = filter_dash_data(c(
-                     "A84600144J",
-                     "A84600078W",
-                     "A84595516F",
-                     "A84595471L"
-                   ),
-                   df = dash_data
-                   ) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                     dplyr::filter(!is.na(.data$value))
+  djpr_async_server(
+    id       = "reg_melvic_line",
+    plot_fun = viz_reg_melvic_line,
+    dates    = input$dates
   )
 
 
@@ -260,24 +269,14 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
     "reg_unemp_emppop_partrate_multiline",
     viz_reg_unemp_emppop_partrate_multiline,
     dates = input$dates,
-    selected_indicator = input$indicator
+    selected_indicator = input$indicator,
+    n_col = ceiling(req(input$sizing$width) / 200)
   )
 
-  # output$text_emp_regions <- renderUI({
-  #   text_reg_regions_sincecovid()
-  # })
 
-  djpr_plot_server("reg_emp_regions_sincecovid_line",
-                   viz_reg_emp_regions_sincecovid_line,
-                   date_slider = FALSE,
-                   data = filter_dash_data(c(
-                     "A84600141A",
-                     "A84600075R"
-                   )) %>%
-                     dplyr::group_by(.data$series_id) %>%
-                     dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                     dplyr::filter(.data$date >= as.Date("2020-01-01")),
-                   plt_change = plt_change
+  djpr_async_server(
+    id = "reg_emp_regions_sincecovid_line",
+    plot_fun = viz_reg_emp_regions_sincecovid_line
   )
 
   djpr_async_server(
@@ -338,8 +337,7 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
   # data_reg_jobactive_map_bar_title <- data_reg_jobactive_vic()
 
   output$title_reg_jobactive_vic <- renderUI({
-    title_reg_jobactive_vic(data = data_reg_jobactive_vic()) %>%
-      djpr_plot_title()
+    title_reg_jobactive_vic(data = data_reg_jobactive_vic())
   })
 
   output$map_reg_jobactive_vic <- leaflet::renderLeaflet({
