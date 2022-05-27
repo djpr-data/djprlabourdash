@@ -1301,6 +1301,7 @@ map_youth_unemp_emppop_partrate_vic <- function(data = data_youth_unemp_emppop_p
   # Produce dynamic map, all of Victoria ----
   map <- mapdata %>%
     leaflet::leaflet(options = leaflet::leafletOptions(background = "white")) %>%
+    leaflet::addProviderTiles('CartoDB.PositronNoLabels') %>%
     leaflet::setView(
       lng = 145.4657, lat = -36.41472, # coordinates of map at first view
       zoom = zoom
