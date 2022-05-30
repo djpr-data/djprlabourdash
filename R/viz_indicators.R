@@ -59,11 +59,12 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_empgro_line <- function(data = filter_dash_data(c(
-                                  "A84423349V",
-                                  "A84423043C"
-                                ))) {
+viz_ind_empgro_line <- function(
+  data = filter_dash_data(c("A84423349V", "A84423043C"), dash_data),
+  dates
+  ) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
     dplyr::group_by(.data$indicator, .data$state) %>%
     dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12)) - 1)) %>%

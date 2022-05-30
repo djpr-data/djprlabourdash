@@ -38,13 +38,16 @@ page_indicatorsUI <- function(...) {
       "ind_empgro_line",
       width = 12,
       fluidRow(
-        column(width = 12,
-               date_slider(
-                 id = "ind_empgro_line",
-                 table_no = "",
-                 value = c(Sys.Date() - years(5), data_dates$`table_no`$max)
-               ))
-      )),
+        column(
+          width = 12,
+          date_slider(
+            id = "ind_empgro_line",
+            table_no = "6202012",
+            value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
+          )
+          )
+      )
+      ),
 
     ##### up to here   #####
 
@@ -199,11 +202,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   djpr_async_server(
     id = "ind_empgro_line",
     plot_fun = viz_ind_empgro_line,
-    data = dash_data %>%
-      dplyr::filter(series_id %in% c(
-        "A84423349V",
-        "A84423043C"
-        ))
+    dates = input$dates
   )
 
   # Indicators: cumulative change in PT / FT since COVID
