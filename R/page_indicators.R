@@ -49,9 +49,6 @@ page_indicatorsUI <- function(...) {
       )
       ),
 
-    ##### up to here   #####
-
-
     fluidRow(
       djpr_async_ui("ind_gen_full_part_line", width = 6),
       djpr_async_ui("ind_emp_sincecovid_line", width = 6)
