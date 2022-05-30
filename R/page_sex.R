@@ -14,17 +14,22 @@ page_sexUI <- function(...) {
     djpr_async_ui(
       width = 12,
       id = "gr_full_part_line",
-      date_slider("gr_full_part_line", table_no = "6202012")
+      date_slider(
+        "gr_full_part_line",
+        table_no = "6202012",
+        value = c(Sys.Date() - (365.25 * 5), data_dates$`6202012`$max))
       ),
-
-    # EMMA - start here
 
     djpr_h2_box( "Unemployment by sex"),
 
     djpr_async_ui(
       width = 12,
       id= "gr_gen_unemp_line",
-      date_slider ("gr_gen_unemp_line", table_no = "6202012")
+      date_slider (
+        "gr_gen_unemp_line",
+        table_no = "6202012",
+        value = c(Sys.Date() - (365.25 * 10), data_dates$`6202012`$max)
+        )
     ),
 
     djpr_h2_box("Employment to population ratio by sex"),
@@ -32,7 +37,11 @@ page_sexUI <- function(...) {
     djpr_async_ui(
       width = 12,
       "gr_gen_emppopratio_line",
-      date_slider ("gr_gen_emppopratio_line", table_no = "6202012")
+      date_slider(
+        "gr_gen_emppopratio_line",
+        table_no = "6202012",
+        value = c(Sys.Date() - (365.25 * 10), data_dates$`6202012`$max)
+        )
       ),
 
     djpr_h2_box( "Participation rate by sex"),
@@ -50,16 +59,14 @@ page_sexUI <- function(...) {
         djpr_with_spinner()
     ),
 
+    djpr_async_ui(
+      width = 12,
+      id = "gr_female_jobact_sincecovid_line",
+      date_slider("gr_female_jobact_sincecovid_line", table_no = "jobactive")
+    ),
 
-    fluidRow(
-      djpr_async_ui(
-        width = 12,
-        id = "gr_female_jobact_sincecovid_line",
-        date_slider("gr_female_jobact_sincecovid_line", table_no = "jobactive")
-      ),
-
-      djpr_async_ui(width = 12, "gr_female_jobactive_bar")
-  ))
+    djpr_async_ui(width = 12, "gr_female_jobactive_bar")
+    )
 }
 
 
@@ -156,34 +163,7 @@ page_sex <- function(input, output, session, plt_change, series_latestdates, foo
   djpr_async_server(
     id = "gr_female_jobact_sincecovid_line",
     plot_fun = viz_gr_female_jobact_sincecovid_line,
-    data = filter_dash_data(c(
-      "jobactive_female_ballarat",
-      "jobactive_female_bendigo",
-      "jobactive_female_barwon",
-      "jobactive_female_gippsland",
-      "jobactive_female_goulburn/murray",
-      "jobactive_female_inner metropolitan melbourne",
-      "jobactive_female_north eastern melbourne",
-      "jobactive_female_north western melbourne",
-      "jobactive_female_south coast of victoria",
-      "jobactive_female_south eastern melbourne and peninsula",
-      "jobactive_female_western melbourne",
-      "jobactive_female_wimmera mallee",
-      "jobactive_total_ballarat",
-      "jobactive_total_bendigo",
-      "jobactive_total_barwon",
-      "jobactive_total_gippsland",
-      "jobactive_total_goulburn/murray",
-      "jobactive_total_inner metropolitan melbourne",
-      "jobactive_total_north eastern melbourne",
-      "jobactive_total_north western melbourne",
-      "jobactive_total_south coast of victoria",
-      "jobactive_total_south eastern melbourne and peninsula",
-      "jobactive_total_western melbourne",
-      "jobactive_total_wimmera mallee"
-    )
-    ) %>%
-      dplyr::filter(date >= as.Date("2019-03-31"))
+    dates = input$dates
      )
 
   djpr_async_server(
