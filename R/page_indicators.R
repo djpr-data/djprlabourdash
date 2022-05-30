@@ -34,10 +34,20 @@ page_indicatorsUI <- function(...) {
       )
       ),
 
+    djpr_async_ui(
+      "ind_empgro_line",
+      width = 12,
+      fluidRow(
+        column(width = 12,
+               date_slider(
+                 id = "ind_empgro_line",
+                 table_no = "",
+                 value = c(Sys.Date() - years(5), data_dates$`table_no`$max)
+               ))
+      )),
 
-    fluidRow(
-      djpr_async_ui("ind_empgro_line", width = 12)
-    ),
+    ##### up to here   #####
+
 
     fluidRow(
       djpr_async_ui("ind_gen_full_part_line", width = 6),
