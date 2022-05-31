@@ -1,20 +1,27 @@
 # Functions to create the graphs for the 'Long-term unemployed' subpage on the dashboard.
 
+
 viz_gr_ltunemp_line <- function(
-  data = filter_dash_data(
-    c(
-      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-      "A84423687K",
-      "A84423089K",
-      "A84597681W"
+    data = filter_dash_data(
+      c(
+        "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+        "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+        "A84423687K",
+        "A84423089K",
+        "A84597681W"
+      ),
+      df = dash_data
     ),
-    df = dash_data
-  ),
-  date_range
-  ) {
+    date_range = NULL) {
+
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1], date <= date_range[2])
+  }
+
+
   df <- data %>%
-    dplyr::filter(date >= date_range[1], date <= date_range[2]) %>%
+    #dplyr::filter(date >= date_range[1], date <= date_range[2]) %>%
     dplyr::select(.data$series, .data$value, .data$date)
 
   df <- df %>%
