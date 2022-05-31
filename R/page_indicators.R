@@ -2,6 +2,17 @@ page_indicatorsUI <- function(...) {
 
   fluidRow(
 
+    column_nopad(
+      width = 12,
+
+      djprshiny::djpr_h1_box("Key Indicators"),
+
+      shinydashboard::box(
+        width = 12,
+        "This page contains key labour force indicators, focusing on Victoria as a whole."
+      )
+    ),
+
     djpr_h2_box("Employment"),
 
     # htmlOutput("ind_empgrowth_sincecovid_text"),
