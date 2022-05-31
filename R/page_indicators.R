@@ -35,7 +35,7 @@ page_indicatorsUI <- function(...) {
       width = 12,
       fluidRow(
         column(
-          width = 6,
+          width = 12,
           date_slider(
             id = "ind_empgro_line",
             table_no = "6202012",
@@ -58,7 +58,7 @@ page_indicatorsUI <- function(...) {
 
     djpr_async_ui(
       "ind_unemprate_line",
-      width = 6,
+      width = 12,
       date_slider(
         id = "ind_unemprate_line",
         table_no = "6202012",
@@ -92,7 +92,7 @@ page_indicatorsUI <- function(...) {
 
     djpr_async_ui(
       "ind_underut_area",
-      width = 6,
+      width = 12,
       date_slider(
         id = "ind_underut_area",
         table_no = "6202023",
@@ -104,7 +104,7 @@ page_indicatorsUI <- function(...) {
 
     djpr_async_ui(
       "ind_hoursworked_line",
-      width = 6,
+      width = 12,
       date_slider(
         id = "ind_hoursworked_line",
         table_no = "6202019",
@@ -116,7 +116,7 @@ page_indicatorsUI <- function(...) {
 
     djpr_async_ui(
       id = "ind_partrate_line",
-      width = 6,
+      width = 12,
       date_slider(
         id = "ind_partrate_line",
         table_no = "6202012",
@@ -127,7 +127,7 @@ page_indicatorsUI <- function(...) {
 
     djpr_async_ui(
       id = "ind_partrate_un_line",
-      width = 6,
+      width = 12,
       date_slider(
         id = "ind_partrate_un_line",
         table_no = "6202012",

@@ -7,7 +7,7 @@ date_slider <- function(
   min = NULL,
   max = NULL,
   value = NULL,
-  width = "90%",
+  width = "50%",
   timeFormat = "%b %Y",
   dragRange = TRUE,
   ticks = FALSE,
