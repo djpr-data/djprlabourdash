@@ -9,8 +9,8 @@ page_migrationUI <- function(...) {
   djpr_h2_box("Jobactive caseload for migrants"),
 
   box(
-    uiOutput("table_jobactive_refugees") %>%
-      djpr_with_spinner()
+    width = 12,
+    uiOutput("table_jobactive_refugees") %>% djpr_with_spinner()
   ),
 
   fluidRow(
