@@ -1,17 +1,13 @@
 page_indicatorsUI <- function(...) {
 
   fluidRow(
-    djpr_h2_box("Key indicators"),
-    shinydashboard::box(
-      width = 12,
-      "This page contains key labour force indicators, focusing on Victoria as a whole."
-    ),
 
     djpr_h2_box("Employment"),
 
     # htmlOutput("ind_empgrowth_sincecovid_text"),
 
     box(
+      width = 12,
       uiOutput("ind_emp_table") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
@@ -49,32 +45,28 @@ page_indicatorsUI <- function(...) {
       )
       ),
 
-    fluidRow(
-      djpr_async_ui("ind_gen_full_part_line", width = 6),
-      djpr_async_ui("ind_emp_sincecovid_line", width = 6)
-    ),
+    djpr_async_ui("ind_gen_full_part_line", width = 6),
+    djpr_async_ui("ind_emp_sincecovid_line", width = 6),
 
     djpr_h2_box("Unemployment & underemployment"),
 
     box(
+      width = 12,
       uiOutput("ind_unemp_summary") %>%
-        djpr_with_spinner(hide.ui = TRUE)),
+        djpr_with_spinner(hide.ui = TRUE)
+      ),
 
     djpr_async_ui(
       "ind_unemprate_line",
       width = 12,
-      fluidRow(
-        column(width = 6,
-               date_slider(
-                 id = "ind_unemprate_line",
-                 table_no = "6202012",
-                 value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
-                 )
-               )
-        )
+      date_slider(
+        id = "ind_unemprate_line",
+        table_no = "6202012",
+        value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
+      )
     ),
 
-    djpr_h3_box("Effective unemployment rate"),
+    djpr_h2_box("Effective unemployment rate"),
 
     shinydashboard::box(
       width = 12,
@@ -86,49 +78,61 @@ page_indicatorsUI <- function(...) {
       "a three month average of persons working zero hours for economic or unstated reasons."
     ),
 
-    fluidRow(
-      djpr_async_ui("ind_effective_unemprate_line", width = 12)
-      ),
+    djpr_async_ui("ind_effective_unemprate_line", width = 12),
 
-    djpr_h3_box("Unemployment rates by state"),
+    djpr_h2_box("Unemployment rates by state"),
 
     box(
-      uiOutput("table_ind_unemp_state")
+      width = 12,
+      uiOutput("table_ind_unemp_state") %>%
+        djpr_with_spinner()
       ),
 
-    fluidRow(
-      djpr_async_ui("ind_unemp_states_dot", width = 12)
-      ),
+    djpr_async_ui("ind_unemp_states_dot", width = 12),
 
     djpr_async_ui(
       "ind_underut_area",
       width = 12,
-      fluidRow(
-        column(width = 6,
-               date_slider(
-                 id = "ind_underut_area",
-                 table_no = "6202023",
-                 value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
-               )
-          )
+      date_slider(
+        id = "ind_underut_area",
+        table_no = "6202023",
+        value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
       ),
 
     djpr_h2_box("Hours worked"),
 
-    fluidRow(
-      djpr_async_ui("ind_hoursworked_line", width = 12)
+    djpr_async_ui(
+      "ind_hoursworked_line",
+      width = 12,
+      date_slider(
+        id = "ind_hoursworked_line",
+        table_no = "6202019",
+        value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
+      )
       ),
 
     djpr_h2_box("Participation"),
 
-    fluidRow(
-      djpr_async_ui("ind_partrate_line", width = 6),
-      djpr_async_ui("ind_partrate_bar", width = 6)
-      ),
+    djpr_async_ui(
+      id = "ind_partrate_line",
+      width = 6,
+      date_slider(
+        id = "ind_partrate_line",
+        table_no = "6202012",
+        value = c(as.Date("2000-01-01"), data_dates$`6202012`$max)
+      )
+    ),
+    djpr_async_ui("ind_partrate_bar", width = 6),
 
-    fluidRow(
-      djpr_async_ui("ind_partrate_un_line", width = 12)
+    djpr_async_ui(
+      id = "ind_partrate_un_line",
+      width = 12,
+      date_slider(
+        id = "ind_partrate_un_line",
+        table_no = "6202012",
+        value = c(Sys.Date() - (10 * 365), data_dates$`6202012`$max)
+      )
     ),
 
     shinydashboard::box(
@@ -138,15 +142,20 @@ page_indicatorsUI <- function(...) {
       "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."
     ),
 
-    shiny::selectInput("ind_partrate_un_scatter_selected_period",
-      label = "Compare monthly or yearly change",
-      selected = "year",
-      choices = c(
-        "Monthly" = "month",
-        "Yearly" = "year"
+
+    djpr_async_ui(
+      "ind_partrate_un_scatter",
+      width = 12,
+      shiny::selectInput(
+        shiny::NS("ind_partrate_un_scatter", "selected_period"),
+        label = "Compare monthly or yearly change",
+        selected = "year",
+        choices = c(
+          "Monthly" = "month",
+          "Yearly" = "year"
+        )
       )
     ),
-    djpr_async_ui("ind_partrate_un_scatter", width = 12),
 
     htmlOutput("indicators_footnote")
   )
@@ -236,7 +245,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   # Indicators: line chart of Aus v Vic
   djpr_async_server(
     id = "ind_unemprate_line",
-    plot_fun = viz_ind_unemprate_line
+    plot_fun = viz_ind_unemprate_line,
+    dates = input$dates
   )
 
   # Indicators: effective unemployment rate
@@ -267,7 +277,8 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
   # Indicators: hours worked ----
   djpr_async_server(
     id = "ind_hoursworked_line",
-    plot_fun = viz_ind_hoursworked_line
+    plot_fun = viz_ind_hoursworked_line,
+    dates = input$dates
   )
 
   # Indicators: participation ----
@@ -278,17 +289,20 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
 
   djpr_async_server(
     id = "ind_partrate_un_line",
-    plot_fun = viz_ind_partrate_un_line
+    plot_fun = viz_ind_partrate_un_line,
+    dates = input$dates
   )
 
   djpr_async_server(
     id = "ind_partrate_un_scatter",
-    plot_fun = viz_ind_partrate_un_scatter
+    plot_fun = viz_ind_partrate_un_scatter,
+    selected_period = input$selected_period
   )
 
   djpr_async_server(
     id = "ind_partrate_line",
-    plot_fun = viz_ind_partrate_line
+    plot_fun = viz_ind_partrate_line,
+    dates = input$dates
   )
 
   observeEvent(input$link_indicators, {
