@@ -8,7 +8,14 @@ viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
                                   "A84597681W"
                                 ),
                                 df = dash_data
-                                )) {
+                                ),
+                                date_range = NULL) {
+  if (!is.null(date_range)){
+    data <- data |>
+      filter(date >= date_range[1],
+             date <= date_range[2])
+  }
+
   df <- data %>%
     dplyr::select(.data$series, .data$value, .data$date)
 
