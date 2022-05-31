@@ -2,7 +2,7 @@ page_migrationUI <- function(...) {
 
   fluidRow(
 
-  djpr_h2_box("Jobactive caseload for migrants"),
+  djpr_h2_box("Refugees: jobactive caseload"),
 
   box(
     width = 12,

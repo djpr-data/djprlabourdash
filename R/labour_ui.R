@@ -18,7 +18,7 @@ labour_ui <- function(...) {
           shinydashboard::menuSubItem("Long-term Unemployed", tabName = "ltunemp"),
           shinydashboard::menuSubItem("Aboriginal Victorians", tabName = "aboriginal"),
           shinydashboard::menuSubItem("People with Disabilities", tabName = "disability"),
-          shinydashboard::menuSubItem("Migrants", tabName = "migration")
+          shinydashboard::menuSubItem("Refugees", tabName = "migration")
           ),
         shinydashboard::menuItem(
           text = "Regions",

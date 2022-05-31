@@ -1,16 +1,16 @@
 page_ltunempUI <- function(...) {
   fluidRow(
-    djpr_h2_box("Long-term unemployed"),
-    box(
+    djprshiny::djpr_h2_box("Long-term unemployed"),
+
+    shinydashboard::box(
       width = 12,
-      style = "padding: 15px;font-size: 15px;background: #71c5e8;",
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "Long-term unemployment is defined as a duration of unemployment of 12 months or more, ",
       "calculated from the time a person either last worked in any job for two weeks or more, ",
       "or began actively looking for work (whichever is the more recent). ",
       "Measuring long-term unemployment is important as it impacts on communities both socially ",
       "and economically. Compared to short-term unemployed people, those unemployed for longer ",
-      "periods of time can experience higher levels of competition, decreased confidence and motivation."
-    ),
+      "periods of time can experience higher levels of competition, decreased confidence and motivation."),
 
     djpr_async_ui(
       id = "gr_ltunemp_line",

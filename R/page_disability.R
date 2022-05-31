@@ -1,7 +1,7 @@
 page_disabilityUI <- function(...) {
   fluidRow(
 
-    djpr_h2_box("People with disabilities: jobactive caseload"),
+    djpr_h2_box("People with Disabilities: jobactive caseload"),
     box(
       width = 12,
       uiOutput("table_jobactive_pwd") %>%

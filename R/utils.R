@@ -84,7 +84,7 @@ focus_box <- function(
   title,
   inputs,
   ...,
-  colour = "#00573f",
+  colour = djprtheme::djpr_bondi_blue,      # "#1D9EC3"
   text_colour = "#FFFFFF",
   width = 12,
   title_width = 9

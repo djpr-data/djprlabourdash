@@ -1,7 +1,8 @@
 page_sexUI <- function(...) {
   fluidRow(
 
-    djpr_h2_box("Overview"),
+    djprshiny::djpr_h2_box("Sex"),
+
     box(
       width = 12,
       uiOutput("table_gr_sex") %>%

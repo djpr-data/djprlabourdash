@@ -3,6 +3,13 @@ page_ausregionsUI <- function(...) {
   fluidRow(
 
     # Unemployment by Australian Regions -------------
+    djprshiny::djpr_h1_box("Australian Regions",
+                           colour = djprtheme::djpr_green),
+
+    shinydashboard::box(
+      width = 12,
+      "This section explores labour force indicators in regional and metropolitan areas of Australia."
+    ),
 
     djpr_h2_box("Unemployment rate in Australian regional areas"),
     box(
