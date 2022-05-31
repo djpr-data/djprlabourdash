@@ -116,7 +116,7 @@ page_indicatorsUI <- function(...) {
 
     djpr_async_ui(
       id = "ind_partrate_line",
-      width = 12,
+      width = 6,
       date_slider(
         id = "ind_partrate_line",
         table_no = "6202012",
