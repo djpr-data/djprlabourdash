@@ -35,7 +35,7 @@ page_indicatorsUI <- function(...) {
       width = 12,
       fluidRow(
         column(
-          width = 6,
+          width = 12,
           date_slider(
             id = "ind_empgro_line",
             table_no = "6202012",
