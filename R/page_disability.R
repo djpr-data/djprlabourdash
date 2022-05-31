@@ -1,26 +1,20 @@
 page_disabilityUI <- function(...) {
   fluidRow(
 
-    shinydashboard::box(
-      width = 12,
-      "This section explores the labour force status of people with disabilities."),
-
     djpr_h2_box("People with disabilities: jobactive caseload"),
     box(
       width = 12,
       uiOutput("table_jobactive_pwd") %>%
       djpr_with_spinner()
       ),
-    paste0("The data above include people with disabilities aged 15 and above."),
-
     fluidRow(
     djpr_async_ui(
-      width = 12,
+      width = 6,
       id = "gr_pwd_jobact_sincecovid_line",
       date_slider("gr_pwd_jobact_sincecovid_line", table_no = "jobactive")
       ),
 
-    djpr_async_ui(width = 12, "gr_pwd_jobactive_bar"),
+    djpr_async_ui(width = 6, "gr_pwd_jobactive_bar"),
 
     htmlOutput("disability_footnote"),
   ))
