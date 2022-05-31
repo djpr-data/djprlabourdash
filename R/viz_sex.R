@@ -464,36 +464,41 @@ viz_gr_gen_emppopratio_line <- function(data,dates ) {
     )
 }
 
-viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
-                                                   "jobactive_female_ballarat",
-                                                   "jobactive_female_bendigo",
-                                                   "jobactive_female_barwon",
-                                                   "jobactive_female_gippsland",
-                                                   "jobactive_female_goulburn/murray",
-                                                   "jobactive_female_inner metropolitan melbourne",
-                                                   "jobactive_female_north eastern melbourne",
-                                                   "jobactive_female_north western melbourne",
-                                                   "jobactive_female_south coast of victoria",
-                                                   "jobactive_female_south eastern melbourne and peninsula",
-                                                   "jobactive_female_western melbourne",
-                                                   "jobactive_female_wimmera mallee",
-                                                   "jobactive_total_ballarat",
-                                                   "jobactive_total_bendigo",
-                                                   "jobactive_total_barwon",
-                                                   "jobactive_total_gippsland",
-                                                   "jobactive_total_goulburn/murray",
-                                                   "jobactive_total_inner metropolitan melbourne",
-                                                   "jobactive_total_north eastern melbourne",
-                                                   "jobactive_total_north western melbourne",
-                                                   "jobactive_total_south coast of victoria",
-                                                   "jobactive_total_south eastern melbourne and peninsula",
-                                                   "jobactive_total_western melbourne",
-                                                   "jobactive_total_wimmera mallee"
-                                                 ),
-                                                 df = dash_data
-                                                 ) %>%
-                                                   dplyr::filter(date >= as.Date("2019-03-31"))) {
+viz_gr_female_jobact_sincecovid_line <- function(
+  data = filter_dash_data(
+    c(
+      "jobactive_female_ballarat",
+      "jobactive_female_bendigo",
+      "jobactive_female_barwon",
+      "jobactive_female_gippsland",
+      "jobactive_female_goulburn/murray",
+      "jobactive_female_inner metropolitan melbourne",
+      "jobactive_female_north eastern melbourne",
+      "jobactive_female_north western melbourne",
+      "jobactive_female_south coast of victoria",
+      "jobactive_female_south eastern melbourne and peninsula",
+      "jobactive_female_western melbourne",
+      "jobactive_female_wimmera mallee",
+      "jobactive_total_ballarat",
+      "jobactive_total_bendigo",
+      "jobactive_total_barwon",
+      "jobactive_total_gippsland",
+      "jobactive_total_goulburn/murray",
+      "jobactive_total_inner metropolitan melbourne",
+      "jobactive_total_north eastern melbourne",
+      "jobactive_total_north western melbourne",
+      "jobactive_total_south coast of victoria",
+      "jobactive_total_south eastern melbourne and peninsula",
+      "jobactive_total_western melbourne",
+      "jobactive_total_wimmera mallee"
+    ),
+    df = dash_data
+  ) %>%
+    dplyr::filter(date >= as.Date("2019-03-31")),
+  dates
+  ) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(
       .data$date, .data$series,
       .data$frequency, .data$value

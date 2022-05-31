@@ -59,11 +59,12 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_empgro_line <- function(data = filter_dash_data(c(
-                                  "A84423349V",
-                                  "A84423043C"
-                                ))) {
+viz_ind_empgro_line <- function(
+  data = filter_dash_data(c("A84423349V", "A84423043C"), dash_data),
+  dates
+  ) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(state = dplyr::if_else(.data$state == "", "Australia", .data$state)) %>%
     dplyr::group_by(.data$indicator, .data$state) %>%
     dplyr::mutate(value = 100 * ((.data$value / lag(.data$value, 12)) - 1)) %>%
@@ -457,13 +458,18 @@ viz_ind_partrate_bar <- function(data = filter_dash_data(c(
     )
 }
 
-viz_ind_unemprate_line <- function(data = filter_dash_data(c(
-                                     "A84423354L",
-                                     "A84423050A"
-                                   ),
-                                   df = dash_data
-                                   )) {
+viz_ind_unemprate_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84423354L",
+      "A84423050A"
+    ),
+    df = dash_data
+  ),
+  dates
+) {
   data <- data %>%
+    filter(date >= dates[1], date <= dates[2]) %>%
     mutate(geog = if_else(.data$state == "", "Australia", .data$state))
 
   latest_values <- data %>%
@@ -515,14 +521,19 @@ viz_ind_unemprate_line <- function(data = filter_dash_data(c(
 }
 
 
-viz_ind_underut_area <- function(data = filter_dash_data(c(
-                                   "A85223450L",
-                                   "A85223451R",
-                                   "A84423354L"
-                                 ),
-                                 df = dash_data
-                                 )) {
+viz_ind_underut_area <- function(
+  data = filter_dash_data(
+    c(
+      "A85223450L",
+      "A85223451R",
+      "A84423354L"
+    ),
+    df = dash_data
+  ),
+  date_filter
+  ) {
   data <- data %>%
+    dplyr::filter(date >= date_filter[1], date <= date_filter[2]) %>%
     dplyr::mutate(under = if_else(.data$indicator == "Underemployment rate (proportion of labour force)",
       "Underemployment rate",
       .data$indicator
@@ -620,15 +631,20 @@ viz_ind_underut_area <- function(data = filter_dash_data(c(
 }
 
 
-viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
-                                       "A84426256L",
-                                       "A84426277X",
-                                       "A84423689R",
-                                       "A84423091W"
-                                     ),
-                                     df = dash_data
-                                     )) {
+viz_ind_hoursworked_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84426256L",
+      "A84426277X",
+      "A84423689R",
+      "A84423091W"
+    ),
+    df = dash_data
+  ),
+  dates
+  ) {
   data <- data %>%
+    filter(date >= dates[1], date <= dates[2]) %>%
     mutate(geog = if_else(.data$state == "",
       "Australia",
       .data$state
@@ -687,13 +703,18 @@ viz_ind_hoursworked_line <- function(data = filter_dash_data(c(
 
 # comparing participation and unemployment visualisation
 
-viz_ind_partrate_un_line <- function(data = filter_dash_data(c(
-                                       "A84423355R",
-                                       "A84423354L"
-                                     ),
-                                     df = dash_data
-                                     )) {
+viz_ind_partrate_un_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84423355R",
+      "A84423354L"
+    ),
+    df = dash_data
+  ),
+  dates
+  ) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$date, .data$value, .data$indicator) %>%
     dplyr::mutate(series = .data$indicator)
 
@@ -916,13 +937,18 @@ viz_ind_partrate_un_scatter <- function(data = filter_dash_data(c(
     theme(axis.title.y = element_text(angle = 90))
 }
 
-viz_ind_partrate_line <- function(data = filter_dash_data(c(
-                                    "A84423355R",
-                                    "A84423051C"
-                                  ),
-                                  df = dash_data
-                                  )) {
+viz_ind_partrate_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84423355R",
+      "A84423051C"
+    ),
+    df = dash_data
+  ),
+  dates
+  ) {
   data <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       geog = dplyr::if_else(.data$state == "", "Australia", .data$state),
       tooltip = paste0(
