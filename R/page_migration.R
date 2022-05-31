@@ -1,22 +1,17 @@
 page_migrationUI <- function(...) {
 
   fluidRow(
-    shinydashboard::box(
-      width = 12,
-      "This section explores the labour force status of migrants in Australia."
-  ),
 
   djpr_h2_box("Jobactive caseload for migrants"),
 
   box(
+    width = 12,
     uiOutput("table_jobactive_refugees") %>%
       djpr_with_spinner()
   ),
 
-  fluidRow(
-    djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
-    djpr_async_ui("gr_refugee_jobactive_bar", width = 6)
-    ),
+  djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
+  djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
 
   htmlOutput("migration_footnote"),
   )
