@@ -75,12 +75,10 @@ viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
                                         df = dash_data
                                       ),
                                       selected_indicator = "unemp_rate",
-                                      date_range = NULL) {
-  if (!is.null(date_range)){
-    data <- data |>
-      filter(date >= date_range[1],
-             date <= date_range[2])
-  }
+                                      date_range) {
+  data <- data |>
+    filter(date >= date_range[1],
+           date <= date_range[2])
 
   df <- data %>%
     dplyr::filter(.data$age == "15-24") %>%
@@ -243,12 +241,10 @@ youth_focus_box_data <- function() {
 
 viz_gr_ages_line <- function(data = youth_focus_box_data(),
                              selected_indicator = "unemp_rate",
-                             date_range = NULL) {
-  if (!is.null(date_range)){
-    data <- data |>
-      filter(date >= date_range[1],
-             date <= date_range[2])
-  }
+                             date_range) {
+  data <- data |>
+    filter(date >= date_range[1],
+           date <= date_range[2])
 
   df <- data %>%
     dplyr::rename(value = selected_indicator) %>%
@@ -351,9 +347,6 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
       filter(date >= date_range[1],
              date <= date_range[2])
   }
-
-  print('start plot')
-  print(selected_indicator)
 
   df <- data %>%
     mutate(indicator_short = dplyr::case_when(
@@ -488,20 +481,21 @@ viz_gr_youth_states_dot <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_yth_lfpartrate_vicaus_line <- function(data = filter_dash_data(c(
-                                                "A84424622R",
-                                                "A84424692W"
-                                              ), df = dash_data) %>%
-                                                dplyr::group_by(.data$series_id) %>%
-                                                dplyr::mutate(value = slider::slide_mean(.data$value,
-                                                  before = 11, complete = TRUE
-                                                )),
-                                              date_range = NULL) {
-  if (!is.null(date_range)){
-    data <- data |>
-      filter(date >= date_range[1],
-             date <= date_range[2])
-  }
+viz_gr_yth_lfpartrate_vicaus_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84424622R",
+      "A84424692W"
+    ), df = dash_data) %>%
+    dplyr::group_by(.data$series_id) %>%
+    dplyr::mutate(value = slider::slide_mean(.data$value,
+                                             before = 11, complete = TRUE
+    )),
+  date_range
+  ) {
+  data <- data |>
+    filter(date >= date_range[1],
+           date <= date_range[2])
 
   latest <- data %>%
     dplyr::ungroup() %>%
@@ -953,52 +947,54 @@ viz_gr_youth_full_part_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_youth_vicaus_line <- function(data = filter_dash_data(c(
-                                       "A84433601W",
-                                       "A84433602X",
-                                       "A84433603A",
-                                       "A84433505W",
-                                       "A84433503T",
-                                       "A84433504V",
-                                       "A84433519K",
-                                       "A84433517F",
-                                       "A84433518J",
-                                       "A84433533F",
-                                       "A84433531A",
-                                       "A84433532C",
-                                       "A84433617R",
-                                       "A84433615K",
-                                       "A84433616L",
-                                       "A84433575C",
-                                       "A84433573X",
-                                       "A84433574A",
-                                       "A84433547V",
-                                       "A84433545R",
-                                       "A84433546T",
-                                       "A84433589T",
-                                       "A84433587L",
-                                       "A84433588R",
-                                       "A84433561R",
-                                       "A84433559C",
-                                       "A84433560L"
-                                     ),
-                                     df = dash_data
-                                     ) %>%
-                                       dplyr::mutate(
-                                         state = dplyr::if_else(.data$state == "",
-                                           "Aus",
-                                           .data$state
-                                         ),
-                                         state = strayr::clean_state(.data$state)
-                                       ),
-                                     selected_indicator = "unemp_rate",
-                                     state = NULL,
-                                     date_range = NULL) {
-  if (!is.null(date_range)){
-    data <- data |>
-      filter(date >= date_range[1],
-             date <= date_range[2])
-  }
+viz_gr_youth_vicaus_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84433601W",
+      "A84433602X",
+      "A84433603A",
+      "A84433505W",
+      "A84433503T",
+      "A84433504V",
+      "A84433519K",
+      "A84433517F",
+      "A84433518J",
+      "A84433533F",
+      "A84433531A",
+      "A84433532C",
+      "A84433617R",
+      "A84433615K",
+      "A84433616L",
+      "A84433575C",
+      "A84433573X",
+      "A84433574A",
+      "A84433547V",
+      "A84433545R",
+      "A84433546T",
+      "A84433589T",
+      "A84433587L",
+      "A84433588R",
+      "A84433561R",
+      "A84433559C",
+      "A84433560L"
+    ),
+    df = dash_data
+  ) %>%
+    dplyr::mutate(
+      state = dplyr::if_else(.data$state == "",
+                             "Aus",
+                             .data$state
+      ),
+      state = strayr::clean_state(.data$state)
+    ),
+  selected_indicator = "unemp_rate",
+  state = NULL,
+  date_range
+  ) {
+
+  data <- data |>
+    filter(date >= date_range[1],
+           date <= date_range[2])
 
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",

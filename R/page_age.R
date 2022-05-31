@@ -1,17 +1,38 @@
 
 page_ageUI <- function(...) {
   shiny::fluidRow(
-    br(),
-    h2(br(), "Overview"),
-    "Labour force data disaggregated by age can be volatile, and most of this data",
-    " is not seasonally adjusted by the ABS. DJPR smooths the data ",
-    "by using 12-month rolling averages. While this assists in removing noise",
-    " to focus on the underlying trends, it makes large month-to-month changes ",
-    "in underlying conditions less apparent.",
-    uiOutput("table_gr_youth_summary"),
-    fluidRow(
-        djpr_async_ui("gr_yth_emp_sincecovid_line", width = 6, height = '385px'),
-        djpr_async_ui("gr_yth_lfpartrate_vicaus_line", width = 6, height = '385px')
+
+    column_nopad(
+      width = 4,
+      djpr_h2_box("Overview"),
+      box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #71c5e8;",
+        div(tags$i("Note:"), style = "font-size: 20px;"),
+        "Labour force data disaggregated by age can be volatile, and most of this data",
+        " is not seasonally adjusted by the ABS. DJPR smooths the data ",
+        "by using 12-month rolling averages. While this assists in removing noise",
+        " to focus on the underlying trends, it makes large month-to-month changes ",
+        "in underlying conditions less apparent."
+      )
+    ),
+
+    box(
+      width = 8,
+      uiOutput("table_gr_youth_summary") %>%
+        djpr_with_spinner()
+    ),
+
+
+    djpr_async_ui("gr_yth_emp_sincecovid_line", width = 6, height = '385px'),
+    djpr_async_ui(
+      id = "gr_yth_lfpartrate_vicaus_line",
+      width = 6,
+      height = '385px',
+      date_slider(
+        id = "gr_yth_lfpartrate_vicaus_line",
+        table_no = "6202016"
+      )
     ),
 
 
@@ -29,28 +50,47 @@ page_ageUI <- function(...) {
       fluidRow(
         column(6,
                djpr_async_ui("gr_youth_states_dot",
-                             height = "635px",
+                             height = "735px",
                              width = 12) %>%
                  async_no_background()
                ),
         column(6,
                fluidRow(
-                 djpr_async_ui("gr_ages_line",
-                                height = "250px",
-                                width = 12) %>%
+                 djpr_async_ui(
+                   "gr_ages_line",
+                   height = "250px",
+                   width = 12,
+                   date_slider(
+                     "gr_ages_line",
+                     table_no = "LM1",
+                     value = c(as.Date("2014-11-01"), data_dates$LM1$max)
+                   )
+                  ) %>%
                    async_no_background()
                ),
                fluidRow(
-                 djpr_async_ui("gr_yth_melbvrest_line",
-                               height = "200px",
-                               width = 12) %>%
+                 djpr_async_ui(
+                   "gr_yth_melbvrest_line",
+                   height = "200px",
+                   width = 12,
+                   date_slider(
+                     "gr_yth_melbvrest_line",
+                     table_no = "LM1",
+                     value = c(as.Date("2014-11-01"), data_dates$LM1$max)
+                   )
+                  ) %>%
                    async_no_background()
                ))),
+
       fluidRow(
         djpr_async_ui(
           "gr_youth_vicaus_line",
           width = 12,
-          state_checkbox(id = 'gr_youth_vicaus_line')) %>%
+          fluidRow(
+            column(6, date_slider("gr_youth_vicaus_line", table_no = "6291003")),
+            column(6, state_checkbox(id = 'gr_youth_vicaus_line'))
+          )
+        ) %>%
           async_no_background()
       )
     ),
@@ -61,12 +101,14 @@ page_ageUI <- function(...) {
       djpr_async_ui("gr_youth_full_part_line",
                     date_slider('gr_youth_full_part_line', table_no = '6202016')),
       djpr_async_ui("gr_youth_eduemp_waterfall"),
-      djpr_async_ui("gr_yth_mostvuln_line",
+      djpr_async_ui("gr_yth_mostvuln_line", width = 12,
                     date_slider('gr_yth_mostvuln_line', table_no = '6202016')),
 
 
     djpr_h2_box("Youth unemployment rate by region"),
-      uiOutput("table_gr_youth_unemp_region") %>% djpr_with_spinner(),
+    box(
+      uiOutput("table_gr_youth_unemp_region") %>% djpr_with_spinner()
+    ),
 
 
     focus_box(
@@ -118,7 +160,8 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
 
   djpr_async_server(
     id         =  "gr_yth_lfpartrate_vicaus_line",
-    plot_fun   =  viz_gr_yth_lfpartrate_vicaus_line
+    plot_fun   =  viz_gr_yth_lfpartrate_vicaus_line,
+    date_range = input$dates
   )
 
   # Age: youth focus box -----
@@ -136,9 +179,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
   djpr_async_server(
     id        =  "gr_ages_line",
     plot_fun  =  viz_gr_ages_line,
-    # date_slider = TRUE,
-    # date_slider_value_min = as.Date("2014-11-01"),
-    # download_button = TRUE,
+    date_range = input$dates,
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
   )
 
@@ -148,11 +189,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
   djpr_async_server(
     id        =  "gr_yth_melbvrest_line",
     plot_fun  =  viz_gr_yth_melbvrest_line,
-    # width_percent = 90,
-    # height_percent = 50,
-    # date_slider = TRUE,
-    # date_slider_value_min = as.Date("2014-11-01"),
-    # download_button = TRUE,
+    date_range = input$dates,
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
   )
 
@@ -161,6 +198,7 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     id        =  "gr_youth_vicaus_line",
     plot_fun  =  viz_gr_youth_vicaus_line,
     state = input$states,
+    date_range = input$dates,
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
 
   )
