@@ -107,6 +107,7 @@ page_ageUI <- function(...) {
 
     djpr_h2_box("Youth unemployment rate by region"),
     box(
+      width = 12,
       uiOutput("table_gr_youth_unemp_region") %>% djpr_with_spinner()
     ),
 
@@ -133,12 +134,18 @@ page_ageUI <- function(...) {
 
 
     djpr_h2_box("Jobactive caseload for 15-24 year olds (youth)"),
-      uiOutput("table_jobactive_youth") %>% djpr_with_spinner(),
-      djpr_async_ui("gr_youth_jobactive_bar"),
+    box(
+      width = 12,
+      uiOutput("table_jobactive_youth") %>% djpr_with_spinner()
+    ),
+    djpr_async_ui("gr_youth_jobactive_bar", width = 12),
 
 
     djpr_h2_box("Jobactive caseload for 50+ (mature age)"),
-      uiOutput("table_jobactive_mature_age") %>% djpr_with_spinner(),
+    box(
+      width = 12,
+      uiOutput("table_jobactive_mature_age") %>% djpr_with_spinner()
+    ),
       djpr_async_ui("gr_age_jobactive_since_covid_line"),
       djpr_async_ui("gr_mature_age_jobactive_bar")
 
