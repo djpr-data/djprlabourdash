@@ -6,8 +6,7 @@ page_migrationUI <- function(...) {
 
   box(
     width = 12,
-    uiOutput("table_jobactive_refugees") %>%
-      djpr_with_spinner()
+    uiOutput("table_jobactive_refugees") %>% djpr_with_spinner()
   ),
 
   djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
