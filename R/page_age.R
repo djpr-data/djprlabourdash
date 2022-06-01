@@ -9,8 +9,8 @@ page_ageUI <- function(...) {
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
         div(tags$i("Note:"), style = "font-size: 20px;"),
-        "Labour force data disaggregated by age can be volatile, and most of this data",
-        " is not seasonally adjusted by the ABS. DJPR smooths the data ",
+        "ABS Labour force data disaggregated by age can be volatile, and most of this data",
+        " is not seasonally adjusted. DJPR smooths the data ",
         "by using 12-month rolling averages. While this assists in removing noise",
         " to focus on the underlying trends, it makes large month-to-month changes ",
         "in underlying conditions less apparent."
