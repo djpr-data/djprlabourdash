@@ -1,16 +1,33 @@
 page_aboriginalUI <- function(...) {
   shiny::fluidRow(
-    djpr_h2_box("Aboriginal Victorians: jobactive caseload"),
-    shinydashboard::box(
+
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h1_box("Aboriginal Victorians",
+                             colour = djprtheme::djpr_blue),
+
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "Jobactive caseload data."
+      )
+    ),
+
+    box(
+      width = 8,
       uiOutput("table_jobactive_aboriginal") %>%
-                          djpr_with_spinner(),
-      width = 12
-      ),
-  shiny::fluidRow(
+        djpr_with_spinner()
+    ),
+
     djpr_async_ui("gr_abor_jobactive_sincecovid_line", width = 6),
-    djpr_async_ui("gr_abor_jobactive_bar", width = 6)
-  ),
-  htmlOutput("aboriginal_footnote"))
+    djpr_async_ui("gr_abor_jobactive_bar", width = 6),
+
+    box(
+      width = 12,
+      shiny::uiOutput("aborifinal_footnote")
+      )
+  )
 }
 
 

@@ -2,23 +2,29 @@ page_indicatorsUI <- function(...) {
 
   fluidRow(
 
-    djprshiny::djpr_h1_box("Indicators",
-                           colour = djprtheme::djpr_green),
+    # No padding column with width = 4
+    column_nopad(
+      width = 4,
 
-    shinydashboard::box(
+      djprshiny::djpr_h1_box("Indicators",
+                             colour = djprtheme::djpr_blue),
+
+      shinydashboard::box(
         width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
         "This page contains key labour force indicators, focusing on Victoria as a whole."
+      )
     ),
-
-    djpr_h2_box("Employment"),
 
     # htmlOutput("ind_empgrowth_sincecovid_text"),
 
     box(
-      width = 12,
-      uiOutput("ind_emp_table") %>%
+      width = 8,
+      shiny::uiOutput("ind_emp_table") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
+
+    djpr_h2_box("Employment"),
 
     djpr_async_ui(
       "ind_emppop_state_line",
@@ -165,7 +171,10 @@ page_indicatorsUI <- function(...) {
       )
     ),
 
-    htmlOutput("indicators_footnote")
+    box(
+      width = 12,
+      shiny::uiOutput("indicators_footnote")
+      )
   )
 }
 

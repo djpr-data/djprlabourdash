@@ -1,23 +1,39 @@
 page_disabilityUI <- function(...) {
   fluidRow(
 
-    djpr_h2_box("People with Disabilities: jobactive caseload"),
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h1_box("People with Disabilities",
+                             colour = djprtheme::djpr_blue),
+
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "Jobactive caseload."
+      )
+    ),
+
     box(
-      width = 12,
+      width = 8,
       uiOutput("table_jobactive_pwd") %>%
-      djpr_with_spinner()
-      ),
-    fluidRow(
+        djpr_with_spinner()
+    ),
+
     djpr_async_ui(
       width = 6,
       id = "gr_pwd_jobact_sincecovid_line",
       date_slider("gr_pwd_jobact_sincecovid_line", table_no = "jobactive")
       ),
+    djpr_async_ui(
+        width = 6,
+        id = "gr_pwd_jobactive_bar"),
 
-    djpr_async_ui(width = 6, "gr_pwd_jobactive_bar"),
-
-    htmlOutput("disability_footnote"),
-  ))
+    box(
+      width = 12,
+      shiny::uiOutput("disability_footnote")
+    )
+  )
 }
 
 
