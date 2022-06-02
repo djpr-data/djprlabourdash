@@ -6,13 +6,13 @@ page_overviewUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("DJPR Jobs Dashboard",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("DJPR Jobs Dashboard"),
 
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "Some content"
+        "Some content",
+        shiny::plotOutput('overview_diagram')
       )
     ),
 
@@ -54,4 +54,9 @@ page_overview <- function(input, output, session) {
       data_dates$`6291016`$max
     )
 
+
+  output$overview_diagram <- renderPlot({
+    viz_overview_illustration()
+  })
 }
+

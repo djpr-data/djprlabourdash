@@ -5,8 +5,7 @@ page_migrationUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("Refugees",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("Refugees"),
 
       shinydashboard::box(
         width = 12,

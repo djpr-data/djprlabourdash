@@ -6,8 +6,7 @@ page_indicatorsUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("Indicators",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("Indicators"),
 
       shinydashboard::box(
         width = 12,
