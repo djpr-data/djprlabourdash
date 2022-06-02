@@ -24,20 +24,34 @@ page_overviewUI <- function(...) {
 
     box(
       width = 12,
-      shiny::uiOutput("overview_footnote")
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
     )
 
   )
 
 }
 
-page_overview <- function(input, output, session, plt_change, series_latestdates, footnote) {
+page_overview <- function(input, output, session) {
 
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(
+      data_dates$`6202012`$max,
+      data_dates$`6202016`$max,
+      data_dates$`6202019`$max,
+      data_dates$`6202023`$max,
+      data_dates$`6291016`$max
+    )
 
 }

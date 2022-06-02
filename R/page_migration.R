@@ -26,13 +26,21 @@ page_migrationUI <- function(...) {
 
     box(
       width = 12,
-      shiny::uiOutput("disability_footnote")
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
     )
   )
 }
 
 
-page_migration <- function(input, output, session, plt_change, series_latestdates, footnote) {
+page_migration <- function(input, output, session) {
   output$table_jobactive_refugees <- renderUI({
     table_jobactive_refugees() %>%
       flextable::htmltools_value()

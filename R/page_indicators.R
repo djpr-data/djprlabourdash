@@ -173,13 +173,21 @@ page_indicatorsUI <- function(...) {
 
     box(
       width = 12,
-      shiny::uiOutput("indicators_footnote")
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
       )
+    )
   )
 }
 
 
-page_indicators <- function(input, output, session, plt_change, series_latestdates, footnote) {
+page_indicators <- function(input, output, session) {
 
   # output$ind_empgrowth_sincecovid_text <- renderUI({
   #   text_active(
@@ -229,7 +237,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     table_ind_employment() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$`6202012`$max)
 
   # Indicators: line graph of emp-pop ratios in states, with state selector boxes
   djpr_async_server(
@@ -257,7 +265,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     table_ind_unemp_summary() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$`6202012`$max)
 
   # Indicators: line chart of Aus v Vic
   djpr_async_server(
@@ -277,7 +285,7 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     table_ind_unemp_state() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$`6202012`$max)
 
   # Indicators: dot plot of unemp rate by state
   djpr_async_server(
@@ -321,8 +329,4 @@ page_indicators <- function(input, output, session, plt_change, series_latestdat
     plot_fun = viz_ind_partrate_line,
     dates = input$dates
   )
-
-  observeEvent(input$link_indicators, {
-    updateNavbarPage(session, "navbarpage", "tab-indicators")
-  })
 }

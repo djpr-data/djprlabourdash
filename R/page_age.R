@@ -36,8 +36,8 @@ page_ageUI <- function(...) {
     ),
 
     focus_box(
-      h2("Labour force status of Victorian youth"),
-      shiny::selectInput("youth_focus",
+      title = h2("Labour force status of Victorian youth"),
+      inputs = shiny::selectInput("youth_focus",
                          label = tags$span(style="color: white;","Select an indicator"),
                         choices = c(
                           "Unemployment rate" = "unemp_rate",
@@ -113,7 +113,7 @@ page_ageUI <- function(...) {
     ),
 
     focus_box(
-      uiOutput("title_youth_unemp_emppop_partrate_vic"),
+      textOutput("title_youth_unemp_emppop_partrate_vic"),
       selectInput("youth_region_focus",
                   label = tags$span(style="color: white;","Select an indicator"),
         choices = c(
@@ -153,18 +153,26 @@ page_ageUI <- function(...) {
 
     box(
       width = 12,
-      shiny::uiOutput("inclusion_footnote")
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
     )
 
   )
 }
 
-page_age <- function(input, output, session, plt_change, series_latestdates, footnote) {
+page_age <- function(input, output, session) {
   output$table_gr_youth_summary <- renderUI({
     table_gr_youth_summary() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$`LM1`$max)
 
   # Line chart indexed to COVID: employment by age
   djpr_async_server(
@@ -243,19 +251,18 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     table_gr_youth_unemp_region() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$RM1$max)
 
   # Youth LF status by region focus box ----
   data_youth_map_bar_title <- reactive({
     data_youth_unemp_emppop_partrate_vic(selected_indicator = input$youth_region_focus)
   })
 
-  output$title_youth_unemp_emppop_partrate_vic <- renderUI({
+  output$title_youth_unemp_emppop_partrate_vic <- renderText({
     title_youth_unemp_emppop_partrate_vic(
       data = data_youth_map_bar_title(),
       selected_indicator = input$youth_region_focus
-    ) %>%
-      djpr_plot_title()
+    )
   })
 
   output$map_youth_unemp_emppop_partrate_vic <- leaflet::renderLeaflet({
@@ -300,7 +307,4 @@ page_age <- function(input, output, session, plt_change, series_latestdates, foo
     plot_fun  =  viz_gr_mature_age_jobactive_bar
   )
 
-  observeEvent(input$link_age, {
-    updateNavbarPage(session, "navbarpage", "tab-age")
-  })
 }

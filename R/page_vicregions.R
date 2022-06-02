@@ -218,12 +218,23 @@ page_vicregionsUI <- function(...) {
         djpr_with_spinner()
     ),
 
-    htmlOutput("vicregions_footnote")
+    box(
+      width = 12,
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
+    )
   )
 }
 
 
-page_vicregions <- function(input, output, session, plt_change, series_latestdates, footnote) {
+page_vicregions <- function(input, output, session) {
   djpr_async_server(
     id       = "reg_melvic_line",
     plot_fun = viz_reg_melvic_line,
@@ -303,7 +314,7 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
   ) %>%
     bindCache(
       input$focus_region,
-      series_latestdates
+      sa42016
     )
 
   output$table_region_focus <- renderUI({
@@ -312,7 +323,7 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
   }) %>%
     bindCache(
       input$focus_region,
-      series_latestdates
+      data_dates$`6291016`$max
     )
 
   reg_sa4unemp_cf_broadregion_withtitle <- reactive({
@@ -320,7 +331,8 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
   }) %>%
     bindCache(
       input$focus_region,
-      series_latestdates
+      data_dates$`6291002`$max,
+      data_dates$`6291016`$max
     )
 
   output$reg_sa4unemp_cf_broadregion_title <- renderUI({
@@ -328,7 +340,8 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
   }) %>%
     bindCache(
       input$focus_region,
-      series_latestdates
+      data_dates$`6291002`$max,
+      data_dates$`6291016`$max
     )
 
   output$reg_sa4unemp_cf_broadregion <- renderPlot({
@@ -338,7 +351,8 @@ page_vicregions <- function(input, output, session, plt_change, series_latestdat
   }) %>%
     bindCache(
       input$focus_region,
-      series_latestdates
+      data_dates$`6291002`$max,
+      data_dates$`6291016`$max
     )
 
   # Regional JobActive caseload --------

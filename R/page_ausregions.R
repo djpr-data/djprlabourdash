@@ -63,23 +63,34 @@ page_ausregionsUI <- function(...) {
       uiOutput("table_reg_metro_states_unemprate") %>%
         djpr_with_spinner()
     ),
-    htmlOutput("regions_footnote")
+    box(
+      width = 12,
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
+    )
   )
 }
 
 
-page_ausregions <- function(input, output, session, plt_change, series_latestdates, footnote) {
+page_ausregions <- function(input, output, session) {
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$`6291016`$max)
 
   output$table_reg_metro_states_unemprate <- renderUI({
     table_reg_metro_states_unemprate() %>%
       flextable::htmltools_value()
   }) %>%
-    bindCache(series_latestdates)
+    bindCache(data_dates$`6291016`$max)
 
   # Regions: National focus box -----
   djpr_async_server(
