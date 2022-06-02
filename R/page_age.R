@@ -4,13 +4,13 @@ page_ageUI <- function(...) {
 
     column_nopad(
       width = 4,
-      djpr_h2_box("Overview"),
+      djpr_h1_box("Age",
+                  colour = djprtheme::djpr_blue),
       box(
         width = 12,
-        style = "padding: 15px;font-size: 15px;background: #71c5e8;",
-        div(tags$i("Note:"), style = "font-size: 20px;"),
-        "Labour force data disaggregated by age can be volatile, and most of this data",
-        " is not seasonally adjusted by the ABS. DJPR smooths the data ",
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "ABS Labour force data disaggregated by age can be volatile, and most of this data",
+        " is not seasonally adjusted. DJPR smooths the data ",
         "by using 12-month rolling averages. While this assists in removing noise",
         " to focus on the underlying trends, it makes large month-to-month changes ",
         "in underlying conditions less apparent."
@@ -23,8 +23,8 @@ page_ageUI <- function(...) {
         djpr_with_spinner()
     ),
 
-
     djpr_async_ui("gr_yth_emp_sincecovid_line", width = 6, height = '385px'),
+
     djpr_async_ui(
       id = "gr_yth_lfpartrate_vicaus_line",
       width = 6,
@@ -34,7 +34,6 @@ page_ageUI <- function(...) {
         table_no = "6202016"
       )
     ),
-
 
     focus_box(
       h2("Labour force status of Victorian youth"),
@@ -96,21 +95,22 @@ page_ageUI <- function(...) {
     ),
 
 
-
     djpr_h2_box("Detailed labour force status of Victorian youth"),
-      djpr_async_ui("gr_youth_full_part_line",
-                    date_slider('gr_youth_full_part_line', table_no = '6202016')),
-      djpr_async_ui("gr_youth_eduemp_waterfall"),
-      djpr_async_ui("gr_yth_mostvuln_line", width = 12,
+
+    djpr_async_ui("gr_youth_full_part_line",
+                  date_slider('gr_youth_full_part_line', table_no = '6202016')),
+
+    djpr_async_ui("gr_youth_eduemp_waterfall"),
+
+    djpr_async_ui("gr_yth_mostvuln_line", width = 12,
                     date_slider('gr_yth_mostvuln_line', table_no = '6202016')),
 
-
     djpr_h2_box("Youth unemployment rate by region"),
+
     box(
       width = 12,
       uiOutput("table_gr_youth_unemp_region") %>% djpr_with_spinner()
     ),
-
 
     focus_box(
       uiOutput("title_youth_unemp_emppop_partrate_vic"),
@@ -132,22 +132,29 @@ page_ageUI <- function(...) {
       ))
     ),
 
-
     djpr_h2_box("Jobactive caseload for 15-24 year olds (youth)"),
+
     box(
       width = 12,
       uiOutput("table_jobactive_youth") %>% djpr_with_spinner()
     ),
+
     djpr_async_ui("gr_youth_jobactive_bar", width = 12),
 
-
     djpr_h2_box("Jobactive caseload for 50+ (mature age)"),
+
     box(
       width = 12,
       uiOutput("table_jobactive_mature_age") %>% djpr_with_spinner()
     ),
-      djpr_async_ui("gr_age_jobactive_since_covid_line"),
-      djpr_async_ui("gr_mature_age_jobactive_bar")
+
+    djpr_async_ui("gr_age_jobactive_since_covid_line"),
+    djpr_async_ui("gr_mature_age_jobactive_bar"),
+
+    box(
+      width = 12,
+      shiny::uiOutput("inclusion_footnote")
+    )
 
   )
 }

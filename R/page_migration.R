@@ -2,17 +2,32 @@ page_migrationUI <- function(...) {
 
   fluidRow(
 
-  djpr_h2_box("Jobactive caseload for migrants"),
+    column_nopad(
+      width = 4,
 
-  box(
-    width = 12,
-    uiOutput("table_jobactive_refugees") %>% djpr_with_spinner()
-  ),
+      djprshiny::djpr_h1_box("Refugees",
+                             colour = djprtheme::djpr_blue),
 
-  djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
-  djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "Jobactive caseload."
+      )
+    ),
 
-  htmlOutput("migration_footnote"),
+    box(
+      width = 8,
+      uiOutput("table_jobactive_refugees") %>%
+        djpr_with_spinner()
+    ),
+
+    djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
+    djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
+
+    box(
+      width = 12,
+      shiny::uiOutput("disability_footnote")
+    )
   )
 }
 

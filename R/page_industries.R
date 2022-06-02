@@ -1,9 +1,9 @@
 page_industriesUI <- function(...) {
   fluidRow(
-    djpr_h2_box("Victoria's industries"),
+    djpr_h1_box("Victoria's industries"),
     box(
       width = 12,
-      style = "padding: 15px;font-size: 15px;background: #71c5e8;",
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       p(
         "On this page, we explore the economic and financial performance of Victorian industries. ",
         "The ",

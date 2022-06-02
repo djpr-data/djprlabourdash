@@ -1,9 +1,22 @@
 page_sexUI <- function(...) {
   fluidRow(
 
-    djpr_h2_box("Overview"),
+    # No padding column with width = 4
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h1_box("Sex",
+                             colour = djprtheme::djpr_blue),
+
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "Some content."
+      )
+    ),
+
     box(
-      width = 12,
+      width = 8,
       uiOutput("table_gr_sex") %>%
         djpr_with_spinner()
       ),
@@ -65,8 +78,13 @@ page_sexUI <- function(...) {
       date_slider("gr_female_jobact_sincecovid_line", table_no = "jobactive")
     ),
 
-    djpr_async_ui(width = 12, "gr_female_jobactive_bar")
-    )
+    djpr_async_ui(width = 12, "gr_female_jobactive_bar"),
+
+    box(
+      width = 12,
+      shiny::uiOutput("inclusion_footnote")
+      )
+  )
 }
 
 
