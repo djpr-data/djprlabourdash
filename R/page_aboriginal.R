@@ -9,7 +9,7 @@ page_aboriginalUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "Jobactive caseload data."
+        "Jobactive caseload."
       )
     ),
 
