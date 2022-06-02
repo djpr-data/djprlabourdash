@@ -112,7 +112,7 @@ page_ageUI <- function(...) {
     ),
 
     focus_box(
-      textOutput("title_youth_unemp_emppop_partrate_vic"),
+      h2(textOutput("title_youth_unemp_emppop_partrate_vic")),
       selectInput("youth_region_focus",
                   label = tags$span(style="color: white;","Select an indicator"),
         choices = c(
