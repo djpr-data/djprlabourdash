@@ -26,7 +26,8 @@ labour_ui <- function(...) {
           shinydashboard::menuSubItem("Victorian Regions", tabName = "vicregions"),
           shinydashboard::menuSubItem("Australian Regions", tabName = "ausregions")
           ),
-        shinydashboard::menuItem("Industries", tabName = "industries")
+        shinydashboard::menuItem("Industries", tabName = "industries"),
+        shinydashboard::menuItem("Methodology", tabName = "methodology")
       ),
       width = "250px"
     ),
@@ -50,7 +51,8 @@ labour_ui <- function(...) {
         shinydashboard::tabItem("migration",  page_migrationUI()),
         shinydashboard::tabItem("vicregions", page_vicregionsUI()),
         shinydashboard::tabItem("ausregions", page_ausregionsUI()),
-        shinydashboard::tabItem("industries", page_industriesUI())
+        shinydashboard::tabItem("industries", page_industriesUI()),
+        shinydashboard::tabItem("methodology", page_methodologyUI())
       )
     )
 
