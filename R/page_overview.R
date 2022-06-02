@@ -11,7 +11,8 @@ page_overviewUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "Some content"
+        "Some content",
+        shiny::plotOutput('overview_diagram')
       )
     ),
 
@@ -39,4 +40,9 @@ page_overview <- function(input, output, session, plt_change, series_latestdates
   }) %>%
     bindCache(series_latestdates)
 
+
+  output$overview_diagram <- renderPlot({
+    viz_overview_illustration()
+  })
 }
+

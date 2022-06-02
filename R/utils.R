@@ -60,8 +60,8 @@ box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL){
 
   stopifnot(width %in% 1:12)
 
-  shiny::div(
-    class = paste0("col-sm-", width),
+  shiny::column(width,
+    #class = paste0("col-sm-", width),
     shiny::div(
       class = "box",
       style = if(is.null(height)) NULL else paste0("height:", height,";"),
