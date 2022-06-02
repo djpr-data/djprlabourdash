@@ -5,8 +5,7 @@ page_ltunempUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("Long-term unemployed",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("Long-term unemployed"),
 
       shinydashboard::box(
         width = 12,

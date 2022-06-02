@@ -4,8 +4,7 @@ page_disabilityUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("People with Disabilities",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("People with Disabilities"),
 
       shinydashboard::box(
         width = 12,

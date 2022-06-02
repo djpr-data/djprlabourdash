@@ -6,8 +6,7 @@ page_overviewUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("DJPR Jobs Dashboard",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("DJPR Jobs Dashboard"),
 
       shinydashboard::box(
         width = 12,

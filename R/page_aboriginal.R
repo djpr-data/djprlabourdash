@@ -4,8 +4,7 @@ page_aboriginalUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("Aboriginal Victorians",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("Aboriginal Victorians"),
 
       shinydashboard::box(
         width = 12,
@@ -25,7 +24,7 @@ page_aboriginalUI <- function(...) {
 
     box(
       width = 12,
-      shiny::uiOutput("aborifinal_footnote")
+      shiny::uiOutput("aboriginal_footnote")
       )
   )
 }

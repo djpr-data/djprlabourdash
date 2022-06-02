@@ -5,8 +5,7 @@ page_migrationUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("Refugees",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("Refugees"),
 
       shinydashboard::box(
         width = 12,
@@ -26,7 +25,7 @@ page_migrationUI <- function(...) {
 
     box(
       width = 12,
-      shiny::uiOutput("disability_footnote")
+      shiny::uiOutput("migration_footnote")
     )
   )
 }

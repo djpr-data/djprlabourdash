@@ -3,11 +3,11 @@ page_ausregionsUI <- function(...) {
   fluidRow(
 
     # Unemployment by Australian Regions -------------
-    djprshiny::djpr_h1_box("Australian Regions",
-                           colour = djprtheme::djpr_green),
+    djprshiny::djpr_h1_box("Australian Regions"),
 
     shinydashboard::box(
       width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "This section explores labour force indicators in regional and metropolitan areas of Australia."
     ),
 
@@ -63,7 +63,11 @@ page_ausregionsUI <- function(...) {
       uiOutput("table_reg_metro_states_unemprate") %>%
         djpr_with_spinner()
     ),
-    htmlOutput("regions_footnote")
+
+    box(
+      width = 12,
+      shiny::uiOutput("regions_footnote")
+    )
   )
 }
 

@@ -69,7 +69,10 @@ page_industriesUI <- function(...) {
       )
     ),
 
-    htmlOutput("industries_footnote")
+    box(
+      width = 12,
+      shiny::uiOutput("industries_footnote")
+    )
   )
 }
 

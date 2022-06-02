@@ -4,8 +4,7 @@ page_ageUI <- function(...) {
 
     column_nopad(
       width = 4,
-      djpr_h1_box("Age",
-                  colour = djprtheme::djpr_blue),
+      djpr_h1_box("Age"),
       box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",

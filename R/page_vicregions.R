@@ -3,11 +3,11 @@ page_vicregionsUI <- function(...) {
 
 
     # Unemployment by region -----
-    djprshiny::djpr_h1_box("Victorian Regions",
-                           colour = djprtheme::djpr_green),
+    djprshiny::djpr_h1_box("Victorian Regions"),
 
     shinydashboard::box(
       width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "Victoria contains a range of diverse regions, both within Greater Melbourne and outside the metropolitan area. Below we explore the regional differences in historical and current labour force status within Victoria. "
     ),
 
@@ -218,7 +218,10 @@ page_vicregionsUI <- function(...) {
         djpr_with_spinner()
     ),
 
-    htmlOutput("vicregions_footnote")
+    box(
+      width = 12,
+      shiny::uiOutput("vicregions_footnote")
+    )
   )
 }
 

@@ -5,8 +5,7 @@ page_sexUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("Sex",
-                             colour = djprtheme::djpr_blue),
+      djprshiny::djpr_h1_box("Sex"),
 
       shinydashboard::box(
         width = 12,
