@@ -1,24 +1,33 @@
 page_industriesUI <- function(...) {
   fluidRow(
-    djpr_h1_box("Victoria's industries"),
-    box(
-      width = 12,
-      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-      p(
-        "On this page, we explore the economic and financial performance of Victorian industries. ",
-        "The ",
-        shiny::a("ABS", href = "https://www.abs.gov.au/ausstats/abs@.nsf/mf/1292.0"),
-        " classifies businesses into one of 19 broad industry divisions, each of which is further ",
-        " divided into sub-divisions, groups, and classes.",
-        "Note that industries data is not seasonally adjusted and is released quarterly."
-      )
+
+    # No padding column with width = 4
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h1_box("Victoria's industries"),
+
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        p(
+          "On this page, we explore the economic and financial performance of Victorian industries. ",
+          "The ",
+          shiny::a("ABS", href = "https://www.abs.gov.au/ausstats/abs@.nsf/mf/1292.0"),
+          " classifies businesses into one of 19 broad industry divisions, each of which is further ",
+          " divided into sub-divisions, groups, and classes.",
+          "Note that industries data is not seasonally adjusted and is released quarterly."
+          )
+        )
     ),
+
     box(
-      width = 12,
+      width = 8,
       title = h3("Number of people employed by industry"),
       uiOutput("table_industries_summary") %>%
         djpr_with_spinner()
     ),
+
     djpr_async_ui("industries_empchange_sincecovid_bar", width = 12),
 
     focus_box(
@@ -76,7 +85,7 @@ page_industriesUI <- function(...) {
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        "dashboard is for ",  format(data_dates$`6291005`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
 
       )
