@@ -6,10 +6,7 @@
 #' @import glue
 #' @import readxl
 #' @import purrr
-#' @return
 #' @export
-#'
-#' @examples
 editEMAIL <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
 

@@ -9,8 +9,6 @@
 #' @import here
 #' @return character SMS text
 #' @export
-#'
-#' @examples
 sms <- function(labour) {
 
   # 3 Define summary stats

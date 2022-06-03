@@ -48,9 +48,6 @@ Imports:
     slider,
     flextable,
     cachem,
-    shinyjs,
-    miniUI,
-    emayili,
     shinyWidgets,
     purrr,
     rvest,
@@ -60,7 +57,6 @@ Imports:
     here,
     lubridate,
     readxl,
-    crayon,
     qs,
     memoise,
     utils,
@@ -83,5 +79,12 @@ Suggests:
     officedown,
     blastula,
     covr,
-    webshot
+    crayon,
+    miniUI,
+    emayili,
+    webshot,
+    fs,
+    htmltools,
+    keyring,
+    rstudioapi
 Config/testthat/edition: 3

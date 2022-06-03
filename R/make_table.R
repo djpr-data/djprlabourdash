@@ -47,6 +47,7 @@ make_table <- function(data,
                        title = "",
                        rename_indicators = TRUE,
                        pretty_round = TRUE) {
+
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
@@ -274,7 +275,7 @@ make_table <- function(data,
 
   # Ensure font, font size, and bolding is correct
   if (destination == "dashboard") {
-    font_family <- "VIC-font"
+    font_family <- "VIC-Regular"
     font_size_main <- 10.5
     font_size_secondary <- 9
   } else if (destination == "briefing") {
@@ -373,6 +374,8 @@ make_table <- function(data,
         j = 1,
         width = 2
       )
+  } else {
+    flex <- flextable::set_table_properties(flex, layout = "autofit", width = 1)
   }
 
   flex

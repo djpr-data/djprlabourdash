@@ -1,32 +1,55 @@
 page_migrationUI <- function(...) {
+
   fluidRow(
-    br(),
-    paste0("This section explores the labour force status of migrants in Australia."),
-    br(),
-    h2(br(), "Jobactive caseload for refugees"),
-    uiOutput("table_jobactive_refugees") %>%
-      djpr_with_spinner(),
-    br(),
-    djpr_plot_ui("gr_refugee_jobact_sincecovid_line"),
-    br(),
-    djpr_plot_ui("gr_refugee_jobactive_bar"),
-    br(),
-    htmlOutput("migration_footnote"),
-    br()
+
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h1_box("Refugees"),
+
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "Jobactive caseload."
+      )
+    ),
+
+    box(
+      width = 8,
+      uiOutput("table_jobactive_refugees") %>%
+        djpr_with_spinner()
+    ),
+
+    djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
+    djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
+
+    box(
+      width = 12,
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$jobactive$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
+    )
   )
 }
 
 
-page_migration <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
+page_migration <- function(input, output, session) {
   output$table_jobactive_refugees <- renderUI({
     table_jobactive_refugees() %>%
       flextable::htmltools_value()
   })
 
-  djpr_plot_server("gr_refugee_jobact_sincecovid_line",
-    viz_gr_refugee_jobact_sincecovid_line,
-    plt_change = plt_change,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "gr_refugee_jobact_sincecovid_line",
+    plot_fun = viz_gr_refugee_jobact_sincecovid_line,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "jobactive_refugee_ballarat",
       "jobactive_refugee_bendigo",
       "jobactive_refugee_barwon",
@@ -51,16 +74,16 @@ page_migration <- function(input, output, session, plt_change = plt_change, seri
       "jobactive_total_south eastern melbourne and peninsula",
       "jobactive_total_western melbourne",
       "jobactive_total_wimmera mallee"
-    ),
-    df = dash_data
+    )
     ) %>%
-      dplyr::filter(date >= as.Date("2019-03-31")),
-    date_slider = FALSE
+      dplyr::filter(date >= as.Date("2019-03-31"))
   )
 
-  djpr_plot_server("gr_refugee_jobactive_bar",
-    viz_gr_refugee_jobactive_bar,
-    data = filter_dash_data(c(
+  djpr_async_server(
+    id = "gr_refugee_jobactive_bar",
+    plot_fun = viz_gr_refugee_jobactive_bar,
+    data = dash_data %>%
+      dplyr::filter(series_id %in% c(
       "jobactive_refugee_ballarat",
       "jobactive_refugee_bendigo",
       "jobactive_refugee_barwon",
@@ -73,12 +96,8 @@ page_migration <- function(input, output, session, plt_change = plt_change, seri
       "jobactive_refugee_south eastern melbourne and peninsula",
       "jobactive_refugee_western melbourne",
       "jobactive_refugee_wimmera mallee"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider = FALSE,
-    download_button = FALSE,
-    width_percent = 75
+    )
+    )
+#    download_button = FALSE,
   )
 }

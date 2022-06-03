@@ -6,9 +6,6 @@
 \usage{
 update_data_and_knit()
 }
-\value{
-
-}
 \description{
 This Rstudio addin will run the code to update data,
 clean the app-cache and then render the Monthly report

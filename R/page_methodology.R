@@ -4,17 +4,17 @@ page_methodologyUI <- function(...) {
     # value = "tab-notes",
     djpr_h2_box("Notes"),
     br(),
-    shiny::includeMarkdown("R/methodology.md"),
+    shiny::includeMarkdown(system.file("methodology.md", package = "djprlabourdash")),
     br(),
 
-    shiny::includeMarkdown("R/glossary.md"),
+    shiny::includeMarkdown(system.file("glossary.md", package = "djprlabourdash")),
 
     shiny::br(),
 
-    shiny::includeMarkdown("R/note.md"),
+    shiny::includeMarkdown(system.file("note.md", package = "djprlabourdash")),
 
     shiny::br(),
-    centred_row(htmlOutput("methodology_footnote")),
+    # centred_row(htmlOutput("methodology_footnote")),
     br()
   )
 }

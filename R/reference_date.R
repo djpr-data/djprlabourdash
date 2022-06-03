@@ -7,8 +7,6 @@
 #'
 #' @return list
 #' @export
-#'
-#' @examples
 reference_dates <- function() {
   url <- "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release#media-releases"
 

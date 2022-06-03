@@ -1,72 +1,70 @@
 page_ltunempUI <- function(...) {
   fluidRow(
-    br(),
-    paste0("Long-term unemployment is defined as a duration of unemployment of 12 months or more, "),
-    paste0("calculated from the time a person either last worked in any job for two weeks or more, "),
-    paste0("or began actively looking for work (whichever is the more recent). "),
-    paste0("Measuring long-term unemployment is important as it impacts on communities both socially "),
-    paste0("and economically. Compared to short-term unemployed people, those unemployed for longer "),
-    paste0("periods of time can experience higher levels of competition, decreased confidence and motivation."),
-    djpr_plot_ui("gr_ltunemp_line"),
-    djpr_plot_ui("gr_ltunvic_bar",
-      interactive = FALSE
-    ),
-    djpr_plot_ui("gr_ltunvic_area",
-      interactive = FALSE
-    ),
-    br(),
-    htmlOutput("inclusion_footnote"),
-    br()
+
+    # No padding column with width = 4
+    column_nopad(
+      width = 4,
+
+      djprshiny::djpr_h1_box("Long-term unemployed"),
+
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "Long-term unemployment is defined as a duration of unemployment of 12 months or more, ",
+        "calculated from the time a person either last worked in any job for two weeks or more, ",
+        "or began actively looking for work (whichever is the more recent). ",
+        "Measuring long-term unemployment is important as it impacts on communities both socially ",
+        "and economically. Compared to short-term unemployed people, those unemployed for longer ",
+        "periods of time can experience higher levels of competition, decreased confidence and motivation.")
+      ),
+
+      djpr_async_ui(
+        id = "gr_ltunemp_line",
+        width = 8,
+        date_slider(
+          id = 'gr_ltunemp_line',
+          table_no = 'UM2',
+          value = c(as.Date('2000-01-01'), data_dates$`6202012`$max)
+          )
+       ),
+
+    djpr_async_ui("gr_ltunvic_bar", width = 12),
+    djpr_async_ui(
+      "gr_ltunvic_area",
+      width = 12,
+      date_slider("gr_ltunvic_area", "UM2")
+      ),
+
+    box(
+      width = 12,
+      style = "padding:10px;",
+      HTML(
+        "This dashboard is produced by the <b>Strategy and Priority ",
+        "Projects - Data + Analytics</b> team at the Victorian Department ",
+        "of Jobs, Precincts and Regions. The <b>latest data in this ",
+        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+
+      )
+    )
   )
 }
 
-page_ltunemp <- function(input, output, session, plt_change = plt_change, series_latestdates = series_latestdates, footnote = footnote) {
-  djpr_plot_server("gr_ltunemp_line",
-    viz_gr_ltunemp_line,
-    data = filter_dash_data(c(
-      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-      "A84423687K",
-      "A84423089K",
-      "A84597681W"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    date_slider_value_min = as.Date("2000-01-01")
+page_ltunemp <- function(input, output, session) {
+  djpr_async_server(
+    id       = "gr_ltunemp_line",
+    plot_fun = viz_gr_ltunemp_line,
+    date_range = input$dates
   )
 
-  djpr_plot_server("gr_ltunvic_bar",
-    viz_gr_ltunvic_bar,
-    data = filter_dash_data(c(
-      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-      "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-      "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-      "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-      "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-    ),
-    df = dash_data
-    ),
-    plt_change = plt_change,
-    interactive = FALSE,
-    date_slider = FALSE
+  djpr_async_server("gr_ltunvic_bar",
+    viz_gr_ltunvic_bar
   )
 
-  djpr_plot_server("gr_ltunvic_area",
+  djpr_async_server(
+    "gr_ltunvic_area",
     viz_gr_ltunvic_area,
-    data = filter_dash_data(c(
-      "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-      "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-      "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-      "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-      "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-      "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
-    ),
-    df = dash_data
-    ),
-    interactive = FALSE,
-    plt_change = plt_change
+    dates = input$dates
   )
 
   observeEvent(input$link_ltunemp, {
