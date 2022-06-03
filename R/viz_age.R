@@ -63,19 +63,21 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
 }
 
 # Line chart -- youth unemp in Greater Melb v Rest of State -----
-viz_gr_yth_melbvrest_line <- function(data = filter_dash_data(
-                                        c(
-                                          "15-24_greater melbourne_employed",
-                                          "15-24_rest of vic._employed",
-                                          "15-24_greater melbourne_nilf",
-                                          "15-24_rest of vic._nilf",
-                                          "15-24_greater melbourne_unemployed",
-                                          "15-24_rest of vic._unemployed"
-                                        ),
-                                        df = dash_data
-                                      ),
-                                      selected_indicator = "unemp_rate",
-                                      date_range) {
+viz_gr_yth_melbvrest_line <- function(
+  data = filter_dash_data(
+    c(
+      "15-24_greater melbourne_employed",
+      "15-24_rest of vic._employed",
+      "15-24_greater melbourne_nilf",
+      "15-24_rest of vic._nilf",
+      "15-24_greater melbourne_unemployed",
+      "15-24_rest of vic._unemployed"
+    ),
+    df = dash_data
+  ),
+  selected_indicator = "unemp_rate",
+  date_range = as.Date(c("1910-01-01", "2030-01-01"))
+  ) {
   data <- data |>
     filter(date >= date_range[1],
            date <= date_range[2])
@@ -239,9 +241,11 @@ youth_focus_box_data <- function() {
   df
 }
 
-viz_gr_ages_line <- function(data = youth_focus_box_data(),
-                             selected_indicator = "unemp_rate",
-                             date_range) {
+viz_gr_ages_line <- function(
+  data = youth_focus_box_data(),
+  selected_indicator = "unemp_rate",
+  date_range = as.Date(c("1980-01-01", "2037-01-01"))
+  ) {
   data <- data |>
     filter(date >= date_range[1],
            date <= date_range[2])
@@ -491,7 +495,7 @@ viz_gr_yth_lfpartrate_vicaus_line <- function(
     dplyr::mutate(value = slider::slide_mean(.data$value,
                                              before = 11, complete = TRUE
     )),
-  date_range
+  date_range= as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   data <- data |>
     filter(date >= date_range[1],
@@ -988,8 +992,8 @@ viz_gr_youth_vicaus_line <- function(
       state = strayr::clean_state(.data$state)
     ),
   selected_indicator = "unemp_rate",
-  state = NULL,
-  date_range
+  state = c("Vic", "NSW"),
+  date_range = as.Date(c("1910-01-01", "2030-01-01"))
   ) {
 
   data <- data |>

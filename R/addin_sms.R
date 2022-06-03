@@ -4,10 +4,7 @@
 #'
 #' @importFrom shinyWidgets switchInput updateSwitchInput
 #' @import glue
-#' @return
 #' @export
-#'
-#' @examples
 editSMS <- function(labour = NULL) {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
   # shell("git checkout main")

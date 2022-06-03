@@ -375,7 +375,7 @@ viz_industries_emp_line <- function(
     df = dash_data
   ),
   chosen_industry = "Agriculture, Forestry and Fishing",
-  dates
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%

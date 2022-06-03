@@ -61,7 +61,7 @@ viz_ind_emp_sincecovid_line <- function(data = filter_dash_data(c(
 
 viz_ind_empgro_line <- function(
   data = filter_dash_data(c("A84423349V", "A84423043C"), dash_data),
-  dates
+  dates =as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
@@ -238,63 +238,66 @@ viz_ind_unemp_states_dot <- function(data = filter_dash_data(
     )
 }
 
-viz_ind_emppop_state_line <- function(data = filter_dash_data(c(
-                                        "A84423272J",
-                                        "A84423356T",
-                                        "A84423286W",
-                                        "A84423370L",
-                                        "A84423328J",
-                                        "A84423300F",
-                                        "A84423314V",
-                                        "A84423342C"
-                                      ),
-                                      df = dash_data
-                                      ) %>%
-                                        dplyr::mutate(
-                                          state = dplyr::case_when(
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
-                                              "Vic",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
-                                              "NSW",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
-                                              "QLD",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
-                                              "NT",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
-                                              "WA",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
-                                              "SA",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
-                                              "Tas",
-                                            .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
-                                              "ACT",
-                                            TRUE ~ .data$state
-                                          )
-                                        ),
-                                      non_filtered_latest = filter_dash_data(
-                                        df = dash_data,
-                                        series_ids = c(
-                                          "A84423272J",
-                                          "A84423356T",
-                                          "A84423286W",
-                                          "A84423370L",
-                                          "A84423328J",
-                                          "A84423300F",
-                                          "A84423314V",
-                                          "A84423342C"
-                                        )
-                                      ) %>%
-                                        dplyr::filter(
-                                          .data$date == max(.data$date),
-                                          !(.data$state %in% c(
-                                            "Northern Territory",
-                                            "Australian Capital Territory"
-                                          )
-                                          )
-                                        ) %>%
-                                        dplyr::arrange(-.data$value),
-                                      date_filter = NULL,
-                                      state_filter = NULL) {
+viz_ind_emppop_state_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84423272J",
+      "A84423356T",
+      "A84423286W",
+      "A84423370L",
+      "A84423328J",
+      "A84423300F",
+      "A84423314V",
+      "A84423342C"
+    ),
+    df = dash_data
+  ) %>%
+    dplyr::mutate(
+      state = dplyr::case_when(
+        .data$series == "Employment to population ratio ;  Persons ;  > Victoria ;" ~
+          "Vic",
+        .data$series == "Employment to population ratio ;  Persons ;  > New South Wales ;" ~
+          "NSW",
+        .data$series == "Employment to population ratio ;  Persons ;  > Queensland ;" ~
+          "QLD",
+        .data$series == "Employment to population ratio ;  Persons ;  > Northern Territory ;" ~
+          "NT",
+        .data$series == "Employment to population ratio ;  Persons ;  > Western Australia ;" ~
+          "WA",
+        .data$series == "Employment to population ratio ;  Persons ;  > South Australia ;" ~
+          "SA",
+        .data$series == "Employment to population ratio ;  Persons ;  > Tasmania ;" ~
+          "Tas",
+        .data$series == "Employment to population ratio ;  Persons ;  > Australian Capital Territory ;" ~
+          "ACT",
+        TRUE ~ .data$state
+      )
+    ),
+  non_filtered_latest = filter_dash_data(
+    df = dash_data,
+    series_ids = c(
+      "A84423272J",
+      "A84423356T",
+      "A84423286W",
+      "A84423370L",
+      "A84423328J",
+      "A84423300F",
+      "A84423314V",
+      "A84423342C"
+    )
+  ) %>%
+    dplyr::filter(
+      .data$date == max(.data$date),
+      !(.data$state %in% c(
+        "Northern Territory",
+        "Australian Capital Territory"
+      )
+      )
+    ) %>%
+    dplyr::arrange(-.data$value),
+  date_filter = as.Date(c("1910-01-01", "2030-01-01")),
+  state_filter = c("Vic", "NSW")
+  ) {
 
   df <- data %>%
     dplyr::filter(.data$state %in% .env$state_filter) %>%
@@ -466,7 +469,7 @@ viz_ind_unemprate_line <- function(
     ),
     df = dash_data
   ),
-  dates
+  dates =as.Date(c("1910-01-01", "2030-01-01"))
 ) {
   data <- data %>%
     filter(date >= dates[1], date <= dates[2]) %>%
@@ -530,7 +533,7 @@ viz_ind_underut_area <- function(
     ),
     df = dash_data
   ),
-  date_filter
+  date_filter = as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   data <- data %>%
     dplyr::filter(date >= date_filter[1], date <= date_filter[2]) %>%
@@ -641,7 +644,7 @@ viz_ind_hoursworked_line <- function(
     ),
     df = dash_data
   ),
-  dates
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   data <- data %>%
     filter(date >= dates[1], date <= dates[2]) %>%
@@ -711,7 +714,7 @@ viz_ind_partrate_un_line <- function(
     ),
     df = dash_data
   ),
-  dates
+  dates =as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
@@ -945,7 +948,7 @@ viz_ind_partrate_line <- function(
     ),
     df = dash_data
   ),
-  dates
+  dates =as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   data <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%

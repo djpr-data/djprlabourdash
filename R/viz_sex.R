@@ -114,7 +114,16 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
 }
 
 # Line chart -- LF participation by sex -----
-viz_gr_gen_partrate_line <- function(data, dates) {
+viz_gr_gen_partrate_line <- function(
+  data = filter_dash_data(c(
+    "A84423355R",
+    "A84423243W",
+    "A84423467J"
+  ),
+  df = dash_data
+  ),
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
+) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
@@ -173,7 +182,16 @@ viz_gr_gen_partrate_line <- function(data, dates) {
 }
 
 # Line chart -- unemployment rate by sex ------
-viz_gr_gen_unemp_line <- function(data,dates) {
+viz_gr_gen_unemp_line <- function(
+  data = filter_dash_data(c(
+    "A84423354L",
+    "A84423242V",
+    "A84423466F"
+  ),
+  df = dash_data
+  ),
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
+) {
 
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
@@ -224,7 +242,17 @@ viz_gr_gen_unemp_line <- function(data,dates) {
 }
 
 # Full-time and part-time  employment growth pattern by gender
-viz_gr_full_part_line <- function(data, dates) {
+viz_gr_full_part_line <- function(
+  data = filter_dash_data(
+    c(
+      "A84423237A",
+      "A84423461V",
+      "A84423245A",
+      "A84423469L"
+    )
+  ),
+  dates = as.Date(c("1910-01-01", "2027-01-01"))
+) {
 
   # We calculate part time employment using total + FT employment
   df <- data %>%
@@ -303,7 +331,15 @@ viz_gr_full_part_line <- function(data, dates) {
     facet_wrap(~indicator, ncol = 1, scales = "free_y")
 }
 
-viz_gr_gen_emppopratio_line <- function(data,dates ) {
+viz_gr_gen_emppopratio_line <- function(
+  data = filter_dash_data(c(
+    "A84423244X",
+    "A84423468K"
+  ),
+  df = dash_data
+  ),
+  dates = as.Date(c("1910-01-01", "2027-01-01"))
+) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$date, .data$value, .data$sex, .data$indicator) %>%
@@ -495,7 +531,7 @@ viz_gr_female_jobact_sincecovid_line <- function(
     df = dash_data
   ) %>%
     dplyr::filter(date >= as.Date("2019-03-31")),
-  dates
+  dates = as.Date(c("1910-01-01", "2027-01-01"))
   ) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%

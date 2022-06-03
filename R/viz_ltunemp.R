@@ -291,7 +291,7 @@ viz_gr_ltunvic_area <- function(
     ),
     df = dash_data
   ),
-  dates
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
   ) {
   # select the series you need for the bar chart
   data <- data %>%

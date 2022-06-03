@@ -353,7 +353,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(
   ),
   selected_indicator = "unemp_rate",
   dates = c(data_dates$`6202016`$min, data_dates$`6202016`$max),
-  n_col
+  n_col = 3
   ){
 
   indic_long <- dplyr::case_when(
@@ -653,7 +653,7 @@ viz_reg_unemprate_dispersion <- function(
   df = dash_data
   ),
   selected_indicator = "all",
-  dates
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
   ){
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
@@ -1338,7 +1338,7 @@ viz_reg_melvic_line <- function(
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
     dplyr::filter(!is.na(.data$value)),
-  dates = dates
+  dates = as.Date(c("1910-01-01", "2030-01-01"))
 ) {
   latest <- data %>%
     dplyr::ungroup() %>%

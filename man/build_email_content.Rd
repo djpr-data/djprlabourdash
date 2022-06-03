@@ -6,9 +6,6 @@
 \usage{
 build_email_content()
 }
-\value{
-
-}
 \description{
 Merge Message Contents into Single Document
 }

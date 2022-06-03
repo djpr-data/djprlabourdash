@@ -107,13 +107,7 @@ page_sex <- function(input, output, session) {
   djpr_async_server(
     id= "gr_gen_emppopratio_line",
     plot_fun = viz_gr_gen_emppopratio_line,
-    dates = input$dates,
-    data = filter_dash_data(c(
-      "A84423244X",
-      "A84423468K"
-    ),
-    df = dash_data
-    )
+    dates = input$dates
   )
 
   # Bar chart: LF status by sex, latest month
@@ -141,28 +135,14 @@ page_sex <- function(input, output, session) {
   djpr_async_server(
     id= "gr_gen_partrate_line",
     plot_fun= viz_gr_gen_partrate_line,
-    dates = input$dates,
-    data = filter_dash_data(c(
-      "A84423355R",
-      "A84423243W",
-      "A84423467J"
-    ),
-    df = dash_data
-    )
+    dates = input$dates
   )
 
   # Line chart: unemployment rate by sex
   djpr_async_server(
    id  = "gr_gen_unemp_line",
    plot_fun = viz_gr_gen_unemp_line,
-   dates = input$dates,
-    data = filter_dash_data(c(
-      "A84423354L",
-      "A84423242V",
-      "A84423466F"
-    ),
-    df = dash_data
-    )
+   dates = input$dates
   )
 
   djpr_async_server(

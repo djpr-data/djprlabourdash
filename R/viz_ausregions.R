@@ -32,7 +32,8 @@ viz_reg_emp_regionstates_sincecovid_line <- function(
         TRUE ~ .data$state
       )
     ),
-  states) {
+  states = c("Reg. Vic", "Reg. NSW")
+  ) {
   df <- data %>%
     dplyr::filter(.data$state %in% states) %>%
     dplyr::group_by(.data$series_id) %>%
