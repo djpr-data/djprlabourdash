@@ -83,7 +83,7 @@ column_nopad <- function(width = 6, ...) {
 focus_box <- function(title,
                       inputs,
                       ...,
-                      colour = djprtheme::djpr_bondi_blue, # "#1D9EC3"
+                      colour = djprtheme::djpr_royal_blue, # "#2A6FA2"
                       text_colour = "#FFFFFF",
                       width = 12,
                       title_width = 9) {
