@@ -126,6 +126,10 @@ page_ageUI <- function(...) {
           6,
           plotOutput("gr_youth_unemp_emppop_partrate_bar")
         )
+      ),
+      div(
+        class = "djpr-caption",
+        "Based on Australian Bureau of Statistics data: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 12 month rolling average."
       )
     ),
     djpr_h2_box("Jobactive caseload for 15-24 year olds (youth)"),

@@ -1206,6 +1206,6 @@ viz_ind_effective_unemprate_line <- function(data = filter_dash_data(c(
     labs(
       title = "Including zero-hours workers in the unemployment rate gives a clearer picture of the economic effects of COVID and lockdowns",
       subtitle = "Unemployment rate, with and without people working zero hours (per cent of labour force)",
-      caption = paste0(caption_lfs_det_m(), "Zero-hours data smoothed using a 3 month rolling average.")
+      caption = paste0(caption_lfs_det_m(), " Zero-hours data smoothed using a 3 month rolling average.")
     )
 }

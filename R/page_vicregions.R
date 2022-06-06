@@ -42,7 +42,7 @@ page_vicregionsUI <- function(...) {
       ),
       div(
         class = "djpr-caption",
-        "Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."
+        "Based on Australian Bureau of Statistics data: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."
       )
     ),
     djpr_async_ui(
