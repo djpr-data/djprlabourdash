@@ -6,14 +6,14 @@ page_overviewUI <- function(...) {
     column_nopad(
       width = 4,
 
-      djprshiny::djpr_h1_box("DJPR Jobs Dashboard")#,
+      djprshiny::djpr_h1_box("DJPR Jobs Dashboard"),
 
-      # shinydashboard::box(
-      #   width = 12,
-      #   style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-      #   "Some content",
-      #   shiny::plotOutput('overview_diagram')
-      # )
+      shinydashboard::box(
+        width = 12,
+        style = "padding: 15px;font-size: 20px;background: #C0E4B5;",
+        "This site provides a guide to the latest movements Victorian ",
+        "employment information. "
+      )
     ),
 
     box(
