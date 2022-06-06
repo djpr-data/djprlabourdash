@@ -2,7 +2,7 @@
 # Shiny components
 date_slider <- function(id,
                         table_no = "6202012",
-                        label = "Dates",
+                        label = "Select dates",
                         min = NULL,
                         max = NULL,
                         value = NULL,
@@ -29,7 +29,7 @@ date_slider <- function(id,
 
   shiny::sliderInput(
     shiny::NS(id, "dates"),
-    label = "Dates",
+    label = "Select dates",
     min = min,
     max = max,
     value = value,
@@ -42,7 +42,7 @@ date_slider <- function(id,
 }
 
 state_checkbox <- function(id,
-                           label = "jurisdiction",
+                           label = "Select jurisdiction",
                            choices = c("Vic", "NSW", "SA", "QLD", "WA", "NT", "ACT", "Tas"),
                            selected = c("Vic", "NSW"),
                            inline = TRUE,
