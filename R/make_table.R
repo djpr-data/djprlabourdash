@@ -340,7 +340,6 @@ make_table <- function(data,
       j = 1:flextable::ncol_keys(flex),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
     flextable::font(fontname = font_family) %>%
     flextable::fontsize(
       size = font_size_secondary * 1.2,
