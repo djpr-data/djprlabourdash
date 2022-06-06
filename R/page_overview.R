@@ -1,12 +1,10 @@
 page_overviewUI <- function(...) {
-
   shiny::tagList(
 
     # No padding column with width = 4
     column_nopad(
       width = 4,
-
-      djprshiny::djpr_h1_box("DJPR Jobs Dashboard")#,
+      djprshiny::djpr_h1_box("DJPR Jobs Dashboard") # ,
 
       # shinydashboard::box(
       #   width = 12,
@@ -15,13 +13,11 @@ page_overviewUI <- function(...) {
       #   shiny::plotOutput('overview_diagram')
       # )
     ),
-
     box(
       width = 8,
       shiny::uiOutput("main_table", height = "800px") %>%
         djpr_with_spinner(proxy.height = "800px")
     ),
-
     box(
       width = 12,
       style = "padding:10px;",
@@ -29,18 +25,14 @@ page_overviewUI <- function(...) {
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
-
       )
     )
-
   )
-
 }
 
 page_overview <- function(input, output, session) {
-
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
@@ -59,4 +51,3 @@ page_overview <- function(input, output, session) {
     viz_overview_illustration()
   })
 }
-

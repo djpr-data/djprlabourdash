@@ -4,36 +4,30 @@ page_vicregionsUI <- function(...) {
 
     # Unemployment by region -----
     djprshiny::djpr_h1_box("Victorian Regions"),
-
     shinydashboard::box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "Victoria contains a range of diverse regions, both within Greater Melbourne and outside the metropolitan area. Below we explore the regional differences in historical and current labour force status within Victoria. "
     ),
-
     djpr_h2_box("Labour force status by region"),
-
     focus_box(
-
       title = tagList(
         h3(textOutput("title_reg_unemp_emppop_partrate_vic"), style = "color:#FFFFFF"),
         h4(textOutput("subtitle_reg_unemp_emppop_partrate_vic"), style = "color:#FFFFFF")
       ),
-
       inputs = tagList(
         br(),
         selectInput(
-          inputId  = "lf_status_region",
-          label    = span("Choose an indicator", style = "color:#FFFFFF;"),
+          inputId = "lf_status_region",
+          label = span("Choose an indicator", style = "color:#FFFFFF;"),
           selected = "unemp_rate",
-          choices  = c(
+          choices = c(
             "Unemployment rate" = "unemp_rate",
             "Participation rate" = "part_rate",
             "Employment to population ratio" = "emp_pop"
           )
         )
       ),
-
       fluidRow(
         column(
           6,
@@ -45,15 +39,12 @@ page_vicregionsUI <- function(...) {
           plotOutput("reg_unemp_emppop_partrate_bar") %>%
             djpr_with_spinner()
         )
-
       ),
       div(
         class = "djpr-caption",
         "Source: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."
       )
     ),
-
-
     djpr_async_ui(
       id = "reg_unemp_emppop_partrate_multiline",
       height = "600px",
@@ -83,8 +74,6 @@ page_vicregionsUI <- function(...) {
         )
       )
     ),
-
-
     djpr_async_ui(
       id = "reg_unemprate_dispersion",
       width = 10,
@@ -112,7 +101,6 @@ page_vicregionsUI <- function(...) {
         )
       )
     ),
-
     box(
       width = 2,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
@@ -136,14 +124,14 @@ page_vicregionsUI <- function(...) {
         id = "reg_melvic_line",
         table_no = "6291002",
         value = c(as.Date("2014-11-01"), data_dates$`6291002`$max)
-        )
+      )
     ),
     djpr_async_ui("reg_emp_regions_sincecovid_line", width = 12),
 
 
 
     # Victorian regions focus box ------
-    djpr_h2_box( "Regional Victoria"),
+    djpr_h2_box("Regional Victoria"),
     # Box for regional focus
     focus_box(
       title = h3("Compare regions of Victoria"),
@@ -151,7 +139,7 @@ page_vicregionsUI <- function(...) {
         tagList(
           selectInput(
             "focus_region",
-            label = span("Choose a region of Victoria", style="color:#FFFFFF;"),
+            label = span("Choose a region of Victoria", style = "color:#FFFFFF;"),
             selected = "Ballarat",
             width = "100%",
             choices = c(
@@ -174,7 +162,7 @@ page_vicregionsUI <- function(...) {
               "Warrnambool and South West"
             )
           )
-      ),
+        ),
       fluidRow(
         column(
           6,
@@ -194,9 +182,7 @@ page_vicregionsUI <- function(...) {
             djpr_with_spinner()
         )
       )
-
     ),
-
     djpr_h2_box("Victorian jobactive caseload by employment region"),
     focus_box(
       title = h3(uiOutput("title_reg_jobactive_vic")),
@@ -210,14 +196,13 @@ page_vicregionsUI <- function(...) {
         ),
         column(
           6,
-          plotOutput("reg_jobactive_vic_bar")%>%
+          plotOutput("reg_jobactive_vic_bar") %>%
             djpr_with_spinner()
         )
       ),
       uiOutput("table_jobactive_regions") %>%
         djpr_with_spinner()
     ),
-
     box(
       width = 12,
       style = "padding:10px;",
@@ -225,9 +210,8 @@ page_vicregionsUI <- function(...) {
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ",  format(data_dates$`6291016`$max, "%B %Y"),
+        "dashboard is for ", format(data_dates$`6291016`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
-
       )
     )
   )
@@ -252,7 +236,7 @@ page_vicregions <- function(input, output, session) {
 
   output$title_reg_unemp_emppop_partrate_vic <- renderText({
     title_reg_unemp_emppop_partrate_vic(data_reg_map_bar_title(),
-                                        selected_indicator = input$lf_status_region
+      selected_indicator = input$lf_status_region
     )
   })
 

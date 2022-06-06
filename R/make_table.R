@@ -47,7 +47,6 @@ make_table <- function(data,
                        title = "",
                        rename_indicators = TRUE,
                        pretty_round = TRUE) {
-
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)

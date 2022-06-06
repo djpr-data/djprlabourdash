@@ -6,16 +6,11 @@ page_methodologyUI <- function(...) {
     br(),
     shiny::includeMarkdown(system.file("methodology.md", package = "djprlabourdash")),
     br(),
-
     shiny::includeMarkdown(system.file("glossary.md", package = "djprlabourdash")),
-
     shiny::br(),
-
     shiny::includeMarkdown(system.file("note.md", package = "djprlabourdash")),
-
     shiny::br(),
     # centred_row(htmlOutput("methodology_footnote")),
     br()
   )
 }
-

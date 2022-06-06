@@ -1,28 +1,31 @@
 
 # Shiny components
-date_slider <- function(
-  id,
-  table_no = "6202012",
-  label = "Dates",
-  min = NULL,
-  max = NULL,
-  value = NULL,
-  width = "50%",
-  timeFormat = "%b %Y",
-  dragRange = TRUE,
-  ticks = FALSE,
-  ...
-){
-
-  if(!exists("data_dates")) stop(
-    "Cannot find data_dates. Have you run pkgload::load_all() ?"
+date_slider <- function(id,
+                        table_no = "6202012",
+                        label = "Dates",
+                        min = NULL,
+                        max = NULL,
+                        value = NULL,
+                        width = "50%",
+                        timeFormat = "%b %Y",
+                        dragRange = TRUE,
+                        ticks = FALSE,
+                        ...) {
+  if (!exists("data_dates")) {
+    stop(
+      "Cannot find data_dates. Have you run pkgload::load_all() ?"
     )
+  }
 
-  if(is.null(min)){min <- data_dates[[table_no]]$min}
-  if(is.null(max)){max <- data_dates[[table_no]]$max}
-  if(is.null(value)){
+  if (is.null(min)) {
+    min <- data_dates[[table_no]]$min
+  }
+  if (is.null(max)) {
+    max <- data_dates[[table_no]]$max
+  }
+  if (is.null(value)) {
     value <- c(min, max)
-    }
+  }
 
   shiny::sliderInput(
     shiny::NS(id, "dates"),
@@ -38,14 +41,12 @@ date_slider <- function(
   )
 }
 
-state_checkbox <- function(
-  id,
-  label = "jurisdiction",
-  choices = c("Vic", "NSW", "SA", "QLD", "WA", "NT", "ACT", "Tas"),
-  selected =  c("Vic", "NSW"),
-  inline = TRUE,
-  ...
-  ){
+state_checkbox <- function(id,
+                           label = "jurisdiction",
+                           choices = c("Vic", "NSW", "SA", "QLD", "WA", "NT", "ACT", "Tas"),
+                           selected = c("Vic", "NSW"),
+                           inline = TRUE,
+                           ...) {
   shinyWidgets::awesomeCheckboxGroup(
     shiny::NS(id, "states"),
     label = label,
@@ -56,47 +57,48 @@ state_checkbox <- function(
   )
 }
 
-box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL){
-
+box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL) {
   stopifnot(width %in% 1:12)
 
-  shiny::column(width,
-    #class = paste0("col-sm-", width),
+  shiny::column(
+    width,
+    # class = paste0("col-sm-", width),
     shiny::div(
       class = "box",
-      style = if(is.null(height)) NULL else paste0("height:", height,";"),
-      if(is.null(title)) NULL else shiny::div(class = "box-header", title),
+      style = if (is.null(height)) NULL else paste0("height:", height, ";"),
+      if (is.null(title)) NULL else shiny::div(class = "box-header", title),
       ...,
-      if(is.null(footer)) NULL else shiny::div(class = "box-footer", footer)
+      if (is.null(footer)) NULL else shiny::div(class = "box-footer", footer)
     )
   )
-
 }
 
 
-column_nopad <- function(width = 6, ...){
+column_nopad <- function(width = 6, ...) {
   shiny::column(width = width, ...) %>%
     shiny::tagAppendAttributes(style = "padding:0px;")
 }
 
 
-focus_box <- function(
-  title,
-  inputs,
-  ...,
-  colour = djprtheme::djpr_bondi_blue,      # "#1D9EC3"
-  text_colour = "#FFFFFF",
-  width = 12,
-  title_width = 9
-  ){
+focus_box <- function(title,
+                      inputs,
+                      ...,
+                      colour = djprtheme::djpr_bondi_blue, # "#1D9EC3"
+                      text_colour = "#FFFFFF",
+                      width = 12,
+                      title_width = 9) {
 
   # Checks
-  if(!(title_width %in% 1:11)) stop(
-    "Title width must be in 1:11 (bootstrap grid)\nTitle width cannot be 12 as space is needed for inputs"
+  if (!(title_width %in% 1:11)) {
+    stop(
+      "Title width must be in 1:11 (bootstrap grid)\nTitle width cannot be 12 as space is needed for inputs"
     )
-  if(!(width %in% 1:12)) stop(
-    "Focus box width must be in 1:12 (bootstrap grid)"
-  )
+  }
+  if (!(width %in% 1:12)) {
+    stop(
+      "Focus box width must be in 1:12 (bootstrap grid)"
+    )
+  }
 
   # Options
   title_width <- round(title_width)
@@ -111,7 +113,6 @@ focus_box <- function(
   box(
     width = width,
     style = box_style,
-
     fluidRow(
       style = title_style,
       column(
@@ -123,18 +124,16 @@ focus_box <- function(
         inputs
       )
     ),
-
     div(
       style = "padding:15px;",
       ...
     )
   )
-
 }
 
 
 # no background box
-async_no_background <- function(djpr_async_ui){
+async_no_background <- function(djpr_async_ui) {
   djpr_async_ui$children[[1]] <- tagAppendAttributes(
     djpr_async_ui$children[[1]],
     style = "background:transparent;box-shadow:none;"
@@ -156,9 +155,7 @@ async_no_background <- function(djpr_async_ui){
 
 
 
-djpr_girafe_box <- function(id, ggobj, widget, ...){
-
-
+djpr_girafe_box <- function(id, ggobj, widget, ...) {
   shiny::div(
     class = "box",
     shiny::div(
@@ -180,7 +177,7 @@ djpr_girafe_box <- function(id, ggobj, widget, ...){
     ),
     shiny::div(
       class = "box-footer",
-       djprtheme::extract_labs(ggobj, "caption") %>%
+      djprtheme::extract_labs(ggobj, "caption") %>%
         shiny::tagAppendAttributes(class = "djpr-caption"),
       ...
     ),
@@ -188,11 +185,11 @@ djpr_girafe_box <- function(id, ggobj, widget, ...){
   )
 }
 
-djpr_ruler_container <- function(id){
+djpr_ruler_container <- function(id) {
 
   # divs IDs and input names used for ggiraph resizing
   ruler_container <- shiny::NS(id, "container")
-  ruler_ppi   <- shiny::NS(id, "ruler-ppi")
+  ruler_ppi <- shiny::NS(id, "ruler-ppi")
   ruler_input <- shiny::NS(id, "sizing")
 
   # JS code to create plot-specific resizing
@@ -224,4 +221,3 @@ $(document).on("shiny:inputchanged", function(e) {
     )
   )
 }
-

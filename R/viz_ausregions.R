@@ -1,39 +1,37 @@
 #' @importFrom rlang `:=`
 
-viz_reg_emp_regionstates_sincecovid_line <- function(
-  data = filter_dash_data(
-    c(
-      "A84600075R",
-      "A84599625R",
-      "A84599781T",
-      "A84599607K",
-      "A84600243R",
-      "A84599715V",
-      "A84599631K"
-    ),
-    df = dash_data
-  ) %>%
-    dplyr::mutate(
-      state = dplyr::case_when(
-        .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
-          "Reg. Vic",
-        .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
-          "Reg. NSW",
-        .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
-          "Reg. QLD",
-        .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
-          "Reg. NT",
-        .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
-          "Reg. WA",
-        .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
-          "Reg. SA",
-        .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
-          "Reg. Tas",
-        TRUE ~ .data$state
-      )
-    ),
-  states = c("Reg. Vic", "Reg. NSW")
-  ) {
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(
+                                                       c(
+                                                         "A84600075R",
+                                                         "A84599625R",
+                                                         "A84599781T",
+                                                         "A84599607K",
+                                                         "A84600243R",
+                                                         "A84599715V",
+                                                         "A84599631K"
+                                                       ),
+                                                       df = dash_data
+                                                     ) %>%
+                                                       dplyr::mutate(
+                                                         state = dplyr::case_when(
+                                                           .data$series == ">> Rest of Vic. ;  Employed total ;  Persons ;" ~
+                                                             "Reg. Vic",
+                                                           .data$series == ">> Rest of NSW ;  Employed total ;  Persons ;" ~
+                                                             "Reg. NSW",
+                                                           .data$series == ">> Rest of Qld ;  Employed total ;  Persons ;" ~
+                                                             "Reg. QLD",
+                                                           .data$series == ">>> Northern Territory - Outback ;  Employed total ;  Persons ;" ~
+                                                             "Reg. NT",
+                                                           .data$series == ">> Rest of WA ;  Employed total ;  Persons ;" ~
+                                                             "Reg. WA",
+                                                           .data$series == ">> Rest of SA ;  Employed total ;  Persons ;" ~
+                                                             "Reg. SA",
+                                                           .data$series == ">> Rest of Tas. ;  Employed total ;  Persons ;" ~
+                                                             "Reg. Tas",
+                                                           TRUE ~ .data$state
+                                                         )
+                                                       ),
+                                                     states = c("Reg. Vic", "Reg. NSW")) {
   df <- data %>%
     dplyr::filter(.data$state %in% states) %>%
     dplyr::group_by(.data$series_id) %>%

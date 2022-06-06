@@ -291,71 +291,68 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_unemp_emppop_partrate_multiline <- function(
-  data = filter_dash_data(
-    c(
-      "A84600253V",
-      "A84599659L",
-      "A84600019W",
-      "A84600187J",
-      "A84599557X",
-      "A84600115W",
-      "A84599851L",
-      "A84599923L",
-      "A84600025T",
-      "A84600193C",
-      "A84599665J",
-      "A84600031L",
-      "A84599671C",
-      "A84599677T",
-      "A84599683L",
-      "A84599929A",
-      "A84600121T",
-      "A84600037A",
-      "A84599658K",
-      "A84599660W",
-      "A84600018V",
-      "A84600020F",
-      "A84600186F",
-      "A84600188K",
-      "A84599556W",
-      "A84599558A",
-      "A84600114V",
-      "A84600116X",
-      "A84599850K",
-      "A84599852R",
-      "A84599922K",
-      "A84599924R",
-      "A84600024R",
-      "A84600026V",
-      "A84600192A",
-      "A84600194F",
-      "A84599664F",
-      "A84599666K",
-      "A84600030K",
-      "A84600032R",
-      "A84599670A",
-      "A84599672F",
-      "A84599676R",
-      "A84599678V",
-      "A84599682K",
-      "A84599684R",
-      "A84599928X",
-      "A84599930K",
-      "A84600120R",
-      "A84600122V",
-      "A84600036X",
-      "A84600038C",
-      "A84600252T",
-      "A84600254W"
-    ),
-    df = dash_data
-  ),
-  selected_indicator = "unemp_rate",
-  dates = c(data_dates$`6202016`$min, data_dates$`6202016`$max),
-  n_col = 3
-  ){
-
+viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(
+                                                      c(
+                                                        "A84600253V",
+                                                        "A84599659L",
+                                                        "A84600019W",
+                                                        "A84600187J",
+                                                        "A84599557X",
+                                                        "A84600115W",
+                                                        "A84599851L",
+                                                        "A84599923L",
+                                                        "A84600025T",
+                                                        "A84600193C",
+                                                        "A84599665J",
+                                                        "A84600031L",
+                                                        "A84599671C",
+                                                        "A84599677T",
+                                                        "A84599683L",
+                                                        "A84599929A",
+                                                        "A84600121T",
+                                                        "A84600037A",
+                                                        "A84599658K",
+                                                        "A84599660W",
+                                                        "A84600018V",
+                                                        "A84600020F",
+                                                        "A84600186F",
+                                                        "A84600188K",
+                                                        "A84599556W",
+                                                        "A84599558A",
+                                                        "A84600114V",
+                                                        "A84600116X",
+                                                        "A84599850K",
+                                                        "A84599852R",
+                                                        "A84599922K",
+                                                        "A84599924R",
+                                                        "A84600024R",
+                                                        "A84600026V",
+                                                        "A84600192A",
+                                                        "A84600194F",
+                                                        "A84599664F",
+                                                        "A84599666K",
+                                                        "A84600030K",
+                                                        "A84600032R",
+                                                        "A84599670A",
+                                                        "A84599672F",
+                                                        "A84599676R",
+                                                        "A84599678V",
+                                                        "A84599682K",
+                                                        "A84599684R",
+                                                        "A84599928X",
+                                                        "A84599930K",
+                                                        "A84600120R",
+                                                        "A84600122V",
+                                                        "A84600036X",
+                                                        "A84600038C",
+                                                        "A84600252T",
+                                                        "A84600254W"
+                                                      ),
+                                                      df = dash_data
+                                                    ),
+                                                    selected_indicator = "unemp_rate",
+                                                    dates = c(data_dates$`6202016`$min, data_dates$`6202016`$max),
+                                                    n_col = 3) {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -380,8 +377,8 @@ viz_reg_unemp_emppop_partrate_multiline <- function(
   df <- df %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(value = slider::slide_mean(.data$value,
-                                             before = 2,
-                                             complete = TRUE
+      before = 2,
+      complete = TRUE
     )) %>%
     dplyr::filter(!is.na(.data$value))
 
@@ -431,7 +428,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(
   melb_sa4s <- sort(unique(df$sa4[df$line_col == "Greater Melbourne"]))
 
   df$sa4 <- factor(df$sa4,
-                   levels = c("Victoria", reg_sa4s, melb_sa4s)
+    levels = c("Victoria", reg_sa4s, melb_sa4s)
   )
 
   highest_current_ur <- df %>%
@@ -628,33 +625,31 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
   )
 }
 
-viz_reg_unemprate_dispersion <- function(
-  data = filter_dash_data(
-    c(
-      "A84600253V",
-      "A84599659L",
-      "A84600019W",
-      "A84600187J",
-      "A84599557X",
-      "A84600115W",
-      "A84599851L",
-      "A84599923L",
-      "A84600025T",
-      "A84600193C",
-      "A84599665J",
-      "A84600031L",
-      "A84599671C",
-      "A84599677T",
-      "A84599683L",
-      "A84599929A",
-      "A84600121T",
-      "A84600037A"
-    ),
-  df = dash_data
-  ),
-  selected_indicator = "all",
-  dates = as.Date(c("1910-01-01", "2030-01-01"))
-  ){
+viz_reg_unemprate_dispersion <- function(data = filter_dash_data(
+                                           c(
+                                             "A84600253V",
+                                             "A84599659L",
+                                             "A84600019W",
+                                             "A84600187J",
+                                             "A84599557X",
+                                             "A84600115W",
+                                             "A84599851L",
+                                             "A84599923L",
+                                             "A84600025T",
+                                             "A84600193C",
+                                             "A84599665J",
+                                             "A84600031L",
+                                             "A84599671C",
+                                             "A84599677T",
+                                             "A84599683L",
+                                             "A84599929A",
+                                             "A84600121T",
+                                             "A84600037A"
+                                           ),
+                                           df = dash_data
+                                         ),
+                                         selected_indicator = "all",
+                                         dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   df <- data %>%
     dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
@@ -662,8 +657,8 @@ viz_reg_unemprate_dispersion <- function(
     ) %>%
     dplyr::mutate(
       geog = dplyr::if_else(grepl("Melbourne|Mornington", .data$sa4),
-                            "Melbourne",
-                            .data$sa4
+        "Melbourne",
+        .data$sa4
       )
     ) %>%
     dplyr::mutate(indicator_short = dplyr::case_when(
@@ -682,8 +677,8 @@ viz_reg_unemprate_dispersion <- function(
 
   df <- df %>%
     dplyr::mutate(sa4 = dplyr::if_else(grepl("Warrnambool", .data$sa4, fixed = TRUE),
-                                       "Warrnambool & S. West",
-                                       .data$sa4
+      "Warrnambool & S. West",
+      .data$sa4
     ))
 
   # Reduce df depending on selected_indicator
@@ -875,9 +870,9 @@ viz_reg_unemprate_dispersion <- function(
 
   # Combine plots -----
   plots_combined <- patchwork::wrap_plots(plot_high_low,
-                                          plot_range,
-                                          patchwork::plot_spacer(),
-                                          ncol = 2
+    plot_range,
+    patchwork::plot_spacer(),
+    ncol = 2
   ) +
     coord_cartesian(clip = "off") +
     patchwork::plot_layout(heights = c(0.99, 0.01)) +
@@ -1325,21 +1320,19 @@ table_region_focus <- function(data = filter_dash_data(
   out
 }
 
-viz_reg_melvic_line <- function(
-  data = filter_dash_data(
-    c(
-      "A84600144J",
-      "A84600078W",
-      "A84595516F",
-      "A84595471L"
-    ),
-    df = dash_data
-  ) %>%
-    dplyr::group_by(.data$series_id) %>%
-    dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-    dplyr::filter(!is.na(.data$value)),
-  dates = as.Date(c("1910-01-01", "2030-01-01"))
-) {
+viz_reg_melvic_line <- function(data = filter_dash_data(
+                                  c(
+                                    "A84600144J",
+                                    "A84600078W",
+                                    "A84595516F",
+                                    "A84595471L"
+                                  ),
+                                  df = dash_data
+                                ) %>%
+                                  dplyr::group_by(.data$series_id) %>%
+                                  dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
+                                  dplyr::filter(!is.na(.data$value)),
+                                dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
