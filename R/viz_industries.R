@@ -330,7 +330,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
       j = 1:flextable::ncol_keys(out),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
+#    flextable::italic(part = "footer") %>%
     flextable::font(fontname = "VIC-font") %>%
     flextable::fontsize(
       size = 9 * 0.85,

@@ -1302,10 +1302,9 @@ table_region_focus <- function(data = filter_dash_data(
       j = 1:flextable::ncol_keys(out),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
     flextable::font(fontname = "VIC-regular") %>%
     flextable::fontsize(
-      size = 9 * 0.85,
+      size = 11 * 0.85,
       part = "footer"
     ) %>%
     flextable::color(
