@@ -225,3 +225,74 @@ $(document).on("shiny:inputchanged", function(e) {
   )
 }
 
+height_sync <- function(id1, id2){
+
+  title1 <- shiny::NS(id1, "title")
+  title2 <- shiny::NS(id2, "title")
+  container1 <- shiny::NS(id1, "container")
+  container2 <- shiny::NS(id2, "container")
+  plot1 <- shiny::NS(id1, "plot")
+  plot2 <- shiny::NS(id2, "plot")
+  caption1 <- shiny::NS(id1, "caption")
+  caption2 <- shiny::NS(id2, "caption")
+
+  shiny::tags$script(
+    glue::glue(
+      .comment = "^",
+      .open = "[",
+      .close = "]",
+      .literal = TRUE,
+"
+//box header sync
+$(document).on('shiny:value', function(event) {
+  if (event.target.id === '[title1]' || event.target.id === '[title2]') {
+  var titleHeightOne = $('#[title1]').parent().height();
+  var titleHeightTwo = $('#[title2]').parent().height();
+  var titleHeightSet = Math.max(titleHeightOne, titleHeightTwo);
+  $('#[title1]').parent().height(titleHeightSet);
+  $('#[title2]').parent().height(titleHeightSet);
+  }
+});
+//plot container sync
+$(document).on('shiny:value', function(event) {
+  if (event.target.id === '[plot1]' || event.target.id === '[plot2]') {
+  var plotHeightOne = $('#[container1]').height();
+  var plotHeightTwo = $('#[container2]').height();
+  var plotHeightSet = Math.max(plotHeightOne, plotHeightTwo);
+  $('#[container1]').height(plotHeightSet);
+  $('#[container2]').height(plotHeightSet);
+  }
+});
+//box footer sync
+$(document).on('shiny:value', function(event) {
+  if (event.target.id === '[caption1]' || event.target.id === '[caption2]') {
+  var footerHeightOne = $('#[caption1]').parent().parent().parent().height();
+  var footerHeightTwo = $('#[caption2]').parent().parent().parent().height();
+  var footerHeightSet = Math.max(footerHeightOne, footerHeightTwo);
+  $('#[caption1]').parent().parent().parent().height(footerHeightSet);
+  $('#[caption2]').parent().parent().parent().height(footerHeightSet);
+  }
+});
+\\Resize all on window resize
+$(window).resize(function(e) {
+  var titleHeightOne = $('#[title1]').parent().height();
+  var titleHeightTwo = $('#[title2]').parent().height();
+  var titleHeightSet = Math.max(titleHeightOne, titleHeightTwo);
+  $('#[title1]').parent().height(titleHeightSet);
+  $('#[title2]').parent().height(titleHeightSet);
+  var plotHeightOne = $('#[container1]').height();
+  var plotHeightTwo = $('#[container2]').height();
+  var plotHeightSet = Math.max(plotHeightOne, plotHeightTwo);
+  $('#[container1]').height(plotHeightSet);
+  $('#[container2]').height(plotHeightSet);
+  var footerHeightOne = $('#[caption1]').parent().parent().parent().height();
+  var footerHeightTwo = $('#[caption2]').parent().parent().parent().height();
+  var footerHeightSet = Math.max(footerHeightOne, footerHeightTwo);
+  $('#[caption1]').parent().parent().parent().height(footerHeightSet);
+  $('#[caption2]').parent().parent().parent().height(footerHeightSet);
+});
+"
+)
+  )
+}
+
