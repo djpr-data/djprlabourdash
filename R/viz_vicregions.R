@@ -787,7 +787,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(
     ) +
     scale_x_date(
       expand = expansion(
-        add = c(0, days_in_data * 0.2)
+        add = c(0, days_in_data * 0.065)
       ),
       breaks = djprtheme::breaks_right(
         limits = c(
