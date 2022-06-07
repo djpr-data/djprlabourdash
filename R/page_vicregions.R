@@ -74,9 +74,24 @@ page_vicregionsUI <- function(...) {
         )
       )
     ),
+
+    djpr_h3_box("Unemployment rate variations across Victoria"),
+
+    box(
+      width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+      "The unemployment rate always varies substantially across Victoria. The amount of ",
+      "variation across the regions of Victoria changes over time - the gap between the ",
+      "highest and lowest unemployment rate in the state grows and shrinks. ",
+      "The graphs below explore the level of that dispersion (i.e. the ",
+      "difference between minimum and maximum) of unemployment rates over time",
+      "in different regions in Victoria. The breakdown of regions is by ",
+      shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4")
+    ),
+
     djpr_async_ui(
       id = "reg_unemprate_dispersion",
-      width = 10,
+      width = 12,
       fluidRow(
         column(
           6,
@@ -100,18 +115,6 @@ page_vicregionsUI <- function(...) {
           )
         )
       )
-    ),
-    box(
-      width = 2,
-      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-      div("<", style = "font-size: 40px;"),
-      "The unemployment rate always varies substantially across Victoria. The amount of ",
-      "variation across the regions of Victoria changes over time - the gap between the ",
-      "highest and lowest unemployment rate in the state grows and shrinks. ",
-      "The graphs below explore the level of that dispersion (i.e. the ",
-      "difference between minimum and maximum) of unemployment rates over time",
-      "in different regions in Victoria. The breakdown of regions is by ",
-      shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4")
     ),
 
 
