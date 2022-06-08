@@ -241,19 +241,23 @@ height_sync <- function(
       .close = "]",
 "
 $('#[element1]').on('DOMSubtreeModified', function() {
+$('#[element1]').css('height', '');
+$('#[element2]').css('height', '');
 var heightOne = $('#[element1]').height();
 var heightTwo = $('#[element2]').height();
 var heightMax = Math.max(heightOne, heightTwo);
-if(heightMax != 0){
+if(heightMax > 0){
 $('#[element1]').height(heightMax);
 $('#[element2]').height(heightMax);
 }
 });
 $('#[element2]').on('DOMSubtreeModified', function() {
+$('#[element1]').css('height', '');
+$('#[element2]').css('height', '');
 var heightOne = $('#[element1]').height();
 var heightTwo = $('#[element2]').height();
 var heightMax = Math.max(heightOne, heightTwo);
-if(heightMax != 0){
+if(heightMax > 0){
 $('#[element1]').height(heightMax);
 $('#[element2]').height(heightMax);
 }

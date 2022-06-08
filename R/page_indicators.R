@@ -56,10 +56,11 @@ page_indicatorsUI <- function(...) {
           )
           )
       )
-      ),
+    ),
 
     djpr_async_ui("ind_gen_full_part_line", width = 6),
     djpr_async_ui("ind_emp_sincecovid_line", width = 6),
+    height_sync("ind_gen_full_part_line", "ind_emp_sincecovid_line"),
 
     djpr_h2_box("Unemployment & underemployment"),
 
@@ -67,7 +68,7 @@ page_indicatorsUI <- function(...) {
       width = 12,
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)
-      ),
+    ),
 
     djpr_async_ui(
       "ind_unemprate_line",
@@ -99,7 +100,7 @@ page_indicatorsUI <- function(...) {
       width = 12,
       uiOutput("table_ind_unemp_state") %>%
         djpr_with_spinner()
-      ),
+    ),
 
     djpr_async_ui("ind_unemp_states_dot", width = 12),
 
@@ -111,7 +112,7 @@ page_indicatorsUI <- function(...) {
         table_no = "6202023",
         value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
-      ),
+    ),
 
     djpr_h2_box("Hours worked"),
 
@@ -123,7 +124,7 @@ page_indicatorsUI <- function(...) {
         table_no = "6202019",
         value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
       )
-      ),
+    ),
 
     djpr_h2_box("Participation"),
 
@@ -257,7 +258,7 @@ page_indicators <- function(input, output, session) {
   djpr_async_server(
     id = "ind_gen_full_part_line",
     plot_fun = viz_ind_gen_full_part_line
-    )
+  )
 
   # Indicators: unemployment ------
   output$ind_unemp_summary <- renderUI({

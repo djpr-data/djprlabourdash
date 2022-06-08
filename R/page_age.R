@@ -149,6 +149,10 @@ page_ageUI <- function(...) {
 
     djpr_async_ui("gr_age_jobactive_since_covid_line"),
     djpr_async_ui("gr_mature_age_jobactive_bar"),
+    height_sync(
+      "gr_age_jobactive_since_covid_line",
+      "gr_mature_age_jobactive_bar"
+    ),
 
     box(
       width = 12,

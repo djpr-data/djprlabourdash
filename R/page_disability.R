@@ -28,6 +28,8 @@ page_disabilityUI <- function(...) {
         width = 6,
         id = "gr_pwd_jobactive_bar"),
 
+    height_sync("gr_pwd_jobact_sincecovid_line", "gr_pwd_jobactive_bar"),
+
     box(
       width = 12,
       style = "padding:10px;",

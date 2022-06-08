@@ -22,6 +22,10 @@ page_migrationUI <- function(...) {
 
     djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
     djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
+    height_sync(
+      "gr_refugee_jobact_sincecovid_line",
+      "gr_refugee_jobactive_bar"
+    ),
 
     box(
       width = 12,

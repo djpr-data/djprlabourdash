@@ -21,6 +21,7 @@ page_aboriginalUI <- function(...) {
 
     djpr_async_ui("gr_abor_jobactive_sincecovid_line", width = 6),
     djpr_async_ui("gr_abor_jobactive_bar", width = 6),
+    height_sync("gr_abor_jobactive_sincecovid_line", "gr_abor_jobactive_bar"),
 
     box(
       width = 12,
