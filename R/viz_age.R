@@ -60,7 +60,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
     labs(
       title = "Employment for young people fell much faster after the COVID shock than employment for other Victorians",
       subtitle = "Cumulative change in employment for different age groups since March 2020",
-      caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
+      caption = paste0(caption_lfs_det_m(), " Data smoothed using a 12 month rolling average.")
     )
 }
 
