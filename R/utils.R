@@ -225,74 +225,51 @@ $(document).on("shiny:inputchanged", function(e) {
   )
 }
 
-height_sync <- function(id1, id2){
+height_sync <- function(
+    id1,
+    id2,
+    sync_elements = c("title", "subtitle", "plot", "caption")
+    ){
 
-  title1 <- shiny::NS(id1, "title")
-  title2 <- shiny::NS(id2, "title")
-  container1 <- shiny::NS(id1, "container")
-  container2 <- shiny::NS(id2, "container")
-  plot1 <- shiny::NS(id1, "plot")
-  plot2 <- shiny::NS(id2, "plot")
-  caption1 <- shiny::NS(id1, "caption")
-  caption2 <- shiny::NS(id2, "caption")
+  elements1 <- paste0(id1, "-", sync_elements)
+  elements2 <- paste0(id2, "-", sync_elements)
 
-  shiny::tags$script(
+  sync_jquery <- function(element1, element2){
     glue::glue(
       .comment = "^",
       .open = "[",
       .close = "]",
-      .literal = TRUE,
 "
-//box header sync
-$(document).on('shiny:value', function(event) {
-  if (event.target.id === '[title1]' || event.target.id === '[title2]') {
-  var titleHeightOne = $('#[title1]').parent().height();
-  var titleHeightTwo = $('#[title2]').parent().height();
-  var titleHeightSet = Math.max(titleHeightOne, titleHeightTwo);
-  $('#[title1]').parent().height(titleHeightSet);
-  $('#[title2]').parent().height(titleHeightSet);
-  }
+$('#[element1]').on('DOMSubtreeModified', function() {
+var heightOne = $('#[element1]').height();
+var heightTwo = $('#[element2]').height();
+var heightMax = Math.max(heightOne, heightTwo);
+if(heightMax != 0){
+$('#[element1]').height(heightMax);
+$('#[element2]').height(heightMax);
+}
 });
-//plot container sync
-$(document).on('shiny:value', function(event) {
-  if (event.target.id === '[plot1]' || event.target.id === '[plot2]') {
-  var plotHeightOne = $('#[container1]').height();
-  var plotHeightTwo = $('#[container2]').height();
-  var plotHeightSet = Math.max(plotHeightOne, plotHeightTwo);
-  $('#[container1]').height(plotHeightSet);
-  $('#[container2]').height(plotHeightSet);
-  }
+$('#[element2]').on('DOMSubtreeModified', function() {
+var heightOne = $('#[element1]').height();
+var heightTwo = $('#[element2]').height();
+var heightMax = Math.max(heightOne, heightTwo);
+if(heightMax != 0){
+$('#[element1]').height(heightMax);
+$('#[element2]').height(heightMax);
+}
 });
-//box footer sync
-$(document).on('shiny:value', function(event) {
-  if (event.target.id === '[caption1]' || event.target.id === '[caption2]') {
-  var footerHeightOne = $('#[caption1]').parent().parent().parent().height();
-  var footerHeightTwo = $('#[caption2]').parent().parent().parent().height();
-  var footerHeightSet = Math.max(footerHeightOne, footerHeightTwo);
-  $('#[caption1]').parent().parent().parent().height(footerHeightSet);
-  $('#[caption2]').parent().parent().parent().height(footerHeightSet);
-  }
-});
-\\Resize all on window resize
 $(window).resize(function(e) {
-  var titleHeightOne = $('#[title1]').parent().height();
-  var titleHeightTwo = $('#[title2]').parent().height();
-  var titleHeightSet = Math.max(titleHeightOne, titleHeightTwo);
-  $('#[title1]').parent().height(titleHeightSet);
-  $('#[title2]').parent().height(titleHeightSet);
-  var plotHeightOne = $('#[container1]').height();
-  var plotHeightTwo = $('#[container2]').height();
-  var plotHeightSet = Math.max(plotHeightOne, plotHeightTwo);
-  $('#[container1]').height(plotHeightSet);
-  $('#[container2]').height(plotHeightSet);
-  var footerHeightOne = $('#[caption1]').parent().parent().parent().height();
-  var footerHeightTwo = $('#[caption2]').parent().parent().parent().height();
-  var footerHeightSet = Math.max(footerHeightOne, footerHeightTwo);
-  $('#[caption1]').parent().parent().parent().height(footerHeightSet);
-  $('#[caption2]').parent().parent().parent().height(footerHeightSet);
+$('#[element1]').removeAttr('style');
+$('#[element2]').removeAttr('style');
 });
 "
-)
-  )
+    )
+  }
+
+  script <- mapply(sync_jquery, elements1, elements2, SIMPLIFY = FALSE)
+  script <- paste(script, collapse = "")
+
+  shiny::tags$script(script)
+
 }
 
