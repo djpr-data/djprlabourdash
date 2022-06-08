@@ -82,13 +82,13 @@ page_ausregionsUI <- function(...) {
 page_ausregions <- function(input, output, session) {
   output$table_reg_nonmetro_states_unemprate <- renderUI({
     table_reg_nonmetro_states_unemprate() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6291016`$max)
 
   output$table_reg_metro_states_unemprate <- renderUI({
     table_reg_metro_states_unemprate() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6291016`$max)
 

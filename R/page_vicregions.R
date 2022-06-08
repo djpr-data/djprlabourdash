@@ -319,7 +319,7 @@ page_vicregions <- function(input, output, session) {
 
   output$table_region_focus <- renderUI({
     table_region_focus(sa4 = input$focus_region) %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(
       input$focus_region,
@@ -372,7 +372,7 @@ page_vicregions <- function(input, output, session) {
 
   output$table_jobactive_regions <- renderUI({
     table_jobactive_regions() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   observeEvent(input$link_vicregions, {

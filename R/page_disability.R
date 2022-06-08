@@ -49,7 +49,7 @@ page_disabilityUI <- function(...) {
 page_disability <- function(input, output, session) {
   output$table_jobactive_pwd <- renderUI({
     table_jobactive_pwd() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(

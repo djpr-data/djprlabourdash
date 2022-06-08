@@ -44,7 +44,7 @@ page_overview <- function(input, output, session) {
   output$main_table <- renderUI({
     req(dash_data)
     table_overview() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(
       data_dates$`6202012`$max,

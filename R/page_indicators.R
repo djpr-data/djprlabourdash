@@ -235,7 +235,7 @@ page_indicators <- function(input, output, session) {
   # Indicators: table of employment indicators
   output$ind_emp_table <- renderUI({
     table_ind_employment() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 
@@ -263,7 +263,7 @@ page_indicators <- function(input, output, session) {
   # Indicators: unemployment ------
   output$ind_unemp_summary <- renderUI({
     table_ind_unemp_summary() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 
@@ -283,7 +283,7 @@ page_indicators <- function(input, output, session) {
   # Indicators: table of unemployment rates by state
   output$table_ind_unemp_state <- renderUI({
     table_ind_unemp_state() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 

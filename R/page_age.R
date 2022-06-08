@@ -173,7 +173,7 @@ page_ageUI <- function(...) {
 page_age <- function(input, output, session) {
   output$table_gr_youth_summary <- renderUI({
     table_gr_youth_summary() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`LM1`$max)
 
@@ -252,7 +252,7 @@ page_age <- function(input, output, session) {
 
   output$table_gr_youth_unemp_region <- renderUI({
     table_gr_youth_unemp_region() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$RM1$max)
 
@@ -287,7 +287,7 @@ page_age <- function(input, output, session) {
 
   output$table_jobactive_youth <- renderUI({
     table_jobactive_youth() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(
@@ -302,7 +302,7 @@ page_age <- function(input, output, session) {
 
   output$table_jobactive_mature_age <- renderUI({
     table_jobactive_mature_age() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(

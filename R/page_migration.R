@@ -46,7 +46,7 @@ page_migrationUI <- function(...) {
 page_migration <- function(input, output, session) {
   output$table_jobactive_refugees <- renderUI({
     table_jobactive_refugees() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(

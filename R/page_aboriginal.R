@@ -42,7 +42,7 @@ page_aboriginalUI <- function(...) {
 page_aboriginal <- function(input, output, session) {
   output$table_jobactive_aboriginal <- renderUI({
     table_jobactive_aboriginal() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server("gr_abor_jobactive_sincecovid_line",
