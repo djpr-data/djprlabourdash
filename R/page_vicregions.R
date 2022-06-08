@@ -74,9 +74,7 @@ page_vicregionsUI <- function(...) {
         )
       )
     ),
-
     djpr_h3_box("Unemployment rate variations across Victoria"),
-
     box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
@@ -88,7 +86,6 @@ page_vicregionsUI <- function(...) {
       "in different regions in Victoria. The breakdown of regions is by ",
       shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4")
     ),
-
     djpr_async_ui(
       id = "reg_unemprate_dispersion",
       width = 12,

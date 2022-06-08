@@ -93,11 +93,12 @@ page_ageUI <- function(...) {
     ),
     djpr_h2_box("Detailed labour force status of Victorian youth"),
     djpr_async_ui("gr_youth_full_part_line",
-                  width = 12,
-                  date_slider("gr_youth_full_part_line", table_no = "6202016")
+      width = 12,
+      date_slider("gr_youth_full_part_line", table_no = "6202016")
     ),
     djpr_async_ui("gr_youth_eduemp_waterfall",
-                  width = 12,),
+      width = 12,
+    ),
     djpr_async_ui("gr_yth_mostvuln_line",
       width = 12,
       date_slider("gr_yth_mostvuln_line", table_no = "6202016")
