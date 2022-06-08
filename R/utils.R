@@ -221,3 +221,52 @@ $(document).on("shiny:inputchanged", function(e) {
     )
   )
 }
+
+height_sync <- function(
+    id1,
+    id2,
+    sync_elements = c("title", "subtitle", "plot", "caption")
+    ){
+
+  elements1 <- paste0(id1, "-", sync_elements)
+  elements2 <- paste0(id2, "-", sync_elements)
+
+  sync_jquery <- function(element1, element2){
+    glue::glue(
+      .comment = "^",
+      .open = "[",
+      .close = "]",
+"
+$('#[element1]').on('DOMSubtreeModified', function() {
+var heightOne = $('#[element1]').height();
+var heightTwo = $('#[element2]').height();
+var heightMax = Math.max(heightOne, heightTwo);
+if(heightMax != 0){
+$('#[element1]').height(heightMax);
+$('#[element2]').height(heightMax);
+}
+});
+$('#[element2]').on('DOMSubtreeModified', function() {
+var heightOne = $('#[element1]').height();
+var heightTwo = $('#[element2]').height();
+var heightMax = Math.max(heightOne, heightTwo);
+if(heightMax != 0){
+$('#[element1]').height(heightMax);
+$('#[element2]').height(heightMax);
+}
+});
+$(window).resize(function(e) {
+$('#[element1]').removeAttr('style');
+$('#[element2]').removeAttr('style');
+});
+"
+    )
+  }
+
+  script <- mapply(sync_jquery, elements1, elements2, SIMPLIFY = FALSE)
+  script <- paste(script, collapse = "")
+
+  shiny::tags$script(script)
+
+}
+
