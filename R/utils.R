@@ -40,7 +40,7 @@ date_slider <- function(
 
 state_checkbox <- function(
   id,
-  label = "jurisdiction",
+  label = "Jurisdiction",
   choices = c("Vic", "NSW", "SA", "QLD", "WA", "NT", "ACT", "Tas"),
   selected =  c("Vic", "NSW"),
   inline = TRUE,
