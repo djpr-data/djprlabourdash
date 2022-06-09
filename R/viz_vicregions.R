@@ -465,6 +465,13 @@ viz_reg_unemp_emppop_partrate_multiline <- function(
       label = F,
       dot = F
     ) +
+    scale_colour_manual(
+      values = c(
+        "Victoria"          = djprtheme::djpr_blue,
+        "Rest of Victoria"  = djprtheme::djpr_green,
+        "Greater Melbourne" = djprtheme::djpr_bondi_blue
+        )
+      ) +
     scale_y_continuous(
       labels = function(x) paste0(x, "%"),
       limits = c(min_limit, max_y),
