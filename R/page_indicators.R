@@ -66,7 +66,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
- 
+
     djpr_async_ui(
       "ind_unemprate_line",
       width = 12,
@@ -93,7 +93,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("table_ind_unemp_state") %>%
         djpr_with_spinner()
     ),
- 
+
     djpr_async_ui("ind_unemp_states_dot", width = 12),
     djpr_async_ui(
       "ind_underut_area",
@@ -104,7 +104,7 @@ page_indicatorsUI <- function(...) {
         value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
     ),
- 
+
     djpr_h2_box("Hours worked"),
     djpr_async_ui(
       "ind_hoursworked_line",
@@ -115,7 +115,7 @@ page_indicatorsUI <- function(...) {
         value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
       )
     ),
- 
+
     djpr_h2_box("Participation"),
     djpr_async_ui(
       id = "ind_partrate_line",
@@ -164,6 +164,12 @@ page_indicatorsUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromindicators_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -312,4 +318,10 @@ page_indicators <- function(input, output, session) {
     plot_fun = viz_ind_partrate_line,
     dates = input$dates
   )
+
+  observeEvent(input$fromindicators_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
+  })
 }
