@@ -17,20 +17,20 @@ labour_server <- function(input, output, session) {
   page_industries(input, output, session)
 
   observeEvent(input$fromoverview_tolegal |
-                 input$fromindicators_tolegal |
-                 input$fromsex_tolegal |
-                 input$fromage_tolegal |
-                 input$fromltunemp_tolegal |
-                 input$fromaboriginal_tolegal |
-                 input$fromdisability_tolegal |
-                 input$frommigration_tolegal |
-                 input$fromvicregions_tolegal |
-                 input$fromausregions_tolegal |
-                 input$fromindustries_tolegal |
-                 input$frommethodology_tolegal,
-               {
+    input$fromindicators_tolegal |
+    input$fromsex_tolegal |
+    input$fromage_tolegal |
+    input$fromltunemp_tolegal |
+    input$fromaboriginal_tolegal |
+    input$fromdisability_tolegal |
+    input$frommigration_tolegal |
+    input$fromvicregions_tolegal |
+    input$fromausregions_tolegal |
+    input$fromindustries_tolegal |
+    input$frommethodology_tolegal, {
     shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
+      "tabs",
+      selected = "legal"
+    )
   })
 }

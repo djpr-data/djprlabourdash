@@ -17,7 +17,6 @@ page_aboriginalUI <- function(...) {
     djpr_async_ui("gr_abor_jobactive_sincecovid_line", width = 6),
     djpr_async_ui("gr_abor_jobactive_bar", width = 6),
     height_sync("gr_abor_jobactive_sincecovid_line", "gr_abor_jobactive_bar"),
-
     box(
       width = 12,
       style = "padding:10px;",
@@ -28,11 +27,13 @@ page_aboriginalUI <- function(...) {
         "dashboard is for ", format(data_dates$jobactive$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
       ),
-      shiny::div(style = 'position:right;bottom:20px',
-                 shiny::actionLink('fromaboriginal_tolegal',
-                                   "Disclaimer and Copyright",
-                                   style = 'material-flat',
-                                   color = 'success')
+      shiny::div(
+        style = "position:right;bottom:20px",
+        shiny::actionLink("fromaboriginal_tolegal",
+          "Disclaimer and Copyright",
+          style = "material-flat",
+          color = "success"
+        )
       )
     )
   )
