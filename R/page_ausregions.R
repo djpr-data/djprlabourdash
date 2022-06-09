@@ -113,10 +113,4 @@ page_ausregions <- function(input, output, session) {
     viz_reg_emp_regionstates_sincecovid_line,
     states = input$states
   )
-
-  observeEvent(input$fromausregions_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

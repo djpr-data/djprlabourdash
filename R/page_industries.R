@@ -124,10 +124,4 @@ page_industries <- function(input, output, session) {
       data_dates$`6291005`$max,
       input$chosen_industry
     )
-
-  observeEvent(input$fromindustries_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

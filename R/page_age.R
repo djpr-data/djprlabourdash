@@ -299,10 +299,4 @@ page_age <- function(input, output, session) {
     id = "gr_mature_age_jobactive_bar",
     plot_fun = viz_gr_mature_age_jobactive_bar
   )
-
-  observeEvent(input$fromage_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

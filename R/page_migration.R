@@ -102,10 +102,4 @@ page_migration <- function(input, output, session) {
       ))
     #    download_button = FALSE,
   )
-
-  observeEvent(input$frommigration_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

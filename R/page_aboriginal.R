@@ -54,10 +54,4 @@ page_aboriginal <- function(input, output, session) {
     "gr_abor_jobactive_bar",
     viz_gr_abor_jobactive_bar
   )
-
-  observeEvent(input$fromaboriginal_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

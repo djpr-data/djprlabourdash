@@ -185,10 +185,4 @@ page_sex <- function(input, output, session) {
   observeEvent(input$link_sex, {
     updateNavbarPage(session, "navbarpage", "tab-sex")
   })
-
-  observeEvent(input$fromsex_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

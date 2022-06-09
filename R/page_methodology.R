@@ -23,12 +23,3 @@ page_methodologyUI <- function(...) {
     )
   )
 }
-
-page_methodology <- function(input, output, session) {
-
-  observeEvent(input$fromoverview_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
-}

@@ -72,10 +72,4 @@ page_ltunemp <- function(input, output, session) {
   observeEvent(input$link_ltunemp, {
     updateNavbarPage(session, "navbarpage", "tab-ltunemp")
   })
-
-  observeEvent(input$fromltunemp_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

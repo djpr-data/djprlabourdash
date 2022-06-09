@@ -106,10 +106,4 @@ page_disability <- function(input, output, session) {
         "jobactive_pwd_wimmera mallee"
       ))
   )
-
-  observeEvent(input$fromdisability_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

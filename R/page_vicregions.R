@@ -365,10 +365,4 @@ page_vicregions <- function(input, output, session) {
   observeEvent(input$link_vicregions, {
     updateNavbarPage(session, "navbarpage", "tab-vicregions")
   })
-
-  observeEvent(input$fromvicregions_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }

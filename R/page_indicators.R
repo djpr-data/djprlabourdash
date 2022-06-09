@@ -318,10 +318,4 @@ page_indicators <- function(input, output, session) {
     plot_fun = viz_ind_partrate_line,
     dates = input$dates
   )
-
-  observeEvent(input$fromindicators_tolegal, {
-    shinydashboard::updateTabItems(session,
-                                   "tabs",
-                                   selected = "legal")
-  })
 }
