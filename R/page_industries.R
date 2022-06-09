@@ -24,7 +24,7 @@ page_industriesUI <- function(...) {
       uiOutput("table_industries_summary") %>%
         djpr_with_spinner()
     ),
-    djpr_async_ui("industries_empchange_sincecovid_bar", width = 12),
+    djpr_box_ui("industries_empchange_sincecovid_bar", width = 12),
     focus_box(
       title = h3("Industry employment trends"),
       inputs = selectInput(
@@ -54,7 +54,7 @@ page_industriesUI <- function(...) {
         width = "100%"
       ),
       fluidRow(
-        djpr_async_ui(
+        djpr_box_ui(
           id = "industries_emp_line",
           date_slider(
             id = "industries_emp_line",
@@ -63,7 +63,7 @@ page_industriesUI <- function(...) {
           )
         ) %>%
           async_no_background(),
-        djpr_async_ui("industries_emp_bysex_bar") %>%
+        djpr_box_ui("industries_emp_bysex_bar") %>%
           async_no_background(),
         column(
           12,
@@ -92,19 +92,19 @@ page_industries <- function(input, output, session) {
       flextable::htmltools_value(ft.shadow = FALSE)
   })
 
-  djpr_async_server(
+  djpr_box_server(
     id = "industries_empchange_sincecovid_bar",
     plot_fun = viz_industries_empchange_sincecovid_bar
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "industries_emp_line",
     plot_fun = viz_industries_emp_line,
     dates = input$dates,
     input_from_server = list(chosen_industry = reactive(input$chosen_industry))
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id                = "industries_emp_bysex_bar",
     plot_fun          = viz_industries_emp_bysex_bar,
     input_from_server = list(chosen_industry = reactive(input$chosen_industry))

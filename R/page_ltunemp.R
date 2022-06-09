@@ -16,7 +16,7 @@ page_ltunempUI <- function(...) {
         "periods of time can experience higher levels of competition, decreased confidence and motivation."
       )
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       id = "gr_ltunemp_line",
       width = 8,
       date_slider(
@@ -25,8 +25,8 @@ page_ltunempUI <- function(...) {
         value = c(as.Date("2000-01-01"), data_dates$`6202012`$max)
       )
     ),
-    djpr_async_ui("gr_ltunvic_bar", width = 12),
-    djpr_async_ui(
+    djpr_box_ui("gr_ltunvic_bar", width = 12),
+    djpr_box_ui(
       "gr_ltunvic_area",
       width = 12,
       date_slider("gr_ltunvic_area", "UM2")
@@ -46,18 +46,18 @@ page_ltunempUI <- function(...) {
 }
 
 page_ltunemp <- function(input, output, session) {
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_ltunemp_line",
     plot_fun = viz_gr_ltunemp_line,
     date_range = input$dates
   )
 
-  djpr_async_server(
+  djpr_box_server(
     "gr_ltunvic_bar",
     viz_gr_ltunvic_bar
   )
 
-  djpr_async_server(
+  djpr_box_server(
     "gr_ltunvic_area",
     viz_gr_ltunvic_area,
     dates = input$dates

@@ -20,7 +20,7 @@ page_indicatorsUI <- function(...) {
         djpr_with_spinner(hide.ui = TRUE)
     ),
     djpr_h2_box("Employment"),
-    djpr_async_ui(
+    djpr_box_ui(
       "ind_emppop_state_line",
       width = 12,
       fluidRow(
@@ -40,7 +40,7 @@ page_indicatorsUI <- function(...) {
         )
       )
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       "ind_empgro_line",
       width = 12,
       fluidRow(
@@ -56,8 +56,8 @@ page_indicatorsUI <- function(...) {
     ),
 
 
-    djpr_async_ui("ind_gen_full_part_line", width = 6),
-    djpr_async_ui("ind_emp_sincecovid_line", width = 6),
+    djpr_box_ui("ind_gen_full_part_line", width = 6),
+    djpr_box_ui("ind_emp_sincecovid_line", width = 6),
     height_sync("ind_gen_full_part_line", "ind_emp_sincecovid_line"),
 
     djpr_h2_box("Unemployment & underemployment"),
@@ -67,7 +67,7 @@ page_indicatorsUI <- function(...) {
         djpr_with_spinner(hide.ui = TRUE)
     ),
  
-    djpr_async_ui(
+    djpr_box_ui(
       "ind_unemprate_line",
       width = 12,
       date_slider(
@@ -86,7 +86,7 @@ page_indicatorsUI <- function(...) {
       "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
       "a three month average of persons working zero hours for economic or unstated reasons."
     ),
-    djpr_async_ui("ind_effective_unemprate_line", width = 12),
+    djpr_box_ui("ind_effective_unemprate_line", width = 12),
     djpr_h2_box("Unemployment rates by state"),
     box(
       width = 12,
@@ -94,8 +94,8 @@ page_indicatorsUI <- function(...) {
         djpr_with_spinner()
     ),
  
-    djpr_async_ui("ind_unemp_states_dot", width = 12),
-    djpr_async_ui(
+    djpr_box_ui("ind_unemp_states_dot", width = 12),
+    djpr_box_ui(
       "ind_underut_area",
       width = 12,
       date_slider(
@@ -106,7 +106,7 @@ page_indicatorsUI <- function(...) {
     ),
  
     djpr_h2_box("Hours worked"),
-    djpr_async_ui(
+    djpr_box_ui(
       "ind_hoursworked_line",
       width = 12,
       date_slider(
@@ -117,7 +117,7 @@ page_indicatorsUI <- function(...) {
     ),
  
     djpr_h2_box("Participation"),
-    djpr_async_ui(
+    djpr_box_ui(
       id = "ind_partrate_line",
       width = 6,
       date_slider(
@@ -126,8 +126,8 @@ page_indicatorsUI <- function(...) {
         value = c(as.Date("2000-01-01"), data_dates$`6202012`$max)
       )
     ),
-    djpr_async_ui("ind_partrate_bar", width = 6),
-    djpr_async_ui(
+    djpr_box_ui("ind_partrate_bar", width = 6),
+    djpr_box_ui(
       id = "ind_partrate_un_line",
       width = 12,
       date_slider(
@@ -142,7 +142,7 @@ page_indicatorsUI <- function(...) {
       "The chart below shows how the unemployment and participation rates changed over the last month or year, and how that compares to past changes in the Victorian labour market. ",
       "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       "ind_partrate_un_scatter",
       width = 12,
       shiny::selectInput(
@@ -207,7 +207,7 @@ page_indicators <- function(input, output, session) {
   #   )
   # })
 
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_emp_sincecovid_line",
     plot_fun = viz_ind_emp_sincecovid_line # ,
     # data = dash_data %>%
@@ -223,7 +223,7 @@ page_indicators <- function(input, output, session) {
     bindCache(data_dates$`6202012`$max)
 
   # Indicators: line graph of emp-pop ratios in states, with state selector boxes
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_emppop_state_line",
     plot_fun = viz_ind_emppop_state_line,
     date_filter = input$dates,
@@ -231,14 +231,14 @@ page_indicators <- function(input, output, session) {
   )
 
   # Indicators: line chart of annual employment growth in Vic & Aus
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_empgro_line",
     plot_fun = viz_ind_empgro_line,
     dates = input$dates
   )
 
   # Indicators: cumulative change in PT / FT since COVID
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_gen_full_part_line",
     plot_fun = viz_ind_gen_full_part_line
   )
@@ -251,14 +251,14 @@ page_indicators <- function(input, output, session) {
     bindCache(data_dates$`6202012`$max)
 
   # Indicators: line chart of Aus v Vic
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_unemprate_line",
     plot_fun = viz_ind_unemprate_line,
     dates = input$dates
   )
 
   # Indicators: effective unemployment rate
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_effective_unemprate_line",
     plot_fun = viz_ind_effective_unemprate_line
   )
@@ -271,43 +271,43 @@ page_indicators <- function(input, output, session) {
     bindCache(data_dates$`6202012`$max)
 
   # Indicators: dot plot of unemp rate by state
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_unemp_states_dot",
     plot_fun = viz_ind_unemp_states_dot
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_underut_area",
     plot_fun = viz_ind_underut_area,
     date_filter = input$dates
   )
 
   # Indicators: hours worked ----
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_hoursworked_line",
     plot_fun = viz_ind_hoursworked_line,
     dates = input$dates
   )
 
   # Indicators: participation ----
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_partrate_bar",
     plot_fun = viz_ind_partrate_bar
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_partrate_un_line",
     plot_fun = viz_ind_partrate_un_line,
     dates = input$dates
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_partrate_un_scatter",
     plot_fun = viz_ind_partrate_un_scatter,
     selected_period = input$selected_period
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "ind_partrate_line",
     plot_fun = viz_ind_partrate_line,
     dates = input$dates

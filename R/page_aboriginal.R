@@ -14,8 +14,8 @@ page_aboriginalUI <- function(...) {
       uiOutput("table_jobactive_aboriginal") %>%
         djpr_with_spinner()
     ),
-    djpr_async_ui("gr_abor_jobactive_sincecovid_line", width = 6),
-    djpr_async_ui("gr_abor_jobactive_bar", width = 6),
+    djpr_box_ui("gr_abor_jobactive_sincecovid_line", width = 6),
+    djpr_box_ui("gr_abor_jobactive_bar", width = 6),
     height_sync("gr_abor_jobactive_sincecovid_line", "gr_abor_jobactive_bar"),
 
     box(
@@ -39,12 +39,12 @@ page_aboriginal <- function(input, output, session) {
       flextable::htmltools_value(ft.shadow = FALSE)
   })
 
-  djpr_async_server(
+  djpr_box_server(
     "gr_abor_jobactive_sincecovid_line",
     viz_gr_abor_jobactive_sincecovid_line
   )
 
-  djpr_async_server(
+  djpr_box_server(
     "gr_abor_jobactive_bar",
     viz_gr_abor_jobactive_bar
   )

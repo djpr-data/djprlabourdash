@@ -19,8 +19,8 @@ page_ageUI <- function(...) {
       uiOutput("table_gr_youth_summary") %>%
         djpr_with_spinner()
     ),
-    djpr_async_ui("gr_yth_emp_sincecovid_line", width = 6, height = "385px"),
-    djpr_async_ui(
+    djpr_box_ui("gr_yth_emp_sincecovid_line", width = 6, height = "385px"),
+    djpr_box_ui(
       id = "gr_yth_lfpartrate_vicaus_line",
       width = 6,
       height = "385px",
@@ -43,7 +43,7 @@ page_ageUI <- function(...) {
       fluidRow(
         column(
           6,
-          djpr_async_ui("gr_youth_states_dot",
+          djpr_box_ui("gr_youth_states_dot",
             height = "735px",
             width = 12
           ) %>%
@@ -52,7 +52,7 @@ page_ageUI <- function(...) {
         column(
           6,
           fluidRow(
-            djpr_async_ui(
+            djpr_box_ui(
               "gr_ages_line",
               height = "250px",
               width = 12,
@@ -65,7 +65,7 @@ page_ageUI <- function(...) {
               async_no_background()
           ),
           fluidRow(
-            djpr_async_ui(
+            djpr_box_ui(
               "gr_yth_melbvrest_line",
               height = "200px",
               width = 12,
@@ -80,7 +80,7 @@ page_ageUI <- function(...) {
         )
       ),
       fluidRow(
-        djpr_async_ui(
+        djpr_box_ui(
           "gr_youth_vicaus_line",
           width = 12,
           fluidRow(
@@ -92,14 +92,14 @@ page_ageUI <- function(...) {
       )
     ),
     djpr_h2_box("Detailed labour force status of Victorian youth"),
-    djpr_async_ui("gr_youth_full_part_line",
+    djpr_box_ui("gr_youth_full_part_line",
       width = 12,
       date_slider("gr_youth_full_part_line", table_no = "6202016")
     ),
-    djpr_async_ui("gr_youth_eduemp_waterfall",
+    djpr_box_ui("gr_youth_eduemp_waterfall",
       width = 12,
     ),
-    djpr_async_ui("gr_yth_mostvuln_line",
+    djpr_box_ui("gr_yth_mostvuln_line",
       width = 12,
       date_slider("gr_yth_mostvuln_line", table_no = "6202016")
     ),
@@ -139,14 +139,14 @@ page_ageUI <- function(...) {
       width = 12,
       uiOutput("table_jobactive_youth") %>% djpr_with_spinner()
     ),
-    djpr_async_ui("gr_youth_jobactive_bar", width = 12),
+    djpr_box_ui("gr_youth_jobactive_bar", width = 12),
     djpr_h2_box("Jobactive caseload for 50+ (mature age)"),
     box(
       width = 12,
       uiOutput("table_jobactive_mature_age") %>% djpr_with_spinner()
     ),
-    djpr_async_ui("gr_age_jobactive_since_covid_line"),
-    djpr_async_ui("gr_mature_age_jobactive_bar"),
+    djpr_box_ui("gr_age_jobactive_since_covid_line"),
+    djpr_box_ui("gr_mature_age_jobactive_bar"),
 
     height_sync(
       "gr_age_jobactive_since_covid_line",
@@ -175,12 +175,12 @@ page_age <- function(input, output, session) {
     bindCache(data_dates$`LM1`$max)
 
   # Line chart indexed to COVID: employment by age
-  djpr_async_server(
+  djpr_box_server(
     id       = "gr_yth_emp_sincecovid_line",
     plot_fun = viz_gr_yth_emp_sincecovid_line
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_yth_lfpartrate_vicaus_line",
     plot_fun = viz_gr_yth_lfpartrate_vicaus_line,
     date_range = input$dates
@@ -188,7 +188,7 @@ page_age <- function(input, output, session) {
 
   # Age: youth focus box -----
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_youth_states_dot",
     plot_fun = viz_gr_youth_states_dot,
     # download_button = TRUE,
@@ -198,7 +198,7 @@ page_age <- function(input, output, session) {
 
 
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_ages_line",
     plot_fun = viz_gr_ages_line,
     date_range = input$dates,
@@ -208,7 +208,7 @@ page_age <- function(input, output, session) {
 
 
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_yth_melbvrest_line",
     plot_fun = viz_gr_yth_melbvrest_line,
     date_range = input$dates,
@@ -216,7 +216,7 @@ page_age <- function(input, output, session) {
   )
 
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_youth_vicaus_line",
     plot_fun = viz_gr_youth_vicaus_line,
     state = input$states,
@@ -228,19 +228,19 @@ page_age <- function(input, output, session) {
 
 
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_youth_full_part_line",
     plot_fun = viz_gr_youth_full_part_line,
     date_range = input$dates
   )
 
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_youth_eduemp_waterfall",
     plot_fun = viz_gr_youth_eduemp_waterfall
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_yth_mostvuln_line",
     plot_fun = viz_gr_yth_mostvuln_line,
     date_range = input$dates
@@ -286,12 +286,12 @@ page_age <- function(input, output, session) {
       flextable::htmltools_value(ft.shadow = FALSE)
   })
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_youth_jobactive_bar",
     plot_fun = viz_gr_youth_jobactive_bar
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_age_jobactive_since_covid_line",
     plot_fun = viz_gr_age_jobactive_since_covid_line
   )
@@ -301,7 +301,7 @@ page_age <- function(input, output, session) {
       flextable::htmltools_value(ft.shadow = FALSE)
   })
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_mature_age_jobactive_bar",
     plot_fun = viz_gr_mature_age_jobactive_bar
   )

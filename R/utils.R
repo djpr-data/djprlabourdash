@@ -135,18 +135,18 @@ focus_box <- function(title,
 
 
 # no background box
-async_no_background <- function(djpr_async_ui) {
-  djpr_async_ui$children[[1]] <- tagAppendAttributes(
-    djpr_async_ui$children[[1]],
+async_no_background <- function(djpr_box_ui) {
+  djpr_box_ui$children[[1]] <- tagAppendAttributes(
+    djpr_box_ui$children[[1]],
     style = "background:transparent;box-shadow:none;"
   )
-  djpr_async_ui$children[[1]]$children <- lapply(
-    djpr_async_ui$children[[1]]$children,
+  djpr_box_ui$children[[1]]$children <- lapply(
+    djpr_box_ui$children[[1]]$children,
     tagAppendAttributes,
     style = "background:transparent;"
   )
 
-  djpr_async_ui
+  djpr_box_ui
 }
 
 

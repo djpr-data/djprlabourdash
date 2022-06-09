@@ -29,13 +29,13 @@ page_ausregionsUI <- function(...) {
         selected = "unemp_rate"
       ),
       fluidRow(
-        djpr_async_ui("reg_regionstates_dot", height = "600px") %>%
+        djpr_box_ui("reg_regionstates_dot", height = "600px") %>%
           async_no_background(),
-        djpr_async_ui("reg_regionstates_bar", height = "600px") %>%
+        djpr_box_ui("reg_regionstates_bar", height = "600px") %>%
           async_no_background()
       )
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       "reg_emp_regionstates_sincecovid_line",
       width = 12,
       state_checkbox(
@@ -88,13 +88,13 @@ page_ausregions <- function(input, output, session) {
     bindCache(data_dates$`6291016`$max)
 
   # Regions: National focus box -----
-  djpr_async_server(
+  djpr_box_server(
     id = "reg_regionstates_dot",
     plot_fun = viz_reg_regionstates_dot,
     input_from_server = list(selected_indicator = reactive(input$aus_regions_indicator))
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "reg_regionstates_bar",
     plot_fun = viz_reg_regionstates_bar,
     input_from_server = list(
@@ -102,7 +102,7 @@ page_ausregions <- function(input, output, session) {
     )
   )
 
-  djpr_async_server(
+  djpr_box_server(
     "reg_emp_regionstates_sincecovid_line",
     viz_reg_emp_regionstates_sincecovid_line,
     states = input$states

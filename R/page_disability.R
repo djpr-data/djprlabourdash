@@ -14,12 +14,12 @@ page_disabilityUI <- function(...) {
       uiOutput("table_jobactive_pwd") %>%
         djpr_with_spinner()
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       width = 6,
       id = "gr_pwd_jobact_sincecovid_line",
       date_slider("gr_pwd_jobact_sincecovid_line", table_no = "jobactive")
     ),
-    djpr_async_ui(
+    djpr_box_ui(
         width = 6,
         id = "gr_pwd_jobactive_bar"
     ),
@@ -48,7 +48,7 @@ page_disability <- function(input, output, session) {
       flextable::htmltools_value(ft.shadow = FALSE)
   })
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_pwd_jobact_sincecovid_line",
     plot_fun = viz_gr_pwd_jobact_sincecovid_line,
     data = dash_data %>%
@@ -81,7 +81,7 @@ page_disability <- function(input, output, session) {
       dplyr::filter(date >= as.Date("2019-03-31"))
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_pwd_jobactive_bar",
     plot_fun = viz_gr_pwd_jobactive_bar,
     data = dash_data %>%

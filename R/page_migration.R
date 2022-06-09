@@ -14,8 +14,8 @@ page_migrationUI <- function(...) {
       uiOutput("table_jobactive_refugees") %>%
         djpr_with_spinner()
     ),
-    djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
-    djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
+    djpr_box_ui("gr_refugee_jobact_sincecovid_line", width = 6),
+    djpr_box_ui("gr_refugee_jobactive_bar", width = 6),
 
     height_sync(
       "gr_refugee_jobact_sincecovid_line",
@@ -43,7 +43,7 @@ page_migration <- function(input, output, session) {
       flextable::htmltools_value(ft.shadow = FALSE)
   })
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_refugee_jobact_sincecovid_line",
     plot_fun = viz_gr_refugee_jobact_sincecovid_line,
     data = dash_data %>%
@@ -76,7 +76,7 @@ page_migration <- function(input, output, session) {
       dplyr::filter(date >= as.Date("2019-03-31"))
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id = "gr_refugee_jobactive_bar",
     plot_fun = viz_gr_refugee_jobactive_bar,
     data = dash_data %>%

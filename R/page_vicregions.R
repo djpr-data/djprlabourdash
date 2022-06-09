@@ -45,7 +45,7 @@ page_vicregionsUI <- function(...) {
         "Based on Australian Bureau of Statistics data: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."
       )
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       id = "reg_unemp_emppop_partrate_multiline",
       height = "600px",
       width = 12,
@@ -86,7 +86,7 @@ page_vicregionsUI <- function(...) {
       "in different regions in Victoria. The breakdown of regions is by ",
       shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4")
     ),
-    djpr_async_ui(
+    djpr_box_ui(
       id = "reg_unemprate_dispersion",
       width = 12,
       fluidRow(
@@ -117,7 +117,7 @@ page_vicregionsUI <- function(...) {
 
     # Regional Vic vs Greater Melb -----
     djpr_h2_box("Regional Victoria and Greater Melbourne"),
-    djpr_async_ui(
+    djpr_box_ui(
       id = "reg_melvic_line",
       width = 12,
       date_slider(
@@ -126,7 +126,7 @@ page_vicregionsUI <- function(...) {
         value = c(as.Date("2014-11-01"), data_dates$`6291002`$max)
       )
     ),
-    djpr_async_ui("reg_emp_regions_sincecovid_line", width = 12),
+    djpr_box_ui("reg_emp_regions_sincecovid_line", width = 12),
 
 
 
@@ -219,7 +219,7 @@ page_vicregionsUI <- function(...) {
 
 
 page_vicregions <- function(input, output, session) {
-  djpr_async_server(
+  djpr_box_server(
     id       = "reg_melvic_line",
     plot_fun = viz_reg_melvic_line,
     dates    = input$dates
@@ -268,7 +268,7 @@ page_vicregions <- function(input, output, session) {
     )
   })
 
-  djpr_async_server(
+  djpr_box_server(
     "reg_unemp_emppop_partrate_multiline",
     viz_reg_unemp_emppop_partrate_multiline,
     dates = input$dates,
@@ -277,12 +277,12 @@ page_vicregions <- function(input, output, session) {
   )
 
 
-  djpr_async_server(
+  djpr_box_server(
     id = "reg_emp_regions_sincecovid_line",
     plot_fun = viz_reg_emp_regions_sincecovid_line
   )
 
-  djpr_async_server(
+  djpr_box_server(
     id                 = "reg_unemprate_dispersion",
     plot_fun           = viz_reg_unemprate_dispersion,
     selected_indicator = input$sa4_type_dispersion,
