@@ -240,31 +240,20 @@ height_sync <- function(
       .open = "[",
       .close = "]",
 "
-$('#[element1]').on('DOMSubtreeModified', function() {
+$(document).on('shiny:idle', function() {
 $('#[element1]').css('height', '');
 $('#[element2]').css('height', '');
 var heightOne = $('#[element1]').height();
 var heightTwo = $('#[element2]').height();
 var heightMax = Math.max(heightOne, heightTwo);
-if(heightMax > 0){
-$('#[element1]').height(heightMax);
-$('#[element2]').height(heightMax);
-}
-});
-$('#[element2]').on('DOMSubtreeModified', function() {
-$('#[element1]').css('height', '');
-$('#[element2]').css('height', '');
-var heightOne = $('#[element1]').height();
-var heightTwo = $('#[element2]').height();
-var heightMax = Math.max(heightOne, heightTwo);
-if(heightMax > 0){
+if(heightOne !== heightTwo){
 $('#[element1]').height(heightMax);
 $('#[element2]').height(heightMax);
 }
 });
 $(window).resize(function(e) {
-$('#[element1]').removeAttr('style');
-$('#[element2]').removeAttr('style');
+$('#[element1]').css('height', '');
+$('#[element2]').css('height', '');
 });
 "
     )
