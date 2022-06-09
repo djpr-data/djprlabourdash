@@ -17,5 +17,4 @@
     dplyr::summarise(min = min(date, na.rm = T), max = max(date, na.rm = T)) %>%
     split(~table_no) %>%
     assign("data_dates", ., envir = myenv)
-
 }

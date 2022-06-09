@@ -47,7 +47,6 @@ make_table <- function(data,
                        title = "",
                        rename_indicators = TRUE,
                        pretty_round = TRUE) {
-
   stopifnot(destination %in% c("dashboard", "briefing"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
@@ -340,10 +339,9 @@ make_table <- function(data,
       j = 1:flextable::ncol_keys(flex),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
     flextable::font(fontname = font_family) %>%
     flextable::fontsize(
-      size = font_size_secondary * 0.85,
+      size = font_size_secondary * 1.2,
       part = "footer"
     ) %>%
     flextable::color(
@@ -357,8 +355,7 @@ make_table <- function(data,
     flextable::font(
       fontname = font_family,
       part = "footer"
-    ) %>%
-    flextable::italic(part = "footer")
+    )
 
   # Add title to briefing tables and resize columns
   if (destination == "briefing") {

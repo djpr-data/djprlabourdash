@@ -1,13 +1,10 @@
 page_indicatorsUI <- function(...) {
-
   fluidRow(
 
     # No padding column with width = 4
     column_nopad(
       width = 4,
-
       djprshiny::djpr_h1_box("Indicators"),
-
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
@@ -22,27 +19,27 @@ page_indicatorsUI <- function(...) {
       shiny::uiOutput("ind_emp_table") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
-
     djpr_h2_box("Employment"),
-
     djpr_async_ui(
       "ind_emppop_state_line",
       width = 12,
       fluidRow(
-        column(width = 6,
-               date_slider(
-                 id = "ind_emppop_state_line",
-                 table_no = "6202023",
-                 value = c(Sys.Date() - years(5), data_dates$`6202023`$max)
-                 )
+        column(
+          width = 6,
+          date_slider(
+            id = "ind_emppop_state_line",
+            table_no = "6202023",
+            value = c(Sys.Date() - years(5), data_dates$`6202023`$max)
+          )
         ),
-        column(width = 6,
-               state_checkbox(
-                 id = "ind_emppop_state_line"
-               ))
+        column(
+          width = 6,
+          state_checkbox(
+            id = "ind_emppop_state_line"
+          )
+        )
       )
-      ),
-
+    ),
     djpr_async_ui(
       "ind_empgro_line",
       width = 12,
@@ -54,22 +51,22 @@ page_indicatorsUI <- function(...) {
             table_no = "6202012",
             value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
           )
-          )
+        )
       )
     ),
+
 
     djpr_async_ui("ind_gen_full_part_line", width = 6),
     djpr_async_ui("ind_emp_sincecovid_line", width = 6),
     height_sync("ind_gen_full_part_line", "ind_emp_sincecovid_line"),
 
     djpr_h2_box("Unemployment & underemployment"),
-
     box(
       width = 12,
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
-
+ 
     djpr_async_ui(
       "ind_unemprate_line",
       width = 12,
@@ -79,9 +76,7 @@ page_indicatorsUI <- function(...) {
         value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
       )
     ),
-
     djpr_h2_box("Effective unemployment rate"),
-
     shinydashboard::box(
       width = 12,
       "People who are employed but have not been able to work any hours do not count ",
@@ -91,19 +86,15 @@ page_indicatorsUI <- function(...) {
       "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
       "a three month average of persons working zero hours for economic or unstated reasons."
     ),
-
     djpr_async_ui("ind_effective_unemprate_line", width = 12),
-
     djpr_h2_box("Unemployment rates by state"),
-
     box(
       width = 12,
       uiOutput("table_ind_unemp_state") %>%
         djpr_with_spinner()
     ),
-
+ 
     djpr_async_ui("ind_unemp_states_dot", width = 12),
-
     djpr_async_ui(
       "ind_underut_area",
       width = 12,
@@ -113,9 +104,8 @@ page_indicatorsUI <- function(...) {
         value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
     ),
-
+ 
     djpr_h2_box("Hours worked"),
-
     djpr_async_ui(
       "ind_hoursworked_line",
       width = 12,
@@ -125,9 +115,8 @@ page_indicatorsUI <- function(...) {
         value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
       )
     ),
-
+ 
     djpr_h2_box("Participation"),
-
     djpr_async_ui(
       id = "ind_partrate_line",
       width = 6,
@@ -138,7 +127,6 @@ page_indicatorsUI <- function(...) {
       )
     ),
     djpr_async_ui("ind_partrate_bar", width = 6),
-
     djpr_async_ui(
       id = "ind_partrate_un_line",
       width = 12,
@@ -148,15 +136,12 @@ page_indicatorsUI <- function(...) {
         value = c(Sys.Date() - (10 * 365), data_dates$`6202012`$max)
       )
     ),
-
     shinydashboard::box(
       width = 12,
       "A fall in the unemployment rate can mean very different things depending on whether the participation rate is rising - more people have joined the labour force - or falling. ",
       "The chart below shows how the unemployment and participation rates changed over the last month or year, and how that compares to past changes in the Victorian labour market. ",
       "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."
     ),
-
-
     djpr_async_ui(
       "ind_partrate_un_scatter",
       width = 12,
@@ -170,7 +155,6 @@ page_indicatorsUI <- function(...) {
         )
       )
     ),
-
     box(
       width = 12,
       style = "padding:10px;",
@@ -178,9 +162,8 @@ page_indicatorsUI <- function(...) {
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
-
       )
     )
   )
@@ -226,7 +209,7 @@ page_indicators <- function(input, output, session) {
 
   djpr_async_server(
     id = "ind_emp_sincecovid_line",
-    plot_fun = viz_ind_emp_sincecovid_line #,
+    plot_fun = viz_ind_emp_sincecovid_line # ,
     # data = dash_data %>%
     #   dplyr::filter(series_id %in% c("A84423043C", "A84423349V"),
     #                 date >= as.Date("2020-01-01"))

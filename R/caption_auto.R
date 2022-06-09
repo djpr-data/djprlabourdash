@@ -36,11 +36,7 @@ caption_auto <- function(data,
 
   out <- combine_words(sources)
 
-  if (length(sources > 1)) {
-    out <- paste0("Sources: ", out, ".")
-  } else {
-    out <- paste0("Source: ", out, ".")
-  }
+  out <- paste0("\nBased on Australian Bureau of Statistics data: ", out, ".")
 
   if (!is.null(notes)) {
     out <- paste0(out, "\nNotes: ", notes)
