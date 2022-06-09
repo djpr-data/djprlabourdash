@@ -11,6 +11,24 @@ page_methodologyUI <- function(...) {
     shiny::includeMarkdown(system.file("note.md", package = "djprlabourdash")),
     shiny::br(),
     # centred_row(htmlOutput("methodology_footnote")),
-    br()
+    box(
+      width = 12,
+      style = "padding:10px;",
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('frommethodology_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
+      )
+    )
   )
+}
+
+page_methodology <- function(input, output, session) {
+
+  observeEvent(input$fromoverview_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
+  })
 }
