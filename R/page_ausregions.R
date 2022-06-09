@@ -4,20 +4,17 @@ page_ausregionsUI <- function(...) {
 
     # Unemployment by Australian Regions -------------
     djprshiny::djpr_h1_box("Australian Regions"),
-
     shinydashboard::box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "This section explores labour force indicators in regional and metropolitan areas of Australia."
     ),
-
     djpr_h2_box("Unemployment rate in Australian regional areas"),
     box(
       width = 12,
       uiOutput("table_reg_nonmetro_states_unemprate") %>%
-      djpr_with_spinner()
-      ),
-
+        djpr_with_spinner()
+    ),
     focus_box(
       title = h3("Compare regional areas of Australian states"),
       inputs = selectInput(
@@ -37,7 +34,6 @@ page_ausregionsUI <- function(...) {
         djpr_async_ui("reg_regionstates_bar", height = "600px") %>%
           async_no_background()
       )
-
     ),
     djpr_async_ui(
       "reg_emp_regionstates_sincecovid_line",
@@ -55,7 +51,7 @@ page_ausregionsUI <- function(...) {
         ),
         selected = c("Reg. Vic", "Reg. NSW")
       )
-      ),
+    ),
     djpr_h2_box("Australian metropolitan areas"),
     box(
       width = 12,
@@ -70,9 +66,8 @@ page_ausregionsUI <- function(...) {
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ",  format(data_dates$`6291016`$max, "%B %Y"),
+        "dashboard is for ", format(data_dates$`6291016`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
-
       )
     )
   )
@@ -104,7 +99,7 @@ page_ausregions <- function(input, output, session) {
     plot_fun = viz_reg_regionstates_bar,
     input_from_server = list(
       selected_indicator = reactive(input$aus_regions_indicator)
-      )
+    )
   )
 
   djpr_async_server(
@@ -112,5 +107,4 @@ page_ausregions <- function(input, output, session) {
     viz_reg_emp_regionstates_sincecovid_line,
     states = input$states
   )
-
 }

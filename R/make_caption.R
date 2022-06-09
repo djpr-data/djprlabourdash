@@ -10,7 +10,7 @@ caption_make <- function(df,
     max()
 
   paste0(
-    "Source: ",
+    "Based on Australian Bureau of Statistics data: ",
     release_name,
     ". ",
     "Note: most recent data is for ",

@@ -4,48 +4,40 @@ page_sexUI <- function(...) {
     # No padding column with width = 4
     column_nopad(
       width = 4,
-
       djprshiny::djpr_h1_box("Sex"),
-
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
         "Some content."
       )
     ),
-
     box(
       width = 8,
       uiOutput("table_gr_sex") %>%
         djpr_with_spinner()
-      ),
-
-    djpr_h2_box( "Labour force status by sex"),
+    ),
+    djpr_h2_box("Labour force status by sex"),
     djpr_async_ui(width = 12, "gr_gen_emp_bar"),
-
     djpr_async_ui(
       width = 12,
       id = "gr_full_part_line",
       date_slider(
         "gr_full_part_line",
         table_no = "6202012",
-        value = c(Sys.Date() - (365.25 * 5), data_dates$`6202012`$max))
-      ),
-
-    djpr_h2_box( "Unemployment by sex"),
-
+        value = c(Sys.Date() - (365.25 * 5), data_dates$`6202012`$max)
+      )
+    ),
+    djpr_h2_box("Unemployment by sex"),
     djpr_async_ui(
       width = 12,
-      id= "gr_gen_unemp_line",
-      date_slider (
+      id = "gr_gen_unemp_line",
+      date_slider(
         "gr_gen_unemp_line",
         table_no = "6202012",
         value = c(Sys.Date() - (365.25 * 10), data_dates$`6202012`$max)
-        )
+      )
     ),
-
     djpr_h2_box("Employment to population ratio by sex"),
-
     djpr_async_ui(
       width = 12,
       "gr_gen_emppopratio_line",
@@ -53,32 +45,26 @@ page_sexUI <- function(...) {
         "gr_gen_emppopratio_line",
         table_no = "6202012",
         value = c(Sys.Date() - (365.25 * 10), data_dates$`6202012`$max)
-        )
-      ),
-
-    djpr_h2_box( "Participation rate by sex"),
-
+      )
+    ),
+    djpr_h2_box("Participation rate by sex"),
     djpr_async_ui(
       width = 12,
       "gr_gen_partrate_line",
-      date_slider("gr_gen_partrate_line", table_no="6202012")),
-
-    djpr_h2_box( "Jobactive caseload by sex"),
-
+      date_slider("gr_gen_partrate_line", table_no = "6202012")
+    ),
+    djpr_h2_box("Jobactive caseload by sex"),
     box(
       width = 12,
       uiOutput("table_jobactive_female") %>%
         djpr_with_spinner()
     ),
-
     djpr_async_ui(
       width = 12,
       id = "gr_female_jobact_sincecovid_line",
       date_slider("gr_female_jobact_sincecovid_line", table_no = "jobactive")
     ),
-
     djpr_async_ui(width = 12, "gr_female_jobactive_bar"),
-
     box(
       width = 12,
       style = "padding:10px;",
@@ -86,9 +72,8 @@ page_sexUI <- function(...) {
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ",  format(data_dates$`6202012`$max, "%B %Y"),
+        "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
-
       )
     )
   )
@@ -96,7 +81,6 @@ page_sexUI <- function(...) {
 
 
 page_sex <- function(input, output, session) {
-
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
       flextable::htmltools_value(ft.shadow = FALSE)
@@ -105,7 +89,7 @@ page_sex <- function(input, output, session) {
 
   # Groups: line chart of emp-pop by sex
   djpr_async_server(
-    id= "gr_gen_emppopratio_line",
+    id = "gr_gen_emppopratio_line",
     plot_fun = viz_gr_gen_emppopratio_line,
     dates = input$dates
   )
@@ -133,16 +117,16 @@ page_sex <- function(input, output, session) {
 
   # Line chart: participation by sex over time
   djpr_async_server(
-    id= "gr_gen_partrate_line",
-    plot_fun= viz_gr_gen_partrate_line,
+    id = "gr_gen_partrate_line",
+    plot_fun = viz_gr_gen_partrate_line,
     dates = input$dates
   )
 
   # Line chart: unemployment rate by sex
   djpr_async_server(
-   id  = "gr_gen_unemp_line",
-   plot_fun = viz_gr_gen_unemp_line,
-   dates = input$dates
+    id = "gr_gen_unemp_line",
+    plot_fun = viz_gr_gen_unemp_line,
+    dates = input$dates
   )
 
   djpr_async_server(
@@ -169,7 +153,7 @@ page_sex <- function(input, output, session) {
     id = "gr_female_jobact_sincecovid_line",
     plot_fun = viz_gr_female_jobact_sincecovid_line,
     dates = input$dates
-     )
+  )
 
   djpr_async_server(
     id = "gr_female_jobactive_bar",
