@@ -89,7 +89,7 @@ page_industriesUI <- function(...) {
 page_industries <- function(input, output, session) {
   output$table_industries_summary <- renderUI({
     table_industries_summary() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(
@@ -112,7 +112,7 @@ page_industries <- function(input, output, session) {
 
   output$industries_employment <- renderUI({
     table_industries_employment(chosen_industry = input$chosen_industry) %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(
       data_dates$`6291005`$max,

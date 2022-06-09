@@ -83,7 +83,7 @@ page_sexUI <- function(...) {
 page_sex <- function(input, output, session) {
   output$table_gr_sex <- renderUI({
     table_gr_sex() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 
@@ -146,7 +146,7 @@ page_sex <- function(input, output, session) {
   # Jobactive by sex
   output$table_jobactive_female <- renderUI({
     table_jobactive_female() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(

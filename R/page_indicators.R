@@ -54,14 +54,19 @@ page_indicatorsUI <- function(...) {
         )
       )
     ),
+
+
     djpr_async_ui("ind_gen_full_part_line", width = 6),
     djpr_async_ui("ind_emp_sincecovid_line", width = 6),
+    height_sync("ind_gen_full_part_line", "ind_emp_sincecovid_line"),
+
     djpr_h2_box("Unemployment & underemployment"),
     box(
       width = 12,
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
+ 
     djpr_async_ui(
       "ind_unemprate_line",
       width = 12,
@@ -88,6 +93,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("table_ind_unemp_state") %>%
         djpr_with_spinner()
     ),
+ 
     djpr_async_ui("ind_unemp_states_dot", width = 12),
     djpr_async_ui(
       "ind_underut_area",
@@ -98,6 +104,7 @@ page_indicatorsUI <- function(...) {
         value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
     ),
+ 
     djpr_h2_box("Hours worked"),
     djpr_async_ui(
       "ind_hoursworked_line",
@@ -108,6 +115,7 @@ page_indicatorsUI <- function(...) {
         value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
       )
     ),
+ 
     djpr_h2_box("Participation"),
     djpr_async_ui(
       id = "ind_partrate_line",
@@ -210,7 +218,7 @@ page_indicators <- function(input, output, session) {
   # Indicators: table of employment indicators
   output$ind_emp_table <- renderUI({
     table_ind_employment() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 
@@ -238,7 +246,7 @@ page_indicators <- function(input, output, session) {
   # Indicators: unemployment ------
   output$ind_unemp_summary <- renderUI({
     table_ind_unemp_summary() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 
@@ -258,7 +266,7 @@ page_indicators <- function(input, output, session) {
   # Indicators: table of unemployment rates by state
   output$table_ind_unemp_state <- renderUI({
     table_ind_unemp_state() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   }) %>%
     bindCache(data_dates$`6202012`$max)
 

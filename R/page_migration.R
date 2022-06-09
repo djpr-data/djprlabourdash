@@ -16,6 +16,12 @@ page_migrationUI <- function(...) {
     ),
     djpr_async_ui("gr_refugee_jobact_sincecovid_line", width = 6),
     djpr_async_ui("gr_refugee_jobactive_bar", width = 6),
+
+    height_sync(
+      "gr_refugee_jobact_sincecovid_line",
+      "gr_refugee_jobactive_bar"
+    ),
+
     box(
       width = 12,
       style = "padding:10px;",
@@ -34,7 +40,7 @@ page_migrationUI <- function(...) {
 page_migration <- function(input, output, session) {
   output$table_jobactive_refugees <- renderUI({
     table_jobactive_refugees() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(

@@ -20,9 +20,13 @@ page_disabilityUI <- function(...) {
       date_slider("gr_pwd_jobact_sincecovid_line", table_no = "jobactive")
     ),
     djpr_async_ui(
-      width = 6,
-      id = "gr_pwd_jobactive_bar"
+        width = 6,
+        id = "gr_pwd_jobactive_bar"
     ),
+
+    height_sync("gr_pwd_jobact_sincecovid_line", "gr_pwd_jobactive_bar"),
+
+
     box(
       width = 12,
       style = "padding:10px;",
@@ -41,7 +45,7 @@ page_disabilityUI <- function(...) {
 page_disability <- function(input, output, session) {
   output$table_jobactive_pwd <- renderUI({
     table_jobactive_pwd() %>%
-      flextable::htmltools_value()
+      flextable::htmltools_value(ft.shadow = FALSE)
   })
 
   djpr_async_server(
