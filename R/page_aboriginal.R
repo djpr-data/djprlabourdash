@@ -27,6 +27,12 @@ page_aboriginalUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$jobactive$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromaboriginal_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -48,4 +54,10 @@ page_aboriginal <- function(input, output, session) {
     "gr_abor_jobactive_bar",
     viz_gr_abor_jobactive_bar
   )
+
+  observeEvent(input$fromaboriginal_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
+  })
 }

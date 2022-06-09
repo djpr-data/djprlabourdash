@@ -74,6 +74,12 @@ page_sexUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromsex_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -178,5 +184,11 @@ page_sex <- function(input, output, session) {
 
   observeEvent(input$link_sex, {
     updateNavbarPage(session, "navbarpage", "tab-sex")
+  })
+
+  observeEvent(input$fromsex_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
   })
 }

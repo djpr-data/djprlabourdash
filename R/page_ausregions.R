@@ -68,6 +68,12 @@ page_ausregionsUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$`6291016`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromausregions_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -107,4 +113,10 @@ page_ausregions <- function(input, output, session) {
     viz_reg_emp_regionstates_sincecovid_line,
     states = input$states
   )
+
+  observeEvent(input$fromausregions_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
+  })
 }

@@ -36,6 +36,12 @@ page_disabilityUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$jobactive$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromdisability_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -100,4 +106,10 @@ page_disability <- function(input, output, session) {
         "jobactive_pwd_wimmera mallee"
       ))
   )
+
+  observeEvent(input$fromdisability_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
+  })
 }

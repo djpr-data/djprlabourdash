@@ -114,7 +114,6 @@ page_vicregionsUI <- function(...) {
       )
     ),
 
-
     # Regional Vic vs Greater Melb -----
     djpr_h2_box("Regional Victoria and Greater Melbourne"),
     djpr_async_ui(
@@ -127,8 +126,6 @@ page_vicregionsUI <- function(...) {
       )
     ),
     djpr_async_ui("reg_emp_regions_sincecovid_line", width = 12),
-
-
 
     # Victorian regions focus box ------
     djpr_h2_box("Regional Victoria"),
@@ -212,6 +209,12 @@ page_vicregionsUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$`6291016`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromvicregions_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -361,5 +364,11 @@ page_vicregions <- function(input, output, session) {
 
   observeEvent(input$link_vicregions, {
     updateNavbarPage(session, "navbarpage", "tab-vicregions")
+  })
+
+  observeEvent(input$fromvicregions_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
   })
 }

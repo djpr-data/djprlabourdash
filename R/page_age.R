@@ -162,6 +162,12 @@ page_ageUI <- function(...) {
         "of Jobs, Precincts and Regions. The <b>latest data in this ",
         "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromage_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
       )
     )
   )
@@ -195,9 +201,6 @@ page_age <- function(input, output, session) {
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
   )
 
-
-
-
   djpr_async_server(
     id = "gr_ages_line",
     plot_fun = viz_gr_ages_line,
@@ -205,16 +208,12 @@ page_age <- function(input, output, session) {
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
   )
 
-
-
-
   djpr_async_server(
     id = "gr_yth_melbvrest_line",
     plot_fun = viz_gr_yth_melbvrest_line,
     date_range = input$dates,
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
   )
-
 
   djpr_async_server(
     id = "gr_youth_vicaus_line",
@@ -224,16 +223,11 @@ page_age <- function(input, output, session) {
     input_from_server = list(selected_indicator = reactive(input$youth_focus))
   )
 
-
-
-
-
   djpr_async_server(
     id = "gr_youth_full_part_line",
     plot_fun = viz_gr_youth_full_part_line,
     date_range = input$dates
   )
-
 
   djpr_async_server(
     id = "gr_youth_eduemp_waterfall",
@@ -305,4 +299,10 @@ page_age <- function(input, output, session) {
     id = "gr_mature_age_jobactive_bar",
     plot_fun = viz_gr_mature_age_jobactive_bar
   )
+
+  observeEvent(input$fromage_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
+  })
 }
