@@ -29,7 +29,8 @@ page_overviewUI <- function(...) {
         "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
         '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
       )
-    )
+    ),
+    shiny::actionLink(id = 'fromoverview_tolegal', label = NULL, icon = NULL, 'Disclaimer and Copyright')
   )
 }
 
@@ -47,8 +48,13 @@ page_overview <- function(input, output, session) {
       data_dates$`6291016`$max
     )
 
-
   output$overview_diagram <- renderPlot({
     viz_overview_illustration()
+  })
+
+  observeEvent(input$fromoverview_tolegal, {
+    shinydashboard::updateTabItems(session,
+                                   "tabs",
+                                   selected = "legal")
   })
 }
