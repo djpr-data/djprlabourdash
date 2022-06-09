@@ -25,12 +25,18 @@ page_overviewUI <- function(...) {
       HTML(
         "This dashboard is produced by the <b>Strategy and Priority ",
         "Projects - Data + Analytics</b> team at the Victorian Department ",
-        "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
-        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
-      )
-    ),
-    shiny::actionLink(id = 'fromoverview_tolegal', label = NULL, icon = NULL, 'Disclaimer and Copyright')
+        "of Jobs, Precincts and Regions. The latest data in this ",
+        "dashboard is for </b>", format(data_dates$`6202012`$max, "%B %Y"),
+        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.\n'
+      ),
+      shiny::div(style = 'position:right;bottom:20px',
+                 shiny::actionLink('fromoverview_tolegal',
+                                   "Disclaimer and Copyright",
+                                   style = 'material-flat',
+                                   color = 'success')
+                 )
+      ),
+
   )
 }
 
