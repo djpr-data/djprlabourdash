@@ -66,7 +66,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),
- 
+
     djpr_box_ui(
       "ind_unemprate_line",
       width = 12,
@@ -93,7 +93,7 @@ page_indicatorsUI <- function(...) {
       uiOutput("table_ind_unemp_state") %>%
         djpr_with_spinner()
     ),
- 
+
     djpr_box_ui("ind_unemp_states_dot", width = 12),
     djpr_box_ui(
       "ind_underut_area",
@@ -104,7 +104,7 @@ page_indicatorsUI <- function(...) {
         value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
     ),
- 
+
     djpr_h2_box("Hours worked"),
     djpr_box_ui(
       "ind_hoursworked_line",
@@ -115,7 +115,7 @@ page_indicatorsUI <- function(...) {
         value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
       )
     ),
- 
+
     djpr_h2_box("Participation"),
     djpr_box_ui(
       id = "ind_partrate_line",
@@ -159,11 +159,25 @@ page_indicatorsUI <- function(...) {
       width = 12,
       style = "padding:10px;",
       HTML(
-        "This dashboard is produced by the <b>Strategy and Priority ",
-        "Projects - Data + Analytics</b> team at the Victorian Department ",
-        "of Jobs, Precincts and Regions. The <b>latest data in this ",
-        "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"),
-        '</b>. Please <a href="mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard">email us</a> with any comments or feedback.'
+        # "This dashboard is produced by the <b>Strategy and Priority ",
+        # "Projects - Data + Analytics</b> team at the Victorian Department ",
+        # "of Jobs, Precincts and Regions.",
+        "The latest data in this ",
+        "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"), '.',
+        "We are committed to making our websites accessible to all users.",
+        "We are aware that parts of these dashboards are not fully accessible.",
+        "If you require this information in an alternative format or would",
+        "like to provide feedback please ",
+        "<a href='mailto:spp-data@ecodev.vic.gov.au?subject=DJPR Jobs Dashboard'>email us</a>.",
+        "</br>"
+      ),
+      div(
+        style = "text-align: center;",
+        tags$a(
+          class = "legalLink",
+          href = "#shiny-tab-legal",
+          "Copyright | Disclaimer"
+        )
       )
     )
   )
