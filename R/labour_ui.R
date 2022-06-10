@@ -39,7 +39,7 @@ labour_ui <- function(...) {
       djprshiny::djpr_dash_theme(),
       shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
       shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
-      shiny::tags$script("document.title='Vic Jobs Daashboard'"),
+      shiny::tags$script("document.title='Vic Jobs Dashboard'"),
       shiny::tags$head(
         shiny::tags$style(".wrapper {
                           background-color: white !important;
