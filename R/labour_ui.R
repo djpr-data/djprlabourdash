@@ -27,7 +27,11 @@ labour_ui <- function(...) {
         ),
         shinydashboard::menuItem("Industries", tabName = "industries"),
         shinydashboard::menuItem("Methodology", tabName = "methodology"),
-        shinydashboard::menuItem("Legal", tabName = "legal")
+        shinydashboard::menuItem("Copyright & Disclaimer", tabName = "legal") %>%
+          shiny::tagAppendAttributes(
+            .cssSelector = "a",
+            style = "font-size: 10px; font-style: italic; display: inline-table; text-align: right; height: 12px;"
+          )
       ),
       width = "250px"
     ),
