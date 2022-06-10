@@ -9,7 +9,8 @@ page_disabilityUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "Jobactive caseload."
+        "This page contains the number of people with a disability assisted through the jobactive program. ",
+        "More detail by location of residence is available on this page."
       )
     ),
 

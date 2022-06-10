@@ -11,7 +11,8 @@ page_indicatorsUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page contains key labour force indicators, focusing on Victoria as a whole."
+        "This page includes headline estimates of employment, unemployment, underemployment, participation, and hours worked for Victoria. ",
+        "States comparison for key labour force indicators is also provided."
       )
     ),
 
