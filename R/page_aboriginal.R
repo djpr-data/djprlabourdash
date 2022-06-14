@@ -6,7 +6,8 @@ page_aboriginalUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "Jobactive caseload."
+        "This page contains the number of Aboriginal people assisted through the jobactive program. ",
+        "The jobactive program is a commonwealth program designed to provide services to the majority of job seekers."
       )
     ),
     box(

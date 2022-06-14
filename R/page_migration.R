@@ -6,7 +6,8 @@ page_migrationUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "Jobactive caseload."
+        "This page contains the number of refugees assisted through the jobactive program. ",
+        "A comparison of refugees and non-refugees assisted through the program is also available on this page."
       )
     ),
     box(

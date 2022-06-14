@@ -9,9 +9,8 @@ page_overviewUI <- function(...) {
 
       shinydashboard::box(
         width = 12,
-        style = "padding: 15px;font-size: 20px;background: #C0E4B5;",
-        "This site provides a guide to the latest movements Victorian ",
-        "employment information. "
+        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+        "This site provides a summary of headline estimates for Victorian employment."
       )
     ),
     box(
