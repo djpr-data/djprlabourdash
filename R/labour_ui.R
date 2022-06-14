@@ -27,7 +27,11 @@ labour_ui <- function(...) {
         ),
         shinydashboard::menuItem("Industries", tabName = "industries"),
         shinydashboard::menuItem("Methodology", tabName = "methodology"),
-        shinydashboard::menuItem("Legal", tabName = "legal")
+        shinydashboard::menuItem("Copyright & Disclaimer", tabName = "legal") %>%
+          shiny::tagAppendAttributes(
+            .cssSelector = "a",
+            style = "font-size: 10px; font-style: italic; display: inline-table; text-align: right; height: 12px;"
+          )
       ),
       width = "250px"
     ),
@@ -35,12 +39,9 @@ labour_ui <- function(...) {
       djprshiny::djpr_dash_theme(),
       shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
       shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
-      shiny::tags$script("document.title='Vic Jobs Daashboard'"),
-      shiny::tags$head(
-        shiny::tags$style(".wrapper {
-                          background-color: white !important;
-                        }")
-      ),
+      shiny::tags$script("document.title='Vic Jobs Dashboard'"),
+      shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
+      shiny::tags$style(".wrapper {background-color: white !important;}"),
       shinydashboard::tabItems(
         shinydashboard::tabItem("overview", page_overviewUI()),
         shinydashboard::tabItem("indicators", page_indicatorsUI()),
