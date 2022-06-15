@@ -32,7 +32,6 @@ Imports:
     djprdashdata (>= 0.0.3.900),
     djprshiny (>= 0.0.6.904),
     djprtheme (>= 0.0.2.903),
-    djprdata,
     dplyr (>= 1.0.5),
     ggplot2,
     leaflet,
@@ -76,6 +75,7 @@ Depends:
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
+    djprdata,
     assertthat,
     pkgload,
     usethis,
