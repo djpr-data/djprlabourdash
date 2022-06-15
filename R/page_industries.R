@@ -9,7 +9,7 @@ page_industriesUI <- function(...) {
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
         p(
-          "On this page, we explore the economic and financial performance of Victorian industries. ",
+          "On this page, we explore the employment trends of Victorian industries. ",
           "The ",
           shiny::a("ABS", href = "https://www.abs.gov.au/ausstats/abs@.nsf/mf/1292.0"),
           " classifies businesses into one of 19 broad industry divisions, each of which is further ",

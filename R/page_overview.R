@@ -9,8 +9,8 @@ page_overviewUI <- function(...) {
 
       shinydashboard::box(
         width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This site provides a summary of headline estimates for Victorian employment."
+        style = "padding: 15px;font-size: 20px;background: #C0E4B5;",
+        "The DJPR Jobs Dashboard explores information on Victorian employment and job seekers. Use the sidebar to navigate through information on various demographics such as regions, age, sex and industry."
       )
     ),
     box(
