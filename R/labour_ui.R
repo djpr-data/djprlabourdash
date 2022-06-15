@@ -12,6 +12,7 @@ labour_ui <- function(...) {
         shinydashboard::menuItem(
           text = "Groups",
           tabName = "groups",
+          startExpanded = TRUE,
           shinydashboard::menuSubItem("Sex", tabName = "sex"),
           shinydashboard::menuSubItem("Age", tabName = "age"),
           shinydashboard::menuSubItem("Long-term Unemployed", tabName = "ltunemp"),
@@ -22,6 +23,7 @@ labour_ui <- function(...) {
         shinydashboard::menuItem(
           text = "Regions",
           tabName = "regions",
+          startExpanded = TRUE,
           shinydashboard::menuSubItem("Victorian Regions", tabName = "vicregions"),
           shinydashboard::menuSubItem("Australian Regions", tabName = "ausregions")
         ),
@@ -42,6 +44,7 @@ labour_ui <- function(...) {
       shiny::tags$script("document.title='Vic Jobs Dashboard'"),
       shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
       shiny::tags$style(".wrapper {background-color: white !important;}"),
+      shiny::tags$style("a:focus-visible {background:yellow !important; color:#000000 !important;}"),
       shinydashboard::tabItems(
         shinydashboard::tabItem("overview", page_overviewUI()),
         shinydashboard::tabItem("indicators", page_indicatorsUI()),
