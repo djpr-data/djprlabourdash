@@ -274,7 +274,7 @@ make_table <- function(data,
 
   # Ensure font, font size, and bolding is correct
   if (destination == "dashboard") {
-    font_family <- "VIC-font"
+    font_family <- "VIC-Regular"
     font_size_main <- 10.5
     font_size_secondary <- 9
   } else if (destination == "briefing") {
@@ -339,10 +339,9 @@ make_table <- function(data,
       j = 1:flextable::ncol_keys(flex),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
     flextable::font(fontname = font_family) %>%
     flextable::fontsize(
-      size = font_size_secondary * 0.85,
+      size = font_size_secondary * 1.2,
       part = "footer"
     ) %>%
     flextable::color(
@@ -356,8 +355,7 @@ make_table <- function(data,
     flextable::font(
       fontname = font_family,
       part = "footer"
-    ) %>%
-    flextable::italic(part = "footer")
+    )
 
   # Add title to briefing tables and resize columns
   if (destination == "briefing") {
@@ -373,6 +371,8 @@ make_table <- function(data,
         j = 1,
         width = 2
       )
+  } else {
+    flex <- flextable::set_table_properties(flex, layout = "autofit", width = 1)
   }
 
   flex

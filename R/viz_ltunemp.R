@@ -1,15 +1,25 @@
 # Functions to create the graphs for the 'Long-term unemployed' subpage on the dashboard.
 
-viz_gr_ltunemp_line <- function(data = filter_dash_data(c(
-                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                                  "A84423687K",
-                                  "A84423089K",
-                                  "A84597681W"
+
+viz_gr_ltunemp_line <- function(data = filter_dash_data(
+                                  c(
+                                    "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                    "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                    "A84423687K",
+                                    "A84423089K",
+                                    "A84597681W"
+                                  ),
+                                  df = dash_data
                                 ),
-                                df = dash_data
-                                )) {
+                                date_range = NULL) {
+  if (!is.null(date_range)) {
+    data <- data |>
+      filter(date >= date_range[1], date <= date_range[2])
+  }
+
+
   df <- data %>%
+    # dplyr::filter(date >= date_range[1], date <= date_range[2]) %>%
     dplyr::select(.data$series, .data$value, .data$date)
 
   df <- df %>%
@@ -267,18 +277,21 @@ viz_gr_ltunvic_bar <- function(data = filter_dash_data(c(
 
 
 # area chart for the proportion of unemployed by duration
-viz_gr_ltunvic_area <- function(data = filter_dash_data(c(
-                                  "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
-                                  "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
-                                  "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
-                                  "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
-                                  "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
-                                  "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+viz_gr_ltunvic_area <- function(data = filter_dash_data(
+                                  c(
+                                    "unemployed total ('000)_victoria_104 weeks and over (2 years and over)",
+                                    "unemployed total ('000)_victoria_13 weeks and under 26 weeks (3-6 months)",
+                                    "unemployed total ('000)_victoria_26 weeks and under 52 weeks (6-12 months)",
+                                    "unemployed total ('000)_victoria_4 weeks and under 13 weeks (1-3 months)",
+                                    "unemployed total ('000)_victoria_52 weeks and under 104 weeks (1-2 years)",
+                                    "unemployed total ('000)_victoria_under 4 weeks (under 1 month)"
+                                  ),
+                                  df = dash_data
                                 ),
-                                df = dash_data
-                                )) {
+                                dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   # select the series you need for the bar chart
   data <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$duration, .data$value, .data$date)
 
   # 3 month moving average

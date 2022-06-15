@@ -291,65 +291,68 @@ viz_reg_emp_regions_sincecovid_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
-                                                      "A84600253V",
-                                                      "A84599659L",
-                                                      "A84600019W",
-                                                      "A84600187J",
-                                                      "A84599557X",
-                                                      "A84600115W",
-                                                      "A84599851L",
-                                                      "A84599923L",
-                                                      "A84600025T",
-                                                      "A84600193C",
-                                                      "A84599665J",
-                                                      "A84600031L",
-                                                      "A84599671C",
-                                                      "A84599677T",
-                                                      "A84599683L",
-                                                      "A84599929A",
-                                                      "A84600121T",
-                                                      "A84600037A",
-                                                      "A84599658K",
-                                                      "A84599660W",
-                                                      "A84600018V",
-                                                      "A84600020F",
-                                                      "A84600186F",
-                                                      "A84600188K",
-                                                      "A84599556W",
-                                                      "A84599558A",
-                                                      "A84600114V",
-                                                      "A84600116X",
-                                                      "A84599850K",
-                                                      "A84599852R",
-                                                      "A84599922K",
-                                                      "A84599924R",
-                                                      "A84600024R",
-                                                      "A84600026V",
-                                                      "A84600192A",
-                                                      "A84600194F",
-                                                      "A84599664F",
-                                                      "A84599666K",
-                                                      "A84600030K",
-                                                      "A84600032R",
-                                                      "A84599670A",
-                                                      "A84599672F",
-                                                      "A84599676R",
-                                                      "A84599678V",
-                                                      "A84599682K",
-                                                      "A84599684R",
-                                                      "A84599928X",
-                                                      "A84599930K",
-                                                      "A84600120R",
-                                                      "A84600122V",
-                                                      "A84600036X",
-                                                      "A84600038C",
-                                                      "A84600252T",
-                                                      "A84600254W"
+viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(
+                                                      c(
+                                                        "A84600253V",
+                                                        "A84599659L",
+                                                        "A84600019W",
+                                                        "A84600187J",
+                                                        "A84599557X",
+                                                        "A84600115W",
+                                                        "A84599851L",
+                                                        "A84599923L",
+                                                        "A84600025T",
+                                                        "A84600193C",
+                                                        "A84599665J",
+                                                        "A84600031L",
+                                                        "A84599671C",
+                                                        "A84599677T",
+                                                        "A84599683L",
+                                                        "A84599929A",
+                                                        "A84600121T",
+                                                        "A84600037A",
+                                                        "A84599658K",
+                                                        "A84599660W",
+                                                        "A84600018V",
+                                                        "A84600020F",
+                                                        "A84600186F",
+                                                        "A84600188K",
+                                                        "A84599556W",
+                                                        "A84599558A",
+                                                        "A84600114V",
+                                                        "A84600116X",
+                                                        "A84599850K",
+                                                        "A84599852R",
+                                                        "A84599922K",
+                                                        "A84599924R",
+                                                        "A84600024R",
+                                                        "A84600026V",
+                                                        "A84600192A",
+                                                        "A84600194F",
+                                                        "A84599664F",
+                                                        "A84599666K",
+                                                        "A84600030K",
+                                                        "A84600032R",
+                                                        "A84599670A",
+                                                        "A84599672F",
+                                                        "A84599676R",
+                                                        "A84599678V",
+                                                        "A84599682K",
+                                                        "A84599684R",
+                                                        "A84599928X",
+                                                        "A84599930K",
+                                                        "A84600120R",
+                                                        "A84600122V",
+                                                        "A84600036X",
+                                                        "A84600038C",
+                                                        "A84600252T",
+                                                        "A84600254W"
+                                                      ),
+                                                      df = dash_data
                                                     ),
-                                                    df = dash_data
-                                                    ),
-                                                    selected_indicator = "unemp_rate") {
+                                                    selected_indicator = "unemp_rate",
+                                                    dates = c(data_dates$`6202016`$min, data_dates$`6202016`$max),
+                                                    n_col = 3) {
   indic_long <- dplyr::case_when(
     selected_indicator == "unemp_rate" ~ "Unemployment rate",
     selected_indicator == "part_rate" ~ "Participation rate",
@@ -358,6 +361,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
   )
 
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     mutate(indicator_short = dplyr::case_when(
       .data$indicator == "Unemployment rate" ~ "unemp_rate",
       .data$indicator == "Participation rate" ~ "part_rate",
@@ -458,6 +462,13 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
       label = F,
       dot = F
     ) +
+    scale_colour_manual(
+      values = c(
+        "Victoria"          = djprtheme::djpr_blue,
+        "Rest of Victoria"  = djprtheme::djpr_green,
+        "Greater Melbourne" = djprtheme::djpr_bondi_blue
+        )
+      ) +
     scale_y_continuous(
       labels = function(x) paste0(x, "%"),
       limits = c(min_limit, max_y),
@@ -475,7 +486,7 @@ viz_reg_unemp_emppop_partrate_multiline <- function(data = filter_dash_data(c(
       size = 12 / .pt
     ) +
     geom_line(data = vic) +
-    facet_wrap(~ factor(sa4), ncol = 6, scales = "free_x") +
+    facet_wrap(~ factor(sa4), ncol = n_col, scales = "free_x") +
     scale_x_date(
       date_labels = "%Y",
       breaks = scales::breaks_pretty(n = 3)
@@ -621,31 +632,33 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
   )
 }
 
-viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
-                                           "A84600253V",
-                                           "A84599659L",
-                                           "A84600019W",
-                                           "A84600187J",
-                                           "A84599557X",
-                                           "A84600115W",
-                                           "A84599851L",
-                                           "A84599923L",
-                                           "A84600025T",
-                                           "A84600193C",
-                                           "A84599665J",
-                                           "A84600031L",
-                                           "A84599671C",
-                                           "A84599677T",
-                                           "A84599683L",
-                                           "A84599929A",
-                                           "A84600121T",
-                                           "A84600037A"
+viz_reg_unemprate_dispersion <- function(data = filter_dash_data(
+                                           c(
+                                             "A84600253V",
+                                             "A84599659L",
+                                             "A84600019W",
+                                             "A84600187J",
+                                             "A84599557X",
+                                             "A84600115W",
+                                             "A84599851L",
+                                             "A84599923L",
+                                             "A84600025T",
+                                             "A84600193C",
+                                             "A84599665J",
+                                             "A84600031L",
+                                             "A84599671C",
+                                             "A84599677T",
+                                             "A84599683L",
+                                             "A84599929A",
+                                             "A84600121T",
+                                             "A84600037A"
+                                           ),
+                                           df = dash_data
                                          ),
-                                         df = dash_data
-                                         ),
-                                         selected_indicator = "all") # all, metropolitan or regional
-{
+                                         selected_indicator = "all",
+                                         dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       sa4 = dplyr::if_else(.data$sa4 == "", "Victoria", .data$sa4)
     ) %>%
@@ -781,7 +794,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     ) +
     scale_x_date(
       expand = expansion(
-        add = c(0, days_in_data * 0.2)
+        add = c(0, days_in_data * 0.065)
       ),
       breaks = djprtheme::breaks_right(
         limits = c(
@@ -794,7 +807,7 @@ viz_reg_unemprate_dispersion <- function(data = filter_dash_data(c(
     ) +
     scale_colour_manual(values = c(
       "min_ur" = djprtheme::djpr_green,
-      "max_ur" = djprtheme::djpr_royal_blue,
+      "max_ur" = djprtheme::djpr_blue,
       "vic" = "black"
     )) +
     theme(
@@ -912,7 +925,7 @@ map_reg_sa4 <- function(sa4 = c(
     ggplot() +
     geom_sf(aes(alpha = .data$selected),
       size = 0.25,
-      fill = djprtheme::djpr_royal_blue,
+      fill = djprtheme::djpr_blue,
       colour = djprtheme::djpr_cool_grey_11
     ) +
     geom_curve(
@@ -1028,7 +1041,7 @@ viz_reg_sa4unemp_cf_broadregion <- function(data = filter_dash_data(
   )
 
   colours <- c(
-    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_blue,
     djprtheme::djpr_green
   )
 
@@ -1280,8 +1293,8 @@ table_region_focus <- function(data = filter_dash_data(
     ) %>%
     # flextable::autofit(add_w = 0, add_h = 0) %>%
     flextable::set_table_properties("autofit", width = 1) %>%
-    flextable::font(part = "body", fontname = "VIC-font") %>%
-    flextable::font(part = "header", fontname = "VIC-font") %>%
+    flextable::font(part = "body", fontname = "VIC-regular") %>%
+    flextable::font(part = "header", fontname = "VIC-regular") %>%
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
 
@@ -1296,10 +1309,9 @@ table_region_focus <- function(data = filter_dash_data(
       j = 1:flextable::ncol_keys(out),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
-    flextable::font(fontname = "VIC-font") %>%
+    flextable::font(fontname = "VIC-regular") %>%
     flextable::fontsize(
-      size = 9 * 0.85,
+      size = 11 * 0.85,
       part = "footer"
     ) %>%
     flextable::color(
@@ -1314,17 +1326,19 @@ table_region_focus <- function(data = filter_dash_data(
   out
 }
 
-viz_reg_melvic_line <- function(data = filter_dash_data(c(
-                                  "A84600144J",
-                                  "A84600078W",
-                                  "A84595516F",
-                                  "A84595471L"
-                                ),
-                                df = dash_data
+viz_reg_melvic_line <- function(data = filter_dash_data(
+                                  c(
+                                    "A84600144J",
+                                    "A84600078W",
+                                    "A84595516F",
+                                    "A84595471L"
+                                  ),
+                                  df = dash_data
                                 ) %>%
                                   dplyr::group_by(.data$series_id) %>%
                                   dplyr::mutate(value = slider::slide_mean(.data$value, before = 2, complete = TRUE)) %>%
-                                  dplyr::filter(!is.na(.data$value))) {
+                                  dplyr::filter(!is.na(.data$value)),
+                                dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   latest <- data %>%
     dplyr::ungroup() %>%
     dplyr::filter(
@@ -1350,7 +1364,8 @@ viz_reg_melvic_line <- function(data = filter_dash_data(c(
       gcc_restofstate = gsub("Melbourne", "Melb", .data$gcc_restofstate,
         fixed = TRUE
       )
-    )
+    ) %>%
+    filter(date >= dates[1], date <= dates[2])
 
   max_date <- data %>%
     dplyr::filter(.data$date == max(.data$date)) %>%

@@ -9,9 +9,6 @@ editEMAIL()
 \arguments{
 \item{labour}{data.frame used for testing, not required by addin}
 }
-\value{
-
-}
 \description{
 Edit SMS before Sending
 }

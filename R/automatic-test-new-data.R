@@ -832,8 +832,7 @@ check_table_industries_summary <- function(df){
 #'
 #' @return list
 #' @export
-#'
-#' @examples
+
 run_checks <- function(){
 
   #future::plan(multisession, workers = 4)

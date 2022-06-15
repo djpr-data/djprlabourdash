@@ -3,10 +3,7 @@
 
 #' Merge Message Contents into Single Document
 #'
-#' @return
 #' @export
-#'
-#' @examples
 build_email_content <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
   stopifnot(addins_check_env())

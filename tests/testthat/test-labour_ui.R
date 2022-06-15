@@ -1,5 +1,4 @@
-test_that("labour_ui() returns a Shiny tag list", {
+test_that("labour_ui() returns a Shiny tag and Shiny tag lists", {
   ui <- labour_ui()
-  expect_s3_class(ui, "shiny.tag.list")
-  expect_gte(length(ui), 5)
+  expect_s3_class(ui, c("shiny.tag"))
 })

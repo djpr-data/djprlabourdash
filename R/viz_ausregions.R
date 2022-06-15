@@ -1,15 +1,16 @@
 #' @importFrom rlang `:=`
 
-viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
-                                                       "A84600075R",
-                                                       "A84599625R",
-                                                       "A84599781T",
-                                                       "A84599607K",
-                                                       "A84600243R",
-                                                       "A84599715V",
-                                                       "A84599631K"
-                                                     ),
-                                                     df = dash_data
+viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(
+                                                       c(
+                                                         "A84600075R",
+                                                         "A84599625R",
+                                                         "A84599781T",
+                                                         "A84599607K",
+                                                         "A84600243R",
+                                                         "A84599715V",
+                                                         "A84599631K"
+                                                       ),
+                                                       df = dash_data
                                                      ) %>%
                                                        dplyr::mutate(
                                                          state = dplyr::case_when(
@@ -29,8 +30,10 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
                                                              "Reg. Tas",
                                                            TRUE ~ .data$state
                                                          )
-                                                       )) {
+                                                       ),
+                                                     states = c("Reg. Vic", "Reg. NSW")) {
   df <- data %>%
+    dplyr::filter(.data$state %in% states) %>%
     dplyr::group_by(.data$series_id) %>%
     dplyr::mutate(
       value = slider::slide_mean(.data$value, before = 2, complete = TRUE)
@@ -123,7 +126,7 @@ viz_reg_emp_regionstates_sincecovid_line <- function(data = filter_dash_data(c(
       labels = function(x) paste0(x, "%")
     ) +
     scale_colour_manual(values = c(
-      "Reg. Vic" = djprtheme::djpr_royal_blue,
+      "Reg. Vic" = djprtheme::djpr_blue,
       "Reg. NSW" = djprtheme::djpr_green,
       "Reg. NT" = other_colour,
       "Reg. Tas" = other_colour,
@@ -293,7 +296,7 @@ viz_reg_regionstates_dot <- function(data = filter_dash_data(c(
       expand = expansion(add = 0.5)
     ) +
     scale_colour_manual(
-      values = suppressWarnings(djpr_pal(10)[c(1, 8)])
+      values = djpr_pal(2)
     ) +
     theme_djpr(flipped = T) +
     labs(
@@ -510,9 +513,9 @@ viz_reg_regionstates_bar <- function(data = filter_dash_data(c(
       ) +
       scale_fill_manual(
         values = c(
-          "Rest of Vic." = djprtheme::djpr_royal_blue,
+          "Rest of Vic." = djprtheme::djpr_blue,
           "Rest of Aus." = djprtheme::djpr_green,
-          "Other" = "grey75"
+          "Other" = "grey70"
         )
       ) +
       labs(subtitle = paste0("Age ", age)) +

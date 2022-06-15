@@ -1,0 +1,11 @@
+name: boxy
+title:
+username:
+account: djpr-spp
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 6458265
+bundleId: 6008734
+url: https://djpr-spp.shinyapps.io/boxy/
+when: 1655264884.23589
+lastSyncTime: 1655264884.23688

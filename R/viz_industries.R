@@ -330,7 +330,7 @@ table_industries_employment <- function(data = filter_dash_data(c(
       j = 1:flextable::ncol_keys(out),
       part = "footer"
     ) %>%
-    flextable::italic(part = "footer") %>%
+    #    flextable::italic(part = "footer") %>%
     flextable::font(fontname = "VIC-font") %>%
     flextable::fontsize(
       size = 9 * 0.85,
@@ -348,32 +348,35 @@ table_industries_employment <- function(data = filter_dash_data(c(
   out
 }
 
-viz_industries_emp_line <- function(data = filter_dash_data(c(
-                                      "A84601680F",
-                                      "A84601683L",
-                                      "A84601686V",
-                                      "A84601665J",
-                                      "A84601704L",
-                                      "A84601707V",
-                                      "A84601710J",
-                                      "A84601638A",
-                                      "A84601653X",
-                                      "A84601689A",
-                                      "A84601656F",
-                                      "A84601713R",
-                                      "A84601668R",
-                                      "A84601695W",
-                                      "A84601698C",
-                                      "A84601650T",
-                                      "A84601671C",
-                                      "A84601641R",
-                                      "A84601716W",
-                                      "A84601662A"
+viz_industries_emp_line <- function(data = filter_dash_data(
+                                      c(
+                                        "A84601680F",
+                                        "A84601683L",
+                                        "A84601686V",
+                                        "A84601665J",
+                                        "A84601704L",
+                                        "A84601707V",
+                                        "A84601710J",
+                                        "A84601638A",
+                                        "A84601653X",
+                                        "A84601689A",
+                                        "A84601656F",
+                                        "A84601713R",
+                                        "A84601668R",
+                                        "A84601695W",
+                                        "A84601698C",
+                                        "A84601650T",
+                                        "A84601671C",
+                                        "A84601641R",
+                                        "A84601716W",
+                                        "A84601662A"
+                                      ),
+                                      df = dash_data
                                     ),
-                                    df = dash_data
-                                    ),
-                                    chosen_industry = "Agriculture, Forestry and Fishing") {
+                                    chosen_industry = "Agriculture, Forestry and Fishing",
+                                    dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       industry = dplyr::if_else(.data$industry == "",
         "Victoria, all industries",
@@ -399,7 +402,7 @@ viz_industries_emp_line <- function(data = filter_dash_data(c(
     dplyr::filter(!is.na(.data$value))
 
   colours <- c(
-    djprtheme::djpr_royal_blue,
+    djprtheme::djpr_blue,
     djprtheme::djpr_green
   )
 
@@ -654,7 +657,7 @@ viz_industries_emp_bysex_bar <- function(data = filter_dash_data(c(
     geom_col(
       position = "fill",
       alpha = 1,
-      col = "grey70"
+      col = djprtheme::djpr_cool_grey_11
     ) +
     geom_text(
       data = label_df,

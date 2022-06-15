@@ -73,7 +73,7 @@ viz_gr_gen_emp_bar <- function(data = filter_dash_data(c(
     geom_col(
       position = "fill",
       alpha = 1,
-      col = "grey70"
+      col = djprtheme::djpr_cool_grey_11
     ) +
     geom_text(
       aes(y = .data$label_y, label = round2(.data$perc * 100, 1)),
@@ -120,8 +120,10 @@ viz_gr_gen_partrate_line <- function(data = filter_dash_data(c(
                                        "A84423467J"
                                      ),
                                      df = dash_data
-                                     )) {
+                                     ),
+                                     dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
       tooltip = paste0(
@@ -184,8 +186,10 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
                                     "A84423466F"
                                   ),
                                   df = dash_data
-                                  )) {
+                                  ),
+                                  dates = as.Date(c("1910-01-01", "2030-01-01"))) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::mutate(
       sex = dplyr::if_else(.data$sex == "", "Persons", .data$sex),
       tooltip = paste0(
@@ -233,17 +237,19 @@ viz_gr_gen_unemp_line <- function(data = filter_dash_data(c(
 }
 
 # Full-time and part-time  employment growth pattern by gender
-viz_gr_full_part_line <- function(data = filter_dash_data(c(
-                                    "A84423237A",
-                                    "A84423461V",
-                                    "A84423245A",
-                                    "A84423469L"
+viz_gr_full_part_line <- function(data = filter_dash_data(
+                                    c(
+                                      "A84423237A",
+                                      "A84423461V",
+                                      "A84423245A",
+                                      "A84423469L"
+                                    )
                                   ),
-                                  df = dash_data
-                                  )) {
+                                  dates = as.Date(c("1910-01-01", "2027-01-01"))) {
 
   # We calculate part time employment using total + FT employment
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$date, .data$sex, .data$indicator, .data$value) %>%
     tidyr::pivot_wider(names_from = .data$indicator, values_from = .data$value) %>%
     dplyr::group_by(.data$sex) %>%
@@ -323,8 +329,10 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
                                           "A84423468K"
                                         ),
                                         df = dash_data
-                                        )) {
+                                        ),
+                                        dates = as.Date(c("1910-01-01", "2027-01-01"))) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(.data$date, .data$value, .data$sex, .data$indicator) %>%
     dplyr::mutate(series = .data$indicator)
 
@@ -483,36 +491,39 @@ viz_gr_gen_emppopratio_line <- function(data = filter_dash_data(c(
     )
 }
 
-viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(c(
-                                                   "jobactive_female_ballarat",
-                                                   "jobactive_female_bendigo",
-                                                   "jobactive_female_barwon",
-                                                   "jobactive_female_gippsland",
-                                                   "jobactive_female_goulburn/murray",
-                                                   "jobactive_female_inner metropolitan melbourne",
-                                                   "jobactive_female_north eastern melbourne",
-                                                   "jobactive_female_north western melbourne",
-                                                   "jobactive_female_south coast of victoria",
-                                                   "jobactive_female_south eastern melbourne and peninsula",
-                                                   "jobactive_female_western melbourne",
-                                                   "jobactive_female_wimmera mallee",
-                                                   "jobactive_total_ballarat",
-                                                   "jobactive_total_bendigo",
-                                                   "jobactive_total_barwon",
-                                                   "jobactive_total_gippsland",
-                                                   "jobactive_total_goulburn/murray",
-                                                   "jobactive_total_inner metropolitan melbourne",
-                                                   "jobactive_total_north eastern melbourne",
-                                                   "jobactive_total_north western melbourne",
-                                                   "jobactive_total_south coast of victoria",
-                                                   "jobactive_total_south eastern melbourne and peninsula",
-                                                   "jobactive_total_western melbourne",
-                                                   "jobactive_total_wimmera mallee"
-                                                 ),
-                                                 df = dash_data
+viz_gr_female_jobact_sincecovid_line <- function(data = filter_dash_data(
+                                                   c(
+                                                     "jobactive_female_ballarat",
+                                                     "jobactive_female_bendigo",
+                                                     "jobactive_female_barwon",
+                                                     "jobactive_female_gippsland",
+                                                     "jobactive_female_goulburn/murray",
+                                                     "jobactive_female_inner metropolitan melbourne",
+                                                     "jobactive_female_north eastern melbourne",
+                                                     "jobactive_female_north western melbourne",
+                                                     "jobactive_female_south coast of victoria",
+                                                     "jobactive_female_south eastern melbourne and peninsula",
+                                                     "jobactive_female_western melbourne",
+                                                     "jobactive_female_wimmera mallee",
+                                                     "jobactive_total_ballarat",
+                                                     "jobactive_total_bendigo",
+                                                     "jobactive_total_barwon",
+                                                     "jobactive_total_gippsland",
+                                                     "jobactive_total_goulburn/murray",
+                                                     "jobactive_total_inner metropolitan melbourne",
+                                                     "jobactive_total_north eastern melbourne",
+                                                     "jobactive_total_north western melbourne",
+                                                     "jobactive_total_south coast of victoria",
+                                                     "jobactive_total_south eastern melbourne and peninsula",
+                                                     "jobactive_total_western melbourne",
+                                                     "jobactive_total_wimmera mallee"
+                                                   ),
+                                                   df = dash_data
                                                  ) %>%
-                                                   dplyr::filter(date >= as.Date("2019-03-31"))) {
+                                                   dplyr::filter(date >= as.Date("2019-03-31")),
+                                                 dates = as.Date(c("1910-01-01", "2027-01-01"))) {
   df <- data %>%
+    dplyr::filter(date >= dates[1], date <= dates[2]) %>%
     dplyr::select(
       .data$date, .data$series,
       .data$frequency, .data$value

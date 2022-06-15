@@ -6,6 +6,9 @@
 \usage{
 reference_dates(detailed = FALSE)
 }
+\arguments{
+\item{detailed}{logical standard or detailed Labour Force release}
+}
 \value{
 list
 }

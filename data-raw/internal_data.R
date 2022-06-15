@@ -9,7 +9,8 @@ if (requireNamespace("absmapsdata", quietly = T)) {
   qs::qsave(absmapsdata::employment_regions2015, "inst/extdata/employment_regions2015.qs")
 }
 
-dash_data <- get_dash_data(verbose = T)
+dash_data <- get_dash_data(verbose = T) %>%
+  filter(table_no != "salm")
 stopifnot(inherits(dash_data, "tbl_df"))
 stopifnot(nrow(dash_data) > 800)
 dash_data_updated <- attr(dash_data, "date_updated")

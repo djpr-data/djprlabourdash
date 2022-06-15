@@ -1423,7 +1423,8 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
                                 title = paste0(
                                   "Jobactive caseload for Victorians with disabilities",
                                   format(max(data$date), "%B %Y")
-                                )) {
+                                ),
+                                caption = "The data above include people with disabilities aged 15 and above.") {
   data <- filter_dash_data(c(
     "jobactive_pwd_ballarat",
     "jobactive_pwd_bendigo",
@@ -1468,7 +1469,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     ) %>%
     dplyr::bind_rows(table_data)
 
-  make_table(table_data,
+  make_table_mem(table_data,
     row_order = c(
       "jobactive_total_pwd",
       "jobactive_pwd_ballarat",
@@ -1486,6 +1487,7 @@ table_jobactive_pwd <- function(destination = Sys.getenv("R_DJPRLABOURDASH_TABLE
     ),
     highlight_rows = "jobactive_total_pwd",
     title = title,
+    notes = caption,
     destination = destination,
     rename_indicators = FALSE,
     pretty_round = FALSE

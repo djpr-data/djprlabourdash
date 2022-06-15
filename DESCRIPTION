@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.1.0.903
+Version: 1.0.0
 Authors@R: 
     c(
     person(given = "Annett",
@@ -49,9 +49,6 @@ Imports:
     slider,
     flextable,
     cachem,
-    shinyjs,
-    miniUI,
-    emayili,
     shinyWidgets,
     purrr,
     furrr,
@@ -62,12 +59,12 @@ Imports:
     here,
     lubridate,
     readxl,
-    crayon,
     qs,
     memoise,
     utils,
     showtext,
-    sysfonts
+    sysfonts,
+    shinydashboard
 Remotes: 
     djpr-data/djprshiny,
     djpr-data/djprtheme,
@@ -86,5 +83,12 @@ Suggests:
     officedown,
     blastula,
     covr,
-    webshot
+    crayon,
+    miniUI,
+    emayili,
+    webshot,
+    fs,
+    htmltools,
+    keyring,
+    rstudioapi
 Config/testthat/edition: 3
