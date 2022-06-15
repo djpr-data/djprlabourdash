@@ -1,6 +1,6 @@
 Package: djprlabourdash
 Title: DJPR Jobs Dashboard
-Version: 0.1.0.903
+Version: 1.0.0
 Authors@R: 
     c(
     person(given = "Annett",
