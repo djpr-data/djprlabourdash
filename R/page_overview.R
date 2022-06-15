@@ -2,19 +2,16 @@ page_overviewUI <- function(...) {
   shiny::tagList(
 
     # No padding column with width = 4
-    column_nopad(
-      width = 4,
+    djprshiny::djpr_h1_box("DJPR Jobs Dashboard"),
 
-      djprshiny::djpr_h1_box("DJPR Jobs Dashboard"),
-
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 20px;background: #C0E4B5;",
-        "The DJPR Jobs Dashboard explores information on Victorian employment and job seekers. Use the sidebar to navigate through information on various demographics such as regions, age, sex and industry."
-      )
+    shinydashboard::box(
+      width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+      "The DJPR Jobs Dashboard explores information on Victorian employment and job seekers. Use the sidebar to navigate through information on various demographics such as regions, age, sex and industry."
     ),
+
     box(
-      width = 8,
+      width = 12,
       shiny::uiOutput("main_table", height = "800px") %>%
         djpr_with_spinner(proxy.height = "800px")
     ),
