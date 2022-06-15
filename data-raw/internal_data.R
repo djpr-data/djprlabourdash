@@ -17,3 +17,6 @@ dash_data_updated <- attr(dash_data, "date_updated")
 
 qs::qsave(dash_data, "inst/extdata/dash_data.qs")
 qs::qsave(dash_data_updated, "inst/extdata/dash_data_updated.qs")
+
+# make sure updated data loaded
+pkgload::load_all()

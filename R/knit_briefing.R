@@ -43,7 +43,7 @@ knit_briefing <- function(path = here::here("inst"),
     quiet = quietly
   )
 
-  if (show) {
+  if (show) {                     # TODO: shell.exec does not work on rstudio server
     normalizePath(out_path) %>%
       shell.exec()
   }

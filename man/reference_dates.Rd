@@ -2,13 +2,13 @@
 % Please edit documentation in R/reference_date.R
 \name{reference_dates}
 \alias{reference_dates}
-\title{Get Labour Force Reference Dates}
+\title{Labour Force Reference Dates}
 \usage{
-reference_dates()
+reference_dates(detailed = FALSE)
 }
 \value{
 list
 }
 \description{
-Get Labour Force Reference Dates
+Get Labour Force reference dates and generate email preamble
 }
