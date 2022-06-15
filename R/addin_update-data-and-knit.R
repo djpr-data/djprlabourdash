@@ -54,8 +54,7 @@ update_data_and_knit <- function() {
 #'
 #' @return
 #' @export
-#'
-#' @examples
+
 generate_report <- function() {
 
   # ensure data is up to date
