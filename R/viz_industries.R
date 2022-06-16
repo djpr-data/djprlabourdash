@@ -314,8 +314,9 @@ table_industries_employment <- function(data = filter_dash_data(c(
       border.bottom = flextable::fp_border_default()
     ) %>%
     flextable::set_table_properties("autofit", width = 1) %>%
-    flextable::font(part = "body", fontname = "VIC-font") %>%
-    flextable::font(part = "header", fontname = "VIC-font") %>%
+    flextable::font(part = "body", fontname = "VIC-Regular") %>%
+    flextable::font(part = "header", fontname = "VIC-Regular") %>%
+    flextable::font(part = "footer", fontname = "VIC-Regular") %>%
     flextable::fontsize(size = 9) %>%
     flextable::fontsize(size = 9, part = "header")
 
@@ -331,7 +332,10 @@ table_industries_employment <- function(data = filter_dash_data(c(
       part = "footer"
     ) %>%
     #    flextable::italic(part = "footer") %>%
-    flextable::font(fontname = "VIC-font") %>%
+    flextable::font(fontname = "VIC-Regular") %>%
+    flextable::font(part = "body", fontname = "VIC-Regular") %>%
+    flextable::font(part = "header", fontname = "VIC-Regular") %>%
+    flextable::font(part = "footer", fontname = "VIC-Regular") %>%
     flextable::fontsize(
       size = 9 * 0.85,
       part = "footer"
