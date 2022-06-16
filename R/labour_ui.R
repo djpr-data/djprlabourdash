@@ -43,6 +43,7 @@ labour_ui <- function(...) {
       shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
       shiny::tags$script("document.title='Vic Jobs Dashboard'"),
       shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
+      tags$script(HTML("$('body').addClass('fixed');")),
       shiny::tags$style(".wrapper {background-color: white !important;}"),
       shinydashboard::tabItems(
         shinydashboard::tabItem("overview", page_overviewUI()),
