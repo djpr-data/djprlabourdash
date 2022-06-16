@@ -44,7 +44,6 @@ labour_ui <- function(...) {
       shiny::tags$script("document.title='Vic Jobs Dashboard'"),
       shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
       shiny::tags$style(".wrapper {background-color: white !important;}"),
-      shiny::tags$style("a:focus-visible {outline: -webkit-focus-ring-color auto 1px;outline-offset: 1px; !important; color:#087d81; !important;}"),
       shinydashboard::tabItems(
         shinydashboard::tabItem("overview", page_overviewUI()),
         shinydashboard::tabItem("indicators", page_indicatorsUI()),
