@@ -3,7 +3,7 @@ page_ausregionsUI <- function(...) {
   fluidRow(
 
     # Unemployment by Australian Regions -------------
-    djprshiny::djpr_h1_box("Australian Regions"),
+    djprshiny::djpr_h1_box("Australian regions"),
     shinydashboard::box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",

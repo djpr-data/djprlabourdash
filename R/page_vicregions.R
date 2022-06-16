@@ -3,7 +3,7 @@ page_vicregionsUI <- function(...) {
 
 
     # Unemployment by region -----
-    djprshiny::djpr_h1_box("Victorian Regions"),
+    djprshiny::djpr_h1_box("Victorian regions"),
     shinydashboard::box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",

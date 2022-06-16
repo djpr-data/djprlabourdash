@@ -15,9 +15,9 @@ labour_ui <- function(...) {
           startExpanded = TRUE,
           shinydashboard::menuSubItem("Sex", tabName = "sex"),
           shinydashboard::menuSubItem("Age", tabName = "age"),
-          shinydashboard::menuSubItem("Long-term Unemployed", tabName = "ltunemp"),
+          shinydashboard::menuSubItem("Long-term unemployed", tabName = "ltunemp"),
           shinydashboard::menuSubItem("Aboriginal Victorians", tabName = "aboriginal"),
-          shinydashboard::menuSubItem("People with Disabilities", tabName = "disability"),
+          shinydashboard::menuSubItem("People with disability", tabName = "disability"),
           shinydashboard::menuSubItem("Refugees", tabName = "migration")
         ),
         shinydashboard::menuItem(

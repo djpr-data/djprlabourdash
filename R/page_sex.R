@@ -8,7 +8,7 @@ page_sexUI <- function(...) {
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page provides key labour force indicators by gender. ",
+        "This page provides key labour force indicators by sex. ",
         "It also contains information on females assisted through the jobactive program."
       )
     ),

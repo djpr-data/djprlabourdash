@@ -2,11 +2,11 @@ page_disabilityUI <- function(...) {
   fluidRow(
     column_nopad(
       width = 4,
-      djprshiny::djpr_h1_box("People with Disabilities"),
+      djprshiny::djpr_h1_box("People with disability"),
       shinydashboard::box(
         width = 12,
         style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page contains the number of people with a disability assisted through the jobactive program. ",
+        "This page contains the number of people with disability assisted through the jobactive program. ",
         "More detail by location of residence is available on this page."
       )
     ),

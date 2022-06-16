@@ -1321,6 +1321,10 @@ table_region_focus <- function(data = filter_dash_data(
     flextable::line_spacing(
       part = "footer",
       space = 0.8
+    ) %>%
+    flextable::font(
+      fontname = "VIC-regular",
+      part = "footer"
     )
 
   out
