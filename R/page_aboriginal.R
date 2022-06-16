@@ -1,17 +1,14 @@
 page_aboriginalUI <- function(...) {
   shiny::fluidRow(
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Aboriginal Victorians"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page contains the number of Aboriginal people assisted through the jobactive program. ",
-        "The jobactive program is a Commonwealth program designed to provide services to the majority of job seekers."
-      )
+    djprshiny::djpr_h1_box("Aboriginal Victorians"),
+    shinydashboard::box(
+      width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+      "This page contains the number of Aboriginal people assisted through the jobactive program. ",
+      "The jobactive program is a Commonwealth program designed to provide services to the majority of job seekers."
     ),
     box(
-      width = 8,
+      width = 12,
       uiOutput("table_jobactive_aboriginal") %>%
         djpr_with_spinner()
     ),

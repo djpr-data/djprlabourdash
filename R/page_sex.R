@@ -1,19 +1,17 @@
 page_sexUI <- function(...) {
   fluidRow(
 
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Sex"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page provides key labour force indicators by sex. ",
-        "It also contains information on females assisted through the jobactive program."
-      )
+
+    djprshiny::djpr_h1_box("Sex"),
+    shinydashboard::box(
+      width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+      "This page provides key labour force indicators by sex. ",
+      "It also contains information on females assisted through the jobactive program."
     ),
+
     box(
-      width = 8,
+      width = 12,
       uiOutput("table_gr_sex") %>%
         djpr_with_spinner()
     ),

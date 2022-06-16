@@ -1,22 +1,18 @@
 page_indicatorsUI <- function(...) {
   fluidRow(
 
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Indicators"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page includes headline estimates of employment, unemployment, underemployment, participation, and hours worked for Victoria. ",
-        "States comparison for key labour force indicators is also provided."
-      )
+    djprshiny::djpr_h1_box("Indicators"),
+    shinydashboard::box(
+      width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+      "This page includes headline estimates of employment, unemployment, underemployment, participation, and hours worked for Victoria. ",
+      "States comparison for key labour force indicators is also provided."
     ),
 
     # htmlOutput("ind_empgrowth_sincecovid_text"),
 
     box(
-      width = 8,
+      width = 12,
       shiny::uiOutput("ind_emp_table") %>%
         djpr_with_spinner(hide.ui = TRUE)
     ),

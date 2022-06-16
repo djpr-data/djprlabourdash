@@ -1,21 +1,18 @@
 
 page_ageUI <- function(...) {
   shiny::fluidRow(
-    column_nopad(
-      width = 4,
-      djpr_h1_box("Age"),
-      box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "ABS Labour force data disaggregated by age can be volatile, and most of this data",
-        " is not seasonally adjusted. DJPR smooths the data ",
-        "by using 12-month rolling averages. While this assists in removing noise",
-        " to focus on the underlying trends, it makes large month-to-month changes ",
-        "in underlying conditions less apparent."
-      )
+    djpr_h1_box("Age"),
+    box(
+      width = 12,
+      style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+      "ABS Labour force data disaggregated by age can be volatile, and most of this data",
+      " is not seasonally adjusted. DJPR smooths the data ",
+      "by using 12-month rolling averages. While this assists in removing noise",
+      " to focus on the underlying trends, it makes large month-to-month changes ",
+      "in underlying conditions less apparent."
     ),
     box(
-      width = 8,
+      width = 12,
       uiOutput("table_gr_youth_summary") %>%
         djpr_with_spinner()
     ),
