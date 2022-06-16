@@ -4,7 +4,7 @@
 #' @description This Rstudio addin will run the code to update data,
 #' clean the app-cache and then render the Monthly report
 #' @export
-update_data_and_knit <- function() {
+update_data <- function() {
   stopifnot(grepl("djprlabourdash", rstudioapi::getActiveProject()))
   stopifnot(addins_check_env())
 
