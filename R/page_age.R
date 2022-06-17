@@ -1,34 +1,43 @@
 
 page_ageUI <- function(...) {
-  shiny::fluidRow(
-    column_nopad(
-      width = 4,
-      djpr_h1_box("Age"),
+  shiny::fluidPage(
+
+    fluidRow(
+      column(
+        width = 4,
+        djpr_h1_box("Age") %>% fluidRow(),
+        box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          "ABS Labour force data disaggregated by age can be volatile, and most of this data",
+          " is not seasonally adjusted. DJPR smooths the data ",
+          "by using 12-month rolling averages. While this assists in removing noise",
+          " to focus on the underlying trends, it makes large month-to-month changes ",
+          "in underlying conditions less apparent."
+        )%>% fluidRow()
+      ),
       box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "ABS Labour force data disaggregated by age can be volatile, and most of this data",
-        " is not seasonally adjusted. DJPR smooths the data ",
-        "by using 12-month rolling averages. While this assists in removing noise",
-        " to focus on the underlying trends, it makes large month-to-month changes ",
-        "in underlying conditions less apparent."
+        width = 8,
+        uiOutput("table_gr_youth_summary") %>%
+          djpr_with_spinner()
       )
     ),
-    box(
-      width = 8,
-      uiOutput("table_gr_youth_summary") %>%
-        djpr_with_spinner()
-    ),
-    djpr_box_ui("gr_yth_emp_sincecovid_line", width = 6, height = "385px"),
-    djpr_box_ui(
-      id = "gr_yth_lfpartrate_vicaus_line",
-      width = 6,
-      height = "385px",
-      date_slider(
+
+    fluidRow(
+      djpr_box_ui("gr_yth_emp_sincecovid_line", width = 6, height = "385px"),
+      djpr_box_ui(
         id = "gr_yth_lfpartrate_vicaus_line",
-        table_no = "6202016"
+        width = 6,
+        height = "385px",
+        date_slider(
+          id = "gr_yth_lfpartrate_vicaus_line",
+          table_no = "6202016"
+        )
       )
     ),
+
+
+    # Focus box
     focus_box(
       title = h2("Labour force status of Victorian youth"),
       inputs = shiny::selectInput("youth_focus",
@@ -90,7 +99,9 @@ page_ageUI <- function(...) {
         ) %>%
           async_no_background()
       )
-    ),
+    ) %>% fluidRow(),
+
+
     djpr_h2_box("Detailed labour force status of Victorian youth"),
     djpr_box_ui("gr_youth_full_part_line",
       width = 12,

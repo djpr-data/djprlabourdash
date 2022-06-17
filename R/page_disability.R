@@ -1,28 +1,34 @@
 page_disabilityUI <- function(...) {
-  fluidRow(
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("People with disability"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page contains the number of people with disability assisted through the jobactive program. ",
-        "More detail by location of residence is available on this page."
+  fluidPage(
+
+    fluidRow(
+      column(
+        width = 4,
+        djprshiny::djpr_h1_box("People with disability") %>% fluidRow(),
+        shinydashboard::box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          "This page contains the number of people with disability assisted through the jobactive program. ",
+          "More detail by location of residence is available on this page."
+        ) %>% fluidRow()
+      ),
+      box(
+        width = 8,
+        uiOutput("table_jobactive_pwd") %>%
+          djpr_with_spinner()
       )
     ),
-    box(
-      width = 8,
-      uiOutput("table_jobactive_pwd") %>%
-        djpr_with_spinner()
-    ),
-    djpr_box_ui(
-      width = 6,
-      id = "gr_pwd_jobact_sincecovid_line",
-      date_slider("gr_pwd_jobact_sincecovid_line", table_no = "jobactive")
-    ),
-    djpr_box_ui(
+
+    fluidRow(
+      djpr_box_ui(
+        width = 6,
+        id = "gr_pwd_jobact_sincecovid_line",
+        date_slider("gr_pwd_jobact_sincecovid_line", table_no = "jobactive")
+      ),
+      djpr_box_ui(
         width = 6,
         id = "gr_pwd_jobactive_bar"
+      )
     ),
 
     height_sync("gr_pwd_jobact_sincecovid_line", "gr_pwd_jobactive_bar"),
@@ -52,7 +58,7 @@ page_disabilityUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 
