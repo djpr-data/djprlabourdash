@@ -218,7 +218,7 @@ viz_gr_abor_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "Aboriginal person jobactive caseload by employment region, ",
+        "Aboriginal people jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()

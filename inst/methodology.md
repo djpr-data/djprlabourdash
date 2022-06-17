@@ -3,7 +3,7 @@
 
 ## Introduction
 
-The **DJPR Jobs Dashboard** includes detailed labour market activity data compiled and released by the *Australian Bureau of Statistics (ABS)* and the *National Skills Commission*. Attributions under respective charts will specify the time period of the data (i.e. whether it is produced on a monthly, or quarterly ), as well as whether it is original (raw) data, seasonally adjusted, 3-month or 12-month rolling average.
+The DJPR Jobs Dashboard includes detailed labour market activity data compiled and released by the Australian Bureau of Statistics (ABS) and the National Skills Commission. Attributions under respective charts will specify the time period of the data (i.e. whether it is produced on a monthly, or quarterly), as well as whether it is original (raw) data, seasonally adjusted, 3-month or 12-month rolling average.
 
 ## The Monthly Labour Force Survey (LFS)
 
@@ -34,7 +34,7 @@ Data from the monthly Labour Force Survey are released in two stages:
 
 ## Jobactive Data
 
-The **National Skills Commission** produces quarterly jobactive caseload data to the All Regions and by Employment Region. The data and the content is available on the [Labour Market Insight website](https://labourmarketinsights.gov.au/) for the following cohorts:
+The National Skills Commission produces quarterly jobactive caseload data to the All Regions and by Employment Region. The data and the content is available on the [Labour Market Insight website](https://labourmarketinsights.gov.au/) for the following cohorts:
 
 - Employed (aged 15+);
 - Unemployment rate (aged 15+);

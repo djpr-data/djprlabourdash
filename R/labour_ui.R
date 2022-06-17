@@ -15,9 +15,9 @@ labour_ui <- function(...) {
           startExpanded = TRUE,
           shinydashboard::menuSubItem("Sex", tabName = "sex"),
           shinydashboard::menuSubItem("Age", tabName = "age"),
-          shinydashboard::menuSubItem("Long-term Unemployed", tabName = "ltunemp"),
+          shinydashboard::menuSubItem("Long-term unemployed", tabName = "ltunemp"),
           shinydashboard::menuSubItem("Aboriginal Victorians", tabName = "aboriginal"),
-          shinydashboard::menuSubItem("People with Disabilities", tabName = "disability"),
+          shinydashboard::menuSubItem("People with disability", tabName = "disability"),
           shinydashboard::menuSubItem("Refugees", tabName = "migration")
         ),
         shinydashboard::menuItem(
@@ -43,8 +43,10 @@ labour_ui <- function(...) {
       shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
       shiny::tags$script("document.title='Vic Jobs Dashboard'"),
       shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
+      shiny::tags$script("$('body').addClass('fixed');"),
+      shiny::tags$script("$('.content-wrapper').css('padding-top','100px')"),
+      shiny::tags$style(".tab-content{padding:0;}"),
       shiny::tags$style(".wrapper {background-color: white !important;}"),
-      shiny::tags$style("a:focus-visible {background:yellow !important; color:#000000 !important;}"),
       shinydashboard::tabItems(
         shinydashboard::tabItem("overview", page_overviewUI()),
         shinydashboard::tabItem("indicators", page_indicatorsUI()),

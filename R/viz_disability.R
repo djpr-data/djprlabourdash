@@ -80,7 +80,7 @@ viz_gr_pwd_jobact_sincecovid_line <- function(data = filter_dash_data(c(
     round2(1)
 
   title <- paste0(
-    "The jobactive caseload for Victorian people with disabilities is ",
+    "The jobactive caseload for Victorian people with disability is ",
     dplyr::case_when(
       latest_PWD > 0 ~ paste0(abs(latest_PWD), " per cent higher than "),
       latest_PWD == 0 ~ "the same as ",
@@ -156,7 +156,7 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
     )
 
   title <- paste0(
-    " Across Victoria, jobactive caseload for people with disabilities ranged from ",
+    " Across Victoria, jobactive caseload for people with disability ranged from ",
     scales::comma(round2(high_low$min_caseload, 1),
       accuracy = 1
     ),
@@ -213,7 +213,7 @@ viz_gr_pwd_jobactive_bar <- function(data = filter_dash_data(c(
     labs(
       title = title,
       subtitle = paste0(
-        "People with disabilities jobactive caseload by employment region, ",
+        "People with disability jobactive caseload by employment region, ",
         format(max(data$date), "%B %Y")
       ),
       caption = caption_jobactive()
