@@ -1,7 +1,7 @@
 labour_ui <- function(...) {
   shinydashboard::dashboardPage(
     header = shinydashboard::dashboardHeader(
-      title = shiny::HTML("DJPR Victorian<br/>Jobs Update"),
+      title = shiny::HTML("Victorian Labour<br/>Force Update"),
       titleWidth = "40%"
     ),
     sidebar = shinydashboard::dashboardSidebar(
@@ -41,7 +41,7 @@ labour_ui <- function(...) {
       djprshiny::djpr_dash_theme(),
       shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
       shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
-      shiny::tags$script("document.title='Vic Jobs Dashboard'"),
+      shiny::tags$script("document.title='Vic Labour Force Update'"),
       shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
       shiny::tags$script("$('body').addClass('fixed');"),
       shiny::tags$script("$('.content-wrapper').css('padding-top','100px')"),

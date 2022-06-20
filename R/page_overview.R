@@ -5,7 +5,7 @@ page_overviewUI <- function(...) {
       column(
         width = 4,
         fluidRow(
-          djprshiny::djpr_h1_box("DJPR jobs dashboard")
+          djprshiny::djpr_h1_box("DJPR labour dashboard")
         ),
         fluidRow(
           shinydashboard::box(
