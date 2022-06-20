@@ -1,15 +1,14 @@
 page_vicregionsUI <- function(...) {
-  fluidRow(
-
+  fluidPage(
 
     # Unemployment by region -----
-    djprshiny::djpr_h1_box("Victorian regions"),
+    djprshiny::djpr_h1_box("Victorian regions") %>% fluidRow(),
     shinydashboard::box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "Victoria contains a range of diverse regions, both within Greater Melbourne and outside the metropolitan area. Below we explore the regional differences in historical and current labour force status within Victoria. "
-    ),
-    djpr_h2_box("Labour force status by region"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Labour force status by region") %>% fluidRow(),
     focus_box(
       title = tagList(
         h3(textOutput("title_reg_unemp_emppop_partrate_vic"), style = "color:#FFFFFF"),
@@ -39,7 +38,7 @@ page_vicregionsUI <- function(...) {
           plotOutput("reg_unemp_emppop_partrate_bar") %>%
             djpr_with_spinner()
         )
-      ),
+      ) %>% fluidRow(),
       div(
         class = "djpr-caption",
         "Based on Australian Bureau of Statistics data: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 3 month rolling average."
@@ -73,8 +72,8 @@ page_vicregionsUI <- function(...) {
           )
         )
       )
-    ),
-    djpr_h3_box("Unemployment rate variations across Victoria"),
+    ) %>% fluidRow(),
+    djpr_h3_box("Unemployment rate variations across Victoria") %>% fluidRow(),
     box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
@@ -85,7 +84,7 @@ page_vicregionsUI <- function(...) {
       "difference between minimum and maximum) of unemployment rates over time",
       "in different regions in Victoria. The breakdown of regions is by ",
       shiny::a("SA4.", href = "https://www.abs.gov.au/statistics/standards/australian-statistical-geography-standard-asgs-edition-3/jul2021-jun2026/main-structure-and-greater-capital-city-statistical-areas/statistical-area-level-4")
-    ),
+    ) %>% fluidRow(),
     djpr_box_ui(
       id = "reg_unemprate_dispersion",
       width = 12,
@@ -112,11 +111,11 @@ page_vicregionsUI <- function(...) {
           )
         )
       )
-    ),
+    ) %>% fluidRow(),
 
 
     # Regional Vic vs Greater Melb -----
-    djpr_h2_box("Regional Victoria and Greater Melbourne"),
+    djpr_h2_box("Regional Victoria and Greater Melbourne") %>% fluidRow(),
     djpr_box_ui(
       id = "reg_melvic_line",
       width = 12,
@@ -125,13 +124,13 @@ page_vicregionsUI <- function(...) {
         table_no = "6291002",
         value = c(as.Date("2014-11-01"), data_dates$`6291002`$max)
       )
-    ),
-    djpr_box_ui("reg_emp_regions_sincecovid_line", width = 12),
+    ) %>% fluidRow(),
+    djpr_box_ui("reg_emp_regions_sincecovid_line", width = 12) %>% fluidRow(),
 
 
 
     # Victorian regions focus box ------
-    djpr_h2_box("Regional Victoria"),
+    djpr_h2_box("Regional Victoria") %>% fluidRow(),
     # Box for regional focus
     focus_box(
       title = h3("Compare regions of Victoria"),
@@ -175,7 +174,9 @@ page_vicregionsUI <- function(...) {
             djpr_with_spinner(proxy.height = "30px"),
           plotOutput("reg_sa4unemp_cf_broadregion", height = 300) %>%
             djpr_with_spinner()
-        ),
+        )
+      ),
+      fluidRow(
         column(
           12,
           uiOutput("table_region_focus") %>%
@@ -183,7 +184,7 @@ page_vicregionsUI <- function(...) {
         )
       )
     ),
-    djpr_h2_box("Victorian jobactive caseload by employment region"),
+    djpr_h2_box("Victorian jobactive caseload by employment region") %>% fluidRow(),
     focus_box(
       title = h3(uiOutput("title_reg_jobactive_vic")),
       inputs = NULL,
@@ -200,8 +201,13 @@ page_vicregionsUI <- function(...) {
             djpr_with_spinner()
         )
       ),
-      uiOutput("table_jobactive_regions") %>%
-        djpr_with_spinner()
+      fluidRow(
+        column(
+          12,
+          uiOutput("table_jobactive_regions") %>%
+            djpr_with_spinner()
+        )
+      )
     ),
     box(
       width = 12,
@@ -227,7 +233,7 @@ page_vicregionsUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 

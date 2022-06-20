@@ -62,7 +62,7 @@ state_checkbox <- function(
 box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL) {
   stopifnot(width %in% 1:12)
 
-  shiny::column(
+  column(
     width,
     # class = paste0("col-sm-", width),
     shiny::div(
@@ -76,8 +76,30 @@ box <- function(..., width = 6, title = NULL, footer = NULL, height = NULL) {
 }
 
 
+# djpr_box_ui shim
+djpr_box_ui <- function(...){
+  ui      <- djprshiny::djpr_box_ui(...)
+  colsize <- ui %>%
+    shiny::tagGetAttribute("class") %>%
+    substr(., 8, nchar(.))
+
+  ui$attribs$class <- paste0("col-xl-", colsize)
+  return(ui)
+}
+
+
+
+
+
+# Column shim
+column <- function(width, ...){
+  colClass <- paste0("col-xl-", width)
+  shiny::div(class = colClass, ...)
+}
+
+
 column_nopad <- function(width = 6, ...) {
-  shiny::column(width = width, ...) %>%
+  column(width = width, ...) %>%
     shiny::tagAppendAttributes(style = "padding:0px;")
 }
 

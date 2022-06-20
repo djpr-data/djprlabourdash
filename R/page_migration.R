@@ -1,22 +1,28 @@
 page_migrationUI <- function(...) {
-  fluidRow(
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Refugees"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page contains the number of refugees assisted through the jobactive program. ",
-        "A comparison of refugees and non-refugees assisted through the program is also available on this page."
+  fluidPage(
+
+    fluidRow(
+      column(
+        width = 4,
+        djprshiny::djpr_h1_box("Refugees") %>% fluidRow(),
+        shinydashboard::box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          "This page contains the number of refugees assisted through the jobactive program. ",
+          "A comparison of refugees and non-refugees assisted through the program is also available on this page."
+        ) %>% fluidRow()
+      ),
+      box(
+        width = 8,
+        uiOutput("table_jobactive_refugees") %>%
+          djpr_with_spinner()
       )
     ),
-    box(
-      width = 8,
-      uiOutput("table_jobactive_refugees") %>%
-        djpr_with_spinner()
+
+    fluidRow(
+      djpr_box_ui("gr_refugee_jobact_sincecovid_line", width = 6),
+      djpr_box_ui("gr_refugee_jobactive_bar", width = 6)
     ),
-    djpr_box_ui("gr_refugee_jobact_sincecovid_line", width = 6),
-    djpr_box_ui("gr_refugee_jobactive_bar", width = 6),
 
     height_sync(
       "gr_refugee_jobact_sincecovid_line",
@@ -47,7 +53,7 @@ page_migrationUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 

@@ -1,26 +1,28 @@
 page_indicatorsUI <- function(...) {
-  fluidRow(
+  fluidPage(
 
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Indicators"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page includes headline estimates of employment, unemployment, underemployment, participation, and hours worked for Victoria. ",
-        "States comparison for key labour force indicators is also provided."
+    fluidRow(
+      # No padding column with width = 4
+      column(
+        width = 4,
+        djprshiny::djpr_h1_box("Indicators") %>% fluidRow(),
+        shinydashboard::box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          "This page includes headline estimates of employment, unemployment, underemployment, participation, and hours worked for Victoria. ",
+          "States comparison for key labour force indicators is also provided."
+        ) %>% fluidRow()
+      ),
+
+      # htmlOutput("ind_empgrowth_sincecovid_text"),
+
+      box(
+        width = 8,
+        shiny::uiOutput("ind_emp_table") %>%
+          djpr_with_spinner(hide.ui = TRUE)
       )
     ),
-
-    # htmlOutput("ind_empgrowth_sincecovid_text"),
-
-    box(
-      width = 8,
-      shiny::uiOutput("ind_emp_table") %>%
-        djpr_with_spinner(hide.ui = TRUE)
-    ),
-    djpr_h2_box("Employment"),
+    djpr_h2_box("Employment") %>% fluidRow(),
     djpr_box_ui(
       "ind_emppop_state_line",
       width = 12,
@@ -40,7 +42,7 @@ page_indicatorsUI <- function(...) {
           )
         )
       )
-    ),
+    ) %>% fluidRow(),
     djpr_box_ui(
       "ind_empgro_line",
       width = 12,
@@ -54,19 +56,21 @@ page_indicatorsUI <- function(...) {
           )
         )
       )
+    ) %>% fluidRow(),
+
+    fluidRow(
+      djpr_box_ui("ind_gen_full_part_line", width = 6),
+      djpr_box_ui("ind_emp_sincecovid_line", width = 6)
     ),
 
-
-    djpr_box_ui("ind_gen_full_part_line", width = 6),
-    djpr_box_ui("ind_emp_sincecovid_line", width = 6),
     height_sync("ind_gen_full_part_line", "ind_emp_sincecovid_line"),
 
-    djpr_h2_box("Unemployment & underemployment"),
+    djpr_h2_box("Unemployment & underemployment") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("ind_unemp_summary") %>%
         djpr_with_spinner(hide.ui = TRUE)
-    ),
+    ) %>% fluidRow(),
 
     djpr_box_ui(
       "ind_unemprate_line",
@@ -76,8 +80,8 @@ page_indicatorsUI <- function(...) {
         table_no = "6202012",
         value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
       )
-    ),
-    djpr_h2_box("Effective unemployment rate"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Effective unemployment rate") %>%  fluidRow(),
     shinydashboard::box(
       width = 12,
       "People who are employed but have not been able to work any hours do not count ",
@@ -86,16 +90,16 @@ page_indicatorsUI <- function(...) {
       "hours due to economic conditions or 'other reasons', divided by the labour force. ",
       "The unemployment rate is seasonally adjusted, while the effective unemployment rate includes ",
       "a three month average of persons working zero hours for economic or unstated reasons."
-    ),
-    djpr_box_ui("ind_effective_unemprate_line", width = 12),
-    djpr_h2_box("Unemployment rates by state"),
+    ) %>% fluidRow(),
+    djpr_box_ui("ind_effective_unemprate_line", width = 12) %>% fluidRow(),
+    djpr_h2_box("Unemployment rates by state") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_ind_unemp_state") %>%
         djpr_with_spinner()
-    ),
+    ) %>% fluidRow(),
 
-    djpr_box_ui("ind_unemp_states_dot", width = 12),
+    djpr_box_ui("ind_unemp_states_dot", width = 12) %>% fluidRow(),
     djpr_box_ui(
       "ind_underut_area",
       width = 12,
@@ -104,9 +108,9 @@ page_indicatorsUI <- function(...) {
         table_no = "6202023",
         value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
       )
-    ),
+    ) %>% fluidRow(),
 
-    djpr_h2_box("Hours worked"),
+    djpr_h2_box("Hours worked") %>% fluidRow(),
     djpr_box_ui(
       "ind_hoursworked_line",
       width = 12,
@@ -115,19 +119,23 @@ page_indicatorsUI <- function(...) {
         table_no = "6202019",
         value = c(as.Date("2000-01-01"), data_dates$`6202019`$max)
       )
+    ) %>% fluidRow(),
+
+    djpr_h2_box("Participation") %>% fluidRow(),
+
+    fluidRow(
+      djpr_box_ui(
+        id = "ind_partrate_line",
+        width = 6,
+        date_slider(
+          id = "ind_partrate_line",
+          table_no = "6202012",
+          value = c(as.Date("2000-01-01"), data_dates$`6202012`$max)
+        )
+      ),
+      djpr_box_ui("ind_partrate_bar", width = 6)
     ),
 
-    djpr_h2_box("Participation"),
-    djpr_box_ui(
-      id = "ind_partrate_line",
-      width = 6,
-      date_slider(
-        id = "ind_partrate_line",
-        table_no = "6202012",
-        value = c(as.Date("2000-01-01"), data_dates$`6202012`$max)
-      )
-    ),
-    djpr_box_ui("ind_partrate_bar", width = 6),
     djpr_box_ui(
       id = "ind_partrate_un_line",
       width = 12,
@@ -136,13 +144,13 @@ page_indicatorsUI <- function(...) {
         table_no = "6202012",
         value = c(Sys.Date() - (10 * 365), data_dates$`6202012`$max)
       )
-    ),
+    ) %>% fluidRow(),
     shinydashboard::box(
       width = 12,
       "A fall in the unemployment rate can mean very different things depending on whether the participation rate is rising - more people have joined the labour force - or falling. ",
       "The chart below shows how the unemployment and participation rates changed over the last month or year, and how that compares to past changes in the Victorian labour market. ",
       "Choose whether you would like to examine monthly, or yearly, changes in the unemployment and participation rates."
-    ),
+    ) %>% fluidRow(),
     djpr_box_ui(
       "ind_partrate_un_scatter",
       width = 12,
@@ -155,7 +163,7 @@ page_indicatorsUI <- function(...) {
           "Yearly" = "year"
         )
       )
-    ),
+    ) %>% fluidRow(),
     box(
       width = 12,
       style = "padding:10px;",
@@ -180,7 +188,7 @@ page_indicatorsUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 

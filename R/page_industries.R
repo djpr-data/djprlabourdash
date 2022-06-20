@@ -1,30 +1,32 @@
 page_industriesUI <- function(...) {
-  fluidRow(
+  fluidPage(
 
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Victoria's industries"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        p(
-          "On this page, we explore the employment trends of Victorian industries. ",
-          "The ",
-          shiny::a("ABS", href = "https://www.abs.gov.au/ausstats/abs@.nsf/mf/1292.0"),
-          " classifies businesses into one of 19 broad industry divisions, each of which is further ",
-          " divided into sub-divisions, groups, and classes.",
-          "Note that industries data is not seasonally adjusted and is released quarterly."
-        )
+    fluidRow(
+      # No padding column with width = 4
+      column(
+        width = 4,
+        djprshiny::djpr_h1_box("Victoria's industries") %>% fluidRow(),
+        shinydashboard::box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          p(
+            "On this page, we explore the employment trends of Victorian industries. ",
+            "The ",
+            shiny::a("ABS", href = "https://www.abs.gov.au/ausstats/abs@.nsf/mf/1292.0"),
+            " classifies businesses into one of 19 broad industry divisions, each of which is further ",
+            " divided into sub-divisions, groups, and classes.",
+            "Note that industries data is not seasonally adjusted and is released quarterly."
+          )
+        ) %>% fluidRow()
+      ),
+      box(
+        width = 8,
+        title = h3("Number of people employed by industry"),
+        uiOutput("table_industries_summary") %>%
+          djpr_with_spinner()
       )
     ),
-    box(
-      width = 8,
-      title = h3("Number of people employed by industry"),
-      uiOutput("table_industries_summary") %>%
-        djpr_with_spinner()
-    ),
-    djpr_box_ui("industries_empchange_sincecovid_bar", width = 12),
+    djpr_box_ui("industries_empchange_sincecovid_bar", width = 12) %>% fluidRow(),
     focus_box(
       title = h3("Industry employment trends"),
       inputs = selectInput(
@@ -71,7 +73,7 @@ page_industriesUI <- function(...) {
             djpr_with_spinner()
         )
       )
-    ),
+    ) %>% fluidRow(),
     box(
       width = 12,
       style = "padding:10px;",
@@ -96,7 +98,7 @@ page_industriesUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 
