@@ -1,20 +1,20 @@
 
 page_ausregionsUI <- function(...) {
-  fluidRow(
+  fluidPage(
 
     # Unemployment by Australian Regions -------------
-    djprshiny::djpr_h1_box("Australian regions"),
+    djprshiny::djpr_h1_box("Australian regions") %>% fluidRow(),
     shinydashboard::box(
       width = 12,
       style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
       "This section explores labour force indicators in regional and metropolitan areas of Australia."
-    ),
-    djpr_h2_box("Unemployment rate in Australian regional areas"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Unemployment rate in Australian regional areas") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_reg_nonmetro_states_unemprate") %>%
         djpr_with_spinner()
-    ),
+    ) %>% fluidRow(),
     focus_box(
       title = h3("Compare regional areas of Australian states"),
       inputs = selectInput(
@@ -34,7 +34,7 @@ page_ausregionsUI <- function(...) {
         djpr_box_ui("reg_regionstates_bar", height = "600px") %>%
           async_no_background()
       )
-    ),
+    )  %>% fluidRow(),
     djpr_box_ui(
       "reg_emp_regionstates_sincecovid_line",
       width = 12,
@@ -51,14 +51,14 @@ page_ausregionsUI <- function(...) {
         ),
         selected = c("Reg. Vic", "Reg. NSW")
       )
-    ),
-    djpr_h2_box("Australian metropolitan areas"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Australian metropolitan areas") %>% fluidRow(),
     box(
       width = 12,
       title = "Unemployment rates in Australian major cities",
       uiOutput("table_reg_metro_states_unemprate") %>%
         djpr_with_spinner()
-    ),
+    ) %>% fluidRow(),
     box(
       width = 12,
       style = "padding:10px;",
@@ -83,7 +83,7 @@ page_ausregionsUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 

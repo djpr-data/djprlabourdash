@@ -102,23 +102,23 @@ page_ageUI <- function(...) {
     ) %>% fluidRow(),
 
 
-    djpr_h2_box("Detailed labour force status of Victorian youth"),
+    djpr_h2_box("Detailed labour force status of Victorian youth") %>% fluidRow(),
     djpr_box_ui("gr_youth_full_part_line",
       width = 12,
       date_slider("gr_youth_full_part_line", table_no = "6202016")
-    ),
+    ) %>% fluidRow(),
     djpr_box_ui("gr_youth_eduemp_waterfall",
       width = 12,
-    ),
+    ) %>% fluidRow(),
     djpr_box_ui("gr_yth_mostvuln_line",
       width = 12,
       date_slider("gr_yth_mostvuln_line", table_no = "6202016")
-    ),
-    djpr_h2_box("Youth unemployment rate by region"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Youth unemployment rate by region") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_gr_youth_unemp_region") %>% djpr_with_spinner()
-    ),
+    ) %>% fluidRow(),
     focus_box(
       h2(textOutput("title_youth_unemp_emppop_partrate_vic")),
       selectInput("youth_region_focus",
@@ -144,20 +144,23 @@ page_ageUI <- function(...) {
         class = "djpr-caption",
         "Based on Australian Bureau of Statistics data: ABS Labour Force, Detailed (monthly). Note: data is not seasonally adjusted; smoothed using a 12 month rolling average."
       )
-    ),
-    djpr_h2_box("Jobactive caseload for 15-24 year olds (youth)"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Jobactive caseload for 15-24 year olds (youth)") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_jobactive_youth") %>% djpr_with_spinner()
-    ),
-    djpr_box_ui("gr_youth_jobactive_bar", width = 12),
-    djpr_h2_box("Jobactive caseload for 50+ (mature age)"),
+    ) %>% fluidRow(),
+    djpr_box_ui("gr_youth_jobactive_bar", width = 12) %>% fluidRow(),
+    djpr_h2_box("Jobactive caseload for 50+ (mature age)") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_jobactive_mature_age") %>% djpr_with_spinner()
+    ) %>% fluidRow(),
+
+    fluidRow(
+      djpr_box_ui("gr_age_jobactive_since_covid_line"),
+      djpr_box_ui("gr_mature_age_jobactive_bar")
     ),
-    djpr_box_ui("gr_age_jobactive_since_covid_line"),
-    djpr_box_ui("gr_mature_age_jobactive_bar"),
 
     height_sync(
       "gr_age_jobactive_since_covid_line",
@@ -188,7 +191,7 @@ page_ageUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 

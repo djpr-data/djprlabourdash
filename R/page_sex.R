@@ -1,24 +1,28 @@
 page_sexUI <- function(...) {
-  fluidRow(
+  fluidPage(
 
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Sex"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page provides key labour force indicators by sex. ",
-        "It also contains information on females assisted through the jobactive program."
+    fluidRow(
+
+      # No padding column with width = 4
+      column_nopad(
+        width = 4,
+        djprshiny::djpr_h1_box("Sex") %>% fluidRow(),
+        shinydashboard::box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          "This page provides key labour force indicators by sex. ",
+          "It also contains information on females assisted through the jobactive program."
+        ) %>% fluidRow()
+      ),
+
+      box(
+        width = 8,
+        uiOutput("table_gr_sex") %>%
+          djpr_with_spinner()
       )
     ),
-    box(
-      width = 8,
-      uiOutput("table_gr_sex") %>%
-        djpr_with_spinner()
-    ),
-    djpr_h2_box("Labour force status by sex"),
-    djpr_box_ui(width = 12, "gr_gen_emp_bar"),
+    djpr_h2_box("Labour force status by sex")  %>% fluidRow(),
+    djpr_box_ui(width = 12, "gr_gen_emp_bar") %>% fluidRow(),
     djpr_box_ui(
       width = 12,
       id = "gr_full_part_line",
@@ -27,8 +31,8 @@ page_sexUI <- function(...) {
         table_no = "6202012",
         value = c(Sys.Date() - (365.25 * 5), data_dates$`6202012`$max)
       )
-    ),
-    djpr_h2_box("Unemployment by sex"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Unemployment by sex") %>% fluidRow(),
     djpr_box_ui(
       width = 12,
       id = "gr_gen_unemp_line",
@@ -37,8 +41,8 @@ page_sexUI <- function(...) {
         table_no = "6202012",
         value = c(Sys.Date() - (365.25 * 10), data_dates$`6202012`$max)
       )
-    ),
-    djpr_h2_box("Employment to population ratio by sex"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Employment to population ratio by sex") %>% fluidRow(),
     djpr_box_ui(
       width = 12,
       "gr_gen_emppopratio_line",
@@ -47,25 +51,25 @@ page_sexUI <- function(...) {
         table_no = "6202012",
         value = c(Sys.Date() - (365.25 * 10), data_dates$`6202012`$max)
       )
-    ),
-    djpr_h2_box("Participation rate by sex"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Participation rate by sex") %>% fluidRow(),
     djpr_box_ui(
       width = 12,
       "gr_gen_partrate_line",
       date_slider("gr_gen_partrate_line", table_no = "6202012")
-    ),
-    djpr_h2_box("Jobactive caseload by sex"),
+    ) %>% fluidRow(),
+    djpr_h2_box("Jobactive caseload by sex") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_jobactive_female") %>%
         djpr_with_spinner()
-    ),
+    ) %>% fluidRow(),
     djpr_box_ui(
       width = 12,
       id = "gr_female_jobact_sincecovid_line",
       date_slider("gr_female_jobact_sincecovid_line", table_no = "jobactive")
-    ),
-    djpr_box_ui(width = 12, "gr_female_jobactive_bar"),
+    ) %>% fluidRow(),
+    djpr_box_ui(width = 12, "gr_female_jobactive_bar") %>% fluidRow(),
     box(
       width = 12,
       style = "padding:10px;",
@@ -90,7 +94,7 @@ page_sexUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 
