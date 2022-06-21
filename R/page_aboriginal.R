@@ -36,8 +36,10 @@ page_aboriginalUI <- function(...) {
         "We recognise the diversity of Aboriginal people living in Victoria. We use ",
         "the term ‘Aboriginal Victorians’ to include Victorian Traditional Owners, ",
         "clans, family groups, and all other Aboriginal and Torres Strait Islander ",
-        "descendants living in Victoria."
-        ),
+        "descendants living in Victoria. The ABS and the National Skills Authority ",
+        "(jobactive caseload data) define Aboriginal and Torres Strait Islander ",
+        "Peoples as Indigenous people."
+        )
     ),
 
     box(
