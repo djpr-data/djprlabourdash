@@ -1,23 +1,28 @@
 page_overviewUI <- function(...) {
-  shiny::tagList(
+  shiny::fluidPage(
 
-    # No padding column with width = 4
-    column_nopad(
-      width = 4,
+    fluidRow(
+      column(
+        width = 4,
+        fluidRow(
+          djprshiny::djpr_h1_box("DJPR labour dashboard")
+        ),
+        fluidRow(
+          shinydashboard::box(
+            width = 12,
+            style = "padding: 15px;font-size: 20px;background: #C0E4B5;",
+            "The DJPR labour dashboard explores information on Victorian employment and job seekers. Use the sidebar to navigate through information on various demographics such as regions, age, sex and industry."
+          )
+        )
+      ),
 
-      djprshiny::djpr_h1_box("DJPR jobs dashboard"),
-
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 20px;background: #C0E4B5;",
-        "The DJPR Jobs Dashboard explores information on Victorian employment and job seekers. Use the sidebar to navigate through information on various demographics such as regions, age, sex and industry."
+      box(
+        width = 8,
+        shiny::uiOutput("main_table", height = "800px") %>%
+          djpr_with_spinner(proxy.height = "800px")
       )
     ),
-    box(
-      width = 8,
-      shiny::uiOutput("main_table", height = "800px") %>%
-        djpr_with_spinner(proxy.height = "800px")
-    ),
+
     box(
       width = 12,
       style = "padding:10px;",
@@ -42,7 +47,8 @@ page_overviewUI <- function(...) {
           "Copyright | Disclaimer"
           )
       )
-    )
+    ) %>%
+      fluidRow()
   )
 }
 

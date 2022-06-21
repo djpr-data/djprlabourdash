@@ -1,31 +1,38 @@
 page_aboriginalUI <- function(...) {
-  shiny::fluidRow(
-    column_nopad(
-      width = 4,
-      djprshiny::djpr_h1_box("Aboriginal Victorians"),
-      shinydashboard::box(
-        width = 12,
-        style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
-        "This page contains the number of Aboriginal people assisted through the jobactive program. ",
-        "The jobactive program is a Commonwealth program designed to provide services to the majority of job seekers."
+  shiny::fluidPage(
+
+    # header row & table
+    fluidRow(
+
+      column(
+        width = 4,
+        djprshiny::djpr_h1_box("Aboriginal Victorians") %>% fluidRow(),
+        shinydashboard::box(
+          width = 12,
+          style = "padding: 15px;font-size: 15px;background: #C0E4B5;",
+          "This page contains the number of Aboriginal people assisted through the jobactive program. ",
+          "The jobactive program is a Commonwealth program designed to provide services to the majority of job seekers."
+        ) %>% fluidRow()
+      ),
+
+      box(
+        width = 8,
+        uiOutput("table_jobactive_aboriginal") %>%
+          djpr_with_spinner()
       )
     ),
-    box(
-      width = 8,
-      uiOutput("table_jobactive_aboriginal") %>%
-        djpr_with_spinner()
+
+
+    fluidRow(
+      djpr_box_ui("gr_abor_jobactive_sincecovid_line", width = 6),
+      djpr_box_ui("gr_abor_jobactive_bar", width = 6)
     ),
-    djpr_box_ui("gr_abor_jobactive_sincecovid_line", width = 6),
-    djpr_box_ui("gr_abor_jobactive_bar", width = 6),
     height_sync("gr_abor_jobactive_sincecovid_line", "gr_abor_jobactive_bar"),
 
     box(
       width = 12,
       style = "padding:10px;",
       HTML(
-        # "This dashboard is produced by the <b>Strategy and Priority ",
-        # "Projects - Data + Analytics</b> team at the Victorian Department ",
-        # "of Jobs, Precincts and Regions.",
         "The latest data in this ",
         "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"), '.',
         "We are committed to making our websites accessible to all users.",
@@ -43,7 +50,7 @@ page_aboriginalUI <- function(...) {
           "Copyright | Disclaimer"
         )
       )
-    )
+    ) %>% fluidRow()
   )
 }
 

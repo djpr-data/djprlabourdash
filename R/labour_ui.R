@@ -1,9 +1,7 @@
 labour_ui <- function(...) {
   shinydashboard::dashboardPage(
-    header = shinydashboard::dashboardHeader(
-      title = shiny::HTML("DJPR Victorian<br/>Jobs Update"),
-      titleWidth = "40%"
-    ),
+    title = "Victorian Labour Force Update",
+    header = shinydashboard::dashboardHeader(),
     sidebar = shinydashboard::dashboardSidebar(
       shinydashboard::sidebarMenu(
         id = "tabs",
@@ -38,15 +36,17 @@ labour_ui <- function(...) {
       width = "250px"
     ),
     body = shinydashboard::dashboardBody(
-      djprshiny::djpr_dash_theme(),
-      shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
-      shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
-      shiny::tags$script("document.title='Vic Jobs Dashboard'"),
-      shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
-      shiny::tags$script("$('body').addClass('fixed');"),
-      shiny::tags$script("$('.content-wrapper').css('padding-top','100px')"),
-      shiny::tags$style(".tab-content{padding:0;}"),
-      shiny::tags$style(".wrapper {background-color: white !important;}"),
+      shiny::tags$head(
+        shiny::tags$link(rel = "stylesheet", type = "text/css", href = "djprshiny/dashboard.css"),
+        shiny::tags$link(rel = "stylesheet", type = "text/css", href = "djprshiny/bs5-card2.css"),
+        shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
+        shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
+        shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
+        shiny::tags$script("$(document).ready(function(){$('body').addClass('fixed');});"),
+        shiny::tags$style(
+          ".skin-blue .main-header .navbar {background: transparent; height: 50px;} .skin-blue .main-header .logo {display: none;} .skin-blue .main-header .navbar .sidebar-toggle {height: auto;} #sidebarCollapsed {padding-top: 50px;} .content{ margin-top: -50px}"
+          )
+      ),
       shinydashboard::tabItems(
         shinydashboard::tabItem("overview", page_overviewUI()),
         shinydashboard::tabItem("indicators", page_indicatorsUI()),
