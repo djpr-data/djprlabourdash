@@ -30,7 +30,7 @@ page_indicatorsUI <- function(...) {
           date_slider(
             id = "ind_emppop_state_line",
             table_no = "6202023",
-            value = c(Sys.Date() - years(5), data_dates$`6202023`$max)
+            value = c(Sys.Date() - lubridate::years(5), data_dates$`6202023`$max)
           )
         ),
         column(
@@ -50,7 +50,7 @@ page_indicatorsUI <- function(...) {
           date_slider(
             id = "ind_empgro_line",
             table_no = "6202012",
-            value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
+            value = c(Sys.Date() - lubridate::years(5), data_dates$`6202012`$max)
           )
         )
       )
@@ -74,7 +74,7 @@ page_indicatorsUI <- function(...) {
       date_slider(
         id = "ind_unemprate_line",
         table_no = "6202012",
-        value = c(Sys.Date() - years(5), data_dates$`6202012`$max)
+        value = c(Sys.Date() - lubridate::years(5), data_dates$`6202012`$max)
       )
     ),
     djpr_h2_box("Effective unemployment rate"),
@@ -102,7 +102,7 @@ page_indicatorsUI <- function(...) {
       date_slider(
         id = "ind_underut_area",
         table_no = "6202023",
-        value = c(Sys.Date() - years(10), data_dates$`6202023`$max)
+        value = c(Sys.Date() - lubridate::years(10), data_dates$`6202023`$max)
       )
     ),
 
