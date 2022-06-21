@@ -38,6 +38,7 @@ labour_ui <- function(...) {
     body = shinydashboard::dashboardBody(
       shiny::tags$head(
         shiny::tags$link(rel = "stylesheet", type = "text/css", href = "djprshiny/dashboard.css"),
+        shiny::tags$link(rel = "stylesheet", type = "text/css", href = "djprshiny/bs5-card2.css"),
         shiny::tags$script("$('html').attr(\"lang\", \"en\")"),
         shiny::tags$script("$('section.content').attr(\"role\", \"main\")"),
         shiny::tags$script("$(document).ready(function(){$('a.legalLink').click(function(){$('.sidebar-menu a[data-value=\"legal\"]').trigger('click');})});"),
