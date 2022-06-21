@@ -33,6 +33,17 @@ page_aboriginalUI <- function(...) {
       width = 12,
       style = "padding:10px;",
       HTML(
+        "We recognise the diversity of Aboriginal people living in Victoria. We use ",
+        "the term ‘Aboriginal Victorians’ to include Victorian Traditional Owners, ",
+        "clans, family groups, and all other Aboriginal and Torres Strait Islander ",
+        "descendants living in Victoria."
+        ),
+    ),
+
+    box(
+      width = 12,
+      style = "padding:10px;",
+      HTML(
         "The latest data in this ",
         "dashboard is for ", format(data_dates$`6202012`$max, "%B %Y"), '.',
         "We are committed to making our websites accessible to all users.",
