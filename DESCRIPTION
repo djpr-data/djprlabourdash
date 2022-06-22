@@ -68,27 +68,18 @@ Remotes:
     djpr-data/djprshiny,
     djpr-data/djprtheme,
     djpr-data/djprdashdata,
-    djpr-data/djpr-import-r,
     mattcowgill/strayr,
     rstudio/webshot2
 Depends: 
     R (>= 3.50)
 Suggests: 
     testthat (>= 3.0.0),
-    djprdata,
-    assertthat,
     pkgload,
     usethis,
     rmarkdown,
     officedown,
-    blastula,
     covr,
-    crayon,
-    miniUI,
-    emayili,
     webshot,
     fs,
-    htmltools,
-    keyring,
-    rstudioapi
+    htmltools
 Config/testthat/edition: 3

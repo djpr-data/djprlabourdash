@@ -4,7 +4,7 @@ page_sexUI <- function(...) {
     fluidRow(
 
       # No padding column with width = 4
-      column_nopad(
+      column(
         width = 4,
         djprshiny::djpr_h1_box("Sex") %>% fluidRow(),
         shinydashboard::box(

@@ -350,7 +350,7 @@ make_table <- function(data,
     ) %>%
     flextable::line_spacing(
       part = "footer",
-      space = 0.8
+      space = 1
     ) %>%
     flextable::font(
       fontname = font_family,
