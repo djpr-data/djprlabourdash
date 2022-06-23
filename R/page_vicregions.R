@@ -52,14 +52,6 @@ page_vicregionsUI <- function(...) {
         style = "padding-top:15px;",
         column(
           6,
-          date_slider(
-            id = "reg_unemp_emppop_partrate_multiline",
-            table_no = "6291016",
-            value = c(as.Date("2018-01-01"), data_dates$`6202016`$max)
-          )
-        ),
-        column(
-          6,
           selectInput(
             NS("reg_unemp_emppop_partrate_multiline", "indicator"),
             label = "Choose an indicator",
@@ -69,6 +61,14 @@ page_vicregionsUI <- function(...) {
               "Employment to population ratio" = "emp_pop"
             ),
             selected = "unemp_rate"
+          )
+        ),
+        column(
+          6,
+          date_slider(
+            id = "reg_unemp_emppop_partrate_multiline",
+            table_no = "6291016",
+            value = c(as.Date("2018-01-01"), data_dates$`6202016`$max)
           )
         )
       )
@@ -91,14 +91,6 @@ page_vicregionsUI <- function(...) {
       fluidRow(
         column(
           6,
-          date_slider(
-            id = "reg_unemprate_dispersion",
-            table_no = "6291016",
-            value = c(as.Date("2014-11-01"), data_dates$`6202016`$max)
-          )
-        ),
-        column(
-          6,
           selectInput(
             "reg_unemprate_dispersion-sa4_type_dispersion",
             label = "Choose regions",
@@ -109,7 +101,15 @@ page_vicregionsUI <- function(...) {
             ),
             selected = "all"
           )
+        ),
+      column(
+        6,
+        date_slider(
+          id = "reg_unemprate_dispersion",
+          table_no = "6291016",
+          value = c(as.Date("2014-11-01"), data_dates$`6202016`$max)
         )
+      )
       )
     ) %>% fluidRow(),
 
