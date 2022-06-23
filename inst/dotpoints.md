@@ -1,10 +1,10 @@
--   Victoria's unemployment rate  rose from 4 to 4.2 per cent, a rise of 0.1 percentage points;
--   The number of people employed in Victoria  rose from 3.486m to 3.497m, a rise of 11,600 workers;
-    -   Full-time employment  rose by 32,400 workers (1.4%);
-    -   Part-time employment  fell by 20,700 workers (-1.9%);
--   The number of unemployed people in Victoria  rose from 146,700 to 152,500, a rise of 5,800 people;
--   Victoria's participation rate  rose from 67 to 67.4 per cent, a rise of 0.3 percentage points;
--   The total number of hours worked in Victoria  fell by 1.5%;
--   Victoria's underemployment rate  rose from 5.8 to 6.1 per cent, a rise of 0.3 percentage points;
--   The youth unemployment rate in Victoria  fell from 10.6 to 10.5 per cent, a fall of 0.1 percentage points (smoothed using a 12-month rolling average);
--   The unsmoothed, original youth unemployment rate is 11 percent, compared to 9.6 percent a month earlier.
+-   Victoria's unemployment rate  fell from 4.2 to 3.7 per cent, a fall of 0.5 percentage points;
+-   The number of people employed in Victoria  fell from 3.53m to 3.516m, a fall of 14,100 workers;
+    -   Full-time employment  fell by 13,800 workers (-0.6%);
+    -   Part-time employment  fell by 300 workers (0%);
+-   The number of unemployed people in Victoria  fell from 154,500 to 135,800, a fall of 18,800 people;
+-   Victoria's participation rate  fell from 67.5 to 66.9 per cent, a fall of 0.6 percentage points;
+-   The total number of hours worked in Victoria  fell by 0.2%;
+-   Victoria's underemployment rate  fell from 6.1 to 5.8 per cent, a fall of 0.4 percentage points;
+-   The youth unemployment rate in Victoria  rose from 10.5 to 10.5 per cent, a rise of 0.1 percentage points (smoothed using a 12-month rolling average);
+-   The unsmoothed, original youth unemployment rate is 9.4 percent, compared to 10.9 percent a month earlier.
