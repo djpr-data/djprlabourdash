@@ -202,7 +202,7 @@ page_age <- function(input, output, session) {
   }) %>%
     bindCache(data_dates$`LM1`$max)
 
-  # Line chart indexed to COVID: employment by age
+  # Line chart indexed to COVID-19: employment by age
   djpr_box_server(
     id       = "gr_yth_emp_sincecovid_line",
     plot_fun = viz_gr_yth_emp_sincecovid_line
