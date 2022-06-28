@@ -244,7 +244,7 @@ make_table <- function(data,
     "Current figures",
     "Change in latest period",
     "Change in past year",
-    "Change since COVID"
+    "Change since COVID-19"
   )
 
   if ("SINCE NOV 2014" %in% cols_to_include) {
