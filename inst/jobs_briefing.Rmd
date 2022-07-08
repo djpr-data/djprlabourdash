@@ -17,10 +17,6 @@ output:
       right: 0.5
     tables:
       layout: autofit
-      caption:
-        style: 'Heading 3'
-        pre: 'Table '
-        sep: ': '
 editor_options: 
   chunk_output_type: console
 ---
