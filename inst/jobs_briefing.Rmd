@@ -38,6 +38,15 @@ knitr::opts_chunk$set(
   warning = FALSE,
   tab.topcaption = TRUE
   )
+
+table_split <- function(tbl){
+  title <- tbl$caption$value
+  tbl$caption <- NULL
+  
+  return(list(tbl = tbl,
+              title = title))
+}
+
 ```
 
 ```{r load-data}
@@ -237,19 +246,48 @@ writeLines(dot_points, 'dotpoints.md')
 \newpage
 
 ```{r, results='asis'}
-table_overview() 
+t1 <- table_overview() |>
+  table_split()
 ```
+
+### Table 1: `r t1$title`
+
+`r t1$tbl`
+
+
+
+
+
 
 \newpage
 
 ```{r}
-table_gr_sex()
+t2 <- table_gr_sex() |>
+  table_split()
+
 ```
+
+### Table 2: `r t2$title`
+
+`r t2$tbl`
+
 
 
 ```{r}
-table_ind_unemp_state()
+t3 <- table_ind_unemp_state() |>
+  table_split()
 ```
+
+<br>
+
+### Table 3: `r t3$title`
+
+`r t3$tbl`
+
+
+
+
+
 
 \newpage
 
@@ -258,82 +296,192 @@ table_ind_unemp_state()
 Youth labour market data provides insights into headline figures. Youth labour force data is volatile therefore DJPR smooths the data by using 12-month averages. While this assists in observing underlying trends, it makes large month-to-month changes in underlying conditions less apparent.
 
 ```{r}
-table_gr_youth_summary()
+t4 <- table_gr_youth_summary() |>
+  table_split()
 ```
+
+### Table 4: `r t4$title`
+
+`r t4$tbl`
+
+
+
+
+
 
 \newpage
 
 ```{r}
-table_gr_youth_unemp_region()
+t5 <- table_gr_youth_unemp_region() |>
+  table_split()
 ```
+
+### Table 5: `r t5$title`
+
+`r t5$tbl`
+
+
+
+
+
 
 \newpage
 
 ## [Metropolitan Melbourne]{.ul}
 
 ```{r}
-table_reg_metro_states_unemprate()
+t6 <- table_reg_metro_states_unemprate() |>
+  table_split()
 ```
+
+### Table 6: `r t6$title`
+
+`r t6$tbl`
 
 <br>
 
+
+
+
 ```{r}
-table_reg_metro_emp()
+t7 <- table_reg_metro_emp() |>
+  table_split()
 ```
+
+### Table 7: `r t7$title`
+
+`r t7$tbl`
 
 <br>
 
+
+
+
 ```{r}
-table_reg_metro_unemp()
+t8 <- table_reg_metro_unemp() |>
+  table_split()
 ```
+
+### Table 8: `r t8$title`
+
+`r t8$tbl`
 
 <br>
 
+
+
+
 ```{r}
-table_reg_metro_unemprate()
+t9 <- table_reg_metro_unemprate() |>
+  table_split()
 ```
+
+### Table 9: `r t9$title`
+
+`r t9$tbl`
 
 <br>
 
+
+
+
+
 ```{r}
-table_reg_metro_partrate()
+t10 <- table_reg_metro_partrate() |>
+  table_split()
 ```
+
+### Table 10: `r t10$title`
+
+`r t10$tbl`
+
+
+
+
 
 \newpage
 
 ## [Regional Victoria]{.ul}
 
 ```{r}
-table_reg_nonmetro_states_unemprate()
+t11 <- table_reg_nonmetro_states_unemprate() |>
+  table_split()
 ```
+
+### Table 11: `r t11$title`
+
+`r t11$tbl`
 
 <br>
 
-```{r}
-table_reg_nonmetro_emp()
 
+
+
+```{r}
+t12 <- table_reg_nonmetro_emp() |>
+  table_split()
 ```
+
+### Table 12: `r t12$title`
+
+`r t12$tbl`
+
+
+
+
+
 
 \newpage
 
 ```{r}
-table_reg_nonmetro_unemp()
+t13 <- table_reg_nonmetro_unemp() |>
+  table_split()
 ```
+
+### Table 13: `r t13$title`
+
+`r t13$tbl`
 
 <br>
 
-```{r}
-table_reg_nonmetro_unemprate()
-```
+
+
 
 ```{r}
-table_reg_nonmetro_partrate()
+t14 <- table_reg_nonmetro_unemprate() |>
+  table_split()
 ```
+
+### Table 14: `r t14$title`
+
+`r t14$tbl`
+
+
+
+
+```{r}
+t15 <- table_reg_nonmetro_partrate() |>
+  table_split()
+```
+
+### Table 15: `r t15$title`
+
+`r t15$tbl`
+
+
+
+
+
 
 \newpage
 
 ## [Industries]{.ul}
 
 ```{r}
-table_industries_summary()
+t16 <- table_industries_summary() |>
+  table_split()
 ```
+
+### Table 16: `r t16$title`
+
+`r t16$tbl`
