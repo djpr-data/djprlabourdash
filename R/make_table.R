@@ -47,7 +47,7 @@ make_table <- function(data,
                        title = "",
                        rename_indicators = TRUE,
                        pretty_round = TRUE) {
-  stopifnot(destination %in% c("dashboard", "briefing"))
+  stopifnot(destination %in% c("dashboard", "briefing", "ppqs"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
 
@@ -111,6 +111,10 @@ make_table <- function(data,
   # This occurs if all data series in the table commenced after Nov 2014
   if (destination == "dashboard" || all(is.na(summary_df$`SINCE NOV 2014`))) {
     cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
+  }
+
+  if (destination == "ppqs" || all(is.na(summary_df$`LAST 3 YEARS`))) {
+    cols_to_include <- cols_to_include[cols_to_include != "LAST 3 YEARS"]
   }
 
   # Create a basic flextable using the supplied dataframe
