@@ -130,7 +130,6 @@ create_summary_df <- function(data,
     ))
 
   ## Select only the latest changes
-
   changedf <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -145,7 +144,8 @@ create_summary_df <- function(data,
       .data$changeinyearpc,
       .data$changesincecovid,
       .data$changesincecovidpc,
-      .data$changesince14
+      .data$changesince14,
+      .data$changesince14pc
     ) %>%
     dplyr::ungroup()
 
@@ -165,6 +165,11 @@ create_summary_df <- function(data,
         .data$changesincecovidpc != "-",
         paste0(.data$changesincecovid, "\n(", .data$changesincecovidpc, ")"),
         .data$changesincecovid
+      ),
+      changesince14 = ifelse(
+        .data$changesince14pc != "-",
+        paste0(.data$changesince14, "\n(", .data$changesince14pc, ")"),
+        .data$changesince14
       )
     )
 
