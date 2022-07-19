@@ -47,6 +47,7 @@ make_table <- function(data,
                        title = "",
                        rename_indicators = TRUE,
                        pretty_round = TRUE) {
+
   stopifnot(destination %in% c("dashboard", "briefing", "ppqs"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
@@ -107,14 +108,18 @@ make_table <- function(data,
   # Define columns to include in output table
   cols_to_include <- names(summary_df)[names(summary_df) != "SERIES_ID"]
 
-  # Drop "Change during govt" column if going into dashboard or all values are NA
+  # Drop "Change during govt" and "Change during gvt pc" column if going into
+  # dashboard or all values are NA
   # This occurs if all data series in the table commenced after Nov 2014
   if (destination == "dashboard" || all(is.na(summary_df$`SINCE NOV 2014`))) {
     cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
+    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014 PC"]
   }
 
-  if (destination == "ppqs" || all(is.na(summary_df$`LAST 3 YEARS`))) {
-    cols_to_include <- cols_to_include[cols_to_include != "LAST 3 YEARS"]
+  # Drop "Change during gvt pc" column if going into briefing
+  if (destination == "briefing" || all(is.na(summary_df$`SINCE NOV 2014`))) {
+    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
+    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014 PC"]
   }
 
   # Create a basic flextable using the supplied dataframe
@@ -248,7 +253,7 @@ make_table <- function(data,
     "Current figures",
     "Change in latest period",
     "Change in past year",
-    "Change since COVID"
+    "Change since COVID-19"
   )
 
   if ("SINCE NOV 2014" %in% cols_to_include) {
@@ -354,7 +359,7 @@ make_table <- function(data,
     ) %>%
     flextable::line_spacing(
       part = "footer",
-      space = 0.8
+      space = 1
     ) %>%
     flextable::font(
       fontname = font_family,
