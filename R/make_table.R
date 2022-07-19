@@ -1,6 +1,6 @@
 #' Create a table for the dashboard or a briefing document
 #' @param data A data frame containing data to summarise
-#' @param destination "dashboard" or "briefing"
+#' @param destination "dashboard", "briefing" or "ppqs
 #' @param years_in_sparklines Period of time to include in the sparkline line
 #' charts.
 #' @param row_order Vector of series IDs, in the order in which you wish the
@@ -108,18 +108,16 @@ make_table <- function(data,
   # Define columns to include in output table
   cols_to_include <- names(summary_df)[names(summary_df) != "SERIES_ID"]
 
-  # Drop "Change during govt" and "Change during gvt pc" column if going into
-  # dashboard or all values are NA
+  # Drop "Change during govt" column if going into dashboard or all values are NA
   # This occurs if all data series in the table commenced after Nov 2014
   if (destination == "dashboard" || all(is.na(summary_df$`SINCE NOV 2014`))) {
     cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
     cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014 PC"]
   }
 
-  # Drop "Change during gvt pc" column if going into briefing
-  if (destination == "briefing" || all(is.na(summary_df$`SINCE NOV 2014`))) {
-    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
-    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014 PC"]
+  # Drop "LAST 3 YEARS" if for ppqs or all values are NA
+  if (destination == "ppqs" || all(is.na(summary_df$`LAST 3 YEARS`))) {
+    cols_to_include <- cols_to_include[cols_to_include != "LAST 3 YEARS"]
   }
 
   # Create a basic flextable using the supplied dataframe
@@ -286,7 +284,7 @@ make_table <- function(data,
     font_family <- "VIC-Regular"
     font_size_main <- 10.5
     font_size_secondary <- 9
-  } else if (destination == "briefing") {
+  } else {
     font_family <- "Arial"
     font_size_main <- 9
     font_size_secondary <- 8
