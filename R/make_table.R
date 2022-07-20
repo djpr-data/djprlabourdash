@@ -218,18 +218,20 @@ make_table <- function(data,
     spark_height <- 0.26
   }
 
-  flex <- flex %>%
-    flextable::compose(
-      j = 2,
-      value = flextable::as_paragraph(
-        flextable::gg_chunk(
-          value = .,
-          height = spark_height,
-          width = 1
-        )
-      ),
-      use_dot = TRUE
-    )
+  if (destination != "ppqs") {
+    flex <- flex %>%
+      flextable::compose(
+        j = 2,
+        value = flextable::as_paragraph(
+          flextable::gg_chunk(
+            value = .,
+            height = spark_height,
+            width = 1
+          )
+        ),
+        use_dot = TRUE
+      )
+  }
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
@@ -253,6 +255,10 @@ make_table <- function(data,
     "Change in past year",
     "Change since COVID-19"
   )
+
+  if (destination == "ppqs") {
+    header_row <- header_row[header_row != "Recent trend"]
+  }
 
   if ("SINCE NOV 2014" %in% cols_to_include) {
     header_row <- c(header_row, "Change during govt")
