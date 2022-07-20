@@ -214,7 +214,7 @@ make_table <- function(data,
   # Add sparklines
   if (destination == "dashboard") {
     spark_height <- 0.36
-  } else {
+  } else if (destination == "briefing") {
     spark_height <- 0.26
   }
 
