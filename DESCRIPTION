@@ -3,6 +3,10 @@ Title: DJPR Jobs Dashboard
 Version: 1.0.0
 Authors@R: 
     c(
+    person(given = "Henry",
+           family = "McMillan",
+           role = "aut",
+           email = "henry.mcmillan@ecodev.vic.gov.au"),
     person(given = "Annett",
            family = "Finger",
            role = "ctb",
@@ -11,6 +15,10 @@ Authors@R:
            family = "Seyoum-Tegegn",
            role = "ctb",
            email = "emma.seyoum-tegegn@ecodev.vic.gov.au"),
+    person(given = "Matt",
+           family = "Johnson",
+           role = "ctb",
+           email = "matthew.johnson@ecodev.vic.gov.au"),
     person(given = "Darren",
            family = "Wong",
            role = "ctb",

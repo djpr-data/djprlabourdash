@@ -26,7 +26,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
 
-  # Indexing to Covid start
+  # Indexing to Covid-19 start
   data <- data %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(
@@ -58,7 +58,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
       labels = function(x) paste0(x, "%")
     ) +
     labs(
-      title = "Employment for young people fell much faster after the COVID shock than employment for other Victorians",
+      title = "Employment for young people fell much faster after the COVID-19 shock than employment for other Victorians",
       subtitle = "Cumulative change in employment for different age groups since March 2020",
       caption = paste0(caption_lfs_det_m(), " Data smoothed using a 12 month rolling average.")
     )
@@ -576,7 +576,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
     dplyr::group_by(.data$age, .data$date) %>%
     dplyr::summarise(value = sum(.data$value))
 
-  # Indexing to Covid start
+  # Indexing to Covid-19 start
   data <- data %>%
     dplyr::group_by(.data$age) %>%
     dplyr::mutate(
@@ -608,7 +608,7 @@ viz_gr_yth_emp_sincecovid_line <- function(data = filter_dash_data(c(
       labels = function(x) paste0(x, "%")
     ) +
     labs(
-      title = "Employment for young people fell much faster after the COVID shock than employment for other Victorians",
+      title = "Employment for young people fell much faster after the COVID-19 shock than employment for other Victorians",
       subtitle = "Cumulative change in employment for different age groups since March 2020, per cent",
       caption = paste0(caption_lfs_det_m(), "Data smoothed using a 12 month rolling average.")
     )
