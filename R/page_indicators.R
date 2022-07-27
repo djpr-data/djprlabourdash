@@ -260,7 +260,7 @@ page_indicators <- function(input, output, session) {
     dates = input$dates
   )
 
-  # Indicators: cumulative change in PT / FT since COVID
+  # Indicators: cumulative change in PT / FT since COVID-19
   djpr_box_server(
     id = "ind_gen_full_part_line",
     plot_fun = viz_ind_gen_full_part_line

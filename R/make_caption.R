@@ -48,9 +48,20 @@ caption_lfs_det_q <- function(df = dash_data,
 
 caption_jobactive <- function(df = dash_data,
                               series_for_date = "jobactive_total_ballarat") {
-  caption_make(
-    df = df,
-    series_for_date = series_for_date,
-    release_name = "Commonwealth jobactive caseload data"
+
+  release_name <- "National Skills Commission jobactive caseload data"
+
+  latest_date <- df %>%
+    dplyr::filter(.data$series_id == series_for_date) %>%
+    dplyr::filter(.data$date == max(.data$date)) %>%
+    pull(.data$date) %>%
+    max()
+
+  paste0(
+    release_name,
+    ". ",
+    "Note: most recent data is for ",
+    format(latest_date, "%B %Y"),
+    "."
   )
 }
