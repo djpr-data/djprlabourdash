@@ -371,7 +371,7 @@ make_table <- function(data,
     )
 
   # Add title to briefing tables and resize columns
-  if (destination == "briefing") {
+  if (destination != "dashboard") {
     flex <- flex %>%
       flextable::set_caption(caption = title)
 
