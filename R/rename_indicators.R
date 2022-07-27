@@ -52,6 +52,10 @@ rename_indicators <- function(data) {
           "Youth unemployment rate",
         .data$series_id == "A84423350C" ~
           "Unemployed persons",
+        .data$series_id == "A84423469L" ~ "Female full-time employment",
+        .data$series_id == "A84423245A" ~ "Male full-time employment",
+        .data$series_id == "Males part-time" ~ "Male part-time employment",
+        .data$series_id == "Females part-time" ~ "Female part-time employment",
         TRUE ~ .data$indicator
       )
     )

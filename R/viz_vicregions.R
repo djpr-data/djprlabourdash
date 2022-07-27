@@ -613,7 +613,7 @@ text_reg_regions_sincecovid <- function(data = filter_dash_data(c(
       "people employed in Greater Melbourne. Employment fell to XX million ",
       "people by October 2020 - a decline of XX or XX per cent. Employment ",
       "in the rest of Victoria fell by only XX per cent over the same period. ",
-      "Greater Melbourne employment is XX per cent XX pre-COVID levels as at XX, ",
+      "Greater Melbourne employment is XX per cent XX pre-COVID-19 levels as at XX, ",
       "while employment in the rest of Victoria is XX per cent XX where it ",
       "was in March 2020."
     ),

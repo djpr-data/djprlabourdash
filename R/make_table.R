@@ -1,6 +1,6 @@
 #' Create a table for the dashboard or a briefing document
 #' @param data A data frame containing data to summarise
-#' @param destination "dashboard" or "briefing"
+#' @param destination "dashboard", "briefing" or "ppqs
 #' @param years_in_sparklines Period of time to include in the sparkline line
 #' charts.
 #' @param row_order Vector of series IDs, in the order in which you wish the
@@ -47,7 +47,8 @@ make_table <- function(data,
                        title = "",
                        rename_indicators = TRUE,
                        pretty_round = TRUE) {
-  stopifnot(destination %in% c("dashboard", "briefing"))
+
+  stopifnot(destination %in% c("dashboard", "briefing", "ppqs"))
   stopifnot(inherits(data, "data.frame"))
   stopifnot(nrow(data) >= 1)
 
@@ -111,6 +112,12 @@ make_table <- function(data,
   # This occurs if all data series in the table commenced after Nov 2014
   if (destination == "dashboard" || all(is.na(summary_df$`SINCE NOV 2014`))) {
     cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014"]
+    cols_to_include <- cols_to_include[cols_to_include != "SINCE NOV 2014 PC"]
+  }
+
+  # Drop "LAST 3 YEARS" if for ppqs or all values are NA
+  if (destination == "ppqs" || all(is.na(summary_df$`LAST 3 YEARS`))) {
+    cols_to_include <- cols_to_include[cols_to_include != "LAST 3 YEARS"]
   }
 
   # Create a basic flextable using the supplied dataframe
@@ -207,22 +214,24 @@ make_table <- function(data,
   # Add sparklines
   if (destination == "dashboard") {
     spark_height <- 0.36
-  } else {
+  } else if (destination == "briefing") {
     spark_height <- 0.26
   }
 
-  flex <- flex %>%
-    flextable::compose(
-      j = 2,
-      value = flextable::as_paragraph(
-        flextable::gg_chunk(
-          value = .,
-          height = spark_height,
-          width = 1
-        )
-      ),
-      use_dot = TRUE
-    )
+  if (destination != "ppqs") {
+    flex <- flex %>%
+      flextable::compose(
+        j = 2,
+        value = flextable::as_paragraph(
+          flextable::gg_chunk(
+            value = .,
+            height = spark_height,
+            width = 1
+          )
+        ),
+        use_dot = TRUE
+      )
+  }
 
   # Ensure the flextable fits the container (eg. Word doc) it is placed in
   flex <- flex %>%
@@ -244,8 +253,12 @@ make_table <- function(data,
     "Current figures",
     "Change in latest period",
     "Change in past year",
-    "Change since COVID"
+    "Change since COVID-19"
   )
+
+  if (destination == "ppqs") {
+    header_row <- header_row[header_row != "Recent trend"]
+  }
 
   if ("SINCE NOV 2014" %in% cols_to_include) {
     header_row <- c(header_row, "Change during govt")
@@ -277,7 +290,7 @@ make_table <- function(data,
     font_family <- "VIC-Regular"
     font_size_main <- 10.5
     font_size_secondary <- 9
-  } else if (destination == "briefing") {
+  } else {
     font_family <- "Arial"
     font_size_main <- 9
     font_size_secondary <- 8
@@ -350,7 +363,7 @@ make_table <- function(data,
     ) %>%
     flextable::line_spacing(
       part = "footer",
-      space = 0.8
+      space = 1
     ) %>%
     flextable::font(
       fontname = font_family,
@@ -358,7 +371,7 @@ make_table <- function(data,
     )
 
   # Add title to briefing tables and resize columns
-  if (destination == "briefing") {
+  if (destination != "dashboard") {
     flex <- flex %>%
       flextable::set_caption(caption = title)
 

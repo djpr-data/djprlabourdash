@@ -21,6 +21,7 @@
 create_summary_df <- function(data,
                               years_in_sparklines = 3,
                               pretty_round = TRUE) {
+
   startdate <- subtract_years(max(data$date), years_in_sparklines)
 
   freq <- unique(data$frequency)
@@ -78,8 +79,8 @@ create_summary_df <- function(data,
       changesincecovidpc = (.data$changesincecovid / .data$value[.data$date == .data$pre_covid_date]) * 100,
       changesince14 = ifelse(.data$min_date >= as.Date("2014-11-01"),
         NA_real_,
-        (.data$value - .data$value[.data$date == as.Date("2014-11-01")])
-      )
+        (.data$value - .data$value[.data$date == as.Date("2014-11-01")])),
+      changesince14pc = (.data$changesince14 / .data$value[.data$date == as.Date("2014-11-01")]) * 100,
     ) %>%
     dplyr::select(-.data$min_date) %>%
     dplyr::filter(.data$date >= startdate) %>%
@@ -129,7 +130,6 @@ create_summary_df <- function(data,
     ))
 
   ## Select only the latest changes
-
   changedf <- summary_df %>%
     dplyr::group_by(.data$indicator, .data$series_id) %>%
     dplyr::filter(.data$date == max(.data$date)) %>%
@@ -144,7 +144,8 @@ create_summary_df <- function(data,
       .data$changeinyearpc,
       .data$changesincecovid,
       .data$changesincecovidpc,
-      .data$changesince14
+      .data$changesince14,
+      .data$changesince14pc
     ) %>%
     dplyr::ungroup()
 
@@ -164,6 +165,11 @@ create_summary_df <- function(data,
         .data$changesincecovidpc != "-",
         paste0(.data$changesincecovid, "\n(", .data$changesincecovidpc, ")"),
         .data$changesincecovid
+      ),
+      changesince14 = ifelse(
+        .data$changesince14pc != "-",
+        paste0(.data$changesince14, "\n(", .data$changesince14pc, ")"),
+        .data$changesince14
       )
     )
 

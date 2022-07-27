@@ -58,7 +58,7 @@ page_sexUI <- function(...) {
       "gr_gen_partrate_line",
       date_slider("gr_gen_partrate_line", table_no = "6202012")
     ) %>% fluidRow(),
-    djpr_h2_box("Jobactive caseload by sex") %>% fluidRow(),
+    djpr_h2_box("Jobactive caseload for women") %>% fluidRow(),
     box(
       width = 12,
       uiOutput("table_jobactive_female") %>%

@@ -20,7 +20,7 @@ caption_auto <- function(data,
           frequency == "Month" ~ "ABS Labour Force detailed monthly",
         cat_no == "6291" &
           frequency != "Month" ~ "ABS Labour Force detailed quarterly",
-        cat_no == "joba" ~ "Commonwealth Jobactive caseload data",
+        cat_no == "joba" ~ "National Skills Commission jobactive caseload data",
         TRUE ~ "."
       ),
       pretty_month = format(.data$date, "%B %Y"),
@@ -36,7 +36,10 @@ caption_auto <- function(data,
 
   out <- combine_words(sources)
 
-  out <- paste0("\nBased on Australian Bureau of Statistics data: ", out, ".")
+  if(grepl("ABS", out)){
+    out <- paste0("\nBased on Australian Bureau of Statistics data: ", out, ".")
+  }
+
 
   if (!is.null(notes)) {
     out <- paste0(out, "\nNotes: ", notes)
